@@ -11,25 +11,11 @@ import {
   shadowStyles,
 } from '@/designer-components/_common/styles/utils';
 
-/**
- * Styles for both the plain picker and the configurable form component.
- *
- * The model is optional: consumers that only need the picker itself (the settings-form icon input)
- * call `useStyles()` and get the trigger and modal styles, while the form component passes its
- * style model and additionally gets `iconPickerStyles` carrying the configured appearance.
- *
- * It is typed as the shared `IStyleValue` rather than the form component props: this file sits in
- * the base component, so depending on `designer-components/iconPicker` would point the dependency
- * the wrong way and close an import cycle back through `ShaIconTypes`.
- */
+// Styles for both the plain picker and the configurable form component; `model` is optional since callers of the plain picker skip it.
 export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }, model?: IStyleValue) => {
   const shaIconPickerSelectedIcon = "sha-icon-picker-selected-icon";
 
-  /*
-   * Trigger styles only. Everything visual (border, background, font, spacing) is left to the
-   * configured appearance below, so a styled component is never fighting a default here — this
-   * block sets the affordance and strips the placeholder button chrome, nothing more.
-   */
+  // Trigger styles only; visual appearance is left to configuredAppearance below.
   const shaIconPicker = cx("sha-icon-picker", css`
     .${shaIconPickerSelectedIcon} {
       display: inline-flex;
@@ -39,8 +25,7 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }, model?
         cursor: pointer;
       }
 
-      /* The button is a placeholder for "no icon chosen yet", not a control in its own right:
-         strip its chrome so it presents as a bare glyph, like the selected state does. */
+      /* Strip button chrome so the "no icon chosen" placeholder presents as a bare glyph. */
       .ant-btn {
         background: transparent;
         border-color: transparent;
@@ -58,11 +43,7 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }, model?
     }
   `);
 
-  /*
-   * The configured box goes on the glyph, not on the picker root: the root spans the whole form
-   * column, so a border or background there would draw a full-width box around a small icon.
-   * On the glyph it hugs the icon, which is what styling a glyph-only component should mean.
-   */
+  // The configured box goes on the glyph, not the picker root, so it hugs the icon instead of the whole form column.
   const configuredAppearance = `
     ${borderStyles(model?.border)}
     ${backgroundStyles(model?.background)}
@@ -76,9 +57,7 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }, model?
       ${marginStyles(model?.stylingBoxJson)}
       box-sizing: border-box;
 
-      /* Align the trigger within the form column. IconPicker nests the glyph two unstyled,
-         block-level divs deep, so the alignment has to be passed down or those full-width divs
-         swallow it before it reaches the icon. */
+      /* Passed down through IconPicker's two unstyled wrapper divs, or they'd swallow the alignment. */
       display: flex;
       justify-content: ${justifyContentFor(model?.font?.align)};
 
@@ -98,8 +77,7 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }, model?
         justify-content: center;
       }
 
-      /* Size the placeholder button from the configured font and padding rather than the antd
-         control height, so the empty state matches the selected one. */
+      /* Size the placeholder button from configured font/padding so the empty state matches the selected one. */
       &&&& .ant-btn {
         height: auto;
         width: auto;
@@ -108,8 +86,7 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }, model?
         border: none;
       }
 
-      /* Hold the configured box through hover and focus so it does not fall back to antd
-         defaults mid-interaction. */
+      /* Hold the configured box through hover/focus so it doesn't fall back to antd defaults. */
       &&&&:hover .${iconPrefixCls},
       &&&&:focus .${iconPrefixCls},
       &&&&:focus-within .${iconPrefixCls} {
@@ -117,16 +94,12 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }, model?
       }
     `);
 
-  /**
-   * Disabled greys the picker out and blocks interaction; read-only leaves it at full strength
-   * because the value is still being presented.
-   */
+  // Disabled greys the picker out and blocks interaction; read-only leaves it at full strength.
   const disabled = cx('sha-icon-picker-disabled', css`
       cursor: not-allowed;
       opacity: 0.4;
 
-      /* The trigger sets pointer-events: all on itself when not read-only, so the block has to be
-         re-applied on the descendant rather than only here. */
+      /* Re-applied on the descendant since the trigger sets pointer-events: all on itself when not read-only. */
       &&& * {
         pointer-events: none;
       }
@@ -134,62 +107,145 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }, model?
 
   const shaIconPickerSearch = "sha-icon-picker-search";
   const shaIconPickerSearchInputContainer = "sha-icon-picker-search-input-container";
+  const shaIconPickerBrowseArea = "sha-icon-picker-browse-area";
   const shaIconPickerIconList = "sha-icon-picker-icon-list";
-  const shaIconPickerIconListGroup = "sha-icon-picker-icon-list-group";
-  const shaIconPickerIconListGroupHeader = "sha-icon-picker-icon-list-group-header";
-  const shaIconPickerIconListGroupBody = "sha-icon-picker-icon-list-group-body";
   const shaIconPickerIconListIcon = "sha-icon-picker-icon-list-icon";
   const shaIconPickerIconListIconName = "sha-icon-picker-icon-list-icon-name";
+  const shaIconPickerCategoryIndex = "sha-icon-picker-category-index";
+  const shaIconPickerCategoryIndexItem = "sha-icon-picker-category-index-item";
+  const shaIconPickerCategoryIndexItemLabel = "sha-icon-picker-category-index-item-label";
+  const shaIconPickerCategoryIndexItemCount = "sha-icon-picker-category-index-item-count";
+  const shaIconPickerLegacyList = "sha-icon-picker-legacy-list";
+  const shaIconPickerIconListGroupBody = "sha-icon-picker-icon-list-group-body";
 
   const shaIconPickerModal = cx("sha-icon-picker-modal", css`
+    /* Body height/display/overflow are set via the Modal's styles={{ body: {...} }} prop, not a class, so it reliably wins over antd's own injected Modal styles. */
+
     .${shaIconPickerSearch} {
+      flex: 0 0 auto;
       display: flex;
+      gap: ${sheshaStyles.paddingLG}px;
       margin-bottom: ${sheshaStyles.paddingLG}px;
 
       .${shaIconPickerSearchInputContainer} {
-        margin-left: ${sheshaStyles.paddingLG}px;
         flex: 1;
       }
     }
 
+    .${shaIconPickerBrowseArea} {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      gap: ${sheshaStyles.paddingLG}px;
+    }
+
     .${shaIconPickerIconList} {
-      max-height: 600px;
+      flex: 1;
+      height: 100%;
+      min-width: 0;
+      /* Overrides flex's default "auto" min-height, which would let react-window's Grid grow to fit instead of scrolling. */
+      min-height: 0;
+    }
+
+    .${shaIconPickerIconListIcon} {
+      padding: 8px 4px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      overflow: hidden;
+
+      &:hover {
+        background: ${token.colorPrimaryBgHover};
+        border-radius: 4px;
+
+        .${iconPrefixCls} {
+          transform: scale(1.25);
+        }
+      }
+
+      .${shaIconPickerIconListIconName} {
+        margin-top: 8px;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 12px;
+      }
+    }
+
+    .${shaIconPickerCategoryIndex} {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      flex: 0 0 auto;
+      /* border-box so width includes the border/padding below, keeping the divider aligned with the Select above. */
+      box-sizing: border-box;
+      width: 280px;
+      height: 100%;
+      min-height: 0;
+      overflow-y: auto;
+      border-right: 1px solid ${token.colorBorderSecondary};
+      padding-right: ${sheshaStyles.paddingLG}px;
+
+      .${shaIconPickerCategoryIndexItem} {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        padding: 6px 12px;
+        margin-bottom: 4px;
+        border-radius: 16px;
+        border: 1px solid ${token.colorBorder};
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        /* Otherwise a <button> shrink-wraps to content, pushing the sidebar wider than its fixed 280px column. */
+        width: 100%;
+        box-sizing: border-box;
+        min-width: 0;
+
+        &:hover {
+          background: ${token.colorPrimaryBgHover};
+          border-color: ${token.colorPrimary};
+        }
+
+        &.active {
+          background: ${token.colorPrimary};
+          border-color: ${token.colorPrimary};
+          color: ${token.colorWhite};
+        }
+
+        .${shaIconPickerCategoryIndexItemLabel} {
+          flex: 1;
+          min-width: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .${shaIconPickerCategoryIndexItemCount} {
+          color: ${token.colorTextTertiary};
+          font-size: 12px;
+        }
+
+        &.active .${shaIconPickerCategoryIndexItemCount} {
+          color: ${token.colorWhite};
+          opacity: 0.85;
+        }
+      }
+    }
+
+    .${shaIconPickerLegacyList} {
+      flex: 1;
+      min-height: 0;
       overflow-y: auto;
 
-      .${shaIconPickerIconListGroup} {
-        .${shaIconPickerIconListGroupHeader} {
-          font-size: 16px;
-          font-weight: 500;
-          margin: ${sheshaStyles.paddingLG}px 0;
-        }
-
-        .${shaIconPickerIconListGroupBody} {
-          display: grid;
-          grid-template-columns: auto auto auto auto;
-
-          .${shaIconPickerIconListIcon} {
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-
-            &:hover {
-              background: ${token.colorPrimaryBgHover};
-              border-radius: 4px;
-
-              .${iconPrefixCls},
-              .${shaIconPickerIconListIconName} {
-                transform: scale(1.25);
-              }
-            }
-
-            .${shaIconPickerIconListIconName} {
-              margin-top: 12px;
-            }
-          }
-        }
+      .${shaIconPickerIconListGroupBody} {
+        display: grid;
+        grid-template-columns: auto auto auto auto;
       }
     }
   `);
@@ -200,12 +256,16 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }, model?
     shaIconPickerModal,
     shaIconPickerSearch,
     shaIconPickerSearchInputContainer,
+    shaIconPickerBrowseArea,
     shaIconPickerIconList,
-    shaIconPickerIconListGroup,
-    shaIconPickerIconListGroupHeader,
-    shaIconPickerIconListGroupBody,
     shaIconPickerIconListIcon,
     shaIconPickerIconListIconName,
+    shaIconPickerCategoryIndex,
+    shaIconPickerCategoryIndexItem,
+    shaIconPickerCategoryIndexItemLabel,
+    shaIconPickerCategoryIndexItemCount,
+    shaIconPickerLegacyList,
+    shaIconPickerIconListGroupBody,
     // Form-component styles
     iconPickerStyles,
     disabled,

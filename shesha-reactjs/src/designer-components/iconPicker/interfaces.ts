@@ -1,5 +1,4 @@
 import { CSSProperties } from 'react';
-import { ShaIconTypes } from '@/components/iconPicker';
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 
@@ -18,13 +17,13 @@ export interface IIconPickerComponentPropsV1 extends IConfigurableFormComponent,
   borderColor?: string | undefined;
   borderRadius?: number | undefined;
   backgroundColor?: string | undefined;
-  defaultIcon?: ShaIconTypes | undefined;
+  defaultIcon?: string | undefined;
   textAlign?: CSSProperties['textAlign'] | undefined;
 }
 
 export interface IIconPickerComponentProps extends IConfigurableFormComponent, IInputStyles {
   /** Icon rendered when the component has no value. */
-  defaultIcon?: ShaIconTypes | undefined;
+  defaultIcon?: string | undefined;
 }
 
 export type IconPickerComponentDefinition = ComponentDefinition<"iconPicker", IIconPickerComponentProps>;

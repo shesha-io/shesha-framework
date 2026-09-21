@@ -1,4 +1,4 @@
-import IconPicker, { IIconPickerProps, ShaIconTypes } from '@/components/iconPicker';
+import IconPicker, { IIconPickerProps } from '@/components/iconPicker';
 import { FC, useCallback } from 'react';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { Tooltip } from 'antd';
@@ -12,7 +12,7 @@ interface IconPickerWrapperProps {
   value: string | null | undefined;
   onChange: ((newValue: string | null) => void) | undefined;
   selectBtnSize?: SizeType | undefined;
-  defaultValue?: ShaIconTypes | undefined;
+  defaultValue?: string | undefined;
   description?: string | undefined;
   iconSize?: number | undefined;
   /** Emotion class carrying the configured appearance. */

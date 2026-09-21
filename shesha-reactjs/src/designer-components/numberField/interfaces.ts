@@ -1,4 +1,3 @@
-import { IconType } from '@/components/shaIcon';
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles, IPropertySetting } from '@/providers/form/models';
 
@@ -12,8 +11,8 @@ export interface INumberFieldComponentPropsV1 extends IConfigurableFormComponent
   placeholder?: string;
   prefix?: string;
   suffix?: string;
-  suffixIcon?: IconType;
-  prefixIcon?: IconType;
+  suffixIcon?: string;
+  prefixIcon?: string;
 }
 
 export type NumberFieldFormat = 'integer' | 'decimal' | 'percent' | 'currency' | 'custom';
@@ -28,8 +27,8 @@ export interface INumberFieldComponentProps extends IConfigurableFormComponent, 
   placeholder?: string | undefined;
   prefix?: string | undefined;
   suffix?: string | undefined;
-  suffixIcon?: IconType | undefined;
-  prefixIcon?: IconType | undefined;
+  suffixIcon?: string | undefined;
+  prefixIcon?: string | undefined;
 }
 interface INumberFieldComponentCalculatedValues {
   executeCustomFormat?: (value: unknown, code: string) => string;

@@ -1,7 +1,6 @@
 import { EntityReference, EntityReferenceValue } from '@/components/entityReference';
 import { useEffect } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { ShaIconTypes } from '@/components/iconPicker';
 import {
   migrateCustomFunctions,
   migrateHiddenToVisible,
@@ -203,7 +202,7 @@ const EntityReferenceComponent: EntityReferenceComponentDefinition = {
       .add<IEntityReferenceControlProps>(8, (prev) => ({
         ...prev,
         // eslint-disable-next-line @typescript-eslint/no-deprecated
-        iconName: (prev.iconName ?? prev.icon) as ShaIconTypes | undefined,
+        iconName: (prev.iconName ?? prev.icon) as string | undefined,
       }))
       .add<IEntityReferenceControlProps>(9, (prev) => ({
         ...prev,
