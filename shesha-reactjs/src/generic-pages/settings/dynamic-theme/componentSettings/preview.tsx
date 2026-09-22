@@ -12,7 +12,7 @@ export interface IComponentDefaultsPreviewProps {
 }
 
 export const ComponentDefaultsPreview: FC<IComponentDefaultsPreviewProps> = ({ componentDefinition, theme }) => {
-  const { styles } = useStyles(theme);
+  const { styles } = useStyles();
 
   const componentTitle = componentDefinition.name;
 

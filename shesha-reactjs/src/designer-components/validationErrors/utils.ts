@@ -5,6 +5,7 @@ export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: "color", color: '' },
     font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI', align: 'left' },
+    shadow: { color: '#000000', offsetX: 0, offsetY: 0, blurRadius: 0, spreadRadius: 0 },
     dimensions: { width: '100%', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: {
       border: {

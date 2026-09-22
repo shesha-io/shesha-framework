@@ -25,7 +25,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
         tabs: [
           {
             key: 'common',
-            title: 'Common',
+            title: 'Main',
             id: commonTabId,
             components: [...fbf()
               .addSettingsInput({ id: nanoid(), inputType: 'textField', propertyName: "componentName", parentId: commonTabId, label: "Component Name", validate: { required: true } })
