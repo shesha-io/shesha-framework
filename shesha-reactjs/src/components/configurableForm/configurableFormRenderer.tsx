@@ -6,7 +6,7 @@ import { ComponentsContainerProvider } from '@/providers/form/nesting/containerC
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { FormLoader } from '@/providers/form/formLoader';
 import { useFormLoader } from '@/providers/form/formLoaderProvider';
-import { Button, Form, Result } from 'antd';
+import { Button, ConfigProvider, Form, Result, theme as antdTheme } from 'antd';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { PropsWithChildren, ReactNode } from 'react';
@@ -87,10 +87,15 @@ export const ConfigurableFormRenderer = <Values extends object = object>({
 
   const { dataSubmitState } = shaForm;
 
+  /* User-configured forms are authored against a light surface and carry their own configured
+     appearance, so they must render the same way whatever the app's light/dark setting is.
+     Settings forms are framework chrome and follow the theme like the rest of the UI. */
+  const followsAppTheme = shaForm.isSettingsForm;
+
   // Get the most recent active loader
   const currentLoader = activeLoaders.length > 0 ? activeLoaders[activeLoaders.length - 1] : null;
 
-  return (
+  const content = (
     <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
       <div style={{ position: 'relative' }}>
         <div inert={Boolean(currentLoader)}>
@@ -103,7 +108,7 @@ export const ConfigurableFormRenderer = <Values extends object = object>({
               onFinishFailed={onFinishFailedInternal}
               onValuesChange={onValuesChangeInternal}
               {...(initialValues ? { initialValues } : {})}
-              className={classNames(styles.shaForm, props.className)}
+              className={classNames(styles.shaForm, { [styles.shaConfiguredForm]: !followsAppTheme }, props.className)}
               {...mergedProps}
               {...(shaForm.form
                 ? {
@@ -121,4 +126,8 @@ export const ConfigurableFormRenderer = <Values extends object = object>({
       </div>
     </ComponentsContainerProvider>
   );
+
+  return followsAppTheme
+    ? content
+    : <ConfigProvider theme={{ algorithm: antdTheme.defaultAlgorithm }}>{content}</ConfigProvider>;
 };

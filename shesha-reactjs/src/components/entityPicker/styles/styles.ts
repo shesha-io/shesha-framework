@@ -1,26 +1,9 @@
 import { createStyles, sheshaStyles } from '@/styles';
 import { IStyleValue } from '@/providers/form/models';
-import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
-import { backgroundStyles, borderStyles, fontStyles } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles } from '@/designer-components/_common/styles/utils';
+import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
-const borderColorStyles = (model: IBorderValue | undefined): string => {
-  if (!model) return '';
-  const sides = model.borderType === 'all'
-    ? ([['border-color', model.border?.all]] as const)
-    : ([
-      ['border-top-color', model.border?.top],
-      ['border-right-color', model.border?.right],
-      ['border-bottom-color', model.border?.bottom],
-      ['border-left-color', model.border?.left],
-    ] as const);
-
-  return sides
-    .filter(([, side]) => Boolean(side?.color))
-    .map(([property, side]) => `${property}: ${side?.color} !important;`)
-    .join(' ');
-};
-
-export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IStyleValue) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }, model?: IStyleValue) => {
   const pickerEllipsisBtnWidth = "45px";
 
   const pickerInputGroup = "picker-input-group";
@@ -30,28 +13,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
 
   const shaReactTable = "sha-react-table";
   const shaGlobalTableFilter = "sha-global-table-filter";
-
-  /* Only the modal panel itself (.ant-modal-container below) is painted with the configured
-     background. A solid color looks fine repeated across every inner element, but a gradient or
-     image tiles independently on each one and reads as busy, so every child below is instead
-     made transparent and lets the panel's background show through - see `transparentBackground`. */
-  const configuredAppearance = `
-    ${borderColorStyles(model?.border)}
-    ${backgroundStyles(model?.background)}
-  `;
-
-  /* Cancels every property `backgroundStyles` can set (color/gradient shorthand as well as the
-     image/size/repeat/position set), so a configured image or gradient doesn't repeat on this
-     element regardless of which background type is configured. */
-  const transparentBackground = `
-    background: transparent;
-    background-image: none;
-  `;
-
-  const textStyle = fontStyles(
-    { type: model?.font?.type, color: model?.font?.color },
-    { fontFamily: model?.styleCss?.fontFamily, color: model?.styleCss?.color },
-  );
+  const fontFamily = isNotNullOrWhiteSpace(model?.font?.type)
+    ? model.font.type
+    : model?.styleCss?.fontFamily;
+  const fontFamilyStyle = isNullOrWhiteSpace(fontFamily) ? '' : `font-family: ${fontFamily};`;
 
   const entityPickerContainer = cx("entity-picker-container", css`
     width: 100%;
@@ -67,13 +32,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
   `);
 
   /* The dialog is portalled to the body, so the picker's Appearance class cannot reach it through
-     a descendant selector — it gets the style model passed down as a value instead. */
+     a descendant selector — it gets the style model passed down as a value instead.
+
+     Only two things are applied here: the configured background on the dialog panel, and the font
+     family on its content. Everything inside — the table, the search box, the pager, the buttons —
+     is left to render its own default styling. */
   const entityPickerModal = cx("entity-picker-modal", css`
     /* antd paints the dialog panel on -modal-container; the class itself lands on the outer
        element, whose background sits behind that panel and never shows. */
     .${prefixCls}-modal-container {
-      ${configuredAppearance}
-      ${borderStyles(model?.border)}
+      ${backgroundStyles(model?.background)}
     }
 
     /* antd paints the header, body and footer on their own elements, which would cover the
@@ -84,17 +52,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
       background: transparent;
     }
 
-    /* antd sets the font on each of these elements itself, so a value inherited from the panel
-       never reaches them. */
-    .${prefixCls}-modal-title {
-      ${textStyle}
-    }
+    /* Inherited by the dialog content. Controls that set their own font-family (antd does so on a
+       few) are not chased down: this is the family for the dialog, not an override of each child. */
+    ${fontFamilyStyle}
 
     .${prefixCls}-modal-body {
-      ${textStyle}
-
-      /* The alert deliberately keeps its own panel: it is an information callout, and tinting it
-         with the field background would lose the distinction it is drawn to make. */
       .${prefixCls}-alert {
         margin-bottom: 8px;
       }
@@ -105,32 +67,12 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
       width: 100%;
       padding: unset;
 
-      .${prefixCls}-input-affix-wrapper, .${prefixCls}-btn {
-        ${transparentBackground}
-        ${borderColorStyles(model?.border)}
-        border-width: 1px !important;
-
-        input {
-          ${textStyle}
-        }
-
-        &:hover,
-        &:focus,
-        &:focus-within,
-        &:active {
-          border-color: ${token.colorPrimary} !important;
-        }
-      }
-
+      /* The search box is an Input.Search: an input plus a button. Neither inherits the family
+         (see the footer rule below), so both are named here. The placeholder is a pseudo-element
+         and follows the input, so it needs no rule of its own. */
+      input,
       .${prefixCls}-btn {
-        ${transparentBackground}
-        ${textStyle}
-
-       &:hover,
-        &:active {
-          ${transparentBackground}
-          border-color: ${token.colorPrimary} !important;
-        }
+        ${fontFamilyStyle}
       }
     }
 
@@ -139,96 +81,41 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
       width: 100% !important;
       display: block !important;
       overflow: auto;
-      ${transparentBackground}
-      ${borderColorStyles(model?.border)}
-      border-width: 1px;
-      border-style: solid;
       border-radius: 6px;
       box-sizing: border-box;
       ${sheshaStyles.thinScrollbars}
 
-      /* The table paints its own row and cell backgrounds, and sets the font on the cell elements
-         themselves, so both have to be restated all the way down. */
-      .sha-table {
-        ${transparentBackground}
-        ${textStyle}
-
-        * {
-          ${textStyle}
-        }
-
-        .tr.tr-head {
-          &,
-          .th,
-          .th * {
-            ${textStyle}
-          }
-        }
-
-        /* A sticky/anchored column has other columns' cells scrolling underneath it, so unlike the
-           rest of the table it can't be fully transparent - it would let that scrolling content
-           bleed through. A flat fallback color would solve that but stand out as a mismatched
-           patch against a configured gradient or image, so instead the column blurs whatever is
-           behind it: it still reads as part of the same themed surface, for any background type,
-           without needing to know what that background actually is.
-
-           This has to apply to every row, not just the header: body cells get their own opaque
-           striping color as an inline style (see rowCell.tsx), so !important is needed here to
-           actually clear it to transparent - otherwise there is nothing for the blur to show
-           through and only the header would appear to work. */
-        .th.fixed-column,
-        .td.fixed-column {
-          background: transparent !important;
-          background-image: none !important;
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-        }
+      /* The table sets a family on its header and body cells only when the caller passes one, and
+         the picker deliberately passes no styling so the table keeps its own defaults otherwise.
+         That leaves the cells on the theme family rather than inheriting the dialog one, so the
+         family alone is restated here. Nothing else about the cells is touched. */
+      .th, .td {
+        ${fontFamilyStyle}
       }
     }
 
     .${entityPickerModalPagerContainer} {
-      ${textStyle}
       display: flex;
       justify-content: flex-end;
       margin: ${sheshaStyles.paddingLG}px 0;
 
+      /* antd sets font-family on the pagination items themselves (token.fontFamily), so the page
+         numbers and the prev/next/jump controls never inherit the dialog family. The page-size
+         select is a Select, whose own rule is font-family: inherit, so it follows its container -
+         which is one of these items. */
+      .${prefixCls}-pagination-item,
+      .${prefixCls}-pagination-prev,
+      .${prefixCls}-pagination-next,
+      .${prefixCls}-pagination-jump-prev,
+      .${prefixCls}-pagination-jump-next,
+      .${prefixCls}-pagination-options,
       .${prefixCls}-pagination-total-text {
-        ${textStyle}
-      }
-
-      /* Each page number is its own opaque box by default, which would repeat a configured
-         gradient or image instead of letting the modal panel's background show through it. */
-      .${prefixCls}-pagination-item {
-        ${transparentBackground}
-
-        a {
-          ${textStyle}
-        }
-      }
-
-      .${prefixCls}-pagination-prev, .${prefixCls}-pagination-next {
-      color: orange;
-        .anticon {
-          ${textStyle}
-        }
+        ${fontFamilyStyle}
       }
 
       .${prefixCls}-select {
         margin-right: 0 !important;
-        ${transparentBackground}
-        ${borderColorStyles(model?.border)}
-        border-width: 1px;
-        ${textStyle}
-
-        .${prefixCls}-select-selector {
-          transition: border-color 0.2s;
-        }
-
-        &:hover .${prefixCls}-select-selector,
-        &.${prefixCls}-select-focused .${prefixCls}-select-selector,
-        &:active .${prefixCls}-select-selector {
-          border-color: ${token.colorPrimary} !important;
-        }
+        ${fontFamilyStyle}
       }
     }
 
@@ -239,27 +126,20 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
       justify-content: space-between;
       column-gap: 12px;
 
+      /* Form controls do not inherit font-family: the browser gives input, button and select
+         their own UA font, and antd inherits font-size and colour on them but not the family.
+         So the footer buttons (Close, Add New) have to be named explicitly. */
       .${prefixCls}-btn {
-        ${transparentBackground}
-        ${borderColorStyles(model?.border)}
-        border-width: 1px;
-        ${textStyle}
-
-        transition: border-color 0.2s;
-
-        &:hover,
-        &:active {
-          ${transparentBackground}
-          ${borderColorStyles(model?.border)}
-          border-width: 1px;
-          border-color: ${token.colorPrimary} !important;
-        }
+        ${fontFamilyStyle}
       }
+    }
+
+    /* The dialog close (X) is rendered outside the header/body/footer, on the modal root. */
+    .${prefixCls}-modal-close {
+      ${fontFamilyStyle}
     }
   `);
 
-  /* Layout only, for the same reason as the container above: font and colour come from the
-     designer component's Appearance class, which scopes them to this element. */
   const entitySelect = cx("entity-select", css`
     flex-basis: unset !important;
 

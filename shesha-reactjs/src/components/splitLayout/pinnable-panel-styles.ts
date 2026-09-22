@@ -24,10 +24,34 @@ export const usePinnablePanelStyles = createStyles(
 
     content: css`
       flex: 1;
+      min-height: 0;
       overflow: auto;
       ${sheshaStyles.thinScrollbars}
       padding: 12px;
       display: ${$expanded ? 'block' : 'none'};
+      /* Anchors a panel whose content sizes itself to the panel (see .sha-properties-tabs). */
+      position: relative;
+
+      /*
+       * A panel that manages its own scrolling - the form designer's settings tabs, which keep their
+       * search box and tab strip fixed while only the tab body scrolls - stretches to the panel's height
+       * and takes the scrollbar off the panel itself. Absolute positioning gets it that height without
+       * needing every wrapper between here and it to pass a height down.
+       */
+      &:has(.sha-properties-tabs) {
+        overflow: hidden;
+        /* The inset below reproduces this padding, so keeping both would make the absolutely-positioned
+           child overflow the padding box by 12px. */
+        padding: 0;
+      }
+
+      .sha-properties-tabs {
+        position: absolute;
+        inset: 12px;
+        /* The inset already fixes both edges, so the root's own height:100% (which it needs when a host
+           does give it a height) would otherwise resolve against the container and overhang the bottom. */
+        height: auto;
+      }
     `,
 
     collapsedBar: css`
@@ -48,7 +72,6 @@ export const usePinnablePanelStyles = createStyles(
 
     verticalText: css`
       writing-mode: vertical-rl;
-      letter-spacing: 4px;
     `,
 
     horizontalText: css``,

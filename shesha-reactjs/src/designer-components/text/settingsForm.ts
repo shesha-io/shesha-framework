@@ -15,7 +15,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
     components: fbf('root')
       .addSearchableTabs({ id: searchableTabsId, propertyName: 'settingsTabs', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
-          { key: 'common', title: 'Common', id: commonTabId, components: fbf(commonTabId)
+          { key: 'common', title: 'Main', id: commonTabId, components: fbf(commonTabId)
             .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', size: 'small', validate: { required: true } })
             .addSettingsInputRow({ inputs: [
               { type: 'switch', propertyName: 'visible', label: 'Visible', size: 'small', jsSetting: true, permissionSettings: true },

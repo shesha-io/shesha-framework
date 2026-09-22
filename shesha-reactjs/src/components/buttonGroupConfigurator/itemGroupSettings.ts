@@ -11,7 +11,7 @@ export const getGroupSettings: SettingsFormMarkupFactory = ({ fbf }) => {
     components: fbf()
       .addSearchableTabs({ propertyName: 'settingsTabs', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
-          { key: 'common', title: 'Common', id: commonTabId,
+          { key: 'common', title: 'Main', id: commonTabId,
             components: [...fbf(commonTabId)
               .addSettingsInput({ inputType: 'textField', propertyName: 'name', label: 'Group Name', jsSetting: false, validate: { required: true } })
               .addSettingsInputRow({
