@@ -169,7 +169,19 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
         }
       });
     }
-    return { ...data, ...api };
+    // `data` here is usually the accessor Proxy from CreateDataAccessor, whose `ownKeys` trap
+    // only reflects the underlying data's keys - not the accessor methods (setFieldValue,
+    // getFieldValue, setData, getData, getAccessorValue). A plain `{ ...data }` spread therefore
+    // silently drops those methods. Re-attach the binder's own accessors explicitly so flattening
+    // never breaks the live data proxy that form scripts rely on (e.g. `contexts.appContext.setFieldValue(...)`).
+    return {
+      ...data,
+      ...api,
+      setFieldValue: setFieldValue as unknown as ContextSetFieldValue,
+      getFieldValue,
+      setData: setData as unknown as ContextSetData,
+      getData,
+    };
   };
 
   const actionContext: IDataContextProviderActionsContext = {
