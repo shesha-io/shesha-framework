@@ -2,13 +2,18 @@
 
 ## 🐞 Bug Fixes
 
-- **Memory Leak Resolution** - Fixed unbounded memory growth in Castle Windsor's component release policy under sustained authenticated traffic
-- **Critical Vulnerability Fix** - Removed SQL injection vulnerabilities in Elmah error logging modules
-- **Fixed invalidation of forms cache**
+- **Excel Export – Respect Column Selection** - Excel export now only includes columns that are ticked/selected at the time of export
+- **Forms Stuck on "Fetching Data"** - Fixed infinite loading indicator on forms that do not require data loading (Loader Type = None)
+- **Registration Verification Routing Fix** - Fixed registration flow always routing to phone/OTP verification regardless of configuration. Email verification is now correctly used when configured, instead of defaulting to the mobile-number path
+- **Entity Config Import/Export Fixes** - Security: Entity CRUD permissions are now correctly enforced after import (previously silently unenforced). Fixed property data being dropped during import
 
 ## 💪 Enhancements
-- **Mobile & Multi-Application Support**
-  - Application-Specific Form Configurations: Forms can now be configured per front-end application with the same name
-  - Added "Application" property to form creation, copy, and details screens
-  - Fallback Logic: When an application requests a form, the system first looks for an application-specific configuration; if none exists, it falls back to the default configuration (Application = null)
-  - Enables selective overrides while maintaining backward compatibility for existing forms
+- **Custom Endpoint Permission Export/Import**
+  - Added export/import support for Shesha.WebApi / Shesha.WebApi.Action permissioned objects
+  - New per-module ApiPermissionsManifest configuration item integrates with the existing export/import pipeline
+  - Permissions are applied to PermissionedObject rows on import via IPermissionedObjectManager.SetAsync
+  - No changes required to existing configuration infrastructure
+ 
+- **L1 Caching for Redis**
+  - Added in-process L1 cache in front of Redis with pub/sub invalidation, reducing CPU/memory from per-request deserialization
+  - Configurable via SheshaRedis section (L1Enabled, TTL, max entries); can be disabled with L1Enabled=false
