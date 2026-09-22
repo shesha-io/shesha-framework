@@ -35,11 +35,7 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
     'sha-appearance-form',
     css`
       ${panelGrid} {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 8px;
         padding: 8px;
-        align-items: start;
       }
 
       /* The grid above supplies the spacing between the grouping panels (Border, Radius,
