@@ -2,12 +2,45 @@ import { PropsWithChildren, ReactElement } from 'react';
 import { render, waitFor } from '@testing-library/react';
 import DataContextBinder from '../dataContextBinder';
 import { GetShaContextDataAccessor } from '../contexts/contextDataAccessor';
-import { IShaDataWrapper } from '../contexts/shaDataAccessProxy';
-import { ContextSetFieldValue, useDataContext } from '../contexts';
+import { IShaDataAccessor, IShaDataWrapper } from '../contexts/shaDataAccessProxy';
+import {
+  ContextGetData,
+  ContextGetFieldValue,
+  ContextSetData,
+  ContextSetFieldValue,
+  IDataContextFull,
+  useDataContext,
+} from '../contexts';
 
 interface IProbeData {
   probeField?: string;
 }
+
+/**
+ * Narrows a raw accessor to the `TData & IShaDataAccessor<TData>` shape DataContextProvider relies
+ * on (a `GetShaContextDataAccessor` result is always this shape at runtime via its Proxy), instead
+ * of blindly asserting it with `as IShaDataWrapper<TData>`.
+ */
+const isShaDataWrapper = <TData extends object>(value: IShaDataAccessor<TData>): value is IShaDataWrapper<TData> =>
+  typeof value.getData === 'function' &&
+  typeof value.setData === 'function' &&
+  typeof value.setFieldValue === 'function' &&
+  typeof value.getFieldValue === 'function';
+
+/** The shape `getFull()` must still expose after flattening: the accessor methods plus probe data. */
+interface IFlattenedProbeContext extends IDataContextFull, IProbeData {
+  setFieldValue: ContextSetFieldValue<IProbeData>;
+  getFieldValue: ContextGetFieldValue;
+  setData: ContextSetData<IProbeData>;
+  getData: ContextGetData<IProbeData>;
+}
+
+/** Narrows `getFull()`'s result instead of asserting it with `as unknown as ...`. */
+const isFlattenedProbeContext = (value: IDataContextFull): value is IFlattenedProbeContext =>
+  typeof value.setFieldValue === 'function' &&
+  typeof value['getFieldValue'] === 'function' &&
+  typeof value['setData'] === 'function' &&
+  typeof value['getData'] === 'function';
 
 const onChangeContextData = vi.fn();
 
@@ -46,7 +79,10 @@ const CaptureFull = ({ onFull }: { onFull: (full: ReturnType<typeof useDataConte
 describe('DataContextBinder getFull() with flattenApi', () => {
   it('keeps setFieldValue/getFieldValue/setData/getData usable after flattening an api onto the context', async () => {
     onChangeContextData.mockClear();
-    const accessor = GetShaContextDataAccessor<IProbeData>(vi.fn()) as IShaDataWrapper<IProbeData>;
+    const rawAccessor = GetShaContextDataAccessor<IProbeData>(vi.fn());
+    expect(isShaDataWrapper(rawAccessor)).toBe(true);
+    if (!isShaDataWrapper(rawAccessor)) return;
+    const accessor = rawAccessor;
 
     let getFull: ReturnType<typeof useDataContext>['getFull'] | undefined;
 
@@ -72,17 +108,14 @@ describe('DataContextBinder getFull() with flattenApi', () => {
     await waitFor(() => expect(getFull).toBeDefined());
 
     const full = getFull!();
+    expect(isFlattenedProbeContext(full)).toBe(true);
+    if (!isFlattenedProbeContext(full)) return;
 
-    expect(typeof full.setFieldValue).toBe('function');
-    expect(typeof full['getFieldValue']).toBe('function');
-    expect(typeof full['setData']).toBe('function');
-    expect(typeof full['getData']).toBe('function');
     // the loader api must still be reachable - that's the point of flattenApi
     expect(typeof full.showLoader).toBe('function');
 
     // exercise it exactly as a form script does: contexts.appContext.setFieldValue(...)
-    const setFieldValue = full.setFieldValue as ContextSetFieldValue<IProbeData> | undefined;
-    expect(() => setFieldValue?.('probeField', 'hello')).not.toThrow();
+    expect(() => full.setFieldValue('probeField', 'hello')).not.toThrow();
     expect(onChangeContextData).toHaveBeenCalled();
   });
 
@@ -91,7 +124,10 @@ describe('DataContextBinder getFull() with flattenApi', () => {
     // wire the accessor's own change notifications to the shared mock, and hand DataContextBinder
     // the accessor object itself via getData (as DataContextProvider does with `storage`) - not
     // accessor.getData, which unwraps to the raw plain object and bypasses the accessor's `set` trap.
-    const accessor = GetShaContextDataAccessor<IProbeData>(onChangeContextData) as IShaDataWrapper<IProbeData>;
+    const rawAccessor = GetShaContextDataAccessor<IProbeData>(onChangeContextData);
+    expect(isShaDataWrapper(rawAccessor)).toBe(true);
+    if (!isShaDataWrapper(rawAccessor)) return;
+    const accessor = rawAccessor;
 
     let getFull: ReturnType<typeof useDataContext>['getFull'] | undefined;
 
@@ -116,7 +152,10 @@ describe('DataContextBinder getFull() with flattenApi', () => {
 
     await waitFor(() => expect(getFull).toBeDefined());
 
-    const full = getFull!() as unknown as IProbeData;
+    const full = getFull!();
+    expect(isFlattenedProbeContext(full)).toBe(true);
+    if (!isFlattenedProbeContext(full)) return;
+
     const callsBeforeWrite = onChangeContextData.mock.calls.length;
 
     // a form script writing straight through the flattened full context...
