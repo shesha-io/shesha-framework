@@ -3,6 +3,7 @@ import { createNamedContext } from '@/utils/react';
 import { DEFAULT_CONTEXT_METADATA } from '../dataContextManager/models';
 import { Path, PathValue } from '@/utils/dotnotation';
 import { IModelMetadata } from '@/interfaces/metadata';
+import type { ILoaderInstance } from '../globalLoader';
 
 export interface IDataContextFullInstance extends IDataContextProviderStateContext, IDataContextProviderActionsContext { }
 
@@ -21,6 +22,10 @@ export interface IDataContextFull {
   api?: unknown;
   metadata?: Promise<IModelMetadata> | undefined;
   setFieldValue?: ContextSetFieldValue | undefined;
+  /** Shows a loader overlay scoped to this context. Only present on contexts backed by DataContextProvider (e.g. pageContext). */
+  showLoader?: (message?: string, isBlocking?: boolean) => ILoaderInstance;
+  /** Hides all loaders shown via this context's `showLoader`. */
+  hideLoaders?: () => void;
 }
 
 export interface IDataContextProviderActionsContext<TData extends object = object> {
