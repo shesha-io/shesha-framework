@@ -88,7 +88,10 @@ describe('DataContextBinder getFull() with flattenApi', () => {
 
   it('reaches the live accessor Proxy on a direct field assignment (contexts.appContext.probeField = ...)', async () => {
     onChangeContextData.mockClear();
-    const accessor = GetShaContextDataAccessor<IProbeData>(vi.fn()) as IShaDataWrapper<IProbeData>;
+    // wire the accessor's own change notifications to the shared mock, and hand DataContextBinder
+    // the accessor object itself via getData (as DataContextProvider does with `storage`) - not
+    // accessor.getData, which unwraps to the raw plain object and bypasses the accessor's `set` trap.
+    const accessor = GetShaContextDataAccessor<IProbeData>(onChangeContextData) as IShaDataWrapper<IProbeData>;
 
     let getFull: ReturnType<typeof useDataContext>['getFull'] | undefined;
 
@@ -98,7 +101,7 @@ describe('DataContextBinder getFull() with flattenApi', () => {
         name="appContext"
         type="app"
         data={accessor}
-        getData={accessor.getData}
+        getData={() => accessor}
         setData={accessor.setData}
         setFieldValue={accessor.setFieldValue}
         flattenApi
@@ -114,12 +117,14 @@ describe('DataContextBinder getFull() with flattenApi', () => {
     await waitFor(() => expect(getFull).toBeDefined());
 
     const full = getFull!() as unknown as IProbeData;
+    const callsBeforeWrite = onChangeContextData.mock.calls.length;
 
     // a form script writing straight through the flattened full context...
     full.probeField = 'direct write';
 
     // ...must reach the live accessor, not just a snapshot object
     expect(accessor.getData().probeField).toBe('direct write');
-    expect(onChangeContextData).toHaveBeenCalled();
+    // and it must be the write itself notifying, not some unrelated call (e.g. the mount effect)
+    expect(onChangeContextData.mock.calls.length).toBe(callsBeforeWrite + 1);
   });
 });
