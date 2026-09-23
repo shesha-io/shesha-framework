@@ -4,7 +4,7 @@ Branch: `nhlakanipho/en/4904`
 
 ## Scope
 
-Two anonymous endpoints on `Shesha.Web.Host`, split so that Azure App Service Health Check pings
+Two anonymous endpoints, provided by `Shesha.Application` and mapped by `Shesha.Web.Host`, split so that Azure App Service Health Check pings
 a path with no dependencies and never auto-recycles instances over a transient database outage:
 
 | Path | Checks | For |
@@ -16,9 +16,11 @@ a path with no dependencies and never auto-recycles instances over a transient d
 
 | File | Change |
 |---|---|
-| `Shesha.Web.Host/Startup/Startup.cs` | registers the `person-db` check tagged `ready`, maps both paths |
-| `Shesha.Web.Host/HealthChecks/PersonReadinessHealthCheck.cs` | the DB probe, bounded to 3s |
-| `Shesha.Web.Host/HealthChecks/SheshaHealthCheckResponseWriter.cs` | sanitized JSON payload |
+| `Shesha.Application/HealthChecks/SheshaHealthCheckExtensions.cs` | `AddSheshaHealthChecks()` registers the `person-db` check tagged `ready`; `MapSheshaHealthChecks()` maps both paths |
+| `Shesha.Web.Host/Startup/Startup.cs` | calls both extensions |
+| `Shesha.Application/HealthChecks/PersonReadinessHealthCheck.cs` | runs the probe, bounded to 3s, one at a time |
+| `Shesha.Application/HealthChecks/IPersonReadinessProbe.cs`, `PersonReadinessProbe.cs` | the `Person` DB query, constructor-injected so tests mock it |
+| `Shesha.Application/HealthChecks/SheshaHealthCheckResponseWriter.cs` | sanitized JSON payload |
 | `Shesha.Tests/HealthChecks/*` | 7 tests |
 | `shesha-core/docs/health-checks.md`, `shesha-core/README.md` | documentation |
 
@@ -59,19 +61,33 @@ request would accumulate for as long as the database stayed unreachable - at a 1
 Contained with a single-flight gate: requests arriving while a probe is in flight join it instead
 of starting another, so the cost is one probe regardless of poll rate, and the second and later
 requests answer immediately instead of waiting out their own 3s. The check is registered as a
-singleton (`services.AddSingleton<PersonReadinessHealthCheck>()`) so the gate is process-wide;
-`AddCheck<T>` resolves through `GetServiceOrCreateInstance`, so it picks up that registration.
+singleton (`services.AddSingleton<PersonReadinessHealthCheck>()`, inside `AddSheshaHealthChecks()`)
+so the gate is process-wide; `AddCheck<T>` resolves through `GetServiceOrCreateInstance`, so it
+picks up that registration.
 
-`IUnitOfWorkManager` moved out of the constructor at the same time - it is transient in ABP, so a
-singleton holding one is a captive dependency. It and the repository are now resolved per probe
-via `ResolveAsDisposable`, which also fixes a leak: the repository resolved from `IIocResolver` was
-never released.
+## Third finding, from review: location and dependency injection
+
+- `Shesha.Web.Host` is a test host that downstream applications never reference, so the check,
+  probe and response writer moved to `Shesha.Application`, behind `AddSheshaHealthChecks()` /
+  `MapSheshaHealthChecks()`.
+- Manual resolution through `IIocResolver.ResolveAsDisposable` was replaced by constructor
+  injection. The DB query now lives in `PersonReadinessProbe` (`IPersonReadinessProbe`), which takes
+  `IUnitOfWorkManager` and `IRepository<Person, Guid>` in its constructor; the check takes the probe.
+  Neither standard implementation is disposable, so there is nothing to release.
+- The singleton check therefore holds one probe, and with it one unit-of-work manager and
+  repository, for the process lifetime. That is safe: `NhRepositoryBase` reads `Session` from the
+  current unit of work on every access, and `UnitOfWorkManager` keeps no state of its own.
+- All 7 tests now mock `IPersonReadinessProbe`; none needs a database or Docker (~6s).
 
 ## Evidence
 
 Host: `Shesha.Web.Host` on `http://localhost:21021`, SQL Server 2025 in Docker (`sheshadb-sql`).
 A hung database was simulated with `docker pause sheshadb-sql`, which drops packets rather than
 refusing connections - the case a timeout has to cover.
+
+The hung-database runs below predate the third finding's refactor. After it, only the healthy path
+was re-run on the real host: `/live` 200 in 0.022s, `/ready` 200 in 0.218s (first request after
+start-up), with the same payloads as below.
 
 ### Database healthy
 
@@ -152,7 +168,7 @@ $ docker unpause sheshadb-sql
 |---|---|
 | `/live` exists, anonymous, no dependency checks, 200 + small JSON | Pass - `200`, `{"status":"Healthy"}`, no `Authorization` header sent |
 | `/ready` exists, anonymous, 200 when DB reachable, 503 when not | Pass - `200` / `503` above |
-| `/ready` probes the `Person` entity | Pass - `GetAll().AnyAsync()`, the ticket's "equivalent lightweight query"; cheaper than `GetFirstOrDefault` since it materialises no entity |
+| `/ready` probes the `Person` entity | Pass - `GetAllAsync()` + `AnyAsync()`, the ticket's "equivalent lightweight query"; cheaper than `GetFirstOrDefault` since it materialises no entity |
 | Failures leak no connection strings or stack traces | Pass - body carries only `"Database unreachable"`; covered by two tests that assert a planted `Password=hunter2;` never appears |
 | Both excluded from global auth filters | Pass - `MapHealthChecks` endpoints are not MVC actions, so `SheshaAuthorizationFilter` (which returns early for non-controller actions) and `ApiAuthorizationHelper`'s default-deny never apply; there is no `FallbackPolicy` anywhere in `shesha-core` |
 | Both respond consistently fast under normal load | Pass - 3-56ms healthy; and now bounded at ~3.05s even with the DB hung |
@@ -166,6 +182,6 @@ $ docker unpause sheshadb-sql
 - An abandoned probe holds a thread, an NHibernate session and a connection attempt until it gives
   up (up to `Connection Timeout`). Bounded to one at a time by the single-flight gate, so it does
   not scale with how hard `/ready` is polled.
-- The endpoints live in `Shesha.Web.Host`, which downstream applications do not reference. They
-  reach the framework's own host only. Promoting them to a packaged project plus the starter
+- Downstream applications get the endpoints only once their own `Startup` calls
+  `AddSheshaHealthChecks()` and `MapSheshaHealthChecks()`. Adding those calls to the starter
   template would be a separate change.

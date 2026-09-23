@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Shesha.Web.Host.HealthChecks;
+using Shesha.HealthChecks;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ namespace Shesha.Tests.HealthChecks
             using var body = new MemoryStream();
             context.Response.Body = body;
 
-            await SheshaHealthCheckResponseWriter.WriteResponse(context, report);
+            await SheshaHealthCheckResponseWriter.WriteResponseAsync(context, report);
 
             body.Seek(0, SeekOrigin.Begin);
             return Encoding.UTF8.GetString(body.ToArray());

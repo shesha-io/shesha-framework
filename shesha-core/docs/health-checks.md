@@ -1,6 +1,8 @@
 # Health check endpoints
 
-`Shesha.Web.Host` exposes two health check endpoints, registered in `Startup.cs`:
+`Shesha.Application` provides two health check endpoints. A host enables them by calling
+`services.AddSheshaHealthChecks()` in `ConfigureServices` and `endpoints.MapSheshaHealthChecks()`
+inside `UseEndpoints`, as `Shesha.Web.Host` does:
 
 | Path | Purpose | Checks | Auth |
 |---|---|---|---|
@@ -36,7 +38,7 @@ served but nothing pings them.
 
 ## How the readiness probe queries the database
 
-`PersonReadinessHealthCheck` runs `GetAll().AnyAsync()` against `Person`, through the same
+`PersonReadinessProbe` runs `GetAllAsync()` + `AnyAsync()` against `Person`, through the same
 NHibernate session and repository the rest of the app uses, inside an explicit unit of work.
 Issue #4904 asks for "a `GetFirstOrDefault` (or equivalent lightweight query)" - `AnyAsync` is
 that equivalent, and is the cheaper of the two: it emits an existence check instead of

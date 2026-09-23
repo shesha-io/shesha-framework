@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Shesha.Web.Host.HealthChecks
+namespace Shesha.HealthChecks
 {
     /// <summary>
     /// Writes health check results as a small JSON payload, e.g. {"status":"Healthy"}. On failure,
@@ -16,7 +16,7 @@ namespace Shesha.Web.Host.HealthChecks
         /// <summary>
         /// Writes <paramref name="report"/> to <paramref name="context"/>'s response as sanitized JSON.
         /// </summary>
-        public static Task WriteResponse(HttpContext context, HealthReport report)
+        public static Task WriteResponseAsync(HttpContext context, HealthReport report)
         {
             context.Response.ContentType = "application/json";
 
