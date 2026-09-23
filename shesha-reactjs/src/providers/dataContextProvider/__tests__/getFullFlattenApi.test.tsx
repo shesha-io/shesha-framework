@@ -85,4 +85,41 @@ describe('DataContextBinder getFull() with flattenApi', () => {
     expect(() => setFieldValue?.('probeField', 'hello')).not.toThrow();
     expect(onChangeContextData).toHaveBeenCalled();
   });
+
+  it('reaches the live accessor Proxy on a direct field assignment (contexts.appContext.probeField = ...)', async () => {
+    onChangeContextData.mockClear();
+    const accessor = GetShaContextDataAccessor<IProbeData>(vi.fn()) as IShaDataWrapper<IProbeData>;
+
+    let getFull: ReturnType<typeof useDataContext>['getFull'] | undefined;
+
+    render(
+      <DataContextBinder<IProbeData>
+        id="appContext"
+        name="appContext"
+        type="app"
+        data={accessor}
+        getData={accessor.getData}
+        setData={accessor.setData}
+        setFieldValue={accessor.setFieldValue}
+        flattenApi
+        api={{ showLoader: vi.fn(), hideLoaders: vi.fn() }}
+      >
+        <CaptureFull onFull={(full) => {
+          getFull = full;
+        }}
+        />
+      </DataContextBinder>,
+    );
+
+    await waitFor(() => expect(getFull).toBeDefined());
+
+    const full = getFull!() as unknown as IProbeData;
+
+    // a form script writing straight through the flattened full context...
+    full.probeField = 'direct write';
+
+    // ...must reach the live accessor, not just a snapshot object
+    expect(accessor.getData().probeField).toBe('direct write');
+    expect(onChangeContextData).toHaveBeenCalled();
+  });
 });

@@ -140,16 +140,16 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                               <ReferenceListDispatcherProvider>
                                 <EntityMetadataFetcherProvider>
                                   <MetadataDispatcherProvider>
-                                    <DataContextManager id={SHESHA_ROOT_DATA_CONTEXT_MANAGER}>
-                                      <DataContextProvider id={SheshaCommonContexts.AppContext} name={SheshaCommonContexts.AppContext} description="Application data store context" type="app" webStorageType="localStorage">
-                                        <WebStorageContextProvider>
-                                          <CanvasProvider>
-                                            <ApplicationContextsProvider>
-                                              <ConfigurationStudioEnvironmentProvider>
-                                                <FormDataLoadersProvider>
-                                                  <FormDataSubmittersProvider>
-                                                    <DataSourcesProvider>
-                                                      <GlobalLoaderProvider>
+                                    <GlobalLoaderProvider>
+                                      <DataContextManager id={SHESHA_ROOT_DATA_CONTEXT_MANAGER}>
+                                        <DataContextProvider id={SheshaCommonContexts.AppContext} name={SheshaCommonContexts.AppContext} description="Application data store context" type="app" webStorageType="localStorage">
+                                          <WebStorageContextProvider>
+                                            <CanvasProvider>
+                                              <ApplicationContextsProvider>
+                                                <ConfigurationStudioEnvironmentProvider>
+                                                  <FormDataLoadersProvider>
+                                                    <FormDataSubmittersProvider>
+                                                      <DataSourcesProvider>
                                                         <DynamicModalProvider>
                                                           {(status === 'inprogress' || status === 'waiting') && (
                                                             <SheshaLoader message={hint ?? 'Initializing...'} />
@@ -169,16 +169,16 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                                             />
                                                           )}
                                                         </DynamicModalProvider>
-                                                      </GlobalLoaderProvider>
-                                                    </DataSourcesProvider>
-                                                  </FormDataSubmittersProvider>
-                                                </FormDataLoadersProvider>
-                                              </ConfigurationStudioEnvironmentProvider>
-                                            </ApplicationContextsProvider>
-                                          </CanvasProvider>
-                                        </WebStorageContextProvider>
-                                      </DataContextProvider>
-                                    </DataContextManager>
+                                                      </DataSourcesProvider>
+                                                    </FormDataSubmittersProvider>
+                                                  </FormDataLoadersProvider>
+                                                </ConfigurationStudioEnvironmentProvider>
+                                              </ApplicationContextsProvider>
+                                            </CanvasProvider>
+                                          </WebStorageContextProvider>
+                                        </DataContextProvider>
+                                      </DataContextManager>
+                                    </GlobalLoaderProvider>
                                   </MetadataDispatcherProvider>
                                 </EntityMetadataFetcherProvider>
                               </ReferenceListDispatcherProvider>
