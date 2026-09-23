@@ -76,6 +76,28 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
     `,
   );
 
+  /** One labelled rendering inside the preview card (dropdown tag mode, thumbnail size, ...). */
+  const previewVariant = cx(
+    'preview-variant',
+    css`
+      /* Separator between consecutive variants only, so a single-variant preview is unchanged. */
+      & + & {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed ${CANVAS_PREVIEW_BORDER};
+      }
+    `,
+  );
+
+  const previewVariantLabel = cx(
+    'preview-variant-label',
+    css`
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 4px;
+    `,
+  );
+
   const colorCircle = cx(
     'color-circle',
     css`
@@ -243,5 +265,7 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
     colorCircleContainer,
     slider,
     appearanceForm,
+    previewVariant,
+    previewVariantLabel,
   };
 });

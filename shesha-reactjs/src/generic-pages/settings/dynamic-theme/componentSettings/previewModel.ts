@@ -45,12 +45,56 @@ const previewModelExtrasByType: Record<string, Record<string, unknown>> = {
 export const getPreviewModelExtras = (componentType: string | undefined): Record<string, unknown> | undefined =>
   isNullOrWhiteSpace(componentType) ? undefined : previewModelExtrasByType[componentType];
 
+/** One labelled rendering of a component in the preview. */
+export interface IPreviewVariant {
+  /** Caption shown above this rendering. */
+  label: string;
+  /** Model properties that put the component into this state. */
+  model: Record<string, unknown>;
+}
+
+/**
+ * Components whose appearance differs by mode, keyed by component type.
+ *
+ * A single rendering only shows one of these, so a theme change that affects, say, a dropdown's
+ * tag styling is invisible while the preview happens to be in plain-text mode. Listing the modes
+ * renders each one, so every style the component exposes can be judged at a glance.
+ *
+ * Property names here are the component's own - `mode`/`displayStyle` on a dropdown,
+ * `displayStyle` on the file list - so they drive the same code paths as a real form.
+ */
+const previewVariantsByType: Record<string, IPreviewVariant[]> = {
+  dropdown: [
+    { label: 'Single', model: { mode: 'single', displayStyle: 'text' } },
+    { label: 'Multiple', model: { mode: 'multiple', displayStyle: 'text' } },
+    { label: 'Tags', model: { mode: 'multiple', displayStyle: 'tags' } },
+    { label: 'Free-text tags', model: { mode: 'tags', displayStyle: 'tags' } },
+  ],
+  attachmentsEditor: [
+    { label: 'File name', model: { displayStyle: 'text' } },
+    { label: 'Thumbnail (small)', model: { displayStyle: 'thumbnailSmall' } },
+    { label: 'Thumbnail (medium)', model: { displayStyle: 'thumbnailMedium' } },
+    { label: 'Thumbnail (large)', model: { displayStyle: 'thumbnailLarge' } },
+    { label: 'Drag & drop', model: { displayStyle: 'text', isDragger: true } },
+  ],
+};
+
+/**
+ * The variants to render for a component type. Components with no entry preview as a single
+ * unlabelled instance, which is the behaviour for everything that has only one appearance.
+ */
+export const getPreviewVariants = (componentType: string | undefined): IPreviewVariant[] | undefined =>
+  isNullOrWhiteSpace(componentType) ? undefined : previewVariantsByType[componentType];
+
 /**
  * Model used to render the preview of a component on the Component Defaults panel: the component's
  * own `previewConfiguration` when it declares one, a generic model otherwise, with the preview-only
  * extras for its type applied on top.
  */
-export const getPreviewComponentModel = (componentDefinition: IToolboxComponent): IConfigurableFormComponent => {
+export const getPreviewComponentModel = (
+  componentDefinition: IToolboxComponent,
+  variant?: IPreviewVariant | undefined,
+): IConfigurableFormComponent => {
   const componentType = componentDefinition.type;
   const baseModel: IConfigurableFormComponent = componentDefinition.previewConfiguration ?? {
     type: componentType,
@@ -63,7 +107,23 @@ export const getPreviewComponentModel = (componentDefinition: IToolboxComponent)
   };
 
   const extras = getPreviewModelExtras(componentType);
-  return isNullOrWhiteSpace(componentType) || !extras
+  const model = isNullOrWhiteSpace(componentType) || !extras
     ? baseModel
     : { ...baseModel, ...extras };
+
+  if (!variant)
+    return model;
+
+  // Each variant needs its own id and propertyName, otherwise the renderings share form state and
+  // a value selected in one appears in all of them. The variant's own properties come last so it
+  // can override anything the base model or the extras set.
+  const variantKey = variant.label.replace(/\W+/g, '-').toLowerCase();
+  return {
+    ...model,
+    ...variant.model,
+    id: `${model.id}-${variantKey}`,
+    propertyName: `${model.propertyName}-${variantKey}`,
+    // The caption above each rendering names the variant, so an inner label just repeats it.
+    label: model.label,
+  } as IConfigurableFormComponent;
 };
