@@ -26,7 +26,7 @@ import { IFormDataSubmittersContext, useFormDataSubmitters } from "../submitters
 import { FormInfo } from "../api";
 import { executeScript, getComponentsAndSettings, IApplicationContext, isSameFormIds, useAvailableConstantsContextsNoRefresh, wrapConstantsData } from "../utils";
 import { Form, FormInstance } from "antd";
-import { IFormApi, IFormLoaderInstanceApi } from "../formApi";
+import { IFormApi } from "../formApi";
 import { ISetFormDataPayload } from "../contexts";
 import { deepMergeValues, setValueByPropertyName, unproxyDeep } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
@@ -48,7 +48,6 @@ import { IDataContextDescriptor, SheshaCommonContexts } from "@/providers/dataCo
 import { useComponentApiProvider } from "@/providers/componentApi/provider";
 import { useDataContextManagerActions } from "@/providers/dataContextManager/hooks";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
-import { FormLoaderContextValue, useFormLoader } from "../formLoaderProvider";
 
 interface ShaFormInstanceArguments<Values extends object = object> {
   forceRootUpdate: ForceUpdateTrigger;
@@ -60,7 +59,6 @@ interface ShaFormInstanceArguments<Values extends object = object> {
   context: IDataContextDescriptor | undefined;
   componentApi: IComponentApi | undefined;
   dataSource: IShaFormDataSource<Values> | undefined;
-  formLoaderContext?: FormLoaderContextValue | undefined;
 }
 
 export type FormData<Values extends object = object> = Values & {
@@ -77,14 +75,11 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
 
   #componentApi: IComponentApi | undefined;
 
-  #formLoaderContext: FormLoaderContextValue | undefined;
-
-  constructor(form: IShaFormInstance<Values>, context: IDataContextDescriptor | undefined, componentApi: IComponentApi | undefined, formLoaderContext?: FormLoaderContextValue) {
+  constructor(form: IShaFormInstance<Values>, context: IDataContextDescriptor | undefined, componentApi: IComponentApi | undefined) {
     this.#form = form;
     this.#data = GetShaFormDataAccessor<Values>(this) as Values;
     this.#context = context;
     this.#componentApi = componentApi;
-    this.#formLoaderContext = formLoaderContext;
   }
 
   addDelayedUpdateData = (data: Values): IDelayedUpdateGroup[] => {
@@ -123,21 +118,6 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
 
   setValidationErrors = (payload: IFormValidationErrors): void => {
     this.#form.setValidationErrors(payload);
-  };
-
-  showLoader = (message?: string): IFormLoaderInstanceApi => {
-    return this.#formLoaderContext?.showLoader(message) ?? {
-      updateMessage: () => { /* no-op */ },
-      close: () => { /* no-op */ },
-    };
-  };
-
-  hideLoaders = (): void => {
-    this.#formLoaderContext?.hideLoaders();
-  };
-
-  setFormLoaderContext = (formLoaderContext: FormLoaderContextValue | undefined): void => {
-    this.#formLoaderContext = formLoaderContext;
   };
 
   get formInstance(): FormInstance<Values> {
@@ -240,8 +220,6 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   private componentApi: IComponentApi | undefined;
 
-  private formLoaderContext: FormLoaderContextValue | undefined;
-
   formDataSetter: ((data: Values | undefined) => void) | undefined;
 
   formDataGetter: (() => (Values | undefined) | undefined) | undefined;
@@ -326,7 +304,6 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.expressionExecuter = undefined;
     this.context = args.context;
     this.componentApi = args.componentApi;
-    this.formLoaderContext = args.formLoaderContext;
 
     this.logEnabled = false;
     this.isSettingsForm = false;
@@ -385,11 +362,6 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   setExpressionExecuter = (expressionExecuter: ExpressionExecuter): void => {
     this.expressionExecuter = expressionExecuter;
-  };
-
-  setFormLoaderContext = (formLoaderContext: FormLoaderContextValue | undefined): void => {
-    this.formLoaderContext = formLoaderContext;
-    this.#publicFormApi?.setFormLoaderContext(formLoaderContext);
   };
 
   setFormMode = (formMode: FormMode): void => {
@@ -457,7 +429,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   #publicFormApi: PublicFormApi<Values> | undefined;
 
   getPublicFormApi = (): IFormApi<Values> => {
-    return this.#publicFormApi ?? (this.#publicFormApi = new PublicFormApi<Values>(this, this.context, this.componentApi, this.formLoaderContext));
+    return this.#publicFormApi ?? (this.#publicFormApi = new PublicFormApi<Values>(this, this.context, this.componentApi));
   };
 
   //#region Antd methods
@@ -959,14 +931,9 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
   const metadataDispatcher = useMetadataDispatcher();
   const componentApi = useComponentApiProvider();
   const formContext = useDataContextManagerActions().getNearestDataContext(SheshaCommonContexts.FormContext, 'form');
-  // Get form loader context if available (returns no-op implementation if provider not found)
-  const formLoaderContext = useFormLoader();
 
   const [formInstance] = useState<IShaFormInstance<Values>>(() => {
     if (form) {
-      // Keep the supplied instance's loader wired to this render's (nested) FormLoaderProvider,
-      // so ConfigurableForm's externalShaForm uses the same showLoader/hideLoaders as a locally-created instance.
-      form.setFormLoaderContext(formLoaderContext);
       return form;
     } else {
       // Create a new FormStore if not provided
@@ -984,7 +951,6 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
         metadataDispatcher: metadataDispatcher,
         componentApi: componentApi,
         context: formContext,
-        formLoaderContext: formLoaderContext,
       });
       const accessors = wrapConstantsData<Values>({
         topContextId: DataContextTopLevels.Full,

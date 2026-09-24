@@ -222,12 +222,6 @@ const SubFormWithMetadataProvider: FC<PropsWithChildren<ISubForWithMetadataProvi
     setValidationErrors: function (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error): void {
       parentFormApi.setValidationErrors(payload);
     },
-    showLoader: function (message?: string) {
-      return parentFormApi.showLoader(message);
-    },
-    hideLoaders: function (): void {
-      parentFormApi.hideLoaders();
-    },
     formSettings: state.formSettings,
     modelType: state.formSettings?.modelType,
     shaForm: parentFormApi.shaForm,
