@@ -17,7 +17,6 @@ import { ShaSpin } from '..';
 import { DataLoadingError } from './dataLoadingError';
 import { IFormActionsContext } from '@/providers/form/contexts';
 import { isDefined } from '@/utils/nullables';
-import { FormLoaderProvider } from '@/providers/form/formLoaderProvider';
 
 export type ConfigurableFormProps<Values extends object = object> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
   form?: FormInstance<Values>;
@@ -217,9 +216,7 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
       name={isDefined(props.formId) ? configurableItemIdentifierToString(props.formId) : `form`}
       isScope
     >
-      <FormLoaderProvider>
-        <ConfigurableFormInner {...props} />
-      </FormLoaderProvider>
+      <ConfigurableFormInner {...props} />
     </ParentProvider>
   );
 };

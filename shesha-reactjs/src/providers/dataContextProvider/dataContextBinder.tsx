@@ -39,15 +39,6 @@ export interface IDataContextBinderProps<TData extends object = object> {
   type: DataContextType;
   data?: TData | undefined;
   api?: unknown | undefined;
-  /**
-   * When true, `api`'s own properties are merged directly onto the object `getFull()` returns
-   * (e.g. `pageContext.showLoader(...)`), instead of being kept nested under `api`.
-   * Leave this false (the default) for any context whose `api` is a structured, caller-defined
-   * object - e.g. IWizardApi/IDataTableContextApi/ICanvasContextApi - scripts are written
-   * against those staying nested (`contexts.myWizard.api.method()`). Only set it when `api` is a
-   * small, fixed, well-known set of methods meant to read as first-class context properties.
-   */
-  flattenApi?: boolean | undefined;
   metadata?: Promise<IModelMetadata> | undefined;
   distributeMetadata?: boolean | undefined;
   getData?: ContextGetData<TData> | undefined;
@@ -145,63 +136,9 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
   const getFull: ContextGetFull = () => {
     const data: IDataContextFull = getData();
     const api = getApi();
-    // Returning `data` untouched when there is no api preserves the live data proxy, so writes
-    // from scripts still reach the context.
-    if (!isDefined(api))
-      return data;
-
-    if (props.flattenApi !== true)
-      // Keep the api nested under `api`: that is the shape declared by the public context api
-      // definitions (IWizardApi, IDataTableContextApi, ICanvasContextApi) that form scripts are
-      // written against.
-      return { ...data, api };
-
-    // Opted in: merge api's own properties directly onto the returned object. Only used by
-    // callers with a small, fixed, well-known api (e.g. DataContextProvider's showLoader/
-    // hideLoaders) - warn if a data field would be shadowed by one of them.
-    const flatApi = (typeof api === 'object' && isDefined(api) ? api : {}) as Record<string, unknown>;
-    Object.keys(flatApi).forEach((apiKey) => {
-      if (Object.prototype.hasOwnProperty.call(data, apiKey)) {
-        console.warn(
-          `[DataContextBinder:${id}] '${apiKey}' is both a data field and a reserved api property name; ` +
-          `the api method will take precedence. Rename the data field to avoid this collision.`,
-        );
-      }
-    });
-
-    // `data` is usually the accessor Proxy from CreateDataAccessor: its `set` trap is what lets
-    // scripts write directly to the context (e.g. `contexts.pageContext.status = 'ready'`), and its
-    // `ownKeys` trap only reflects the underlying data's keys - not the accessor methods
-    // (setFieldValue, getFieldValue, setData, getData, getAccessorValue). A plain `{ ...data, ...api }`
-    // spread snapshots current values into a brand-new plain object, permanently losing both. Wrap
-    // `data` in a Proxy instead: reads/writes still delegate to it, while the flattened api keys and
-    // the binder's own accessors are resolved locally and take precedence over same-named data fields.
-    const overrides: Record<string, unknown> = {
-      ...flatApi,
-      setFieldValue,
-      getFieldValue,
-      setData,
-      getData,
-    };
-
-    return new Proxy(data as object, {
-      get(target, prop, receiver) {
-        if (typeof prop === 'string' && Object.prototype.hasOwnProperty.call(overrides, prop))
-          return overrides[prop];
-        return Reflect.get(target, prop, receiver);
-      },
-      has(target, prop) {
-        return (typeof prop === 'string' && Object.prototype.hasOwnProperty.call(overrides, prop)) || Reflect.has(target, prop);
-      },
-      ownKeys(target) {
-        return Array.from(new Set([...Reflect.ownKeys(target), ...Object.keys(overrides)]));
-      },
-      getOwnPropertyDescriptor(target, prop) {
-        if (typeof prop === 'string' && Object.prototype.hasOwnProperty.call(overrides, prop))
-          return { enumerable: true, configurable: true, writable: false, value: overrides[prop] };
-        return Reflect.getOwnPropertyDescriptor(target, prop);
-      },
-    }) as IDataContextFull;
+    return isDefined(api)
+      ? { ...data, api }
+      : data;
   };
 
   const actionContext: IDataContextProviderActionsContext = {

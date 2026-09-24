@@ -8,7 +8,6 @@ import { ISetFormDataPayload } from "../contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { ExpressionCaller, IDataArguments, SubmitCaller } from "../submitters/interfaces";
 import { ShaFormSubscriptionType } from "./shaFormInstance";
-import { FormLoaderContextValue } from "../formLoaderProvider";
 
 export type LoaderType = 'gql' | 'custom' | 'none';
 export type SubmitType = 'gql' | 'custom' | 'none';
@@ -127,7 +126,6 @@ export interface IShaFormInstance<Values extends object = object> {
   readonly logEnabled: boolean;
   setLogEnabled: (enabled: boolean) => void;
   getPublicFormApi: () => IFormApi<Values>;
-  setFormLoaderContext: (formLoaderContext: FormLoaderContextValue | undefined) => void;
 
   //#region antd methods
   submit: () => void;
