@@ -4,6 +4,7 @@ import { executeScriptSync } from '@/providers/form/utils';
 import { IPropertySetting } from '..';
 import { getStyleBoxValue } from "@/designer-components/styleBox/utils";
 import { IConfigurableFormComponent, IStyleValue, IToolboxComponent } from "@/interfaces";
+import { getThemeGroupForStyleGroup } from "@/interfaces/formDesigner";
 import { IConfigurableTheme } from "@/providers";
 import { DeviceTypes } from "@/providers/canvas/contexts";
 import { deepMergeSkipUndefinedFunc, deepMergeValues } from "@/utils/object";
@@ -13,11 +14,17 @@ export const getEffectiveStyle = (model: IConfigurableFormComponent, effectiveDe
   if (isSettingsForm === true)
     return model;
 
-  // Default styles + Theme component styles
+  // Default styles + Group theme styles (Input/Inline/Standard/Layout Components tabs)
   const defStyle: IStyleValue = toolboxComponent?.getDefaultStyles?.() ?? { styleCss: {} };
-  const themeDefStyle: IStyleValue = isDefined(theme?.components)
-    ? deepMergeValues(defStyle, theme.components[model.type] as IStyleValue, deepMergeSkipUndefinedFunc)
+  const groupStyle = theme?.componentGroups?.[getThemeGroupForStyleGroup(toolboxComponent?.styleGroup)] as IStyleValue | undefined;
+  const groupDefStyle: IStyleValue = isDefined(groupStyle)
+    ? deepMergeValues(defStyle, groupStyle, deepMergeSkipUndefinedFunc)
     : defStyle;
+
+  // + Theme component styles (per-type override wins over the group default)
+  const themeDefStyle: IStyleValue = isDefined(theme?.components)
+    ? deepMergeValues(groupDefStyle, theme.components[model.type] as IStyleValue, deepMergeSkipUndefinedFunc)
+    : groupDefStyle;
 
   // Default styles + Theme component styles + Desktop component styles
   const desktopModel = model.desktop;

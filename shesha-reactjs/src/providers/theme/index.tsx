@@ -2,7 +2,7 @@ import { App, ConfigProvider, ThemeConfig, theme as antdTheme } from 'antd';
 import { FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import './interFont.generated.css';
 import './baseFont.css';
-import { ColorScheme, IConfigurableTheme, IThemeActionsContext, IThemeStateContext, normalizeColorScheme, ResolvedTheme, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
+import { ColorScheme, IConfigurableTheme, IThemeActionsContext, IThemeStateContext, normalizeColorScheme, ResolvedTheme, THEME_CONTEXT_INITIAL_STATE, ThemeComponentGroup, UiActionsContext, UiStateContext } from './contexts';
 import { useResolvedTheme } from './useResolvedTheme';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
@@ -50,6 +50,10 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   }, []);
 
   const getComponentStyle = useCallback((componentName: string) => state.theme.components?.[componentName] ?? {}, [state.theme.components]);
+  const getComponentGroupStyle = useCallback(
+    (group: ThemeComponentGroup | undefined) => (group ? state.theme.componentGroups?.[group] ?? {} : {}),
+    [state.theme.componentGroups],
+  );
 
   // 'system' follows the OS preference and re-resolves when the user flips it.
   const resolvedTheme = useResolvedTheme(state.theme.sidebar);
@@ -106,6 +110,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
           changeTheme,
           resetToApplicationTheme,
           getComponentStyle,
+          getComponentGroupStyle,
         }}
       >
         <ConfigProvider

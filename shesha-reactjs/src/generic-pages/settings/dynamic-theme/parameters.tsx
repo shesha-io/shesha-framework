@@ -4,6 +4,7 @@ import { FC } from 'react';
 import { ColorPicker } from '@/components/colorPicker';
 import { ColorScheme, IConfigurableTheme, normalizeColorScheme } from '@/providers/theme/contexts';
 import { ComponentDefaultsPanel } from './componentSettings/componentSettingsPanel';
+import { GroupSettingsPanel } from './groupSettingsPanel';
 import { useStyles } from './styles/styles';
 import AlertsExample from './alertsPreview';
 import InputStatesPreview from './inputStatePreview';
@@ -12,17 +13,42 @@ import { FormItemLayout } from 'antd/es/form/Form';
 import { FormLabelAlign } from 'antd/es/form/interface';
 import { useDebouncedCallback } from 'use-debounce';
 
+/**
+ * The theme settings tabs: theme-wide settings, the full per-component tree, then the four
+ * component groups by style (see `StyleGroups`).
+ */
+export type ThemeSettingsSection = 'theme' | 'components' | 'input' | 'inline' | 'standard' | 'layout';
+
 export interface ThemeParametersProps {
   value: IConfigurableTheme;
   onChange: (theme: IConfigurableTheme) => void;
   readOnly: boolean;
-  themeLevel?: number | undefined;
+  section?: ThemeSettingsSection | undefined;
 }
 
 const PRESET_COLORS = [
   '#1890ff', '#ff4d4f', '#faad14', '#52c41a', '#13c2c2',
   '#722ed1', '#eb2f96', '#f5222d', '#fa8c16', '#a0d911',
 ];
+
+const COMPONENT_GROUP_TITLES: Record<'input' | 'inline' | 'standard' | 'layout', { title: string; description: string }> = {
+  input: {
+    title: 'Input Component Settings',
+    description: 'Set a shared default appearance for all input components (text fields, dropdowns, checkboxes, ...). To style one component individually, use the Components tab.',
+  },
+  inline: {
+    title: 'Inline Component Settings',
+    description: 'Set a shared default appearance for buttons and other in-line components. To style one component individually, use the Components tab.',
+  },
+  standard: {
+    title: 'Standard Component Settings',
+    description: 'Set a shared default appearance for standard display components. To style one component individually, use the Components tab.',
+  },
+  layout: {
+    title: 'Layout Component Settings',
+    description: 'Set a shared default appearance for layout and container components (panels, columns, containers, ...). To style one component individually, use the Components tab.',
+  },
+};
 
 interface ColorCircleProps {
   color: string | undefined;
@@ -64,7 +90,7 @@ const setUndefinedForEmptyProperties = (data: Record<string, unknown | undefined
   return data;
 };
 
-const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readOnly, themeLevel = 1 }) => {
+const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readOnly, section = 'theme' }) => {
   // it is necessary to use debounce save because it changes the theme and it results in re-rendering of all components.
   const debouncedSave = useDebouncedCallback(
     (values: IConfigurableTheme) => onChange(setUndefinedForEmptyProperties(values as Record<string, unknown | undefined>)),
@@ -114,7 +140,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
 
   return (
     <div style={{ padding: '0 0 0px' }}>
-      {themeLevel === 1 && (
+      {section === 'theme' && (
         <>
           <Typography.Title level={4} style={{ marginBottom: 4 }}>Theme Settings</Typography.Title>
           <Typography.Text type="secondary">
@@ -263,15 +289,27 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
           </div>
         </>
       )}
-      {themeLevel === 2 && (
+      {section === 'components' && (
         <>
-          {/* Component Defaults Section */}
+          {/* Component Defaults Section: the full component tree, unfiltered */}
           <div style={{ marginTop: 0 }}>
             <Typography.Title level={4} style={{ marginBottom: 4 }}>Component Settings</Typography.Title>
             <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
               Configure default appearance styles for individual components. Select a component from the tree to customize its appearance settings.
             </Typography.Text>
             <ComponentDefaultsPanel value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
+          </div>
+        </>
+      )}
+      {(section === 'input' || section === 'inline' || section === 'standard' || section === 'layout') && (
+        <>
+          {/* Group Defaults: one shared appearance form for every component in this style group */}
+          <div style={{ marginTop: 0 }}>
+            <Typography.Title level={4} style={{ marginBottom: 4 }}>{COMPONENT_GROUP_TITLES[section].title}</Typography.Title>
+            <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
+              {COMPONENT_GROUP_TITLES[section].description}
+            </Typography.Text>
+            <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
           </div>
         </>
       )}
