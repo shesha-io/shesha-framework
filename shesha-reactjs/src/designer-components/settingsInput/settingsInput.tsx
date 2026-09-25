@@ -18,7 +18,7 @@ export interface ISettingsComponentGroup {
 }
 
 export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
-  const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden, visible, size, validate, validationDependencies, inline, width, availableConstantsExpression, permissionSettings, ...rest } = props;
+  const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden, visible, size, validate, validationDependencies, inline, width, hasExplicitWidth, availableConstantsExpression, permissionSettings, ...rest } = props;
 
   const { formData } = useShaFormInstance();
   const settingsComponents = useSettingsComponents();
@@ -45,13 +45,16 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
   } as BaseInputProps;
 
   const style = useMemo(() => {
-    // Inline inputs with an explicit width must not flex-grow, otherwise a single
-    // width-constrained field (e.g. a radius/width box) stretches to fill the whole row.
-    const grow = inline && width != null ? 0 : 1;
-    return unwrappedType === 'button' || unwrappedType === 'radio' || unwrappedType === 'iconPicker' || unwrappedType === 'colorPicker' || unwrappedType === 'multiColorPicker'
-      ? { width: 'auto' }
-      : { flex: `${grow} 1 ${inline === true ? (width ?? 'auto') : '120px'}`, width };
-  }, [unwrappedType, inline, width]);
+    if (unwrappedType === 'button' || unwrappedType === 'radio' || unwrappedType === 'iconPicker' || unwrappedType === 'colorPicker' || unwrappedType === 'multiColorPicker')
+      return { width: 'auto' };
+
+    // An explicitly declared width wins: lay the input out at exactly that width and don't let
+    // it grow, otherwise a width-constrained field stretches to fill the row and the width stops
+    // meaning anything. Everything else keeps the shared flex basis and shares the row as before.
+    return hasExplicitWidth === true
+      ? { flex: `0 0 ${typeof width === 'number' ? `${width}px` : width}`, width }
+      : { flex: `${inline === true ? 0 : 1} 1 120px`, width };
+  }, [unwrappedType, inline, width, hasExplicitWidth]);
 
   return isHidden ? null
     : (

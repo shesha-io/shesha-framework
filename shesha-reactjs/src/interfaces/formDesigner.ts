@@ -113,6 +113,34 @@ export type ToolboxComponentAsTemplate = {
 
 export type StyleGroups = 'common' | 'inputs' | 'common-containers' | 'buttons';
 
+/**
+ * The four component-group theme tabs (Input/Inline/Standard/Layout Components) a component
+ * belongs to for theming purposes, derived from its `styleGroup`. Components in the same tier
+ * inherit shared group-level appearance defaults (see `IConfigurableTheme.componentGroups`).
+ */
+export type ThemeComponentGroup = 'input' | 'inline' | 'standard' | 'layout';
+
+/**
+ * Maps each `ThemeComponentGroup` tab to the `styleGroup` value(s) it shows. 'standard' is the
+ * catch-all for components not yet migrated to a `styleGroup` (most components) - it matches any
+ * component whose `styleGroup` is unset, plus the reserved 'buttons' group once populated, since it
+ * has no tab of its own yet.
+ */
+const THEME_GROUP_STYLE_GROUPS: Record<ThemeComponentGroup, ReadonlyArray<StyleGroups>> = {
+  input: ['inputs'],
+  inline: ['common'],
+  layout: ['common-containers'],
+  standard: ['buttons'],
+};
+
+/** The `ThemeComponentGroup` tab a component's `styleGroup` inherits its group-tier styles from. */
+export const getThemeGroupForStyleGroup = (styleGroup: StyleGroups | undefined): ThemeComponentGroup => {
+  if (styleGroup === undefined) return 'standard';
+  const match = (Object.keys(THEME_GROUP_STYLE_GROUPS) as ThemeComponentGroup[])
+    .find((group) => THEME_GROUP_STYLE_GROUPS[group].includes(styleGroup));
+  return match ?? 'standard';
+};
+
 export type IToolboxComponentBase = {
   /** Show the component in the theme editor (true by default) */
   showInThemeEditor?: boolean | undefined;

@@ -346,11 +346,11 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       inline: true,
       propertyName: propertyName,
       inputs: excludeInputs([
-        { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypes },
+        { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypes, width: 120 },
         { type: 'numberField', label: 'Size', propertyName: `${propertyName}.size`, hideLabel: true, width: 50 },
-        { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 48, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
+        { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 130, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
         { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
-        { type: 'dropdown', label: 'Align', propertyName: `${propertyName}.align`, hideLabel: true, width: 48, dropdownOptions: textAlignOptions },
+        { type: 'dropdown', label: 'Align', propertyName: `${propertyName}.align`, hideLabel: true, width: 50, dropdownOptions: textAlignOptions },
       ], exclude) });
     return this;
   };
@@ -465,19 +465,19 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'dimensionField', dimensionType: 'width', label: 'Width', width: 85, propertyName: `${propertyName}.width`, icon: 'widthIcon',
+          { type: 'dimensionField', dimensionType: 'width', label: 'Width', width: 120, propertyName: `${propertyName}.width`, icon: 'widthIcon',
             tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit. \nAlso you can use calc value, for example `calc(50% - 10px)` or `50% - 10px`' },
-          { type: 'dimensionField', dimensionType: 'minWidth', label: 'Min Width', width: 85, hideLabel: true, propertyName: `${propertyName}.minWidth`, icon: 'minWidthIcon' },
-          { type: 'dimensionField', dimensionType: 'maxWidth', label: 'Max Width', width: 85, hideLabel: true, propertyName: `${propertyName}.maxWidth`, icon: 'maxWidthIcon' },
+          { type: 'dimensionField', dimensionType: 'minWidth', label: 'Min Width', width: 120, hideLabel: true, propertyName: `${propertyName}.minWidth`, icon: 'minWidthIcon' },
+          { type: 'dimensionField', dimensionType: 'maxWidth', label: 'Max Width', width: 120, hideLabel: true, propertyName: `${propertyName}.maxWidth`, icon: 'maxWidthIcon' },
         ], exclude),
       })
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'dimensionField', dimensionType: 'height', label: 'Height', width: 85, propertyName: `${propertyName}.height`, icon: 'heightIcon',
+          { type: 'dimensionField', dimensionType: 'height', label: 'Height', width: 120, propertyName: `${propertyName}.height`, icon: 'heightIcon',
             tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit. \nAlso you can use calc value, for example `calc(50% - 10px)` or `50% - 10px`' },
-          { type: 'dimensionField', dimensionType: 'minHeight', label: 'Min Height', width: 85, hideLabel: true, propertyName: `${propertyName}.minHeight`, icon: 'minHeightIcon' },
-          { type: 'dimensionField', dimensionType: 'maxHeight', label: 'Max Height', width: 85, hideLabel: true, propertyName: `${propertyName}.maxHeight`, icon: 'maxHeightIcon' },
+          { type: 'dimensionField', dimensionType: 'minHeight', label: 'Min Height', width: 120, hideLabel: true, propertyName: `${propertyName}.minHeight`, icon: 'minHeightIcon' },
+          { type: 'dimensionField', dimensionType: 'maxHeight', label: 'Max Height', width: 120, hideLabel: true, propertyName: `${propertyName}.maxHeight`, icon: 'maxHeightIcon' },
         ], exclude),
       }));
     this.stdContainerChecker((f) => f
@@ -564,10 +564,10 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'numberField', label: 'Offset X', hideLabel: true, tooltip: 'Offset X', width: 80, icon: 'offsetHorizontalIcon', propertyName: `${propertyName}.offsetX` },
-          { type: 'numberField', label: 'Offset Y', hideLabel: true, tooltip: 'Offset Y', width: 80, icon: 'offsetVerticalIcon', propertyName: `${propertyName}.offsetY` },
-          { type: 'numberField', label: 'Blur', hideLabel: true, tooltip: 'Blur Radius', width: 80, icon: 'blurIcon', propertyName: `${propertyName}.blurRadius` },
-          { type: 'numberField', label: 'Spread', hideLabel: true, tooltip: 'Spread Radius', width: 80, icon: 'spreadIcon', propertyName: `${propertyName}.spreadRadius` },
+          { type: 'numberField', label: 'Offset X', hideLabel: true, tooltip: 'Offset X', width: 100, icon: 'offsetHorizontalIcon', propertyName: `${propertyName}.offsetX` },
+          { type: 'numberField', label: 'Offset Y', hideLabel: true, tooltip: 'Offset Y', width: 100, icon: 'offsetVerticalIcon', propertyName: `${propertyName}.offsetY` },
+          { type: 'numberField', label: 'Blur', hideLabel: true, tooltip: 'Blur Radius', width: 100, icon: 'blurIcon', propertyName: `${propertyName}.blurRadius` },
+          { type: 'numberField', label: 'Spread', hideLabel: true, tooltip: 'Spread Radius', width: 100, icon: 'spreadIcon', propertyName: `${propertyName}.spreadRadius` },
           { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
         ], exclude),
       }));

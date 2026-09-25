@@ -12,6 +12,7 @@ import { buildNodeContextMenu } from '../../menu-utils';
 import { useStyles } from '../../styles';
 import { useFilteredTreeNodes } from './filter';
 import { DndPreview } from './dndPreview';
+import { TreeFilterButton } from '../tree-filter-button';
 import { DropPositions } from './models';
 import { isDefined } from '@/utils/nullables';
 import { useConfigurationStudioEnvironment } from '@/configuration-studio/cs-environment/contexts';
@@ -68,7 +69,7 @@ type DndState = {
 export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = false }) => {
   const cs = useConfigurationStudio();
   const { getDocumentDefinition } = useConfigurationStudioEnvironment();
-  const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, selectedNodes, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
+  const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, selectedNodes, onNodeExpand, quickSearch, setQuickSearch, itemTypeFilter, getTreeNodeById, folderDraft } = useCsTree();
   const { isDragging, setIsDragging } = useCsTreeDnd();
   // Anchor for shift+click/shift+arrow range selection: the last node clicked without shift.
   const lastClickedKeyRef = useRef<React.Key | null>(null);
@@ -78,7 +79,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   const { styles } = useStyles();
   const [dndState, setDndState] = useState<DndState>();
 
-  const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch);
+  const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch, itemTypeFilter, folderDraft);
 
   // Auto-expand a collapsed folder hovered during a drag, bypassing antd Tree's own gated drag events.
   useEffect(() => {
@@ -138,19 +139,41 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
     };
   }, [isDragging, expandedKeys, getTreeNodeById, cs]);
 
+  // While a type filter is active, matching items usually sit inside collapsed folders, so
+  // reveal every surviving container. This is display-only: the user's persisted expansion
+  // state is untouched, and clearing the filter restores exactly what they had open.
+  const isTypeFiltered = itemTypeFilter.length > 0;
+  const effectiveExpandedKeys = useMemo<React.Key[]>(() => {
+    const userKeys = expandedKeys ?? [];
+    if (!isTypeFiltered)
+      return userKeys;
+
+    const keys = new Set<React.Key>(userKeys);
+    const walk = (nodes: TreeNode[]): void => {
+      for (const node of nodes) {
+        if (isNodeWithChildren(node)) {
+          keys.add(node.key);
+          walk(node.children as TreeNode[]);
+        }
+      }
+    };
+    walk(filteredTreeNodes);
+    return Array.from(keys);
+  }, [filteredTreeNodes, expandedKeys, isTypeFiltered]);
+
   const flatVisibleNodes = useMemo<TreeNode[]>(() => {
     const result: TreeNode[] = [];
     const walk = (nodes: TreeNode[]): void => {
       for (const node of nodes) {
-        if (node.nodeType !== TreeNodeType.Placeholder)
+        if (node.nodeType !== TreeNodeType.Placeholder && node.nodeType !== TreeNodeType.FolderDraft)
           result.push(node);
-        if (isNodeWithChildren(node) && isDefined(expandedKeys) && expandedKeys.includes(node.key))
+        if (isNodeWithChildren(node) && effectiveExpandedKeys.includes(node.key))
           walk(node.children as TreeNode[]);
       }
     };
     walk(filteredTreeNodes);
     return result;
-  }, [filteredTreeNodes, expandedKeys]);
+  }, [filteredTreeNodes, effectiveExpandedKeys]);
 
   const handleSelect: OnSelectHandler = (keys, info) => {
     const isCtrl = info.nativeEvent.ctrlKey || info.nativeEvent.metaKey;
@@ -182,7 +205,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   };
 
   const handleClick: OnClickHandler = (_, node) => {
-    if (node.nodeType === TreeNodeType.Placeholder)
+    if (node.nodeType === TreeNodeType.Placeholder || node.nodeType === TreeNodeType.FolderDraft)
       return;
     cs.clickTreeNode(node);
   };
@@ -250,7 +273,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
 
   const handleNodeRightClick: OnRightClick = ({ event, node }) => {
     event.preventDefault();
-    if (node.nodeType === TreeNodeType.Placeholder) {
+    if (node.nodeType === TreeNodeType.Placeholder || node.nodeType === TreeNodeType.FolderDraft) {
       // preventDefault() alone doesn't stop this from bubbling to the wrapping Dropdown.
       event.stopPropagation();
       return;
@@ -343,7 +366,9 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
               value={quickSearch}
               onChange={onSearchChange}
               allowClear
+              size="small"
             />
+            <TreeFilterButton />
           </div>
           <div className={styles.csNavPanelTree} onKeyDownCapture={handleTreeKeyDownCapture}>
             <Dropdown
@@ -352,7 +377,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
               getPopupContainer={() => document.body}
             >
               <Tree<TreeNode>
-                showLine
+                /* Connector lines removed - the filter button supersedes them (issue #4783). */
                 showIcon
                 multiple
                 virtual={false}
@@ -367,7 +392,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 onRightClick={handleNodeRightClick}
-                expandedKeys={expandedKeys ?? []}
+                expandedKeys={effectiveExpandedKeys}
 
                 onSelect={handleSelect}
                 onClick={handleClick}

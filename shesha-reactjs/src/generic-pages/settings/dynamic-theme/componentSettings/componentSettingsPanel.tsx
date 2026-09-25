@@ -4,6 +4,7 @@ import * as React from 'react';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { useStyles } from '../styles/styles';
 import { findComponentNode, getMenuItems, IMenuItem } from '../toolboxComponents';
+import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from '@/utils/object';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
 import {
   DEFAULT_FORM_SETTINGS,
@@ -18,7 +19,7 @@ import { SearchBox } from '@/components/formDesigner/toolboxSearchBox';
 import { ComponentDefaultsPreview } from './preview';
 import { ComponentDefaultsSettings } from './settings';
 import DefaultModelProvider from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
-import { IToolboxComponent } from '../../../../interfaces/formDesigner';
+import { getThemeGroupForStyleGroup, IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useFormBuilderFactory } from '../../../..';
 /** Markup node that wraps designer settings tabs (e.g. Appearance). */
@@ -110,8 +111,10 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
   }, [componentType]);
 
   const defaultStyles = useMemo(() => {
-    return typeof componentDef?.getDefaultStyles === 'function' ? componentDef.getDefaultStyles() : {};
-  }, [componentDef]);
+    const hardcodedDefaults = typeof componentDef?.getDefaultStyles === 'function' ? componentDef.getDefaultStyles() : {};
+    const groupStyle = theme?.componentGroups?.[getThemeGroupForStyleGroup(componentDef?.styleGroup)] as object | undefined ?? {};
+    return deepMergeValues(deepCopyViaJson(hardcodedDefaults) as object, groupStyle, deepMergeSkipUndefinedFunc);
+  }, [componentDef, theme?.componentGroups]);
 
   // Get the settings form markup (could be a function or object)
   const settingsFormMarkup = componentDef?.settingsFormMarkup;

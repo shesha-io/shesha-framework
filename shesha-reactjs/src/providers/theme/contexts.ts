@@ -2,6 +2,7 @@ import { createNamedContext } from '@/utils/react';
 import { Theme } from 'antd/lib/config-provider/context';
 import { FormItemLayout } from 'antd/lib/form/Form';
 import { FormLabelAlign } from 'antd/lib/form/interface';
+import { ThemeComponentGroup } from '@/interfaces/formDesigner';
 
 interface ITextTheme {
   default?: string;
@@ -33,6 +34,8 @@ const COLOR_SCHEMES: readonly ColorScheme[] = ['light', 'dark', 'system'];
 export const normalizeColorScheme = (value: unknown): ColorScheme =>
   COLOR_SCHEMES.includes(value as ColorScheme) ? (value as ColorScheme) : 'system';
 
+export type { ThemeComponentGroup };
+
 export interface IConfigurableTheme {
   application?: Theme | undefined;
   /**
@@ -50,6 +53,12 @@ export interface IConfigurableTheme {
   layout?: FormItemLayout;
   colon?: boolean;
   components?: { [key: string]: unknown };
+  /**
+   * Per-style-group appearance defaults (Input/Inline/Standard/Layout Components tabs). Every
+   * component whose `styleGroup` maps to one of these tiers inherits from it, between the
+   * component's hardcoded defaults and its own per-type override in `components`.
+   */
+  componentGroups?: Partial<Record<ThemeComponentGroup, unknown>>;
 }
 
 export interface IThemeStateContext {
@@ -70,6 +79,8 @@ export interface IThemeActionsContext {
   changeTheme: (theme: IConfigurableTheme, isApplication?: boolean) => void;
   resetToApplicationTheme: () => void;
   getComponentStyle: (componentName: string) => unknown;
+  /** Group-tier theme styles for a style group (Input/Inline/Standard/Layout Components), or {} when unset. */
+  getComponentGroupStyle: (group: ThemeComponentGroup | undefined) => unknown;
 
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
 }

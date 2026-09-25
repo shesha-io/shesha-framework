@@ -4,16 +4,16 @@ import { DocumentDefinition, ITEM_TYPES, ItemEditorProps, ProviderRendererProps 
 import { DesignerMainArea } from "@/components/formDesigner/designerMainArea";
 import { useMainStyles } from "@/components/formDesigner/styles/styles";
 import { CanvasConfig } from "@/components/formDesigner/toolbar/canvasConfig";
-import { Space } from "antd";
+import { Divider, Space } from "antd";
 import { ReactNode, useEffect } from "react";
 import { FormToolbar } from "./toolbar";
 import { useFormDesigner } from "@/providers/formDesigner";
 import { useConfigurationStudio } from "@/configuration-studio/cs/contexts";
-import { FormOutlined } from "@ant-design/icons";
+import { CsFormIcon } from "@/icons/configurationStudioIcons";
 
 export const FormDocumentDefinition: DocumentDefinition = {
   documentType: ITEM_TYPES.FORM,
-  icon: <FormOutlined />,
+  icon: <CsFormIcon />,
   Editor: (props: ItemEditorProps): ReactNode => {
     const { styles } = useMainStyles();
     const cs = useConfigurationStudio();
@@ -52,8 +52,9 @@ export const FormDocumentDefinition: DocumentDefinition = {
   Toolbar: (_props: ItemEditorProps): ReactNode => {
     return (
       <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Space orientation="horizontal" size={5}>
+        <Space orientation="horizontal" size="small">
           <CanvasConfig />
+          <Divider orientation="vertical" />
           <FormToolbar />
         </Space>
       </div>

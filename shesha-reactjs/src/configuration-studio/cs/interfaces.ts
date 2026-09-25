@@ -4,6 +4,7 @@ import { MoveNodePayload } from "../apis";
 import {
   CloseDocumentResponse,
   ConfigItemTreeNode,
+  FolderDraft,
   FolderTreeNode,
   ForceRenderFunc,
   IDocumentInstance,
@@ -68,6 +69,7 @@ export interface IConfigurationStudio {
   readonly treeNodes: TreeNode[];
   readonly treeLoadingState: ProcessingState;
   readonly quickSearch: string | undefined;
+  readonly itemTypeFilter: string[];
   readonly treeExpandedKeys: React.Key[];
   readonly treeSelectedKeys: React.Key[];
   readonly treeSelectedNode: TreeNode | undefined;
@@ -87,6 +89,7 @@ export interface IConfigurationStudio {
 
   onTreeNodeExpand: (expandedKeys: React.Key[]) => void;
   setQuickSearch: (value: string) => void;
+  setItemTypeFilter: (value: string[]) => void;
 
   loadTreeAndDocsAsync: () => Promise<void>;
   moveTreeNodeAsync: (payload: MoveNodePayload) => Promise<void>;
@@ -97,6 +100,16 @@ export interface IConfigurationStudio {
   selectTreeNode: (node?: TreeNode) => void;
   setMultiSelection: (nodeIds: string[]) => Promise<void>;
   clickTreeNode: (node: TreeNode) => void;
+  /** Expand every ancestor of the node, then select and highlight it. */
+  revealAndSelectTreeNodeAsync: (node: TreeNode) => Promise<void>;
+
+  //#region inline folder editing (issue #4783)
+  /** The folder currently being named inline in the tree, if any. */
+  folderDraft: FolderDraft | undefined;
+  beginFolderDraft: (draft: FolderDraft) => void;
+  cancelFolderDraft: () => void;
+  commitFolderDraftAsync: (name: string) => Promise<void>;
+  //#endregion
 
   docs: IDocumentInstance[];
   activeDocId: string | undefined;

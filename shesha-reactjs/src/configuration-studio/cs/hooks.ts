@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
-import { CloseDocumentResponse, ConfigItemTreeNode, IDocumentInstance, TreeNode } from "../models";
+import { CloseDocumentResponse, ConfigItemTreeNode, FolderDraft, IDocumentInstance, ItemTypeDefinition, TreeNode } from "../models";
 import { CsSubscriptionType, ProcessingState } from "./interfaces";
 import { useConfigurationStudio, useConfigurationStudioIfAvailable } from "./contexts";
 import { TreeProps } from "antd";
@@ -33,11 +33,16 @@ export type UseCsTreeResponse = {
 
   quickSearch?: string | undefined;
   setQuickSearch: (value: string) => void;
+  itemTypeFilter: string[];
+  setItemTypeFilter: (value: string[]) => void;
+  itemTypes: ItemTypeDefinition[];
   expandedKeys: ExpandedKeys;
   selectedKeys: SeletcedKeys;
   selectedNodes: TreeNode[];
   selectedItemNode?: ConfigItemTreeNode | undefined;
   onNodeExpand: OnTreeExpand;
+  /** Folder currently being named inline in the tree (issue #4783). */
+  folderDraft: FolderDraft | undefined;
 };
 export const useCsTree = (): UseCsTreeResponse => {
   const cs = useConfigurationStudio();
@@ -50,11 +55,15 @@ export const useCsTree = (): UseCsTreeResponse => {
     treeLoadingState: cs.treeLoadingState,
     quickSearch: cs.quickSearch,
     setQuickSearch: cs.setQuickSearch,
+    itemTypeFilter: cs.itemTypeFilter,
+    setItemTypeFilter: cs.setItemTypeFilter,
+    itemTypes: cs.itemTypes,
     expandedKeys: cs.treeExpandedKeys,
     selectedKeys: cs.treeSelectedKeys,
     selectedNodes: cs.treeSelectedNodes,
     selectedItemNode: cs.treeSelectedItemNode,
     onNodeExpand: cs.onTreeNodeExpand,
+    folderDraft: cs.folderDraft,
   };
 };
 

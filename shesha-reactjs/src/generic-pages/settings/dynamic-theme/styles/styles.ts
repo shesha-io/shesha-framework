@@ -18,17 +18,32 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
     `,
   );
 
+  /**
+   * The settings panels sit two container levels deep:
+   * container > inner > component > container > inner. That innermost `inner` is the
+   * element laid out as the grid, so the grid rule and the breakpoints below all share
+   * this selector.
+   *
+   * Descendant (not child) combinators, because a container rendered with
+   * `noDefaultStyling` omits the `.sha-components-container` wrapper.
+   */
+  const panelGrid =
+    '> .sha-components-container .sha-components-container-inner' +
+    ' .sha-component .sha-components-container .sha-components-container-inner';
+
   const appearanceForm = cx(
     'sha-appearance-form',
     css`
-      [data-sha-c-type="propertyRouter"] {
-        > .sha-components-container-inner {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 16px;
-          padding: 16px 0;
-          align-items: start;
-        }
+      ${panelGrid} {
+        padding: 8px;
+      }
+
+      /* The grid above supplies the spacing between the grouping panels (Border, Radius,
+         Background, ...), so drop antd's padding inside each one. The header and body are
+         siblings under the item, so the body is addressed via the panel, not the header. */
+      .ant-collapse-item > .ant-collapse-panel > .ant-collapse-body,
+      .ant-collapse-item > .ant-collapse-panel > .ant-collapse-header {
+        padding: 0px;
       }
 
       /* Adjust form items within the grid panels */
@@ -45,23 +60,41 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
         }
       }
 
-      /* Responsive grid - single column on smaller screens */
-      @media (max-width: 768px) {
-        > [data-sha-c-type="propertyRouter"] {
-          > .sha-components-container-inner {
-            grid-template-columns: 1fr;
-          }
+      /* Two columns on medium screens */
+      @media (min-width: 769px) and (max-width: 1200px) {
+        ${panelGrid} {
+          grid-template-columns: repeat(2, 1fr);
         }
       }
 
-      /* Two columns on medium screens */
-      @media (min-width: 769px) and (max-width: 1200px) {
-        > [data-sha-c-type="propertyRouter"] {
-          > .sha-components-container-inner {
-            grid-template-columns: repeat(2, 1fr);
-          }
+      /* Responsive grid - single column on smaller screens */
+      @media (max-width: 768px) {
+        ${panelGrid} {
+          grid-template-columns: 1fr;
         }
       }
+    `,
+  );
+
+  /** One labelled rendering inside the preview card (dropdown tag mode, thumbnail size, ...). */
+  const previewVariant = cx(
+    'preview-variant',
+    css`
+      /* Separator between consecutive variants only, so a single-variant preview is unchanged. */
+      & + & {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed ${CANVAS_PREVIEW_BORDER};
+      }
+    `,
+  );
+
+  const previewVariantLabel = cx(
+    'preview-variant-label',
+    css`
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 4px;
     `,
   );
 
@@ -93,6 +126,13 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
         display: none;
       }
 
+      /* Outer panel only - the content inside brings its own padding. Scoped with child
+         combinators so the nested appearance panels keep antd's default body padding.
+         (antd 6 renders item then panel then body; there is no -content element.) */
+      > .ant-collapse-item > .ant-collapse-panel > .ant-collapse-body {
+        padding: 0px;
+      }
+
       .ant-card {
         .ant-card-head {
           min-height: 40px;
@@ -105,7 +145,7 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
         }
 
         .ant-card-body {
-          padding: 16px;
+          padding: 0px;
         }
       }
 
@@ -225,5 +265,7 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
     colorCircleContainer,
     slider,
     appearanceForm,
+    previewVariant,
+    previewVariantLabel,
   };
 });
