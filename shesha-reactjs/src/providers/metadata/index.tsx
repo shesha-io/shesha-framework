@@ -48,7 +48,7 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id = 
 
   const getPropertyMeta = (name: string): IPropertyMetadata | undefined => {
     return state.metadata
-      ? asPropertiesArray(state.metadata.properties, []).find((p) => camelcase(p.path) === name)
+      ? asPropertiesArray(state.metadata.properties, []).find((p) => camelcase(p.path) === camelcase(name))
       : undefined;
   };
 
