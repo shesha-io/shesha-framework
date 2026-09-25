@@ -4,9 +4,9 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useForm, useGlobalState, useMetadata } from '@/providers';
+import { useMetadata } from '@/providers';
 import { FormMarkup, IInputStyles } from '@/providers/form/models';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import NumberFieldControl from './control';
 import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
@@ -31,14 +31,10 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
     const properties = asPropertiesArray(metaProperties, []);
 
-    const { formMode, formData } = useForm();
-    const { globalState } = useGlobalState();
-
+    // NOTE: the configured `defaultValue` is deliberately not applied here. Default values are a part of the form
+    // model initialization and are applied by the form itself, see `ShaFormInstance`.
     return (
-      <ConfigurableFormItem
-        model={model}
-        initialValue={model?.defaultValue ? evaluateString(model?.defaultValue, { formData, formMode, globalState }) : undefined}
-      >
+      <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem

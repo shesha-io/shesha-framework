@@ -1,14 +1,14 @@
 import React from "react";
 import { AfterSubmitHandler, FormEvents, IDataSubmitContext, InitByFormIdPayload, InitByMarkupPayload, InitByRawMarkupPayload, IShaFormInstance, LoadFormByIdPayload, OnMarkupLoadedHandler, OnValuesChangeHandler, ProcessingState, SubmitDataPayload, SubmitHandler } from "./interfaces";
 import { IFormDataLoader } from "../loaders/interfaces";
-import { FormIdentifier, FormMarkup, FormMode, IFlatComponentsStructure, IFormSettings, IFormValidationErrors, IModelMetadata, isEntityMetadata } from "@/interfaces";
+import { FormIdentifier, FormMarkup, FormMode, IFlatComponentsStructure, IFormSettings, IFormValidationErrors, IModelMetadata, isEntityMetadata, IToolboxComponents } from "@/interfaces";
 import { ExpressionCaller, ExpressionExecuter, IDataArguments, IFormDataSubmitter } from "../submitters/interfaces";
 import { IFormManagerActionsContext } from "@/providers/formManager/contexts";
 import { useFormManager } from "@/providers/formManager";
 import { IFormDataLoadersContext, useFormDataLoaders } from "../loaders/formDataLoadersProvider";
 import { IFormDataSubmittersContext, useFormDataSubmitters } from "../submitters/formDataSubmittersProvider";
 import { FormInfo } from "../api";
-import { executeScript, getComponentsAndSettings, IApplicationContext, isSameFormIds, useAvailableConstantsContexts, wrapConstantsData } from "../utils";
+import { evaluateString, executeScript, getActualPropertyValue, getComponentsAndSettings, IApplicationContext, isSameFormIds, useAvailableConstantsContexts, wrapConstantsData } from "../utils";
 import { ConfigurationItemsViewMode } from "@/providers/appConfigurator/models";
 import { Form, FormInstance } from "antd";
 import { IFormApi } from "../formApi";
@@ -23,14 +23,18 @@ import { getQueryParams } from "@/utils/url";
 import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
 import { removeGhostKeys } from "@/utils/form";
 import { FormLoaderContextValue, useFormLoader } from "../formLoaderProvider";
+import { applyDefaultValues, DefaultValueEvaluator, getFormDefaultValues, IFormDefaultValue } from "./defaultValues";
+import { useFormDesignerComponents } from "../hooks";
 
 type ForceUpdateTrigger = () => void;
+type ApplicationContextGetter = () => any;
 interface ShaFormInstanceArguments {
     forceRootUpdate: ForceUpdateTrigger;
     formManager: IFormManagerActionsContext;
     metadataDispatcher: IMetadataDispatcher;
     dataLoaders: IFormDataLoadersContext;
     dataSubmitters: IFormDataSubmittersContext;
+    toolboxComponents: IToolboxComponents;
     antdForm: FormInstance;
     formLoaderContext?: FormLoaderContextValue;
 }
@@ -109,7 +113,9 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
     private dataLoaders: IFormDataLoadersContext;
     private dataSubmitters: IFormDataSubmittersContext;
+    private toolboxComponents: IToolboxComponents;
     private expressionExecuter: ExpressionExecuter;
+    private applicationContextGetter: ApplicationContextGetter;
     private events: FormEvents<Values>;
     private dataSubmitContext: IDataSubmitContext;
     private formLoaderContext?: FormLoaderContextValue;
@@ -120,7 +126,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     formData?: any;
     validationErrors?: IFormValidationErrors;
 
-    defaultValues: Values;
+    /** Default values configured on the inputs of the form. Applied on initialization of the form model */
+    defaultValues: IFormDefaultValue[];
     initialValues: any;
     parentFormValues: any;
     formArguments?: any;
@@ -159,7 +166,9 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.metadataDispatcher = args.metadataDispatcher;
         this.dataLoaders = args.dataLoaders;
         this.dataSubmitters = args.dataSubmitters;
+        this.toolboxComponents = args.toolboxComponents;
         this.expressionExecuter = undefined;
+        this.applicationContextGetter = undefined;
         this.formLoaderContext = args.formLoaderContext;
 
         this.logEnabled = false;
@@ -187,6 +196,9 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
     setExpressionExecuter = (expressionExecuter: ExpressionExecuter) => {
         this.expressionExecuter = expressionExecuter;
+    };
+    setApplicationContextGetter = (getter: ApplicationContextGetter) => {
+        this.applicationContextGetter = getter;
     };
     setFormMode = (formMode: FormMode) => {
         if (this.formMode === formMode)
@@ -300,6 +312,46 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
     resetMarkup = () => {
         this.form = undefined;
+        this.defaultValues = undefined;
+    };
+
+    /**
+     * Returns the actual value of the `Default Value` setting of the passed component.
+     */
+    #evaluateDefaultValue: DefaultValueEvaluator = (component) => {
+        const context = this.applicationContextGetter?.();
+        if (!context)
+            return component.defaultValue;
+
+        // the setting may be specified as a JS expression (code mode)
+        const value = getActualPropertyValue(component, context, 'defaultValue').defaultValue;
+
+        // legacy mustache templates. `formData`, `formMode` and `globalState` are exposed as documented on the setting
+        return typeof value === 'string' && value.includes('{{')
+            ? evaluateString(value, { formData: context.data, formMode: context.form?.formMode, globalState: context.globalState })
+            : value;
+    };
+
+    /**
+     * Initializes the model of the form: fills the properties that are not specified in the passed values with the
+     * default values configured on the inputs of the form.
+     *
+     * Note: this is intentionally done here and not by the components. `Form.Item`s `initialValue` writes straight into
+     * the antd store without raising `onValuesChange`, and `onValuesChange` is the only thing that syncs values into
+     * `formData` - the object that gets submitted. A default value applied by a component is therefore displayed but
+     * never submitted.
+     */
+    #initModel = <T,>(values: T): T => {
+        this.defaultValues = getFormDefaultValues({
+            flatStructure: this.flatStructure,
+            toolboxComponents: this.toolboxComponents,
+            evaluator: this.#evaluateDefaultValue,
+            metadata: this.modelMetadata,
+        });
+
+        this.log('LOG: default values', this.defaultValues);
+
+        return applyDefaultValues(values, this.defaultValues);
     };
 
     applyFormSettingsAsync = async (): Promise<void> => {
@@ -386,11 +438,12 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
                 await this.onMarkupLoaded(this);
 
             this.log('LOG: initialValues', initialValues);
-            this.initialValues = initialValues;
-            this.formData = initialValues;
-            if (initialValues) {
+            const values = this.#initModel(initialValues);
+            this.initialValues = values;
+            this.formData = values;
+            if (values) {
                 this.antdForm.resetFields();
-                this.antdForm.setFieldsValue(initialValues);
+                this.antdForm.setFieldsValue(values);
             }
 
             this.markupLoadingState = { status: 'ready' };
@@ -444,11 +497,12 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
         await this.loadFormByRawMarkupAsync();
 
-        this.initialValues = initialValues;
-        this.#setInternalFormData(initialValues);
+        const values = this.#initModel(initialValues);
+        this.initialValues = values;
+        this.#setInternalFormData(values);
 
         this.antdForm.resetFields();
-        this.antdForm.setFieldsValue(initialValues);
+        this.antdForm.setFieldsValue(values);
         //await this.loadData(formArguments);
         this.dataLoadingState = { status: 'ready', hint: null, error: null };
         this.forceRootUpdate();
@@ -542,17 +596,30 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
                 throw this.dataLoadingState.error;
 
             this.dataLoadingState = { status: 'ready' };
-            this.initialValues = data;
-            this.formData = data;
+
+            // the loaded data replaces the model, re-initialize it to keep the default values of the properties that
+            // are not specified in the response
+            const values = this.#initModel(data);
+            this.initialValues = values;
+            this.formData = values;
             this.antdForm.resetFields();
-            this.antdForm.setFieldsValue(data);
+            this.antdForm.setFieldsValue(values);
             this.forceRootUpdate();
 
-            this.log('LOG: loaded', data);
-            return data;
+            this.log('LOG: loaded', values);
+            return values;
         }
 
         this.dataLoadingState = { status: 'ready', hint: null, error: null };
+
+        // no data has been loaded, make sure the model is initialized with the configured default values
+        const values = this.#initModel(this.formData);
+        if (values !== this.formData) {
+            this.initialValues = values;
+            this.formData = values;
+            this.antdForm.setFieldsValue(values);
+        }
+
         this.forceRootUpdate();
 
         return this.initialValues;
@@ -633,6 +700,7 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
     const [antdFormInstance] = Form.useForm(antdForm);
     const fullContext = useAvailableConstantsContexts();
     const metadataDispatcher = useMetadataDispatcher();
+    const toolboxComponents = useFormDesignerComponents();
 
     // Get form loader context if available (returns no-op implementation if provider not found)
     const formLoaderContext = useFormLoader();
@@ -653,6 +721,7 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
                 dataSubmitters: dataSubmitters,
                 antdForm: antdFormInstance,
                 metadataDispatcher: metadataDispatcher,
+                toolboxComponents: toolboxComponents,
                 formLoaderContext: formLoaderContext,
             });
             const accessors = wrapConstantsData({
@@ -667,6 +736,7 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
                 return executeScript(expression, { ...allConstants, ...data });
             };
             instance.setExpressionExecuter(expressionExecuter);
+            instance.setApplicationContextGetter(() => allConstants);
 
             init?.(instance);
 
