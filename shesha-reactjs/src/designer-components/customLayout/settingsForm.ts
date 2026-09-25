@@ -13,11 +13,17 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
     components: fbf()
       .addSearchableTabs({ propertyName: 'settingsTabs', parentId: 'root', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
-          { key: 'common', title: 'Common', id: commonTabId,
+          { key: 'common', title: 'Main', id: commonTabId,
             components: fbf(commonTabId)
               .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', validate: { required: true }, jsSetting: false })
               // No `propertyName` input: the heading is a section title, the container holds no value.
-              .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
+              .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true,
+                labelAlignOptions: [
+                  { value: 'left', icon: 'AlignLeftOutlined', title: 'Left' },
+                  { value: 'center', icon: 'AlignCenterOutlined', title: 'Center' },
+                  { value: 'right', icon: 'AlignRightOutlined', title: 'Right' },
+                ],
+              })
               .stdVisibleEditableInputs('full')
               .addSettingsInput({ inputType: 'switch', propertyName: 'noDefaultStyling', label: 'No Default Styling', size: 'small', tooltip: 'If checked, the default styles and classes of the container will not be applied.', jsSetting: true })
               .addPropertyRouter({ id: commonStyleRouterId, componentName: 'propertyRouter1', label: 'Property router1', labelAlign: 'right',
