@@ -15,7 +15,6 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { ShaIconTypes } from '../iconPicker';
 import { formItemLayout, getQuickViewInitialValues, loadingBox } from './utils';
 import { useStyles } from './styles/styles';
 import { IPropertyMetadata } from '@/interfaces/metadata';
@@ -66,7 +65,7 @@ export interface IQuickViewProps extends PropsWithChildren {
    */
   popupClassName?: string | undefined;
   displayType?: 'textTitle' | 'icon' | 'displayProperty' | undefined;
-  iconName?: ShaIconTypes | undefined;
+  iconName?: string | undefined;
   textTitle?: string | undefined;
   emptyText?: string | undefined;
 }

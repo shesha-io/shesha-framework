@@ -1,4 +1,3 @@
-import { IconType } from '@/components/shaIcon';
 import { ComponentDefinition } from '@/interfaces';
 import { FormIdentifier, IConfigurableFormComponent, IInputStyles, IStyleValue } from '@/providers/form/models';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
@@ -79,7 +78,7 @@ export interface IAttachmentsEditorDeviceStyles extends IStyleValue {
    */
   styleDownloadedFiles?: boolean | undefined;
   /** Badge shown on a downloaded file. Device-scoped for the same reason as the toggle above. */
-  downloadedIcon?: IconType | undefined;
+  downloadedIcon?: string | undefined;
   /**
    * Pre-v17 style set for the scrolling container. Retained so the migration can read it off old
    * saved models; nothing renders from it any more.
@@ -139,7 +138,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent<IAtt
   /** @deprecated device-scoped now. Kept so migration 20 can read it off old saved models. */
   styleDownloadedFiles?: boolean | undefined;
   /** @deprecated device-scoped now. Kept so migration 20 can read it off old saved models. */
-  downloadedIcon?: IconType | undefined;
+  downloadedIcon?: string | undefined;
 }
 
 export type AttachmentsEditorComponentDefinition = ComponentDefinition<'attachmentsEditor', IAttachmentsEditorProps>;

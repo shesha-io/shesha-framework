@@ -1,5 +1,5 @@
 import { CSSProperties, FC } from 'react';
-import { IconType, StoredFilesRendererBase } from '@/components/';
+import { StoredFilesRendererBase } from '@/components/';
 import { IStoredFilesClassNames } from '@/components/storedFilesRendererBase';
 import { IInputStyles, IStyleValue, useAttachmentsEditorActions, useAttachmentsEditorFetchError, useAttachmentsEditorState } from '@/providers';
 import { LayoutType, ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
@@ -46,7 +46,7 @@ export interface ICustomFileProps extends IInputStyles {
   enableStyleOnReadonly?: boolean | undefined;
   downloadedFileStyles?: CSSProperties | undefined;
   styleDownloadedFiles?: boolean | undefined;
-  downloadedIcon?: IconType | undefined;
+  downloadedIcon?: string | undefined;
   /**
    * Class names for the parts of the list that the component styles from its Appearance tab.
    * The popup ones matter most: antd portals popovers to the body, so no descendant selector from
