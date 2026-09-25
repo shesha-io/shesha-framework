@@ -1,5 +1,9 @@
 import { FormRule } from "antd";
-import { getValidationRules, IConfigurableFormComponent, IFormValidationRulesOptions, isDefined, useShaFormInstance } from "../..";
+import { getValidationRules } from "@/providers/form/utils";
+import { IConfigurableFormComponent } from "@/interfaces";
+import { IFormValidationRulesOptions } from "@/providers/form/models";
+import { isDefined } from "@/utils/nullables";
+import { useShaFormInstance } from "@/providers/form/providers/shaFormProvider";
 import { FormDesignerComponentGetter, useFormDesignerComponentGetter } from "../form/hooks";
 import { useMemo } from "react";
 

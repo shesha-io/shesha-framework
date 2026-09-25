@@ -3,6 +3,7 @@ import { createStyles } from '@/styles';
 import { IAttachmentsEditorProps } from './interfaces';
 import { fontStyles } from '../_common/styles/utils';
 import { isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { withFontFallback } from '@/designer-components/_settings/utils/font/utils';
 
 /**
  * The evaluated nested Custom styles. The framework only executes the root `model.style` into
@@ -100,7 +101,7 @@ export const useStyles = createStyles((
      follows the configured font family. */
   const previewMask = cx('sha-file-list-preview', css`
     &&& .${prefixCls}-image-preview-operations {
-      ${isNotNullOrWhiteSpace(model.font?.type) ? `font-family: ${model.font.type};` : ''}
+      ${isNotNullOrWhiteSpace(model.font?.type) ? `font-family: ${withFontFallback(model.font.type)};` : ''}
     }
   `);
 

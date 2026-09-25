@@ -11,6 +11,7 @@ export const designerClassNames = {
   shaComponent: "sha-component",
   shaComponentGhost: "sha-component-ghost",
   shaComponentIndicator: "sha-component-indicator",
+  shaComponentIndicatorIcon: "sha-component-indicator-icon",
   shaComponentSearch: "sha-component-search",
   shaComponentTitle: "sha-component-title",
   shaComponentValidationIcon: "sha-component-validation-icon",
@@ -81,6 +82,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaToolboxPanelItems,
     shaDatasourceTree,
     shaComponentIndicator,
+    shaComponentIndicatorIcon,
     shaComponentsContainer,
     shaDropHintContainer,
     shaDropHint,
@@ -153,9 +155,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         .${sidebarContainerMainAreaBody} {
             .content-heading {
                 .${shaDesignerHeader} {
-                  background: white;
+                  background: ${token.colorBgContainer};
                   margin: unset;
-                  border-top: 1px solid lightgrey;
+                  border-top: 1px solid ${token.colorBorderSecondary};
                   padding: ${sheshaStyles.paddingMD}px;
                 }
             }
@@ -173,7 +175,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         }
         .${shaDesignerToolbar} {
-            background: white;
+            background: ${token.colorBgContainer};
             padding: 8px 12px 0px 12px;
             display: flex;
             align-items: center;
@@ -270,8 +272,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
         
                 .${siteTreeSearchValue} {
-                    background-color: chartreuse;
-                    color: #f50;
+                    background-color: ${token.colorWarningBg};
+                    color: ${token.colorWarningText};
                 }
             }
             
@@ -318,9 +320,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 align-content: flex-start;
                 line-height: 1.5;
                 border-radius: 3px;
-                background: #fff;
+                background: ${token.colorBgContainer};
+                color: ${token.colorText};
                 margin: 4px 0;
-                border: 1px solid #ddd;
+                border: 1px solid ${token.colorBorder};
         
                 .${iconPrefixCls} {
                     margin: 5px 10px 5px 10px;
@@ -350,7 +353,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
 
         .${designerWorkArea}{
-            background-color: white;
             height: calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT});
             .${shaComponentsContainer} {
 
@@ -459,18 +461,46 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               }
             }
         
+            /**
+             * Visibility / permission / interaction-mode indicators are secondary information: they sit in the
+             * wrapper's top-right corner (clear of a button's own label, which they used to overlap) and only
+             * fade in while the component is hovered or selected. Misconfiguration icons are rendered
+             * separately (ErrorIconPopover) and stay visible at all times.
+             *
+             * The z-index stays below the tooltip layer so an icon can no longer punch through the tooltip that
+             * describes it.
+             */
             .${shaComponentIndicator} {
-              display: inline-block;
+              display: flex;
               align-items: center;
+              gap: ${sheshaStyles.paddingSM}px;
               color: darkgray;
-              left: 15px;
-              height: auto;
               position: absolute;
-              z-index: 1000;
-        
-              .anticon {
-                margin-right: ${sheshaStyles.paddingMD}px;
+              top: 2px;
+              right: 6px;
+              height: auto;
+              z-index: 5;
+              opacity: 0;
+              pointer-events: none;
+              transition: opacity 0.15s ease;
+
+              .${shaComponentIndicatorIcon} {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                line-height: 1;
+                pointer-events: auto;
               }
+
+              .anticon {
+                display: block;
+                line-height: 1;
+              }
+            }
+
+            &:hover > .${shaComponentIndicator},
+            &.${designerClassNames.selectedComponent} > .${shaComponentIndicator} {
+              opacity: 1;
             }
           }
     `);

@@ -1,7 +1,7 @@
 import { Alert, Skeleton } from 'antd';
 import { FC, lazy, use } from 'react';
 import React from 'react';
-import { useFormData, useGlobalState, useSubFormOrUndefined } from '@/providers';
+import { useFormData, useGlobalState, useSubFormOrUndefined, useThemeState } from '@/providers';
 import { useForm } from '@/providers/form';
 import { evaluateString } from '@/providers/form/utils';
 import { IMarkdownComponentProps } from './interfaces';
@@ -58,6 +58,8 @@ const Markdown: FC<IMarkdownComponentProps> = (model) => {
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
   const { styles } = useStyles();
+  // Follow the application's colour scheme rather than the OS preference.
+  const { resolvedTheme } = useThemeState();
 
   const data = subFormData || formData;
 
@@ -73,7 +75,12 @@ const Markdown: FC<IMarkdownComponentProps> = (model) => {
     <Skeleton loading={true} />
   ) : (
     <React.Suspense fallback={<div>Loading editor...</div>}>
-      <div className={classNames("markdown-body", styles.markdownBody)} style={model.style}>
+      <div
+        className={classNames("markdown-body", styles.markdownBody, {
+          'sha-markdown-dark': resolvedTheme === 'dark',
+        })}
+        style={model.style}
+      >
         <MarkdownWithGfm content={content} style={model.style} />
       </div>
     </React.Suspense>

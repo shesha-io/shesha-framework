@@ -27,7 +27,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
         tabs: [
           {
             key: 'common',
-            title: 'Common',
+            title: 'Main',
             id: commonTabId,
             components: [
               ...fbf()
