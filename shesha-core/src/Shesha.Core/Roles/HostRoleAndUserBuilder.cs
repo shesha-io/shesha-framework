@@ -89,6 +89,9 @@ namespace Shesha.Roles
                 user.Password = new PasswordHasher<User>(new OptionsWrapper<PasswordHasherOptions>(new PasswordHasherOptions())).HashPassword(user, "123qwe");
                 user.IsEmailConfirmed = true;
                 user.IsActive = true;
+                // seeded with a well known default password, so the account must not stay usable
+                // with it - force a change on first login (#4614)
+                user.RequireChangePassword = true;
 
                 _userRepository.Insert(user);
 
