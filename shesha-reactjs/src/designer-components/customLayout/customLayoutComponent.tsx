@@ -17,7 +17,8 @@ const CustomLayoutComponent: CustomLayoutComponentDefinition = {
   name: 'Custom Layout',
   icon: <GroupOutlined />,
   emptyComponents: [],
-  getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
+  // Factory renders nothing when hidden, so the wrapper must not keep the default min-height
+  getWrapperStyle: (model) => model.hidden === true ? {} : getFullSizeWrapperDesignerStyle(model),
   Factory: ({ model }) => {
     const { styles, cx } = useStyles(model);
     const wrappedStyleJson = useActualContextExecutionNoRefresh(model.wrapperStyle, undefined, {});
