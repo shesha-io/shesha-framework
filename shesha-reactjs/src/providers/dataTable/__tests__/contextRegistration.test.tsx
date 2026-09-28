@@ -23,6 +23,7 @@ vi.mock('@/providers/dataContextProvider/dataContextBinder', async (importOrigin
 vi.mock('@/providers/configurableActionsDispatcher', async (importOriginal) => ({
   ...(await importOriginal<object>()),
   useConfigurableAction: (): undefined => undefined,
+  useConfigurableActionImplementation: (): undefined => undefined,
 }));
 
 const { DataTableProviderWithRepository } = await import('../provider');

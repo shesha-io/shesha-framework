@@ -2,7 +2,7 @@ import { FC, PropsWithChildren, useEffect, useMemo } from "react";
 import { useDeepCompareEffect } from "@/hooks/useDeepCompareEffect";
 import { useDatasetInstance, useDatasetInstanceSubscription, useDatasetState, useDatasetSubscription } from "./hooks";
 import { DataTableActionsContext, DataTableStateContext, IDataTableStateContext } from "./contexts";
-import { useConfigurableAction } from "../configurableActionsDispatcher";
+import { useConfigurableActionImplementation } from "../configurableActionsDispatcher";
 import { IDataTableProviderBaseProps } from "./provider.props";
 import { IHasModelType, IHasRepository } from "./repository/interfaces";
 import DataContextBinder from "../dataContextProvider/dataContextBinder";
@@ -14,6 +14,7 @@ import { isEqual } from "lodash";
 import { ContextOnChangeData } from "../dataContextProvider/contexts";
 import { IDatasetInstance } from "./models";
 import { useComponentApiProvider } from "../componentApi/provider";
+import { ExportToExcelAction, RefreshTableAction, ToggleAdvancedFilterAction, ToggleColumnsSelectorAction } from "./configurableActions";
 
 const TempDataSetBridge: FC<PropsWithChildren> = ({ children }) => {
   // fire api refresh on any Dataset change
@@ -55,60 +56,35 @@ const DataTableProviderWithRepositoryWithContext: FC<PropsWithChildren<DataTable
   // on mount - row selection, fetched data and paging never reach the scripts.
   useDatasetInstanceSubscription(instance, 'data');
 
-  useConfigurableAction(
-    {
-      name: 'Refresh table',
-      owner: actionOwnerName,
-      ownerUid: actionOwnerId,
-      hasArguments: false,
-      executer: () => {
-        return instance.refreshTable();
-      },
+  useConfigurableActionImplementation(actionOwnerId, RefreshTableAction, {
+    owner: actionOwnerName,
+    executer: () => {
+      return instance.refreshTable();
     },
-    [instance],
-  );
+  }, [instance]);
 
-  useConfigurableAction(
-    {
-      name: 'Export to Excel',
-      description: 'Export current table view to Excel',
-      owner: actionOwnerName,
-      ownerUid: actionOwnerId,
-      hasArguments: false,
-      executer: () => {
-        return instance.exportToExcel();
-      },
+  useConfigurableActionImplementation(actionOwnerId, ExportToExcelAction, {
+    owner: actionOwnerName,
+    executer: () => {
+      return instance.exportToExcel();
     },
-    [instance],
-  );
+  }, [instance]);
 
-  useConfigurableAction(
-    {
-      name: 'Toggle Advanced Filter',
-      owner: actionOwnerName,
-      ownerUid: actionOwnerId,
-      hasArguments: false,
-      executer: () => {
-        instance.toggleAdvancedFilter();
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation(actionOwnerId, ToggleAdvancedFilterAction, {
+    owner: actionOwnerName,
+    executer: () => {
+      instance.toggleAdvancedFilter();
+      return Promise.resolve();
     },
-    [instance],
-  );
+  }, [instance]);
 
-  useConfigurableAction(
-    {
-      name: 'Toggle Columns Selector',
-      owner: actionOwnerName,
-      ownerUid: actionOwnerId,
-      hasArguments: false,
-      executer: () => {
-        instance.toggleColumnsSelector();
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation(actionOwnerId, ToggleColumnsSelectorAction, {
+    owner: actionOwnerName,
+    executer: () => {
+      instance.toggleColumnsSelector();
+      return Promise.resolve();
     },
-    [instance],
-  );
+  }, [instance]);
 
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
     typeDefinitionLoader: () => {

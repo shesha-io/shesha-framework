@@ -18,6 +18,7 @@ import { DataListApi } from "@/componentsApi/dataListApi";
 
 import apiCode from "../../componentsApi/dataListApi.ts?raw";
 import { migratePermissionsToVisiblePermissions } from "../_common-migrations/migratePermissionsToVisiblePermissions";
+import { AddNewItem } from "./configurableActions";
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -174,6 +175,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       addModelError('formIdExpression', 'This Data List has no form identifier expression configured.\nConfiguring an expression tells the Data List how to dynamically determine which form to use.');
     }
   },
+  actions: [AddNewItem],
 };
 
 export default DataListComponent;

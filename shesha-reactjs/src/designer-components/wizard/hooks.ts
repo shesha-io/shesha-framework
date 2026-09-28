@@ -3,7 +3,7 @@ import { getStepDescritpion, getWizardStep } from './utils';
 import { IActionExecutionContext, IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IConfigurableFormComponent, isConfigurableFormComponent, useForm, useSheshaApplication, ShaForm } from '@/providers';
 import { IWizardComponentProps, IWizardStepProps } from './models';
-import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
+import { useConfigurableActionImplementation } from '@/providers/configurableActionsDispatcher';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormExpression } from '@/hooks';
@@ -13,6 +13,7 @@ import { useClosestModal } from '@/providers/dynamicModal';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { isNonEmptyArray } from '@/utils/array';
 import { ValidateErrorEntity } from '../..';
+import { Back, Cancel, Close, Done, Next, ResetSteps, Validate } from './configurableActions';
 
 interface IWizardComponent {
   back: () => void;
@@ -308,106 +309,64 @@ export const useWizard = (model: IWizardComponentProps): IWizardComponent => {
   // #region configurable actions
   const actionDependencies = [actionOwnerName, actionsOwnerId, current];
 
-  useConfigurableAction(
-    {
-      name: 'Back',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        back();
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation(actionsOwnerId, Back, {
+    owner: actionOwnerName,
+    executer: () => {
+      back();
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
+  }, actionDependencies);
 
-  useConfigurableAction(
-    {
-      name: 'Next',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        next();
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation(actionsOwnerId, Next, {
+    owner: actionOwnerName,
+    executer: () => {
+      next();
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
+  }, actionDependencies);
 
-  useConfigurableAction(
-    {
-      name: 'Cancel',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        cancel();
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation(actionsOwnerId, Cancel, {
+    owner: actionOwnerName,
+    executer: () => {
+      cancel();
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
+  }, actionDependencies);
 
-  useConfigurableAction(
-    {
-      name: 'Close',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        close();
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation(actionsOwnerId, Close, {
+    owner: actionOwnerName,
+    executer: () => {
+      close();
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
+  }, actionDependencies);
 
-  useConfigurableAction(
-    {
-      name: 'Done',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        done();
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation(actionsOwnerId, Done, {
+    owner: actionOwnerName,
+    executer: () => {
+      done();
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
+  }, actionDependencies);
 
-  useConfigurableAction(
-    {
-      name: 'Reset Steps',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        reset();
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation(actionsOwnerId, ResetSteps, {
+    owner: actionOwnerName,
+    executer: () => {
+      reset();
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
+  }, actionDependencies);
 
-  useConfigurableAction<object, unknown, IValidatable>(
-    {
-      name: 'Validate',
-      description: 'Validate the Wizard step data and show validation errors if any',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: (_, actionContext) => {
-        if (actionContext.validate) {
-          return actionContext.validate();
-        }
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation<object, IValidatable>(actionsOwnerId, Validate, {
+    owner: actionOwnerName,
+    executer: (_, actionContext) => {
+      if (actionContext.validate) {
+        return actionContext.validate();
+      }
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
+  }, actionDependencies);
+
   //#endregion
 
   const content = getStepDescritpion(showStepStatus, sequence, current);

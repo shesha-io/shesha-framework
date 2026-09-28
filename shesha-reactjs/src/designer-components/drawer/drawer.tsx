@@ -4,9 +4,10 @@ import { CSSProperties, FC, Fragment, ReactNode, useState } from 'react';
 import { Alert, Button, Drawer, Space } from 'antd';
 import { executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
+import { useConfigurableActionDispatcher, useConfigurableActionImplementation } from '@/providers/configurableActionsDispatcher';
 import { IConfigurableFormComponent, IFormComponentStyles } from '@/providers';
 import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
+import { CloseDrawer, OpenDrawer } from './configurableActions';
 interface IShaDrawer {
   id?: string | undefined;
   componentName?: string | undefined;
@@ -111,33 +112,22 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     executeActionIfConfigured(onCancelAction);
   };
 
-  useConfigurableAction(
-    {
-      name: 'Open drawer',
-      owner: actionOwnerName,
-      ownerUid: id,
-      hasArguments: false,
-      executer: () => {
-        openDrawer(); // TODO: return real promise
-        return Promise.resolve();
-      },
+  const actionOwnerId = id;
+  useConfigurableActionImplementation(actionOwnerId, OpenDrawer, {
+    owner: actionOwnerName,
+    executer: () => {
+      openDrawer(); // TODO: return real promise
+      return Promise.resolve();
     },
-    [state],
-  );
+  }, [state]);
 
-  useConfigurableAction(
-    {
-      name: 'Close drawer',
-      owner: actionOwnerName,
-      ownerUid: id,
-      hasArguments: false,
-      executer: () => {
-        closeDrawer(); // TODO: return real promise
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation(actionOwnerId, CloseDrawer, {
+    owner: actionOwnerName,
+    executer: () => {
+      closeDrawer(); // TODO: return real promise
+      return Promise.resolve();
     },
-    [state],
-  );
+  }, [state]);
 
   const context = {
     data: allData.data,

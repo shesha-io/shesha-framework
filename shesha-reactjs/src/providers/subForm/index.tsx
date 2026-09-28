@@ -23,7 +23,7 @@ import { StandardEntityActions } from '@/interfaces/metadata';
 import { ISubFormActionsContext, ISubFormStateContext, SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
 import { subFormReducer } from './reducer';
 import { ConditionalMetadataProvider, IConfigurableFormComponent, isConfigurableFormComponent, useHttpClient, useMetadataOrUndefined } from '@/providers';
-import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
+import { useConfigurableActionImplementation } from '@/providers/configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useDebouncedCallback } from 'use-debounce';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
@@ -62,6 +62,7 @@ import { SubFormApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from 'react-use';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { GetFormDataAction, PostFormDataAction, UpdateFormDataAction } from './configurableActions';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -760,47 +761,33 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   const actionDependencies = [id];
   const actionsOwnerName = componentName ?? `subForm-${id}`;
-  useConfigurableAction(
-    {
-      name: 'Get form data',
-      owner: actionsOwnerName,
-      ownerUid: id,
-      hasArguments: false,
-      executer: () => {
-        debouncedFetchData(true); // TODO: return real promise
-        return Promise.resolve();
-      },
+  const actionsOwnerUid = id;
+  useConfigurableActionImplementation(actionsOwnerUid, GetFormDataAction, {
+    owner: actionsOwnerName,
+    executer: () => {
+      debouncedFetchData(true); // TODO: return real promise
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
+  },
+  actionDependencies);
 
-  useConfigurableAction(
-    {
-      name: 'Post form data',
-      owner: actionsOwnerName,
-      ownerUid: id,
-      hasArguments: false,
-      executer: () => {
-        postData(); // TODO: return real promise
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation(actionsOwnerUid, PostFormDataAction, {
+    owner: actionsOwnerName,
+    executer: () => {
+      postData(); // TODO: return real promise
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
 
-  useConfigurableAction(
-    {
-      name: 'Update form data',
-      owner: actionsOwnerName,
-      ownerUid: id,
-      hasArguments: false,
-      executer: () => {
-        putData(); // TODO: return real promise
-        return Promise.resolve();
-      },
+  }, actionDependencies);
+
+  useConfigurableActionImplementation(actionsOwnerUid, UpdateFormDataAction, {
+    owner: actionsOwnerName,
+    executer: () => {
+      putData(); // TODO: return real promise
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
+  },
+  actionDependencies);
 
   // register subform api
 

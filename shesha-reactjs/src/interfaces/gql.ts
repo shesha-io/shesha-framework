@@ -20,6 +20,12 @@ export interface IGetAllPayload {
   readonly filter?: string | undefined;
   readonly quickSearch?: string | undefined;
 }
+
+export type IGetAllEntitiesPayload = IGetAllPayload & (
+  { readonly entityType: string } |
+  { readonly module: string; readonly name: string }
+);
+
 /**
  * Generic get all payload, is used for the generic entpoint like `/api/services/app/Entities/GetAll`
  */

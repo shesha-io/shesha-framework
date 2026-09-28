@@ -42,6 +42,12 @@ export const getValueFromPropertySettings = <T = unknown>(value: IPropertySettin
   else return value;
 };
 
+export const getCodeFromPropertySettings = <T = unknown>(value: IPropertySetting<T> | T): string | undefined => {
+  return isPropertySettings<T>(value)
+    ? value._code ?? undefined
+    : undefined;
+};
+
 export const getValuesFromSettings = <T extends object = object>(model: T): T => {
   const copy = { ...model };
   Object.keys(copy).forEach((k) => {

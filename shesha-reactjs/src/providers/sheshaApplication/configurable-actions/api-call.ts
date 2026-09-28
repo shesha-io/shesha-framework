@@ -191,7 +191,7 @@ export const useApiCallAction = (): void => {
   const allData = useAvailableConstantsData({});
 
   useConfigurableAction<IApiCallArguments>({
-    isPermament: true,
+    isPermanent: true,
     owner: 'Common',
     ownerUid: SheshaActionOwners.Common,
     name: 'API Call',

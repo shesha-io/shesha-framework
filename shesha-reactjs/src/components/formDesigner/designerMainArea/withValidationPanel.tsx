@@ -1,9 +1,9 @@
 import { ComponentType, JSX, ReactNode } from 'react';
 import { SplitLayout } from '@/components/splitLayout';
 import { useFormDesignerFormMode } from '@/providers/formDesigner';
-import { ValidationPanel } from '../validationPanel';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { ValidationIndicators } from './ValidationIndicators';
+import { IssuesPanel } from '@/components/formsValidator/issues/issuesPanel';
 
 export const withValidationPanel = <P extends JSX.IntrinsicAttributes>(
   WrappedComponent: ComponentType<P>,
@@ -23,7 +23,7 @@ export const withValidationPanel = <P extends JSX.IntrinsicAttributes>(
       <SplitLayout
         orientation="vertical"
         position="end"
-        panel={<ValidationPanel />}
+        panel={<IssuesPanel />}
         panelTitle={(expanded) => {
           return expanded
             ? "Problems"

@@ -139,7 +139,6 @@ export type FormDesignerActions = {
 
   setSettingsPanelElement: (element: HTMLDivElement | null) => void;
   validateFormAsync: () => Promise<void>;
-  validateComponentAsync: <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(component: TModel) => Promise<void>;
 };
 
 

@@ -318,9 +318,13 @@ export const componentGroupsToComponentDefinitions = (componentGroups: IToolboxC
   return result;
 };
 
+export const getComponentGroups = (): IToolboxComponentGroup[] => {
+  return getToolboxComponents(false, { formId: "", formProps: null });
+};
+
 
 export const getComponentDefinitions = (): Map<string, IToolboxComponent> => {
-  const componentGroups = getToolboxComponents(false, { formId: "", formProps: null });
+  const componentGroups = getComponentGroups();
 
   return componentGroupsToComponentDefinitions(componentGroups);
 };

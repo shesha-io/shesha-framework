@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { FormIdentifier, useShaRouting, useSheshaApplication } from '..';
-import { IToolboxComponent, IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
+import { ISettingsComponent, IToolboxComponent, IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
 import { getToolboxComponents } from './defaults/toolboxComponents';
 import { useFormPersisterIfAvailable } from '../formPersisterProvider';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
@@ -52,6 +52,13 @@ export const toolbarGroupsToComponents = (availableComponents: IToolboxComponent
   return allComponents;
 };
 
+export const toolbarComponentsMapToComponents = (components: Map<string, IToolboxComponent>): IToolboxComponents => {
+  const allComponents: IToolboxComponents = {};
+  components.forEach((component) => (allComponents[component.type] = component));
+  return allComponents;
+};
+
+
 export const useFormDesignerComponents = (): IToolboxComponents => {
   const componentGroups = useFormDesignerComponentGroups();
 
@@ -60,6 +67,8 @@ export const useFormDesignerComponents = (): IToolboxComponents => {
 };
 
 export type FormDesignerComponentGetter = (type: string) => IToolboxComponent | undefined;
+
+export type SettingsComponentGetter = (type: string) => ISettingsComponent | undefined;
 
 export const useFormDesignerComponentGetter = (): FormDesignerComponentGetter => {
   const components = useFormDesignerComponents();
@@ -77,6 +86,7 @@ const getDesignerUrl = (designerUrl: string, formId: FormIdentifier): string => 
       ? `${designerUrl}?module=${formId.module}&name=${formId.name}`
       : "";
 };
+
 
 export const useFormDesignerUrl = (formId: FormIdentifier | undefined): string => {
   const app = useSheshaApplication();

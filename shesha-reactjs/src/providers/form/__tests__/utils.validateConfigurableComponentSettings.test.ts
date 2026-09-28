@@ -1,13 +1,26 @@
 import { getFormSettingsFormMarkup } from '@/components/formDesigner/formSettings';
 import { getComponentDefinitions } from '../defaults/toolboxComponents';
-import { DEFAULT_FORM_SETTINGS, IFormSettings } from '../models';
-import { validateConfigurableComponentSettings } from '../utils';
+import { ActionParametersDictionary, DEFAULT_FORM_SETTINGS, IFormSettings, IFormValidationRulesOptions } from '../models';
+import { IApplicationContext, validateConfigurableComponentSettings } from '../utils';
 import { makeFormBuliderFactory } from '@/form-factory/implementation';
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { AsyncValidationError } from '@rc-component/async-validator/lib/util';
 import { GqlLoaderSettings } from '../loaders/interfaces';
-import { ValidateError } from '@rc-component/async-validator';
-import { FormDesignerComponentGetter } from '../hooks';
+import { ValidateError, Values } from '@rc-component/async-validator';
+import { toolbarComponentsMapToComponents } from '../hooks';
+import { IConfigurableActionDescriptor } from '@/interfaces/configurableAction';
+import { IGetConfigurableActionPayload } from '@/providers/configurableActionsDispatcher/contexts';
+import { FormValidator } from '@/providers/formDesigner/formValidator';
+
+const getFakeActionDescriptor = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IGetConfigurableActionPayload): IConfigurableActionDescriptor<TArguments> => {
+  return {
+    name: payload.name,
+    owner: payload.owner,
+    ownerUid: payload.owner,
+    hasArguments: false,
+    executer: () => Promise.resolve(),
+  } satisfies IConfigurableActionDescriptor;
+};
 
 const isRequiredValidation = (error: ValidateError): boolean => {
   return !isNullOrWhiteSpace(error.message) && error.message.endsWith('is required');
@@ -16,10 +29,27 @@ const isRequiredValidation = (error: ValidateError): boolean => {
 describe('validateConfigurableComponentSettings()', () => {
   const componentDefinitions = getComponentDefinitions();
   const formSettingsMarkup = getFormSettingsFormMarkup({ fbf: makeFormBuliderFactory(componentDefinitions), removeStyleRouter: true });
-  const componentGetter: FormDesignerComponentGetter = (type) => componentDefinitions.get(type);
+  const toolboxComponents = toolbarComponentsMapToComponents(componentDefinitions);
+
+  const appContext: IApplicationContext = {} as IApplicationContext;
+
+  const formValidator = new FormValidator({
+    toolboxComponents: toolboxComponents,
+    settingsComponentGetter: () => undefined,
+    formBuilderFactory: makeFormBuliderFactory(componentDefinitions),
+    getConfigurableActionOrNull: getFakeActionDescriptor,
+    appContext: appContext,
+  });
+  const validationContext: IFormValidationRulesOptions<Values> = {
+    validator: formValidator,
+    appContext: appContext,
+    componentId: '',
+    contextConfigurableActionGetter: () => null,
+    path: [],
+  };
 
   it('should validate default settings', () => {
-    expect(() => validateConfigurableComponentSettings(formSettingsMarkup, DEFAULT_FORM_SETTINGS, componentGetter)).not.toThrow();
+    expect(() => validateConfigurableComponentSettings(formSettingsMarkup, DEFAULT_FORM_SETTINGS, validationContext)).not.toThrow();
   });
 
   it('should not validate field in hidden container', async () => {
@@ -32,7 +62,7 @@ describe('validateConfigurableComponentSettings()', () => {
       dataLoadersSettings: { gql: gqlLoaderSettings },
     };
     try {
-      await validateConfigurableComponentSettings(formSettingsMarkup, formSettingsData, componentGetter);
+      await validateConfigurableComponentSettings(formSettingsMarkup, formSettingsData, validationContext);
     } catch (error) {
       expect(error).toBeInstanceOf(AsyncValidationError);
       if (error instanceof AsyncValidationError) {
@@ -56,7 +86,7 @@ describe('validateConfigurableComponentSettings()', () => {
       dataLoadersSettings: { gql: gqlLoaderSettings },
     };
     try {
-      await validateConfigurableComponentSettings(formSettingsMarkup, formSettingsData, componentGetter);
+      await validateConfigurableComponentSettings(formSettingsMarkup, formSettingsData, validationContext);
       expect.fail('Expected validation error but none was thrown');
     } catch (error) {
       expect(error).toBeInstanceOf(AsyncValidationError);
@@ -90,7 +120,7 @@ describe('validateConfigurableComponentSettings()', () => {
       dataLoadersSettings: { gql: gqlLoaderSettings },
     };
     try {
-      await validateConfigurableComponentSettings(formSettingsMarkup, formSettingsData, componentGetter);
+      await validateConfigurableComponentSettings(formSettingsMarkup, formSettingsData, validationContext);
     } catch (error) {
       expect(error).toBeInstanceOf(AsyncValidationError);
       if (error instanceof AsyncValidationError) {

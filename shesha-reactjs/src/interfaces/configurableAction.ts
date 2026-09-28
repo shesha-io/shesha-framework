@@ -82,11 +82,11 @@ export type ConfigurableActionArgumentsMigrator<TArguments extends IHasVersion =
   migrator: Migrator<TArguments, TArguments, ConfigurableActionArgumentsMigrationContext>,
 ) => MigratorFluent<TArguments, TArguments, ConfigurableActionArgumentsMigrationContext>;
 
-/**
- * Configurable action descriptor. Is used to define consigurable actions
- */
-export interface IConfigurableActionDescriptor<TArguments extends object = object, TReponse = unknown, TExecutionContext extends IActionExecutionContext = IActionExecutionContext>
-  extends IConfigurableActionIdentifier {
+export type IActionDescriptorBase = {
+  /**
+   * Action Name
+   */
+  name: string;
   /**
    * User friendly name of the action. Action name is displayed if the label is not specified
    */
@@ -104,14 +104,22 @@ export interface IConfigurableActionDescriptor<TArguments extends object = objec
    */
   hasArguments: boolean;
   /**
+   * Markup of the arguments editor. Applied when the @argumentsFormFactory is not specified, in this case you can render arguments for in the designer itself
+   */
+  argumentsFormMarkup?: FormMarkup | FormMarkupFactory | undefined;
+};
+
+export type IActionDescriptor<TArguments extends object = object> = IActionDescriptorBase & {
+  /**
    * Arguments form factory. Renders the action arguments editor
    */
   argumentsFormFactory?: IConfigurableActionArgumentsFormFactory<TArguments> | undefined;
   /**
-   * Markup of the arguments editor. Applied when the @argumentsFormFactory is not specified, in this case you can render arguments for in the designer itself
+   * Arguments migrations. Returns last version of arguments
    */
-  argumentsFormMarkup?: FormMarkup | FormMarkupFactory | undefined;
-
+  migrator?: ConfigurableActionArgumentsMigrator<TArguments> | undefined;
+};
+export type IActionImplementation<TArguments extends object = object, TReponse = unknown, TExecutionContext extends IActionExecutionContext = IActionExecutionContext> = {
   /**
    * Argument evaluation function. Default implementation is used when not specified
    */
@@ -123,12 +131,15 @@ export interface IConfigurableActionDescriptor<TArguments extends object = objec
   executer: IConfigurableActionExecuter<TArguments, TReponse, TExecutionContext>;
 
   useDynamicContextHook?: DynamicContextHook | undefined;
+};
 
-  /**
-   * Arguments migrations. Returns last version of arguments
-   */
-  migrator?: ConfigurableActionArgumentsMigrator<TArguments> | undefined;
-}
+/**
+ * Configurable action descriptor. Is used to define consigurable actions
+ */
+export type IConfigurableActionDescriptor<TArguments extends object = object, TReponse = unknown, TExecutionContext extends IActionExecutionContext = IActionExecutionContext> =
+  IConfigurableActionIdentifier &
+  IActionDescriptor<TArguments> &
+  IActionImplementation<TArguments, TReponse, TExecutionContext>;
 
 export interface IMayHaveType {
   _type: string | undefined;

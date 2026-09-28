@@ -1033,7 +1033,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                         inputs: [
                                           {
                                             type: 'multiColorPicker',
-                                            id: 'backgroundStyle-gradientColors-footer',
+                                            id: 'backgroundStyle-gradientColors-footer-input',
                                             propertyName: 'footerStyles.background.gradient.colors',
                                             label: 'Colors',
                                             jsSetting: false,

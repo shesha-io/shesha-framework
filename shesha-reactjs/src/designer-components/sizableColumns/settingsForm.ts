@@ -259,7 +259,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 parentId: "backgroundStylePnl",
                                 inputs: [{
                                   type: 'colorPicker',
-                                  id: 'backgroundStyleRow-color',
+                                  id: 'backgroundStyleRow-color-input',
                                   label: "Color",
                                   propertyName: "background.color",
                                   hideLabel: true,
@@ -272,7 +272,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 parentId: "backgroundStylePnl",
                                 inputs: [{
                                   type: 'multiColorPicker',
-                                  id: 'backgroundStyle-gradientColors',
+                                  id: 'backgroundStyle-gradientColors-input',
                                   propertyName: "background.gradient.colors",
                                   label: "Colors",
                                   jsSetting: false,
@@ -286,7 +286,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 parentId: "backgroundStylePnl",
                                 inputs: [{
                                   type: 'textField',
-                                  id: 'backgroundStyle-url',
+                                  id: 'backgroundStyle-url-input',
                                   propertyName: "background.url",
                                   jsSetting: false,
                                   label: "URL",
@@ -299,7 +299,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 inputs: [
                                   {
                                     type: 'imageUploader',
-                                    id: 'backgroundStyle-image',
+                                    id: 'backgroundStyle-image-input',
                                     propertyName: 'background.uploadFile',
                                     label: "Image",
                                     jsSetting: false,
