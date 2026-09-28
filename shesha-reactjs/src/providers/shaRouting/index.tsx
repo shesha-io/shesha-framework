@@ -53,6 +53,13 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
 
   useConfigurableAction<INavigateActoinArguments>(
     {
+      // Permanent, like every other app-level action in `sheshaApplication/configurable-actions`: this
+      // provider is mounted once at the application root and outlives everything that dispatches the
+      // action. Without the flag the registration is torn down and rebuilt on every re-render (no deps
+      // are passed), and `ConfigurableButton` resolves `Navigate` from an effect to build its href — so
+      // any re-render landing in the same commit as the provider's leaves the button throwing
+      // "Action 'Navigate' in the owner 'shesha.common' not found."
+      isPermament: true,
       name: NAVIGATE_ACTION_NAME,
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,

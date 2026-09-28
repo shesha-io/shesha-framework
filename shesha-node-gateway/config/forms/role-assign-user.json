@@ -1,0 +1,11 @@
+{
+  "id": "31c72112-4ddc-4d46-8bd8-92d3a8c5f39e",
+  "module": "Shesha",
+  "name": "role-assign-user",
+  "label": "",
+  "description": "Assign user to a role",
+  "markup": "{\n \"components\": [\n {\n \"id\": \"0iO4QH1k6eEFd3CG-WiNL\",\n \"type\": \"validationErrors\",\n \"name\": \"validationErrors1\",\n \"label\": \"Validation Errors1\",\n \"labelAlign\": \"right\",\n \"parentId\": \"root\",\n \"hidden\": false,\n \"visibility\": \"Yes\",\n \"customVisibility\": null,\n \"isDynamic\": false\n },\n {\n \"id\": \"BF4jmpyul5p8XcqVmRCe5\",\n \"type\": \"autocomplete\",\n \"name\": \"person.id\",\n \"label\": \"Person\",\n \"labelAlign\": \"right\",\n \"hidden\": false,\n \"visibility\": \"Yes\",\n \"customVisibility\": null,\n \"isDynamic\": false,\n \"validate\": {},\n \"dataSourceType\": \"entitiesList\",\n \"useRawValues\": true,\n \"entityTypeShortAlias\": \"Shesha.Core.Person\",\n \"parentId\": \"root\",\n \"placeholder\": \"\",\n \"description\": \"\",\n \"quickviewFormPath\": \"\",\n \"quickviewGetEntityUrl\": \"\",\n \"quickviewDisplayPropertyName\": \"\",\n \"quickviewWidth\": \"\",\n \"settingsValidationErrors\": [],\n \"mode\": [\n \"single\"\n ],\n \"entityDisplayProperty\": \"fullName\",\n \"filter\": {\n \"and\": [\n {\n \"!!\": {\n \"var\": \"fullName\"\n }\n },\n {\n \"==\": [\n {\n \"var\": \"user.isActive\"\n },\n true\n ]\n }\n ]\n }\n }\n ],\n \"formSettings\": {\n \"_formFields\": [\n \"modelType\",\n \"postUrl\",\n \"putUrl\",\n \"deleteUrl\",\n \"getUrl\",\n \"layout\",\n \"size\",\n \"colon\",\n \"labelCol.span\",\n \"wrapperCol.span\",\n \"showModeToggler\",\n \"excludeFormFieldsInPayload\",\n \"preparedValues\",\n \"initialValues\"\n ],\n \"layout\": \"horizontal\",\n \"colon\": true,\n \"labelCol\": {\n \"span\": 5\n },\n \"wrapperCol\": {\n \"span\": 13\n },\n \"postUrl\": \"\",\n \"excludeFormFieldsInPayload\": true,\n \"uniqueFormId\": \"\",\n \"initialValues\": [\n {\n \"id\": \"zBX_sgVhoTrXkeh3fAUeJ\",\n \"key\": \"role\",\n \"value\": \"{{parentFormValues.id}}\"\n }\n ],\n \"modelType\": \"Shesha.Core.ShaRoleAppointedPerson\"\n }\n}",
+  "modelType": "Shesha.Core.ShaRole",
+  "access": null,
+  "permissions": []
+}

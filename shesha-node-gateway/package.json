@@ -1,0 +1,36 @@
+{
+  "name": "@shesha-io/node-gateway",
+  "version": "0.1.0",
+  "description": "Backend-agnostic Shesha integration gateway: a generic, data-driven adapter that lets any backend (Go, .NET, Python, ...) serve Shesha React apps.",
+  "license": "GPL-3.0",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "rimraf dist && tsc -p tsconfig.json",
+    "start": "cross-env NODE_ENV=production node dist/index.js",
+    "type-check": "tsc --noEmit",
+    "smoke": "tsx scripts/smoke.ts"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "http-proxy-middleware": "^3.0.3",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^20.16.10",
+    "rimraf": "^5.0.10",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
+  }
+}

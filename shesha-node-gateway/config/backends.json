@@ -1,0 +1,29 @@
+{
+  "$comment": "Named upstream backends. Any language that speaks HTTP works. Add/remove freely; operations reference these by name.",
+  "backends": [
+    {
+      "name": "dotnet-upstream",
+      "baseUrl": "http://localhost:21021",
+      "description": "Existing .NET shesha-core backend. Used by `proxy` mode and ABP passthrough.",
+      "auth": { "type": "bearer-passthrough" },
+      "healthPath": "/api/services/app/Session/GetCurrentLoginInfo",
+      "timeoutMs": 30000
+    },
+    {
+      "name": "go-example",
+      "baseUrl": "http://localhost:8080",
+      "description": "Example Go backend. Demonstrates mapping Shesha operations onto a non-.NET service.",
+      "auth": { "type": "bearer-passthrough" },
+      "healthPath": "/healthz",
+      "timeoutMs": 15000
+    },
+    {
+      "name": "generic-rest",
+      "baseUrl": "http://localhost:9000",
+      "description": "Example generic REST backend (Python/Rust/anything) using a static API key header.",
+      "auth": { "type": "header", "header": "X-Api-Key", "scheme": "", "token": "replace-me" },
+      "healthPath": "/health",
+      "timeoutMs": 15000
+    }
+  ]
+}
