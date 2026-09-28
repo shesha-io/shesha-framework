@@ -1,0 +1,107 @@
+{
+  "$comment": "EXAMPLES ONLY — not loaded by default. Copy any operation into operations.json and switch its mode to 'adapter' to serve it from a non-.NET backend (Go/Python/Rust/...). The transform engine maps Shesha's contract to your backend's shape and back.",
+  "defaultMode": "adapter",
+  "defaultBackend": "go-example",
+  "operations": [
+    {
+      "id": "session.getCurrentLoginInfo",
+      "shesha": { "method": "GET", "path": "/api/services/app/Session/GetCurrentLoginInfo" },
+      "mode": "adapter",
+      "requiresAuth": false,
+      "description": "Map Shesha's login-info call onto a Go endpoint returning a different shape.",
+      "adapter": {
+        "target": {
+          "backend": "go-example",
+          "method": "GET",
+          "path": "/internal/session/me"
+        },
+        "response": {
+          "application": {
+            "version": "$.body.app.version",
+            "releaseDate": "$.body.app.releasedAt",
+            "features": {}
+          },
+          "user": {
+            "id": "$.body.account.id",
+            "accountFound": { "$const": true },
+            "userName": "$.body.account.username",
+            "firstName": "$.body.account.profile.firstName",
+            "lastName": "$.body.account.profile.lastName",
+            "fullName": "{{$.body.account.profile.firstName}} {{$.body.account.profile.lastName}}",
+            "email": "$.body.account.email",
+            "personId": "$.body.account.personId",
+            "hasRegistered": { "$const": true },
+            "grantedPermissions": {
+              "$each": "$.body.account.permissions",
+              "$as": { "permission": "$.name" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "tokenAuth.authenticate",
+      "shesha": { "method": "POST", "path": "/api/TokenAuth/Authenticate" },
+      "mode": "adapter",
+      "description": "Forward login to a Go auth service and reshape its token response.",
+      "adapter": {
+        "target": {
+          "backend": "go-example",
+          "method": "POST",
+          "path": "/internal/auth/login",
+          "body": {
+            "username": "$.body.userNameOrEmailAddress",
+            "password": "$.body.password"
+          }
+        },
+        "response": {
+          "accessToken": "$.body.token",
+          "encryptedAccessToken": "$.body.token",
+          "expireInSeconds": "$.body.expiresIn",
+          "userId": "$.body.userId",
+          "resultType": { "$const": 0 }
+        }
+      }
+    },
+    {
+      "id": "dynamicEntity.get",
+      "shesha": { "method": "GET", "path": "/api/services/app/DynamicEntity/Get" },
+      "mode": "adapter",
+      "requiresAuth": true,
+      "description": "Generic entity read mapped to a REST resource on any backend.",
+      "adapter": {
+        "target": {
+          "backend": "generic-rest",
+          "method": "GET",
+          "path": "/entities/{{$.query.modelType}}/{{$.query.id}}"
+        },
+        "response": "$.body.data"
+      }
+    },
+    {
+      "id": "dynamicEntity.create",
+      "shesha": { "method": "POST", "path": "/api/services/app/DynamicEntity/Create" },
+      "mode": "adapter",
+      "requiresAuth": true,
+      "adapter": {
+        "target": {
+          "backend": "generic-rest",
+          "method": "POST",
+          "path": "/entities/{{$.body.modelType}}",
+          "body": "$.body.entity"
+        },
+        "response": { "id": "$.body.data.id" }
+      }
+    },
+    {
+      "id": "abp.passthrough.example",
+      "shesha": { "method": "GET", "path": "/api/services/app/Some/AbpEndpoint" },
+      "mode": "adapter",
+      "description": "When the target backend already returns an ABP { success, result } envelope, pass it through untouched.",
+      "adapter": {
+        "target": { "backend": "dotnet-upstream", "method": "GET", "path": "/api/services/app/Some/AbpEndpoint" },
+        "passthroughEnvelope": true
+      }
+    }
+  ]
+}

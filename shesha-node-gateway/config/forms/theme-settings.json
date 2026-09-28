@@ -1,0 +1,11 @@
+{
+  "id": "4660a73b-417e-4f57-b584-0b9a6c61f292",
+  "module": "Shesha",
+  "name": "theme-settings",
+  "label": "Theme settings",
+  "description": null,
+  "markup": "{\"components\":[{\"id\":\"hb--vTKDUURKfhv7wi_PlMUcVHkPqr\",\"type\":\"themeEditor\",\"propertyName\":\"themeEditor\",\"componentName\":\"themeEditor\",\"label\":\"Theme editor1\",\"labelAlign\":\"right\",\"parentId\":\"root\",\"hidden\":false,\"isDynamic\":false,\"hideLabel\":true,\"context\":null}],\"formSettings\":{\"_formFields\":[\"modelType\",\"access\",\"layout\",\"size\",\"colon\",\"labelCol.span\",\"wrapperCol.span\",\"excludeFormFieldsInPayload\",\"fieldsToFetch\",\"initialValues\",\"preparedValues\",\"onInitialized\",\"onDataLoaded\",\"onUpdate\"],\"access\":null,\"permissions\":null,\"version\":1,\"labelCol\":{\"span\":6},\"wrapperCol\":{\"span\":18},\"layout\":\"horizontal\",\"onDataLoaded\":\"\"}}",
+  "modelType": null,
+  "access": null,
+  "permissions": []
+}

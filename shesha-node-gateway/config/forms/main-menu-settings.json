@@ -1,0 +1,11 @@
+{
+  "id": "503d130f-ca8b-4480-a6a3-2b96caa104ad",
+  "module": "Shesha",
+  "name": "main-menu-settings",
+  "label": "Main menu settings",
+  "description": null,
+  "markup": "{\"components\":[{\"id\":\"HXyHckO26SRbPxZcq61ezurr97CoUj\",\"type\":\"mainMenuEditor\",\"propertyName\":\"mainMenuEditor1\",\"componentName\":\"mainMenuEditor1\",\"label\":\"Main menu editor1\",\"labelAlign\":\"right\",\"parentId\":\"root\",\"hidden\":false,\"isDynamic\":false,\"height\":\"calc(100vh - 200px)\"}],\"formSettings\":{\"access\":null,\"permissions\":null,\"version\":5,\"labelCol\":{\"span\":6},\"wrapperCol\":{\"span\":18},\"dataLoaderType\":\"gql\",\"dataSubmitterType\":\"gql\",\"onBeforeDataLoad\":\"    form.setFieldsValue({...form.formArguments});\",\"onAfterDataLoad\":null,\"onPrepareSubmitData\":null,\"onBeforeSubmit\":null,\"onSubmitSuccess\":null,\"onSubmitFailed\":null,\"dataSubmittersSettings\":{\"gql\":{\"endpointType\":\"default\",\"dynamicEndpoint\":\"    return data?.id ? form.defaultApiEndpoints.update : form.defaultApiEndpoints.create\"}},\"dataLoadersSettings\":{\"gql\":{\"endpointType\":\"default\"},\"custom\":{}}}}",
+  "modelType": null,
+  "access": null,
+  "permissions": []
+}

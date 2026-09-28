@@ -1,0 +1,11 @@
+{
+  "id": "10ef23ed-9f8f-486f-b486-06442c54fe01",
+  "module": "Shesha",
+  "name": "email-settings",
+  "label": "Email Settings",
+  "description": "",
+  "markup": "{\"components\":[{\"id\":\"8xg9QTwIzngPitbEgrwA_gMpQFxhGL\",\"type\":\"checkbox\",\"propertyName\":\"emailsEnabled\",\"componentName\":\"emailsEnabled\",\"label\":\"Emails Enabled?\",\"labelAlign\":\"right\",\"parentId\":\"root\",\"hidden\":false,\"isDynamic\":false,\"version\":3,\"settingsValidationErrors\":[],\"description\":\"\",\"validate\":{}},{\"textType\":\"text\",\"id\":\"kd1XUR0YIY17Al0p8BnbIREDgK0tSO\",\"type\":\"textField\",\"propertyName\":\"redirectAllMessagesTo\",\"componentName\":\"redirectAllMessagesTo\",\"label\":\"Redirect All Messages To?\",\"labelAlign\":\"right\",\"parentId\":\"root\",\"hidden\":false,\"isDynamic\":false,\"version\":4,\"settingsValidationErrors\":[],\"placeholder\":\"\",\"description\":\"\",\"prefix\":\"\",\"suffix\":\"\",\"initialValue\":\"\",\"validate\":{\"minLength\":\"\",\"maxLength\":\"\",\"message\":\"\"}}],\"formSettings\":{\"_formFields\":[\"modelType\",\"layout\",\"size\",\"colon\",\"labelCol.span\",\"wrapperCol.span\",\"excludeFormFieldsInPayload\",\"fieldsToFetch\",\"formKeysToPersist\",\"uniqueFormId\",\"initialValues\",\"preparedValues\",\"onInitialized\",\"onDataLoaded\",\"onUpdate\"],\"layout\":\"horizontal\",\"colon\":true,\"labelCol\":{\"span\":10},\"wrapperCol\":{\"span\":14},\"modelType\":\"\",\"uniqueFormId\":\"\",\"version\":1}}",
+  "modelType": null,
+  "access": null,
+  "permissions": []
+}

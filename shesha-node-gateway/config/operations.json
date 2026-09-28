@@ -1,0 +1,507 @@
+{
+  "$comment": "Shesha operation map. `defaultMode` handles any path not listed here. Switch an operation's `mode` (native|adapter|proxy|mock) to transition it without touching code. Groups: auth/session/settings bootstrap, Form Designer (`formConfiguration.*`), Configuration Studio (`configurationStudio.*`).",
+  "defaultMode": "proxy",
+  "defaultBackend": "go-example",
+  "operations": [
+    {
+      "id": "tokenAuth.authenticate",
+      "shesha": { "method": "POST", "path": "/api/TokenAuth/Authenticate" },
+      "mode": "native",
+      "native": "tokenAuth.authenticate",
+      "description": "Login: validate credentials, issue JWT access+refresh tokens.",
+      "tags": ["auth", "bootstrap"]
+    },
+    {
+      "id": "tokenAuth.refreshToken",
+      "shesha": { "method": "POST", "path": "/api/TokenAuth/RefreshToken" },
+      "mode": "native",
+      "native": "tokenAuth.refreshToken",
+      "tags": ["auth", "bootstrap"]
+    },
+    {
+      "id": "tokenAuth.signOff",
+      "shesha": { "method": "POST", "path": "/api/TokenAuth/SignOff" },
+      "mode": "native",
+      "native": "tokenAuth.signOff",
+      "tags": ["auth", "bootstrap"]
+    },
+    {
+      "id": "session.getCurrentLoginInfo",
+      "shesha": { "method": "GET", "path": "/api/services/app/Session/GetCurrentLoginInfo" },
+      "mode": "native",
+      "native": "session.getCurrentLoginInfo",
+      "description": "App bootstrap: current user + application info. Works anonymously.",
+      "tags": ["session", "bootstrap"]
+    },
+    {
+      "id": "configurationStudio.getModules",
+      "shesha": { "method": "GET", "path": "/api/services/app/ConfigurationStudio/GetModules" },
+      "mode": "native",
+      "native": "configurationStudio.getModules",
+      "tags": ["configuration", "bootstrap"]
+    },
+    {
+      "id": "configurationItem.getCurrent",
+      "shesha": { "method": "GET", "path": "/api/services/app/ConfigurationItem/GetCurrent" },
+      "mode": "native",
+      "native": "configurationItem.getCurrent",
+      "description": "Serves reference lists and forms via the generic ConfigurationItem abstraction.",
+      "tags": ["configuration", "reflist", "bootstrap"]
+    },
+    {
+      "id": "configurationItem.get",
+      "shesha": { "method": "GET", "path": "/api/services/app/ConfigurationItem/Get" },
+      "mode": "native",
+      "native": "configurationItem.get",
+      "description": "Resolves a configuration item by raw id (used once the client has cached the full name).",
+      "tags": ["configuration"]
+    },
+    {
+      "id": "entityConfig.getEntityConfigForm",
+      "shesha": { "method": "GET", "path": "/api/services/app/EntityConfig/GetEntityConfigForm" },
+      "mode": "native",
+      "native": "entityConfig.getEntityConfigForm",
+      "tags": ["configuration", "entity"]
+    },
+    {
+      "id": "metadata.get",
+      "shesha": { "method": "GET", "path": "/api/services/app/Metadata/Get" },
+      "mode": "native",
+      "native": "metadata.get",
+      "tags": ["metadata", "bootstrap"]
+    },
+    {
+      "id": "metadata.autocomplete",
+      "shesha": { "method": "GET", "path": "/api/services/app/Metadata/Autocomplete" },
+      "mode": "native",
+      "native": "metadata.autocomplete",
+      "description": "Entity type picker used by the Form Designer's Model Type setting.",
+      "tags": ["metadata", "designer"]
+    },
+    {
+      "id": "settings.getConfigurations",
+      "shesha": { "method": "GET", "path": "/api/services/app/Settings/GetConfigurations" },
+      "mode": "native",
+      "native": "settings.getConfigurations",
+      "description": "Setting metadata behind the typed application.settings API used by form scripts.",
+      "tags": ["settings", "bootstrap"]
+    },
+    {
+      "id": "settings.getValue",
+      "shesha": { "method": "GET", "path": "/api/services/app/Settings/GetValue" },
+      "mode": "native",
+      "native": "settings.getValue",
+      "tags": ["settings", "bootstrap"]
+    },
+    {
+      "id": "settings.updateValue",
+      "shesha": { "method": "POST", "path": "/api/services/app/Settings/UpdateValue" },
+      "mode": "native",
+      "native": "settings.updateValue",
+      "tags": ["settings", "bootstrap"]
+    },
+    {
+      "id": "settings.getUserValue",
+      "shesha": { "method": "POST", "path": "/api/services/app/Settings/GetUserValue" },
+      "mode": "native",
+      "native": "settings.getUserValue",
+      "tags": ["settings"]
+    },
+    {
+      "id": "settings.updateUserValue",
+      "shesha": { "method": "POST", "path": "/api/services/app/Settings/UpdateUserValue" },
+      "mode": "native",
+      "native": "settings.updateUserValue",
+      "tags": ["settings"]
+    },
+    {
+      "id": "permission.isPermissionGranted",
+      "shesha": { "method": "GET", "path": "/api/services/app/Permission/IsPermissionGranted" },
+      "mode": "native",
+      "native": "permission.isPermissionGranted",
+      "requiresAuth": true,
+      "tags": ["permission"]
+    },
+    {
+      "id": "permission.isRoleGranted",
+      "shesha": { "method": "GET", "path": "/api/services/app/ShaRole/IsRoleGranted" },
+      "mode": "native",
+      "native": "permission.isRoleGranted",
+      "requiresAuth": true,
+      "tags": ["permission"]
+    },
+
+    {
+      "id": "formConfiguration.updateMarkup",
+      "shesha": { "method": "PUT", "path": "/api/services/Shesha/FormConfiguration/UpdateMarkup" },
+      "mode": "native",
+      "native": "formConfiguration.updateMarkup",
+      "description": "The Form Designer's Save button. Writes the markup back to config/forms/<name>.json.",
+      "requiresAuth": true,
+      "tags": ["designer", "form"]
+    },
+    {
+      "id": "formConfiguration.checkPermissions",
+      "shesha": { "method": "POST", "path": "/api/services/Shesha/FormConfiguration/CheckPermissions" },
+      "mode": "native",
+      "native": "formConfiguration.checkPermissions",
+      "description": "Called by the main-menu provider while resolving menu items.",
+      "tags": ["form", "permission", "bootstrap"]
+    },
+    {
+      "id": "formConfiguration.get",
+      "shesha": { "method": "GET", "path": "/api/services/Shesha/FormConfiguration/Get" },
+      "mode": "native",
+      "native": "formConfiguration.get",
+      "tags": ["designer", "form"]
+    },
+    {
+      "id": "formConfiguration.getAll",
+      "shesha": { "method": "GET", "path": "/api/services/Shesha/FormConfiguration/GetAll" },
+      "mode": "native",
+      "native": "formConfiguration.getAll",
+      "tags": ["designer", "form"]
+    },
+    {
+      "id": "formConfiguration.create",
+      "shesha": { "method": "POST", "path": "/api/services/Shesha/FormConfiguration/Create" },
+      "mode": "native",
+      "native": "formConfiguration.create",
+      "requiresAuth": true,
+      "tags": ["designer", "form"]
+    },
+    {
+      "id": "formConfiguration.update",
+      "shesha": { "method": "PUT", "path": "/api/services/Shesha/FormConfiguration/Update" },
+      "mode": "native",
+      "native": "formConfiguration.update",
+      "requiresAuth": true,
+      "tags": ["designer", "form"]
+    },
+    {
+      "id": "formConfiguration.delete",
+      "shesha": { "method": "DELETE", "path": "/api/services/Shesha/FormConfiguration/Delete" },
+      "mode": "native",
+      "native": "formConfiguration.delete",
+      "requiresAuth": true,
+      "tags": ["designer", "form"]
+    },
+    {
+      "id": "formConfiguration.getJson",
+      "shesha": { "method": "GET", "path": "/api/services/Shesha/FormConfiguration/GetJson" },
+      "mode": "native",
+      "native": "formConfiguration.getJson",
+      "description": "'Download as JSON' configurable action. Returns a file, not an ABP envelope.",
+      "requiresAuth": true,
+      "tags": ["designer", "form"]
+    },
+    {
+      "id": "formConfiguration.getAnonymousForms",
+      "shesha": { "method": "GET", "path": "/api/services/Shesha/FormConfiguration/GetAnonymousForms" },
+      "mode": "native",
+      "native": "formConfiguration.getAnonymousForms",
+      "tags": ["form"]
+    },
+
+    {
+      "id": "configurationStudio.getFlatTree",
+      "shesha": { "method": "GET", "path": "/api/services/app/ConfigurationStudio/GetFlatTree" },
+      "mode": "native",
+      "native": "configurationStudio.getFlatTree",
+      "requiresAuth": true,
+      "tags": ["configuration-studio"]
+    },
+    {
+      "id": "configurationStudio.getAvailableItemTypes",
+      "shesha": { "method": "GET", "path": "/api/services/app/ConfigurationStudio/GetAvailableItemTypes" },
+      "mode": "native",
+      "native": "configurationStudio.getAvailableItemTypes",
+      "requiresAuth": true,
+      "tags": ["configuration-studio"]
+    },
+    {
+      "id": "configurationStudio.getItem",
+      "shesha": { "method": "GET", "path": "/api/services/app/ConfigurationStudio/GetItem" },
+      "mode": "native",
+      "native": "configurationStudio.getItem",
+      "requiresAuth": true,
+      "tags": ["configuration-studio"]
+    },
+    {
+      "id": "configurationStudio.createItem",
+      "shesha": { "method": "POST", "path": "/api/services/app/ConfigurationStudio/CreateItem" },
+      "mode": "native",
+      "native": "configurationStudio.createItem",
+      "requiresAuth": true,
+      "tags": ["configuration-studio"]
+    },
+    {
+      "id": "configurationStudio.updateItem",
+      "shesha": { "method": "PUT", "path": "/api/services/app/ConfigurationStudio/UpdateItem" },
+      "mode": "native",
+      "native": "configurationStudio.updateItem",
+      "requiresAuth": true,
+      "tags": ["configuration-studio"]
+    },
+    {
+      "id": "configurationStudio.renameItem",
+      "shesha": { "method": "PUT", "path": "/api/services/app/ConfigurationStudio/RenameItem" },
+      "mode": "native",
+      "native": "configurationStudio.renameItem",
+      "requiresAuth": true,
+      "tags": ["configuration-studio"]
+    },
+    {
+      "id": "configurationStudio.deleteItem",
+      "shesha": { "method": "DELETE", "path": "/api/services/app/ConfigurationStudio/DeleteItem" },
+      "mode": "native",
+      "native": "configurationStudio.deleteItem",
+      "requiresAuth": true,
+      "tags": ["configuration-studio"]
+    },
+    {
+      "id": "configurationStudio.duplicateItem",
+      "shesha": { "method": "POST", "path": "/api/services/app/ConfigurationStudio/DuplicateItem" },
+      "mode": "native",
+      "native": "configurationStudio.duplicateItem",
+      "requiresAuth": true,
+      "tags": ["configuration-studio"]
+    },
+    {
+      "id": "configurationStudio.exposeItem",
+      "shesha": { "method": "POST", "path": "/api/services/app/ConfigurationStudio/ExposeItem" },
+      "mode": "native",
+      "native": "configurationStudio.exposeItem",
+      "requiresAuth": true,
+      "tags": ["configuration-studio"]
+    },
+    {
+      "id": "configurationStudio.createFolder",
+      "shesha": { "method": "POST", "path": "/api/services/app/ConfigurationStudio/CreateFolder" },
+      "mode": "native",
+      "native": "configurationStudio.createFolder",
+      "requiresAuth": true,
+      "tags": ["configuration-studio"]
+    },
+    {
+      "id": "configurationStudio.renameFolder",
+      "shesha": { "method": "PUT", "path": "/api/services/app/ConfigurationStudio/RenameFolder" },
+      "mode": "native",
+      "native": "configurationStudio.renameFolder",
+      "requiresAuth": true,
+      "tags": ["configuration-studio"]
+    },
+    {
+      "id": "configurationStudio.deleteFolder",
+      "shesha": { "method": "DELETE", "path": "/api/services/app/ConfigurationStudio/DeleteFolder" },
+      "mode": "native",
+      "native": "configurationStudio.deleteFolder",
+      "requiresAuth": true,
+      "tags": ["configuration-studio"]
+    },
+    {
+      "id": "configurationStudio.moveNodeToFolder",
+      "shesha": { "method": "POST", "path": "/api/services/app/ConfigurationStudio/MoveNodeToFolder" },
+      "mode": "native",
+      "native": "configurationStudio.moveNodeToFolder",
+      "requiresAuth": true,
+      "tags": ["configuration-studio"]
+    },
+    {
+      "id": "configurationStudio.reorderNode",
+      "shesha": { "method": "POST", "path": "/api/services/app/ConfigurationStudio/ReorderNode" },
+      "mode": "native",
+      "native": "configurationStudio.reorderNode",
+      "requiresAuth": true,
+      "tags": ["configuration-studio"]
+    },
+    {
+      "id": "configurationStudio.getItemRevisions",
+      "shesha": { "method": "GET", "path": "/api/services/app/ConfigurationStudio/GetItemRevisions" },
+      "mode": "native",
+      "native": "configurationStudio.getItemRevisions",
+      "requiresAuth": true,
+      "tags": ["configuration-studio", "revision"]
+    },
+    {
+      "id": "configurationStudio.renameRevision",
+      "shesha": { "method": "PUT", "path": "/api/services/app/ConfigurationStudio/RenameRevision" },
+      "mode": "native",
+      "native": "configurationStudio.renameRevision",
+      "requiresAuth": true,
+      "tags": ["configuration-studio", "revision"]
+    },
+    {
+      "id": "configurationStudio.restoreItemRevision",
+      "shesha": { "method": "POST", "path": "/api/services/app/ConfigurationStudio/RestoreItemRevision" },
+      "mode": "native",
+      "native": "configurationStudio.restoreItemRevision",
+      "requiresAuth": true,
+      "tags": ["configuration-studio", "revision"]
+    },
+    {
+      "id": "configurationStudio.getRevisionJson",
+      "shesha": { "method": "GET", "path": "/api/services/app/ConfigurationStudio/GetRevisionJson" },
+      "mode": "native",
+      "native": "configurationStudio.getRevisionJson",
+      "description": "Revision download. Returns a file, not an ABP envelope.",
+      "requiresAuth": true,
+      "tags": ["configuration-studio", "revision"]
+    },
+
+    {
+      "id": "dynamic.crud.get",
+      "shesha": { "method": "GET", "path": "/api/dynamic/:module/:entity/Crud/:action" },
+      "mode": "native",
+      "native": "dynamic.crud",
+      "description": "Every entity's generated CRUD route (shesha-core builds api/dynamic/{module}/{entity}/Crud/{action}). One entry covers every entity that ever exists, including ones created in the Entity Designer after the gateway was deployed. Auth is per-resource, so it cannot be declared here.",
+      "requiresAuth": false,
+      "tags": ["generic", "dynamic-entities"]
+    },
+    {
+      "id": "dynamic.crud.create",
+      "shesha": { "method": "POST", "path": "/api/dynamic/:module/:entity/Crud/:action" },
+      "mode": "native",
+      "native": "dynamic.crud",
+      "requiresAuth": false,
+      "tags": ["generic", "dynamic-entities"]
+    },
+    {
+      "id": "dynamic.crud.update",
+      "shesha": { "method": "PUT", "path": "/api/dynamic/:module/:entity/Crud/:action" },
+      "mode": "native",
+      "native": "dynamic.crud",
+      "requiresAuth": false,
+      "tags": ["generic", "dynamic-entities"]
+    },
+    {
+      "id": "dynamic.crud.delete",
+      "shesha": { "method": "DELETE", "path": "/api/dynamic/:module/:entity/Crud/:action" },
+      "mode": "native",
+      "native": "dynamic.crud",
+      "requiresAuth": false,
+      "tags": ["generic", "dynamic-entities"]
+    },
+
+    {
+      "id": "appService.dispatch.get",
+      "shesha": { "method": "GET", "path": "/api/services/:serviceModule/:service/:action" },
+      "mode": "native",
+      "native": "appService.dispatch",
+      "description": "The generic app-service route. Resolved against config/resources.json: standard ABP CRUD is derived from the resource's storage, anything else is a named behaviour. A service the registry does not describe falls through to the upstream, so this never swallows an endpoint it cannot serve. Exact entries above outrank it.",
+      "requiresAuth": false,
+      "tags": ["generic", "app-service"]
+    },
+    {
+      "id": "appService.dispatch.create",
+      "shesha": { "method": "POST", "path": "/api/services/:serviceModule/:service/:action" },
+      "mode": "native",
+      "native": "appService.dispatch",
+      "requiresAuth": false,
+      "tags": ["generic", "app-service"]
+    },
+    {
+      "id": "appService.dispatch.update",
+      "shesha": { "method": "PUT", "path": "/api/services/:serviceModule/:service/:action" },
+      "mode": "native",
+      "native": "appService.dispatch",
+      "requiresAuth": false,
+      "tags": ["generic", "app-service"]
+    },
+    {
+      "id": "appService.dispatch.delete",
+      "shesha": { "method": "DELETE", "path": "/api/services/:serviceModule/:service/:action" },
+      "mode": "native",
+      "native": "appService.dispatch",
+      "requiresAuth": false,
+      "tags": ["generic", "app-service"]
+    },
+
+    {
+      "id": "appService.dispatch.short.get",
+      "shesha": { "method": "GET", "path": "/api/:service/:action" },
+      "mode": "native",
+      "native": "appService.dispatch",
+      "description": "Same router, for the services core puts outside /api/services/... (api/Sms/Gateways). The serviceModule segment is absent, so resources claiming it use \"*\".",
+      "requiresAuth": false,
+      "tags": ["generic", "app-service"]
+    },
+    {
+      "id": "appService.dispatch.short.create",
+      "shesha": { "method": "POST", "path": "/api/:service/:action" },
+      "mode": "native",
+      "native": "appService.dispatch",
+      "requiresAuth": false,
+      "tags": ["generic", "app-service"]
+    },
+    {
+      "id": "appService.dispatch.short.update",
+      "shesha": { "method": "PUT", "path": "/api/:service/:action" },
+      "mode": "native",
+      "native": "appService.dispatch",
+      "requiresAuth": false,
+      "tags": ["generic", "app-service"]
+    },
+    {
+      "id": "appService.dispatch.short.delete",
+      "shesha": { "method": "DELETE", "path": "/api/:service/:action" },
+      "mode": "native",
+      "native": "appService.dispatch",
+      "requiresAuth": false,
+      "tags": ["generic", "app-service"]
+    },
+
+    {
+      "id": "appService.dispatch.collection.get",
+      "shesha": { "method": "GET", "path": "/api/:service" },
+      "mode": "native",
+      "native": "appService.dispatch",
+      "description": "Collection-shaped routes with no {action} segment (api/ModelConfigurations). The HTTP verb supplies the action: GET->get, POST->create, PUT/PATCH->update, DELETE->delete.",
+      "requiresAuth": false,
+      "tags": ["generic", "app-service"]
+    },
+    {
+      "id": "appService.dispatch.collection.create",
+      "shesha": { "method": "POST", "path": "/api/:service" },
+      "mode": "native",
+      "native": "appService.dispatch",
+      "requiresAuth": false,
+      "tags": ["generic", "app-service"]
+    },
+    {
+      "id": "appService.dispatch.collection.update",
+      "shesha": { "method": "PUT", "path": "/api/:service" },
+      "mode": "native",
+      "native": "appService.dispatch",
+      "requiresAuth": false,
+      "tags": ["generic", "app-service"]
+    },
+    {
+      "id": "appService.dispatch.collection.delete",
+      "shesha": { "method": "DELETE", "path": "/api/:service" },
+      "mode": "native",
+      "native": "appService.dispatch",
+      "requiresAuth": false,
+      "tags": ["generic", "app-service"]
+    },
+
+    {
+      "id": "modelConfigurations.getAll",
+      "shesha": { "method": "GET", "path": "/api/ModelConfigurations/GetAll" },
+      "mode": "native",
+      "native": "appService.dispatch",
+      "description": "Exact match so the paged model list is not swallowed by /api/ModelConfigurations/:id below, which would read 'GetAll' as a GUID. Not a shesha-core route: the Entity Designer's data table needs a paged list and core only exposes the by-name and by-id lookups.",
+      "requiresAuth": false,
+      "tags": ["entity-designer", "generic", "app-service"]
+    },
+    {
+      "id": "modelConfigurations.getById",
+      "shesha": { "method": "GET", "path": "/api/ModelConfigurations/:id" },
+      "mode": "native",
+      "native": "modelConfigurations.getById",
+      "description": "The one route the wildcards cannot express: the id lands in the {action} segment, where it is indistinguishable from an action name.",
+      "requiresAuth": true,
+      "tags": ["entity-designer"]
+    }
+  ]
+}

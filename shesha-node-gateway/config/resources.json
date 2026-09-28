@@ -1,0 +1,259 @@
+{
+  "$schema-note": "Declarative resource registry. Each entry turns the generic wildcard routes (/api/services/:serviceModule/:service/:action, /api/:service/:action, /api/:service and /api/dynamic/:module/:entity/Crud/:action) into a working API. Standard ABP CRUD (Get/GetAll/Create/Update/Delete) is derived from `storage` and needs no `actions` entry; anything else is a named behaviour from src/modules/behaviours/index.ts. Services that already have an exact entry in operations.json are only listed here for the actions that do NOT (exact matches outrank the wildcard), so there is one owner per route.",
+
+  "resources": [
+    {
+      "service": "Module",
+      "serviceModule": "*",
+      "description": "Application modules. Bound to the `modules` table rather than the generic row store so this and ConfigurationStudio/GetModules can never disagree about what exists.",
+      "storage": { "kind": "module" },
+      "defaultSorting": "name asc",
+      "auth": { "requiresAuth": true, "permission": "app:Configurator" }
+    },
+    {
+      "service": "PermissionedObject",
+      "serviceModule": "*",
+      "description": "The permissioned-object hierarchy (pages, endpoints, categories). Rows are flat; the tree is derived on read from each row's dotted `object` path.",
+      "storage": { "kind": "entity", "module": "Shesha", "entity": "PermissionedObject" },
+      "nameField": "object",
+      "defaultSorting": "object asc",
+      "actions": {
+        "GetAllTree": "permissionedObject.getAllTree"
+      },
+      "auth": { "requiresAuth": true, "permission": "pages:maintenance" }
+    },
+    {
+      "service": "Permission",
+      "serviceModule": "*",
+      "description": "Permission definitions. In shesha-core a permission IS the `permission-definition` configuration item — `PermissionAppService` is a CRUD-looking facade over `PermissionDefinition` — so this is bound to that item type and the Permission Configurator and the Configuration Studio tree edit the same objects. Every action is a named behaviour because the DTO does not fit the generic engine: `id` is the permission name rather than a GUID, and `GetAll` returns a bare array instead of a PagedResultDto. IsPermissionGranted keeps its own exact operation.",
+      "storage": { "kind": "behaviour" },
+      "actions": {
+        "Get": "permission.get",
+        "GetAll": "permission.getAll",
+        "GetAllTree": "permission.getAllTree",
+        "Autocomplete": "permission.autocomplete",
+        "Create": "permission.create",
+        "Update": "permission.update",
+        "UpdateParent": "permission.updateParent",
+        "Delete": "permission.deleteByName"
+      },
+      "auth": { "requiresAuth": true, "permission": "app:Configurator" }
+    },
+    {
+      "service": "ShaRole",
+      "serviceModule": "*",
+      "description": "Security roles. A role IS the `role` configuration item, so the role table and the Configuration Studio tree edit the same document. IsRoleGranted keeps its own exact operation.",
+      "storage": { "kind": "configItem", "itemType": "role" },
+      "auth": { "requiresAuth": true, "permission": "app:Configurator" }
+    },
+    {
+      "service": "ShaRoleAppointedPerson",
+      "serviceModule": "*",
+      "description": "Who holds a role, and in what capacity (region, branch, project...).",
+      "storage": { "kind": "entity", "module": "Shesha", "entity": "ShaRoleAppointedPerson" },
+      "auth": { "requiresAuth": true, "permission": "app:Configurator" }
+    },
+    {
+      "service": "ShaRoleAppointedPersonActions",
+      "serviceModule": "*",
+      "description": "The per-appointee action overrides that the role-assignment editor writes.",
+      "storage": { "kind": "entity", "module": "Shesha", "entity": "ShaRoleAppointedPersonActions" },
+      "auth": { "requiresAuth": true, "permission": "app:Configurator" }
+    },
+    {
+      "service": "FrontEndApp",
+      "serviceModule": "*",
+      "description": "Front-end applications. Every request carries one in the `sha-frontend-application` header, so this is what that value is validated against.",
+      "storage": { "kind": "entity", "module": "Shesha", "entity": "FrontEndApp" },
+      "nameField": "appKey",
+      "defaultSorting": "name asc",
+      "auth": { "requiresAuth": true, "permission": "app:Configurator" }
+    },
+    {
+      "service": "NotificationTypeConfig",
+      "serviceModule": "*",
+      "description": "Notification types. A notification type IS the `notification-type` configuration item, so the studio editor and this CRUD surface stay in step.",
+      "storage": { "kind": "configItem", "itemType": "notification-type" },
+      "auth": { "requiresAuth": true, "permission": "app:Configurator" }
+    },
+    {
+      "service": "NotificationTemplate",
+      "serviceModule": "*",
+      "description": "Per-channel notification templates.",
+      "storage": { "kind": "entity", "module": "Shesha", "entity": "NotificationTemplate" },
+      "auth": { "requiresAuth": true, "permission": "app:Configurator" }
+    },
+    {
+      "service": "ReferenceList",
+      "serviceModule": "*",
+      "description": "Lists of values. A reference list IS the `reference-list` configuration item, so what the runtime provider caches by md5 and what this CRUD writes are the same document. Public, because the login page renders reference lists before anyone is authenticated.",
+      "storage": { "kind": "configItem", "itemType": "reference-list" },
+      "actions": {
+        "GetByName": "referenceList.getByName",
+        "Delete": "referenceList.delete"
+      },
+      "auth": {
+        "requiresAuth": true,
+        "permission": "app:Configurator",
+        "anonymousActions": ["GetByName", "Get", "GetAll"]
+      }
+    },
+    {
+      "service": "ReferenceListItem",
+      "serviceModule": "*",
+      "description": "Individual list-of-values entries. Not a store of their own: each call mutates the `items[]` array inside the owning reference list, so there is no second copy to drift.",
+      "storage": { "kind": "behaviour" },
+      "actions": {
+        "Create": "referenceListItem.create",
+        "Update": "referenceListItem.update",
+        "Delete": "referenceListItem.delete"
+      },
+      "auth": { "requiresAuth": true, "permission": "app:Configurator" }
+    },
+    {
+      "service": "User",
+      "serviceModule": "*",
+      "description": "Accounts, bound to the gateway's `users` table. The password-reset and OTP actions are anonymous by necessity (they are core's `[AbpAllowAnonymous]` set); the ones that need a session call requireUser(ctx) themselves rather than relying on the route. `ChangePassword` is deliberately opened to any authenticated user: core inherits `Pages.Users` from the class attribute, but the method itself only checks that someone is logged in, and the change-password form is offered to every user. `ResetPassword` keeps core's dedicated `users:resetPassword` check inside the behaviour.",
+      "storage": { "kind": "user" },
+      "actions": {
+        "GetUserPasswordResetOptions": "user.getUserPasswordResetOptions",
+        "GetSecurityQuestions": "user.getSecurityQuestions",
+        "SendEmailLink": "user.sendEmailLink",
+        "SendSmsOtp": "user.sendSmsOtp",
+        "SendSMSOTP": "user.sendSmsOtp",
+        "ResetPasswordSendOtp": "user.resetPasswordSendOtp",
+        "ValidateResetCode": "user.validateResetCode",
+        "ResetPasswordVerifyOtp": "user.resetPasswordVerifyOtp",
+        "ValidateSecurityQuestions": "user.validateSecurityQuestions",
+        "ResetPasswordUsingToken": "user.resetPasswordUsingToken",
+        "ChangePassword": "user.changePassword",
+        "ResetPassword": "user.resetPassword",
+        "ActivateUser": "user.activate",
+        "InactivateUser": "user.inactivate"
+      },
+      "auth": {
+        "requiresAuth": true,
+        "permission": "Pages.Users",
+        "anonymousActions": [
+          "GetUserPasswordResetOptions",
+          "GetSecurityQuestions",
+          "SendEmailLink",
+          "SendSmsOtp",
+          "SendSMSOTP",
+          "ResetPasswordSendOtp",
+          "ValidateResetCode",
+          "ResetPasswordVerifyOtp",
+          "ValidateSecurityQuestions",
+          "ResetPasswordUsingToken"
+        ],
+        "actions": {
+          "ChangePassword": ""
+        }
+      }
+    },
+    {
+      "service": "UserManagement",
+      "serviceModule": "*",
+      "description": "Person-account creation, which applies the Shesha.UserManagement settings (userEmailAsUsername, mandatory fields) that plain User/Create does not.",
+      "storage": { "kind": "user" },
+      "actions": {
+        "Create": "userManagement.create"
+      },
+      "auth": { "requiresAuth": true, "permission": "Pages.Users" }
+    },
+    {
+      "service": "Otp",
+      "serviceModule": "*",
+      "description": "One-time pins. The same engine backs the User reset flows, so a pin issued by one path verifies through the other.",
+      "storage": { "kind": "behaviour" },
+      "actions": {
+        "SendPin": "otp.sendPin",
+        "ResendPin": "otp.resendPin",
+        "VerifyPin": "otp.verifyPin"
+      },
+      "auth": { "requiresAuth": false }
+    },
+    {
+      "service": "EntityHistory",
+      "serviceModule": "*",
+      "description": "Audit trail, projected from the same `entity_audit` rows the generic row store writes.",
+      "storage": { "kind": "behaviour" },
+      "actions": {
+        "GetAuditTrail": "entityHistory.getAuditTrail"
+      },
+      "auth": { "requiresAuth": true }
+    },
+    {
+      "service": "ConfigurationItemToExpose",
+      "serviceModule": "*",
+      "description": "Read-only view of everything that can be exposed into another module — the left-hand list of the studio's 'Expose existing' dialog.",
+      "storage": { "kind": "behaviour" },
+      "actions": {
+        "GetAll": "configurationItemToExpose.getAll"
+      },
+      "auth": { "requiresAuth": true, "permission": "app:Configurator" }
+    },
+    {
+      "service": "ConfigurationStudio",
+      "serviceModule": "*",
+      "description": "Only `Expose` is declared here: every other ConfigurationStudio action has an exact entry in operations.json, and exact matches outrank the wildcard. Listing the service at all is what makes the batch expose reachable without adding another operation.",
+      "storage": { "kind": "behaviour" },
+      "actions": {
+        "Expose": "configurationStudio.expose"
+      },
+      "auth": { "requiresAuth": true, "permission": "app:Configurator" }
+    },
+    {
+      "service": "Metadata",
+      "serviceModule": "*",
+      "description": "The designer's type and property pickers. Get and Autocomplete keep their exact operations; these are the three the Entity Designer added.",
+      "storage": { "kind": "behaviour" },
+      "actions": {
+        "EntityTypeAutocomplete": "metadata.entityTypeAutocomplete",
+        "TypeAutocomplete": "metadata.typeAutocomplete",
+        "GetNonFrameworkRelatedProperties": "metadata.getNonFrameworkRelatedProperties"
+      },
+      "auth": { "requiresAuth": true }
+    },
+    {
+      "service": "Entities",
+      "serviceModule": "*",
+      "description": "shesha-core's generic entity endpoint: one route for every entity, with the entity named by `?entityType=` (or `?module=&name=`) instead of by the URL. Data tables without an explicit getListUrl, entity autocomplete and the settings editor all call it. Each action resolves the entity type and delegates to the same engine the /api/dynamic route uses. ExportToExcel and Reorder are not implemented and fall through to the upstream.",
+      "storage": { "kind": "behaviour" },
+      "actions": {
+        "Get": "entities.get",
+        "GetAll": "entities.getAll",
+        "Create": "entities.create",
+        "Update": "entities.update",
+        "Delete": "entities.delete",
+        "Specifications": "entities.specifications"
+      },
+      "auth": { "requiresAuth": true }
+    },
+    {
+      "service": "Sms",
+      "serviceModule": "*",
+      "description": "SMS gateways. Not under /api/services/..., which is why the /api/:service/:action wildcard exists. Anonymous in core (no [Authorize] on GetAll). api/Sms/Test is deliberately unimplemented and falls through to the upstream rather than reporting a send that never happened.",
+      "storage": { "kind": "behaviour" },
+      "actions": {
+        "Gateways": "sms.gateways",
+        "GetAll": "sms.gateways"
+      },
+      "auth": { "requiresAuth": false }
+    },
+    {
+      "service": "ModelConfigurations",
+      "serviceModule": "*",
+      "description": "The Entity Designer's read/write API over `entity` configuration items. Also not under /api/services/..., and its collection route has no {action} segment, so the verb is the action: GET resolves to `Get` and is mapped to the by-name lookup core actually performs there. /api/ModelConfigurations/{id} keeps an exact operation because the id would otherwise land in the {action} segment.",
+      "storage": { "kind": "configItem", "itemType": "entity" },
+      "actions": {
+        "Get": "modelConfigurations.getByName",
+        "GetAll": "modelConfigurations.getAll",
+        "Create": "modelConfigurations.create",
+        "Update": "modelConfigurations.update",
+        "Merge": "modelConfigurations.merge"
+      },
+      "auth": { "requiresAuth": true, "permission": "app:Configurator" }
+    }
+  ]
+}
