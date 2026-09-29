@@ -39,7 +39,7 @@ export interface IValidationErrorsComponentProps extends IConfigurableFormCompon
 }
 
 const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentProps> = {
-  styleGroup: 'common',
+  styleGroup: 'common-containers',
   allowInherit: true,
   type: 'validationErrors',
   isInput: false,

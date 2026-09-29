@@ -130,14 +130,21 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
          combinators so the nested appearance panels keep antd's default body padding.
          (antd 6 renders item then panel then body; there is no -content element.) */
       > .ant-collapse-item > .ant-collapse-panel > .ant-collapse-body {
-        padding: 0px;
+        padding: 8px;
+      }
+
+      .ant-tabs-body-holder {
+        padding: 8px;
       }
 
       .ant-card {
+        padding: 8px;
+        height: 100%;
+
         .ant-card-head {
           min-height: 40px;
-          padding: 0 16px;
-          
+          padding: 8px;
+
           .ant-card-head-title {
             font-size: 14px;
             font-weight: 600;

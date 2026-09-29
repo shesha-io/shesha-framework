@@ -1,5 +1,5 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Radio, Row, Slider, Space, Tooltip, Typography } from 'antd';
+import { Button, Card, Col, Radio, Row, Slider, Space, Switch, Tooltip, Typography } from 'antd';
 import { FC } from 'react';
 import { ColorPicker } from '@/components/colorPicker';
 import { ColorScheme, IConfigurableTheme, normalizeColorScheme } from '@/providers/theme/contexts';
@@ -30,25 +30,6 @@ const PRESET_COLORS = [
   '#1890ff', '#ff4d4f', '#faad14', '#52c41a', '#13c2c2',
   '#722ed1', '#eb2f96', '#f5222d', '#fa8c16', '#a0d911',
 ];
-
-const COMPONENT_GROUP_TITLES: Record<'input' | 'inline' | 'standard' | 'layout', { title: string; description: string }> = {
-  input: {
-    title: 'Input Component Settings',
-    description: 'Set a shared default appearance for all input components (text fields, dropdowns, checkboxes, ...). To style one component individually, use the Components tab.',
-  },
-  inline: {
-    title: 'Inline Component Settings',
-    description: 'Set a shared default appearance for buttons and other in-line components. To style one component individually, use the Components tab.',
-  },
-  standard: {
-    title: 'Standard Component Settings',
-    description: 'Set a shared default appearance for standard display components. To style one component individually, use the Components tab.',
-  },
-  layout: {
-    title: 'Layout Component Settings',
-    description: 'Set a shared default appearance for layout and container components (panels, columns, containers, ...). To style one component individually, use the Components tab.',
-  },
-};
 
 interface ColorCircleProps {
   color: string | undefined;
@@ -142,12 +123,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
     <div style={{ padding: '0 0 0px' }}>
       {section === 'theme' && (
         <>
-          <Typography.Title level={4} style={{ marginBottom: 4 }}>Theme Settings</Typography.Title>
-          <Typography.Text type="secondary">
-            Customize the look and feel of your workspace.
-          </Typography.Text>
-
-          <Typography.Title level={5} style={{ marginBottom: 12 }}>Theme</Typography.Title>
+          <Typography.Title level={5} style={{ margin: 0 }}>Theme</Typography.Title>
           <Radio.Group
             value={normalizeColorScheme(theme.sidebar)}
             onChange={(e) => {
@@ -165,10 +141,10 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             <Radio.Button value="system">System</Radio.Button>
           </Radio.Group>
 
-          <Row gutter={[32, 24]} style={{ marginTop: 32 }}>
+          <Row gutter={[32, 24]}>
             <Col xs={24} md={8}>
               <Typography.Title level={5} style={{ marginBottom: 4 }}>Colours</Typography.Title>
-              <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 12, fontSize: 12 }}>
+              <Typography.Text type="secondary" style={{ display: 'block', fontSize: 12 }}>
                 Select a circle below to choose your desired colour.
               </Typography.Text>
               <Space size={16} wrap>
@@ -202,8 +178,46 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             </Col>
           </Row>
 
-          {/* Form Span Settings */}
+          {/* Preview Card */}
           <div style={{ marginTop: 32 }}>
+            <Typography.Title level={5} style={{ marginBottom: 12 }}>Preview Card</Typography.Title>
+            <Card style={{ background: theme.layoutBackground ?? '#f0f2f5' }}>
+              <Row gutter={24}>
+                <Col xs={24} md={8}>
+                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Alerts</Typography.Text>
+                  <AlertsExample />
+                </Col>
+
+                <Col xs={24} md={8}>
+                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Forms</Typography.Text>
+                  <InputStatesPreview />
+                </Col>
+
+                <Col xs={24} md={8}>
+                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Buttons</Typography.Text>
+                  <Space orientation="vertical" style={{ width: '100%' }} size="small">
+                    <Button type="primary" block style={{ background: primaryColor, borderColor: primaryColor }}>Primary</Button>
+                    <Button danger block>Error</Button>
+                    <Button block style={{ color: successColor, borderColor: successColor }}>Secondary</Button>
+                    <Button block>Default</Button>
+                    <TextsPreview />
+                  </Space>
+                </Col>
+              </Row>
+            </Card>
+          </div>
+        </>
+      )}
+      {section === 'components' && (
+        <>
+          {/* Component Defaults Section: the full component tree, unfiltered */}
+          <ComponentDefaultsPanel value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
+        </>
+      )}
+      {section === 'input' && (
+        <>
+          {/* Form Span Settings: label layout/spacing only affects input (form-item) components */}
+          <div style={{ marginBottom: 24 }}>
             <Space align="center" style={{ marginBottom: 4 }}>
               <Typography.Title level={5} style={{ margin: 0 }}>Form Span Settings</Typography.Title>
               <Tooltip title="The layout uses a 24-column grid system by default. Choose between vertical or horizontal layout. You can customize how much space each element takes by setting the label span and wrapper span.">
@@ -257,60 +271,25 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 </Radio.Group>
               </div>
             )}
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Switch
+                checked={theme.colon ?? true}
+                onChange={(checked) => changeThemeInternal({ ...theme, colon: checked })}
+                disabled={readOnly}
+              />
+              <Typography.Text>Show Colon</Typography.Text>
+            </div>
           </div>
 
-          {/* Preview Card */}
-          <div style={{ marginTop: 32 }}>
-            <Typography.Title level={5} style={{ marginBottom: 12 }}>Preview Card</Typography.Title>
-            <Card style={{ background: theme.layoutBackground ?? '#f0f2f5' }}>
-              <Row gutter={24}>
-                <Col xs={24} md={8}>
-                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Alerts</Typography.Text>
-                  <AlertsExample />
-                </Col>
-
-                <Col xs={24} md={8}>
-                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Forms</Typography.Text>
-                  <InputStatesPreview />
-                </Col>
-
-                <Col xs={24} md={8}>
-                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Buttons</Typography.Text>
-                  <Space orientation="vertical" style={{ width: '100%' }} size="small">
-                    <Button type="primary" block style={{ background: primaryColor, borderColor: primaryColor }}>Primary</Button>
-                    <Button danger block>Error</Button>
-                    <Button block style={{ color: successColor, borderColor: successColor }}>Secondary</Button>
-                    <Button block>Default</Button>
-                    <TextsPreview />
-                  </Space>
-                </Col>
-              </Row>
-            </Card>
-          </div>
+          {/* Group Defaults: one shared appearance form for every input component */}
+          <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
         </>
       )}
-      {section === 'components' && (
-        <>
-          {/* Component Defaults Section: the full component tree, unfiltered */}
-          <div style={{ marginTop: 0 }}>
-            <Typography.Title level={4} style={{ marginBottom: 4 }}>Component Settings</Typography.Title>
-            <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
-              Configure default appearance styles for individual components. Select a component from the tree to customize its appearance settings.
-            </Typography.Text>
-            <ComponentDefaultsPanel value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
-          </div>
-        </>
-      )}
-      {(section === 'input' || section === 'inline' || section === 'standard' || section === 'layout') && (
+      {(section === 'inline' || section === 'standard' || section === 'layout') && (
         <>
           {/* Group Defaults: one shared appearance form for every component in this style group */}
-          <div style={{ marginTop: 0 }}>
-            <Typography.Title level={4} style={{ marginBottom: 4 }}>{COMPONENT_GROUP_TITLES[section].title}</Typography.Title>
-            <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
-              {COMPONENT_GROUP_TITLES[section].description}
-            </Typography.Text>
-            <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
-          </div>
+          <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
         </>
       )}
     </div>

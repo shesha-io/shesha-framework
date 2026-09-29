@@ -17,7 +17,7 @@ const GROUP_APPEARANCE_PANELS: Record<ThemeComponentGroup, StandardAppearancePan
   input: ['font', 'border', 'background', 'shadow', 'marginPadding'],
   inline: ['font', 'border', 'background', 'shadow'],
   layout: ['border', 'background', 'shadow', 'marginPadding'],
-  standard: ['font'],
+  standard: ['font', 'marginPadding'],
 };
 
 const GROUP_LABELS: Record<ThemeComponentGroup, string> = {
@@ -86,6 +86,7 @@ export const GroupSettingsPanel: FC<IGroupSettingsPanelProps> = ({ group, value:
         cacheKey={`theme-group-style:${group}`}
         className={styles.appearanceForm}
         isSettingsForm
+        layout="vertical"
       />
     </Card>
   );

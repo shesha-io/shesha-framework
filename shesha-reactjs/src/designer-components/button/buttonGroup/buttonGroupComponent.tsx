@@ -22,6 +22,7 @@ import { TypedProxy } from '@/providers/form/observableProxy';
 import { migratePermissionsToVisiblePermissions } from '@/designer-components/_common-migrations/migratePermissionsToVisiblePermissions';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
+  styleGroup: 'common',
   allowInherit: true,
   type: 'buttonGroup',
   isInput: false,

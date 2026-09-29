@@ -22,6 +22,7 @@ import { getStringPropertyOrUndefined } from '@/utils/object';
 import { isNonEmptyArray } from '@/utils/array';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
+  styleGroup: 'common-containers',
   type: 'wizard',
   isInput: false,
   name: 'Wizard',

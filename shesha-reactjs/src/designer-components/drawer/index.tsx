@@ -15,6 +15,7 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 
 const DrawerComponent: IToolboxComponent<IDrawerProps> = {
+  styleGroup: 'common-containers',
   type: 'drawer',
   isInput: false,
   name: 'Drawer',

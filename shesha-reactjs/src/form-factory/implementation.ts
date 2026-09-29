@@ -546,10 +546,10 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
         visibleJs: `return !["color", "gradient"].includes(getSettingValue(${dataPath}?.${propertyName}?.type));`,
         inputs: excludeInputs([
           { type: 'customDropdown', label: 'Size', hideLabel: true, propertyName: `${propertyName}.size`, dropdownOptions: sizeOptions,
-            customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
+            customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"', width: 150,
           },
           { type: 'customDropdown', label: 'Position', hideLabel: true, propertyName: `${propertyName}.position`, dropdownOptions: positionOptions,
-            customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
+            customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"', width: 150,
           },
           { type: 'radio', label: 'Repeat', hideLabel: true, propertyName: `${propertyName}.repeat`, buttonGroupOptions: repeatOptions },
         ], exclude),

@@ -35,6 +35,7 @@ import { FILE_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/event
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const FileUploadComponent: FileUploadComponentDefinition = {
+  styleGroup: 'inputs',
   allowInherit: true,
   type: 'fileUpload',
   name: 'File',
