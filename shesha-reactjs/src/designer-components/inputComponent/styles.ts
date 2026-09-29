@@ -36,13 +36,27 @@ export const useStyles = createStyles(({ css, cx }) => {
         flex: 0 0 auto;
     `);
 
-  const icon = cx(css`
-        --icon-fill-color: #1C1B1F;
+  const icon = cx("sha-input-component-icon", css`
+        display: flex;
+        align-items: center;
+        color: inherit;
     `);
 
   const radioBtns = cx(css`
       .ant-radio-button-wrapper-checked {
         z-index: 0 !important;
+      }
+
+      .ant-radio-button-wrapper {
+
+        & .ant-radio-button-label {
+         > div {
+          display: flex;
+          align-items: center;
+         }
+        }
+        display: inline-flex;
+        align-items: center;
       }
       
       `);

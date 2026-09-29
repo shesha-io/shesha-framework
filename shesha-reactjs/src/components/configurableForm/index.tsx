@@ -89,6 +89,7 @@ const ConfigurableFormInner = <Values extends object = object>(props: Configurab
         formId: formId,
         formArguments: formArguments,
         initialValues: initialValues,
+        isSettingsForm: isSettingsForm,
       });
     } else
       if (markup) {

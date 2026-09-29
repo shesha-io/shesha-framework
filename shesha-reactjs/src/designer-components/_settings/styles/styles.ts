@@ -36,11 +36,19 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
 
   const label = cx("properties-label", css`
             font-size: 12px;
-            color: darkslategrey;
+            color: ${token.colorTextSecondary};
             font-weight: 500;
             position: relative;
-            
-            
+            /* Long labels ("Interaction Mode") used to run into the control below them in a narrow
+               settings column. Keeping them on one line and letting the overflow ellipsise means the
+               row keeps its height and the icons underneath stay clear of the text. */
+            line-height: 20px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+
+
             +.ant-form-item-tooltip {
             align-self: center !important;
             position: relative;
@@ -51,16 +59,25 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
   const jsSwitch = cx(css`
             position: absolute;
             right: 0;
-            top: 4px;
+            /* The button is 20px tall and sits against a 20px label line; anchoring it to the top of that
+               line rather than 4px into it is what puts the JS icon level with the label text. */
+            top: 0;
             font-size: 12px;
             height: 20px;
+            line-height: 1;
+            padding: 0;
             max-width: 100%;
             margin-left: 5px;
             margin-right: 0px;
             color: ${token.colorPrimary};
-            display: flex;
+            display: inline-flex;
             justify-content: center;
             align-items: center;
+
+            .anticon {
+              display: block;
+              line-height: 1;
+            }
             ${responsive.mobile} {
                 right: 0;
                 left: auto;
@@ -97,17 +114,40 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
     .ant-color-picker-trigger
   `;
 
+  /* antd renders the editable text in a nested node whose own rule is more specific than a bare
+     `input`, so the wrapper's colour never reaches it. These need the text colour only - the
+     wrapper above already paints the background, and repainting it here would double the tint. */
+  const nestedTextSelectors = `
+    .ant-input-number .ant-input-number-input,
+    .ant-select .ant-select-content,
+    .ant-select .ant-select-selection-item,
+    /* AutoComplete (dimension fields) keeps its value in a real input that overrides
+       .ant-select-content. */
+    .ant-select .ant-select-input,
+    .ant-input-affix-wrapper > input.ant-input
+  `;
+
+  const isDarkMode = token.colorBgBase === '#000';
+  const inheritedBg = isDarkMode ? token.colorSuccessBg : '#D7E8D9';
+  const overriddenBg = isDarkMode ? token.colorWarningBg : '#F4E9D6';
+
   const inheritedValue = cx(css`
     ${valueHighlightSelectors} {
-      background-color: #D7E8D9;
-      color: #1C1B1F;
+      background-color: ${inheritedBg};
+    }
+
+    ${nestedTextSelectors} {
+      background-color: transparent;
     }
   `);
 
   const overriddenValue = cx(css`
     ${valueHighlightSelectors} {
-      background-color: #F4E9D6;
-      color: #1C1B1F;
+      background-color: ${overriddenBg};
+    }
+
+    ${nestedTextSelectors} {
+      background-color: transparent;
     }
   `);
 

@@ -1,6 +1,13 @@
+import { IConfigurableTheme } from '@/providers';
 import { createStyles, sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }) => {
+/* Fixed light values: the component preview mirrors the canvas, which never follows the app's
+   light/dark setting. These match antd's light colorBgContainer / colorBorderSecondary / colorText. */
+const CANVAS_PREVIEW_BACKGROUND = '#ffffff';
+const CANVAS_PREVIEW_BORDER = '#f0f0f0';
+const CANVAS_PREVIEW_TEXT = 'rgba(0, 0, 0, 0.88)';
+
+export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) => {
   const slider = cx(
     'slider',
     css`
@@ -129,13 +136,21 @@ export const useStyles = createStyles(({ css, cx }) => {
     `,
   );
 
+  /* Represents the canvas, so it must stay light regardless of the app theme - the components
+     inside are rendered the way an end user will see them (see ConfigurableFormRenderer). The
+     antd Card paints its own themed body background, so that is overridden too. */
   const previewSection = cx(
     'preview-section',
     css`
       padding: 16px;
-      background: #fafafa;
+      background: ${theme?.layoutBackground ?? CANVAS_PREVIEW_BACKGROUND};
       border-radius: 8px;
-      border: 1px solid #f0f0f0;
+      border: 1px solid ${CANVAS_PREVIEW_BORDER};
+      color: ${CANVAS_PREVIEW_TEXT};
+
+      .ant-card-body {
+        background: transparent;
+      }
     `,
   );
 
@@ -144,9 +159,6 @@ export const useStyles = createStyles(({ css, cx }) => {
     css`
       margin-bottom: 16px;
       height: 400px;
-      .ant-card-head {
-        background: #fafafa;
-      }
     `,
   );
 
@@ -155,9 +167,6 @@ export const useStyles = createStyles(({ css, cx }) => {
     css`
       margin-bottom: 16px;
       height: 200px;
-      .ant-card-head {
-        background: #fafafa;
-      }
     `,
   );
 

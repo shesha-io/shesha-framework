@@ -20,6 +20,7 @@ export interface InitFormDataPayload<Values extends object = object> {
 
 export interface InitByFormIdPayload<Values extends object = object> extends InitFormDataPayload<Values> {
   formId: FormIdentifier;
+  isSettingsForm?: boolean | undefined;
 }
 
 export interface InitByRawMarkupPayload<Values extends object = object> extends InitFormDataPayload<Values> {
@@ -98,6 +99,9 @@ export interface IShaFormInstance<Values extends object = object> {
   readonly form?: FormInfo | undefined;
   readonly formId?: FormIdentifier | undefined;
   readonly settings?: IFormSettings | undefined;
+  /** True when this form is framework chrome (settings/properties editors) rather than a
+   *  user-configured form. Set on init and authoritative for both markup and formId paths. */
+  readonly isSettingsForm: boolean;
   readonly flatStructure?: IFlatComponentsStructure | undefined;
   readonly initialValues?: Partial<Values> | undefined;
   readonly parentFormValues?: object | undefined;

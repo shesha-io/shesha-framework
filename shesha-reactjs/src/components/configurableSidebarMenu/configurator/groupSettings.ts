@@ -20,7 +20,7 @@ export const getGroupSettings: FormMarkupFactory = ({ fbf }) => {
         tabs: [
           {
             key: 'common',
-            title: 'Common',
+            title: 'Main',
             id: commonTabId,
             components: [
               ...fbf()

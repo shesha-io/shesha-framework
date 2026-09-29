@@ -739,9 +739,10 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   };
 
   initFormByFormId = async (payload: InitByFormIdPayload<Values>): Promise<void> => {
-    const { formId, formArguments } = payload;
+    const { formId, formArguments, isSettingsForm } = payload;
 
     this.setArguments(formArguments);
+    this.isSettingsForm = isSettingsForm ?? false;
 
     const formNotChanged = isDefined(this.formId) && isSameFormIds(this.formId, formId);
     if (!formNotChanged) {

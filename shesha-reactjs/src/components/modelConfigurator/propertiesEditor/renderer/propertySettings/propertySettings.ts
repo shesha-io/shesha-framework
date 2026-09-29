@@ -59,7 +59,7 @@ export const getSettings = (
         tabs: [
           {
             key: '1',
-            title: 'Common',
+            title: 'Main',
             id: commonTabId,
             components: [...fbf()
               .addSettingsInput({ parentId: commonTabId, inputType: 'switch', propertyName: 'suppress', label: 'Hidden' })

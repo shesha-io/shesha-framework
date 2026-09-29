@@ -90,6 +90,7 @@ export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props)
         shaFormRef={formRef}
         initialValues={initialValues}
         formId={editorForm}
+        isSettingsForm
       />
     )
     : undefined;

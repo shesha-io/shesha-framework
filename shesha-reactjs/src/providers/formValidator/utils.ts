@@ -1,8 +1,14 @@
-import { FormRule } from "antd";
-import { ComplexValidationRules, getValidationRules, IConfigurableFormComponent, IFormValidationRulesOptions, useAvailableConstantsDataNoRefresh, useConfigurableActionDispatcher, useFormBuilderFactory, useSettingsComponents, useShaFormInstance } from "../..";
-import { useFormDesignerComponents } from "../form/hooks";
-import { useMemo } from "react";
+import { useFormBuilderFactory } from '@/form-factory/hooks';
+import { ComplexValidationRules, IConfigurableFormComponent } from "@/interfaces";
+import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
+import { useFormDesignerComponents } from '@/providers/form/hooks';
+import { IFormValidationRulesOptions } from "@/providers/form/models";
+import { useShaFormInstance } from "@/providers/form/providers/shaFormProvider";
+import { getValidationRules, useAvailableConstantsDataNoRefresh } from "@/providers/form/utils";
+import { useSettingsComponents } from '@/providers/sheshaApplication/hooks/useSettingsComponents';
 import { isDefined } from "@/utils";
+import { FormRule } from "antd";
+import { useMemo } from "react";
 import { FormValidator, IFormValidator } from "../formDesigner/formValidator";
 
 export const getComponentValidationRules = (model: IConfigurableFormComponent, options: IFormValidationRulesOptions): FormRule[] => {

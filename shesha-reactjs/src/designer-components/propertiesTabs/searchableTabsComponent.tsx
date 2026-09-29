@@ -57,7 +57,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
         readOnly={autofillGuard}
         onFocus={() => setAutofillGuard(false)}
         autoComplete="new-password"
-        suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />}
+        suffix={<SearchOutlined className={styles.searchIcon} />}
         ref={options?.ref}
         className={options?.className}
         style={options?.style}
@@ -185,7 +185,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   ), [effectiveActiveKey, handleTabChange, model.size, model.tabType, newFilteredTabs, styles.content, model.position]);
 
   return (
-    <>
+    <div>
       {renderSearchInput({
         ref: searchInputRef,
         autoFocus: newFilteredTabs.length === 0,
@@ -194,7 +194,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
       {newFilteredTabs.length === 0 && searchQuery
         ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
         : localTabs}
-    </>
+    </div>
   );
 };
 

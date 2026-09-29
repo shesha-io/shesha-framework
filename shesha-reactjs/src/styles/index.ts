@@ -21,9 +21,13 @@ export const sheshaStyles = {
     justify-content: space-between;
     align-items: center;
 `,
+  /* Theme-aware via antd's CSS variables (ConfigProvider runs with cssVar enabled), so this stays
+     a plain string usable from any style block while still following light/dark. The matching
+     `color-scheme` is set on the document root by ThemeProvider. */
   thinScrollbars:
         `
 scrollbar-width: thin;
+scrollbar-color: var(--ant-color-fill) transparent;
 ::-webkit-scrollbar {
     width: 8px;
     background-color: transparent;
@@ -31,7 +35,11 @@ scrollbar-width: thin;
 
 ::-webkit-scrollbar-thumb {
     border-radius: 4px;
-    background-color: #ccc;
+    background-color: var(--ant-color-fill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--ant-color-fill-secondary);
 }`,
   verticalSettingsClass: 'vertical-settings',
 };

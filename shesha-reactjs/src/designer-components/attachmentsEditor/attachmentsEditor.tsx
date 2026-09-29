@@ -26,6 +26,7 @@ import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/uti
 import { AdvancedFormats } from '@/interfaces/dataTypes';
 import { FILE_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { withFontFallback } from '@/designer-components/_settings/utils/font/utils';
 import { getIdOrUndefined } from '@/utils/entity';
 import { addPx } from '@/utils/style';
 import CustomFile from '@/components/customFile';
@@ -250,7 +251,7 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
           ...(isNotNullOrWhiteSpace(font?.color) ? { color: font.color } : {}),
           ...(isDefined(font?.size) ? { fontSize: addPx(font.size) } : {}),
           ...(isNotNullOrWhiteSpace(font?.weight) ? { fontWeight: font.weight as CSSProperties['fontWeight'] } : {}),
-          ...(isNotNullOrWhiteSpace(font?.type) ? { fontFamily: font.type } : {}),
+          ...(isNotNullOrWhiteSpace(font?.type) ? { fontFamily: withFontFallback(font.type) } : {}),
           ...(isDefined(font?.align) ? { textAlign: font.align } : {}),
           ...downloadedFileStyleCss,
         };

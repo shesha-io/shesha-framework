@@ -8,7 +8,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
     components: fbf()
       .addSearchableTabs({ propertyName: 'settingsTabs', parentId: 'root', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
-          { key: 'common', title: 'Common', id: commonTabId,
+          { key: 'common', title: 'Main', id: commonTabId,
             components: fbf(commonTabId)
               .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', size: 'small', validate: { required: true } })
               .addSettingsInputRow({ inputs: [

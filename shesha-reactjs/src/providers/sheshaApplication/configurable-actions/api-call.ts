@@ -5,9 +5,8 @@ import { SheshaActionOwners } from "../../configurableActionsDispatcher/models";
 import axios, { Method } from 'axios';
 import { IKeyValue } from "@/interfaces/keyValue";
 import { useConfigurableAction } from "@/providers/configurableActionsDispatcher";
-import qs from "qs";
 import { unwrapAbpResponse } from "@/utils/fetchers";
-import { getQueryParams } from "@/utils/url";
+import { buildUrl } from "@/utils/url";
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { FormMarkupFactory } from '@/interfaces/configurableAction';
 import { IRequestParam, IRequestHeader, IRequestBody, IFormDataField, IResponseTransformationConfiguration, executeResponseTransformation } from '@/components/requestConfigModal';
@@ -75,6 +74,26 @@ const migrateV0toV1 = (prev: IApiCallArgumentsV0): IApiCallArguments => {
 
   return { ...rest, verb, requestConfig };
 };
+
+/** `sendStandardHeaders` is typed as a required boolean on `IApiCallArguments`, but migration
+ * input is whatever was actually persisted — plenty of already-saved configs predate this field
+ * entirely, so it can be missing (or, for hand-edited data, not even a boolean) at runtime despite
+ * the type. Model that honestly instead of asserting the type away. */
+type IApiCallArgumentsPersisted = Omit<IApiCallArguments, 'sendStandardHeaders'> & {
+  sendStandardHeaders?: unknown;
+};
+
+/** Default "Send Standard Headers" to on. Runs for both freshly-created actions (which start at
+ * version -1 and pass through every migration step, including this one) and pre-existing configs
+ * that never had the switch set, so standard headers (incl. Authorization) are sent unless a user
+ * has explicitly turned the switch off — an explicit `false` is preserved as-is. Anything else
+ * (missing, or not a boolean) defaults to `true`. */
+const migrateV1toV2 = (prev: IApiCallArgumentsPersisted): IApiCallArguments => ({
+  ...prev,
+  sendStandardHeaders: typeof prev.sendStandardHeaders === 'boolean'
+    ? prev.sendStandardHeaders
+    : true,
+});
 
 const HttpVerbs: Method[] = ['get',
   'delete',
@@ -153,6 +172,35 @@ const isGlobalUrl = (url: string): boolean => {
   return !isNullOrWhiteSpace(url) && Boolean(url.match(/^(http|https):\/\//gi));
 };
 
+/** True when `url`'s effective destination is this app's own backend, reached over HTTPS.
+ * Resolves `url` against `backendUrl` as the base — the same rule a browser (and axios's own
+ * `isAbsoluteURL` check) uses for any URL reference — then compares origins. Standard headers
+ * (including the current user's Authorization bearer token) must never be forwarded anywhere
+ * else, regardless of the "Send Standard Headers" switch, otherwise pointing the action at a
+ * destination outside this app's backend (by mistake, or by a form author who shouldn't have that
+ * reach) would leak the session's credentials to a third party.
+ *
+ * A scheme-anchored check like `isGlobalUrl` (`^(http|https):\/\/`) isn't enough here on its own:
+ * a protocol-relative URL such as `//attacker.example/path` doesn't match that regex, but it's
+ * still resolved as an absolute, cross-origin reference by both browsers and axios's own
+ * `isAbsoluteURL` (whose scheme group is optional). Resolving through `new URL(url, backendUrl)`
+ * handles a plain relative path, a protocol-relative URL, and a fully-qualified absolute URL
+ * uniformly, so none of those shapes can slip past this check.
+ *
+ * Requiring `https:` on top of the origin match closes a second gap: an origin match alone
+ * doesn't rule out cleartext transport — an http backendUrl (or an http URL that happens to
+ * resolve to the same origin) would still expose the bearer token to anyone on the network path. */
+const isApprovedDestination = (url: string, backendUrl: string): boolean => {
+  if (isNullOrWhiteSpace(backendUrl)) return false;
+  try {
+    const resolved = new URL(url, backendUrl);
+    const backend = new URL(backendUrl);
+    return resolved.protocol === 'https:' && backend.protocol === 'https:' && resolved.origin === backend.origin;
+  } catch {
+    return false;
+  }
+};
+
 const hasHeader = (headers: Record<string, string>, name: string): boolean =>
   Object.keys(headers).some((k) => k.toLowerCase() === name.toLowerCase());
 
@@ -163,9 +211,13 @@ const setHeaderIfMissing = (headers: Record<string, string>, name: string, value
 const prepareUrlAndData = (url: string, verb: string, parameters: IDictionary<string>): { url: string; data: IDictionary<string> | undefined } => {
   const encodeAsQueryString = ['get', 'delete'].includes(verb.toLowerCase());
   if (encodeAsQueryString) {
-    const queryStringData = { ...getQueryParams(url), ...parameters };
+    // buildUrl merges `parameters` into whatever query string `url` already carries and re-emits a
+    // single, correctly-encoded query string — rather than hand-appending `?...` onto a `url` that
+    // may already have its own `?...` (its own literal query string, or one injected by the
+    // bodyOverridesParams branch above), which used to produce a doubled string like
+    // `/Delete?id=X?id=X` that most backends reject as an invalid parameter value.
     return {
-      url: `${url}?${qs.stringify(queryStringData, { allowDots: true })}`,
+      url: buildUrl(url, parameters),
       data: undefined,
     };
   } else {
@@ -200,7 +252,8 @@ export const useApiCallAction = (): void => {
     hasArguments: true,
     argumentsFormMarkup: getApiCallArgumentsForm,
     migrator: (m) => m
-      .add<IApiCallArgumentsV0>(0, (prev) => migrateV0toV1(prev)),
+      .add<IApiCallArgumentsV0>(0, (prev) => migrateV0toV1(prev))
+      .add<IApiCallArguments>(1, (prev) => migrateV1toV2(prev)),
     // Evaluate arguments normally (params/headers/url get their Mustache resolved), but keep the
     // JSON/raw body template raw. A JSON body is one big string, and letting the generic pass run
     // Mustache over it can blank tags before the body data is available; instead the executer
@@ -337,7 +390,9 @@ export const useApiCallAction = (): void => {
         }
       }
 
-      const standardHeaders = sendStandardHeaders ? httpHeaders : {};
+      // Never forward standard headers (incl. Authorization) to a destination outside this app's
+      // own backend, even when the switch is on — see isApprovedDestination.
+      const standardHeaders = sendStandardHeaders && isApprovedDestination(url, backendUrl) ? httpHeaders : {};
       const allHeaders = { ...standardHeaders, ...finalHeaders };
 
       // validate arguments
@@ -355,7 +410,7 @@ export const useApiCallAction = (): void => {
       const hasParams = Object.keys(finalParams).length > 0;
       const bodyOverridesParams = requestBody !== undefined && hasParams;
       const effectiveUrl = bodyOverridesParams
-        ? `${url.split('?')[0]}?${qs.stringify({ ...getQueryParams(url), ...finalParams }, { allowDots: true })}`
+        ? buildUrl(url, finalParams)
         : url;
 
       const { url: preparedUrl, data: paramsData } = prepareUrlAndData(

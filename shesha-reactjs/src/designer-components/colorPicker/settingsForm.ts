@@ -25,7 +25,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
           // common
           {
             key: 'common',
-            title: 'Common',
+            title: 'Main',
             id: commonTabId,
             components: [...fbf()
               .addContextPropertyAutocomplete({

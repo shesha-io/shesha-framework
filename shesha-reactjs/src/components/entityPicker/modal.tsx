@@ -22,6 +22,7 @@ import { DataTable } from '../dataTable';
 import DataTableProvider from '@/providers/dataTable';
 import { ITableRowData } from '@/providers/dataTable/interfaces';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { withFontFallback } from '@/designer-components/_settings/utils/font/utils';
 import { isNonEmptyArray } from '@/utils/array';
 import { IEntityReferenceDto } from '@/interfaces';
 
@@ -52,7 +53,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): React.JSX.El
   const { styles } = useStyles(props.styleValue);
 
   const headerTextColor = props.styleValue?.font?.color ?? props.styleValue?.styleCss?.color;
-  const headerFontFamily = props.styleValue?.font?.type ?? props.styleValue?.styleCss?.fontFamily;
+  const headerFontFamily = withFontFallback(props.styleValue?.font?.type ?? props.styleValue?.styleCss?.fontFamily);
   const [modalId] = useState(nanoid()); // use generated value because formId was changed. to be reviewed
   const [state, setState] = useState<IEntityPickerState>({ showModal: true });
   const hidePickerDialog = (): void => {

@@ -3,6 +3,7 @@ import { addPx } from '@/utils/style';
 import { CSSProperties } from 'react';
 import { CSSInterpolation } from '@emotion/serialize';
 import { isDefined } from '@/utils/nullables';
+import { DEFAULT_FONT_FAMILY, withFontFallback } from '@/designer-components/_settings/utils/font/utils';
 
 interface ModelProps {
   layout?: boolean | undefined;
@@ -71,7 +72,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     backgroundColor,
     borderStyle = 'solid',
     color,
-    fontFamily = 'Segoe UI',
+    fontFamily: fontFamilyProp,
     fontSize = '25px',
     fontWeight = '400',
     height,
@@ -80,6 +81,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     textAlign = 'left',
   } = style || {};
 
+  const fontFamily = withFontFallback(fontFamilyProp ?? 'Segoe UI') ?? DEFAULT_FONT_FAMILY;
   const { layout: layoutProp, isDragger, hideFileName, listType } = model;
   /**
    * First of the candidates that is actually set. CSS values treat an empty string as "not set", so

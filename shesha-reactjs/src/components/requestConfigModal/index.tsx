@@ -3,7 +3,7 @@ import { Modal, Tabs } from 'antd';
 import { ParamsTab } from './paramsTab';
 import { HeadersTab } from './headersTab';
 import { BodyTab } from './bodyTab';
-import { TransformationTab, DEFAULT_TRANSFORMATION_SCRIPT } from './transformationTab';
+import { TransformationTab } from './transformationTab';
 import { IRequestConfig } from './models';
 import { useStyles } from './styles';
 import { ExpressionContext, buildExpressionContextFromPaths } from '@/components/expressionEditor';
@@ -142,12 +142,7 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
               children: (
                 <TransformationTab
                   {...(localConfig.responseTransformation !== undefined ? { value: localConfig.responseTransformation } : {})}
-                  onChange={(t) => {
-                    const seeded = t.enabled && !t.script.trim()
-                      ? { ...t, script: DEFAULT_TRANSFORMATION_SCRIPT }
-                      : t;
-                    updateConfig({ responseTransformation: seeded });
-                  }}
+                  onChange={(t) => updateConfig({ responseTransformation: t })}
                 />
               ),
             },

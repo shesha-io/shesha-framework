@@ -27,7 +27,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
         tabs: [
           {
             key: 'common',
-            title: 'Common',
+            title: 'Main',
             id: commonTabId,
             components: [
               ...fbf()
@@ -232,6 +232,19 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               propertyName: 'autofocus',
                               label: 'Auto Focus',
                               tooltip: "If yes, will automatically be focused (be selected component) when the page loads",
+                            },
+                          ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: optionsCollapsiblePanelId,
+                          inputs: [
+                            {
+                              type: 'switch',
+                              id: nanoid(),
+                              propertyName: 'spellcheck',
+                              label: 'Spell Check',
+                              tooltip: "If yes, the browser will spell-check the editor's content",
                             },
                           ],
                         })

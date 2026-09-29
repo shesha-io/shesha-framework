@@ -9,7 +9,7 @@ export const useStyles = createStyles(({ css, token }) => {
         position: absolute;
         justify-content: flex-end;
         right: 36px;
-        top: 4px;
+        top: -4px;
         z-index: 2;
     `;
 

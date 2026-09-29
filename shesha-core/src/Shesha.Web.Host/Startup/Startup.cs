@@ -32,6 +32,7 @@ using Shesha.Extensions;
 using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
 using Shesha.GraphQL.Swagger;
+using Shesha.HealthChecks;
 using Shesha.Identity;
 using Shesha.Notifications;
 using Shesha.Notifications.SMS;
@@ -76,6 +77,8 @@ namespace Shesha.Web.Host.Startup
             services.AddSheshaElmah(_appConfiguration);
 
             services.AddSheshaRateLimiting(opts => _appConfiguration.GetSection("RateLimiting").Bind(opts));
+
+            services.AddSheshaHealthChecks();
 
             services.AddMvcCore(options =>
                 {
@@ -197,6 +200,7 @@ namespace Shesha.Web.Host.Startup
                 endpoints.MapHub<AbpCommonHub>("/signalr");
                 endpoints.MapControllers();
                 endpoints.MapSignalRHubs();
+                endpoints.MapSheshaHealthChecks();
             });
 
             // Block access to Swagger UI when the setting is disabled

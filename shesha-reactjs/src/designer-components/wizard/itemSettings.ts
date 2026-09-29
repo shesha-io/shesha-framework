@@ -39,7 +39,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
       tabs: [
         {
           key: '1',
-          title: 'Common',
+          title: 'Main',
           id: commonTabId,
           components: [...fbf()
             .addSettingsInputRow({

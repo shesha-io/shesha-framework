@@ -94,6 +94,7 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
       shaFormRef={formRef}
       markup={formMarkup}
       initialValues={model}
+      isSettingsForm
     />
   );
 };

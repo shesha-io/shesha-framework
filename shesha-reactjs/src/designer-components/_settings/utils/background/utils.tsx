@@ -86,14 +86,14 @@ export const getBackgroundStyle = (input: IBackgroundValue | undefined, jsStyle:
 };
 
 export const gradientDirectionOptions: IDropdownOption[] = [
-  { value: 'to right', label: 'To right' },
-  { value: 'to left', label: 'To left' },
-  { value: 'to top', label: 'To top' },
-  { value: 'to bottom', label: 'To bottom' },
-  { value: 'to top right', label: 'To top right' },
-  { value: 'to top left', label: 'To top left' },
-  { value: 'to bottom right', label: 'To bottom right' },
-  { value: 'to bottom left', label: 'To bottom left' },
+  { value: 'to right', label: 'Right' },
+  { value: 'to left', label: 'Left' },
+  { value: 'to top', label: 'Top' },
+  { value: 'to bottom', label: 'Bottom' },
+  { value: 'to top right', label: 'Top right' },
+  { value: 'to top left', label: 'Top left' },
+  { value: 'to bottom right', label: 'Bottom right' },
+  { value: 'to bottom left', label: 'Bottom left' },
   { value: 'radial', label: 'Radial' },
   { value: 'conic', label: 'Conic' },
 ];

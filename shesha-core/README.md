@@ -29,3 +29,8 @@ shesha-core
 > [!NOTE]
 > If you have do not have local certificate for SSL you will need to install the default development certificate and trust via:
 >> dotnet dev-certs https --trust
+
+## Health checks
+
+See [docs/health-checks.md](docs/health-checks.md) for the `/api/health/live` and
+`/api/health/ready` endpoints, and which one to point Azure App Service Health Check at.

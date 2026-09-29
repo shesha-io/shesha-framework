@@ -32,7 +32,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
         size: 'small',
         tabs: [
           {
-            key: 'common', title: 'Common', id: commonTabId,
+            key: 'common', title: 'Main', id: commonTabId,
             components: [
               ...fbf(commonTabId)
                 .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
@@ -66,7 +66,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   .addSettingsInputRow({
                     inputs: [
                       { type: 'textField', propertyName: 'validate.message', label: 'Message', size: 'small', jsSetting: true },
-                      { type: 'codeEditor', propertyName: 'validate.validator', label: 'Custom Validator', labelAlign: 'right', tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise' },
+                      { type: 'codeEditor', propertyName: 'validate.validator', label: 'Custom Validator', labelAlign: 'right', tooltip: 'Call callback("message") to fail, or return nothing to pass. Async checks must return a Promise (reject to fail); a later callback is not awaited.' },
                     ],
                   }))
                 .toJson(),

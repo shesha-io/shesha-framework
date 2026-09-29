@@ -110,6 +110,9 @@ export const unproxyDeep = <TValue = unknown>(value: TValue): TValue => {
 
 export const deepMergeSkipUndefinedFunc = (objValue: unknown, srcValue: unknown, _key: string): unknown => srcValue === undefined ? objValue : undefined;
 
+const isPropertySettingValue = (value: unknown): boolean =>
+  isRecord(value) && (value['_mode'] === 'code' || value['_mode'] === 'value');
+
 export const deepMergeValues = <TObject extends object = object, TSource extends object = object>(
   target: TObject,
   source: TSource | null | undefined,
@@ -154,6 +157,11 @@ export const deepMergeValues = <TObject extends object = object, TSource extends
     if (isEntityReferenceId(srcValue)) {
       // replace without merging: a reference identifies a *different* entity, so keys from the
       // previous one (id, _displayName) must not survive underneath the new value
+      return srcValue;
+    }
+
+    // handle JS-enabled settings
+    if (isPropertySettingValue(objValue) || isPropertySettingValue(srcValue)) {
       return srcValue;
     }
 
