@@ -199,6 +199,7 @@ export class BatchFormsValidator {
       extractAjaxResponse(response.data);
     } catch (error) {
       console.error(extractErrorMessage(error));
+      throw error;
     }
   };
 }

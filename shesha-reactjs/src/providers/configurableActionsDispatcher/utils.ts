@@ -64,7 +64,7 @@ export const validateActionConfiguration = async <TValues = unknown>(value: ICon
   const isEmpty = isNullOrWhiteSpace(value.actionOwner) || isNullOrWhiteSpace(value.actionName);
   if (isEmpty) {
     if (isRequired)
-      throw new ComponentValidationError(MESSAGES.THIS_FIELD_IS_REQUIRED, context.path, '');
+      errors.push(new ComponentValidationError(MESSAGES.THIS_FIELD_IS_REQUIRED, context.path, ''));
   } else {
     // find action and throw if action is unknown
     const action = getAction(value, context);

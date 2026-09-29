@@ -7,6 +7,7 @@ export const RefreshTableAction: IActionDescriptor = {
 
 export const ExportToExcelAction: IActionDescriptor = {
   name: 'Export to Excel',
+  description: 'Export current table view to Excel',
   hasArguments: false,
 };
 

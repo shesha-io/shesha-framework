@@ -40,7 +40,7 @@ export const SeverityFilter: React.FC<{
     options={[
       { label: `All (${counts.all})`, value: 'all' },
       { label: `Errors (${counts.error})`, value: 'error' },
-      { label: `Warnings (${counts.warn})`, value: 'warn' },
+      { label: `Warnings (${counts.warn})`, value: 'warning' },
     ]}
   />
 );

@@ -259,6 +259,7 @@ namespace Shesha.Web.FormsDesigner.Services
                 using (var reader = new StreamReader(fileStream)) 
                 {
                     item.Markup = await reader.ReadToEndAsync();
+                    item.UpdateMarkupMd5();
                     await Repository.UpdateAsync(item);
                 }
             }
@@ -296,6 +297,8 @@ namespace Shesha.Web.FormsDesigner.Services
             entity.Label = input.Label;
             entity.Description = input.Description;
             entity.Markup = input.Markup;
+            entity.UpdateMarkupMd5();
+
             entity.ConfigurationForm =  new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!);
             entity.ModelType = input.ModelType;
             entity.GenerationLogicTypeName = input.GenerationLogicTypeName;

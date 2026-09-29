@@ -185,7 +185,7 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
         dataListRef.current.addNewItem();
       return Promise.resolve();
     },
-  }, []);
+  }, [actionOwnerId, actionOwnerName]);
 
   const data = useDeepCompareMemo<ITableRowData[]>(() => {
     if (isDesignMode) {

@@ -67,6 +67,7 @@ describe('validateActionConfiguration()', () => {
         path: [],
         contextConfigurableActionGetter: () => null,
       });
+      expect.fail('Expected validation error but none was thrown');
     } catch (error) {
       expect(Array.isArray(error)).toBe(true);
 
