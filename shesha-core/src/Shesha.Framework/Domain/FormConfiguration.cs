@@ -69,5 +69,27 @@ namespace Shesha.Domain
         /// </summary>
         [MaxLength(100)]
         public virtual string? PlaceholderIcon { get; set; }
+
+        /// <summary>
+        /// If true, indicates that the markup is valid
+        /// </summary>
+        public virtual bool? IsMarkupValid { get; set; }
+
+        /// <summary>
+        /// Number of markup issues
+        /// </summary>
+        public virtual int? MarkupIssuesCount { get; set; }
+
+        /// <summary>
+        /// Validated markup MD5
+        /// </summary>
+        [MaxLength(40)]
+        public virtual string? ValidatedMarkupMd5 { get; set; }
+
+        /// <summary>
+        /// Markup MD5
+        /// </summary>
+        [MaxLength(40)]
+        public virtual string? MarkupMd5 { get; set; }
     }
 }

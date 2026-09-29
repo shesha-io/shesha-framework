@@ -10,7 +10,6 @@ import {
 import { FormDesignerInstance } from './instance';
 import { FormDesignerSubscriptionType } from './models';
 import { useFormPersister } from '../formPersisterProvider';
-import { useIsDevMode } from '@/hooks/useIsDevMode';
 import { isDefined } from '@/utils/nullables';
 import { useDataContextManagerActionsOrUndefined } from '../dataContextManager/hooks';
 import ConditionalWrap from '@/components/conditionalWrapper';
@@ -21,6 +20,8 @@ import { ValidationCollectorContext } from '../validator/contexts';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
 import { useTheme } from '../theme';
 import { useCanvas } from '../canvas';
+import { useConfigurableActionDispatcher } from '../configurableActionsDispatcher';
+import { useAvailableConstantsDataNoRefresh, useSettingsComponents } from '../..';
 
 export interface IFormDesignerProviderProps {
   flatMarkup: IFlatComponentsStructure;
@@ -38,21 +39,27 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   const formPersister = useFormPersister();
   const { theme } = useTheme();
   const { activeDevice } = useCanvas();
-  const devMode = useIsDevMode();
+  // const devMode = useIsDevMode();
   const noPageContext = !Boolean(useDataContextManagerActionsOrUndefined()?.getPageContext());
   const formBuilderFactory = useFormBuilderFactory();
+  const { getConfigurableActionOrNull } = useConfigurableActionDispatcher();
+  const settingsComponents = useSettingsComponents();
+  const allData = useAvailableConstantsDataNoRefresh();
 
   const [formDesigner] = useState<IFormDesignerInstance>(() => {
     return new FormDesignerInstance({
       readOnly,
       toolboxComponentGroups,
+      settingsComponents: settingsComponents,
       formPersister,
       formFlatMarkup: flatMarkup,
       formSettings,
-      logEnabled: devMode,
+      // logEnabled: devMode,
       formBuilderFactory,
       theme,
       activeDevice,
+      getConfigurableActionOrNull: getConfigurableActionOrNull,
+      appContext: allData,
     });
   });
 

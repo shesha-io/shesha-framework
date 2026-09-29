@@ -2,7 +2,6 @@ import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
 import { CSSProperties, ReactNode } from 'react';
-import * as React from 'react';
 import { IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
@@ -17,10 +16,18 @@ import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/m
 import { IActionExecutionContext } from '@/interfaces/configurableAction';
 import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/interfaces";
 import { StringSubtype } from '@/interfaces/utilityTypes';
+import { FormBuilderFactory } from '@/form-factory/interfaces';
+import { IFormValidator } from '../formDesigner/formValidator';
+import { ContextConfigurableActionGetter } from '../configurableActionsDispatcher/models';
+import { IApplicationContext, ValidationNodeRef } from '../..';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
 export const TOOLBOX_DATA_ITEM_DROPPABLE_KEY: string = 'toolboxDataItem';
+
+export const MESSAGES = {
+  THIS_FIELD_IS_REQUIRED: 'This field is required',
+};
 
 export interface ISubmitActionArguments {
   validateFields?: boolean;
@@ -545,6 +552,11 @@ export interface FormMarkupWithSettings {
 export type FormRawMarkup = IConfigurableFormComponent[];
 export type FormMarkup = FormRawMarkup | FormMarkupWithSettings;
 
+export interface FormMarkupFactoryArgs {
+  fbf: FormBuilderFactory;
+}
+export type FormMarkupFactory<Args extends FormMarkupFactoryArgs = FormMarkupFactoryArgs> = (args: Args) => FormMarkup;
+
 export type FormFullName = ConfigurableItemFullName;
 export type FormUid = ConfigurableItemUid;
 export type FormIdentifier = ConfigurableItemIdentifier;
@@ -634,9 +646,16 @@ export interface IFormDto extends Omit<FormDto, 'markup'> {
   readOnly: boolean;
 }
 
-export interface IFormValidationRulesOptions<TData extends object = object> {
+export interface IFormValidationRulesOptions<TData = unknown> {
   formData?: TData | undefined;
   getFormData?: (() => TData) | undefined;
+  validator: IFormValidator;
+  appContext: IApplicationContext;
+
+  /* Component Id, is used to get hierarchy info */
+  componentId: string;
+  path: ValidationNodeRef[];
+  contextConfigurableActionGetter: ContextConfigurableActionGetter;
 }
 
 /** Default form settings */

@@ -147,3 +147,12 @@ export type BaseHistoryItem = {
   description: string;
   time: Date;
 };
+
+export type IssueSeverity = 'warning' | 'error';
+export type ConfigurationIssue = {
+  severity: IssueSeverity;
+  location: string;
+  property: string;
+  message: string;
+  code?: string | undefined;
+};

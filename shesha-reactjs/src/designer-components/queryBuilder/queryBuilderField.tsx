@@ -10,6 +10,8 @@ import { QueryBuilder } from '@/components/queryBuilder';
 import { Show } from '@/components/show';
 import { isDefined } from '@/utils/nullables';
 
+const JSON_PANEL = "json";
+
 export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const { styles } = useStyles();
   const [modalVisible, setModalVisible] = useState(false);
@@ -47,11 +49,11 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
     <div className={styles.shaQueryBuilderMarginTop8}>
       <Collapse
         className={styles.shaQueryBuilderField}
-        {...(jsonExpanded ? { activeKey: '1' } : {})}
+        activeKey={jsonExpanded ? JSON_PANEL : ""}
         expandIconPlacement="end"
         bordered={false}
         ghost={true}
-        expandIcon={({ isActive }) =>
+        expandIcon={({ isActive = false }) =>
           isActive ? (
             <span onClick={onExpandClick}>
               hide json <CaretRightOutlined rotate={90} />
@@ -63,10 +65,17 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
           )}
         items={[
           {
-            key: '1',
+            key: JSON_PANEL,
             label: (
               <Space>
-                <Button type={readOnly ? 'default' : 'primary'} onClick={() => setModalVisible(true)} size="small">
+                <Button
+                  type={readOnly ? 'default' : 'primary'}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setModalVisible(true);
+                  }}
+                  size="small"
+                >
                   {`Query Builder ${hasValue ? '(applied)' : ''}`.trim()}
                 </Button>
 
@@ -84,14 +93,16 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
                 </Show>
               </Space>
             ),
-            children: (
-              <CodeEditor
-                readOnly={true}
-                value={props.value ? JSON.stringify(props.value, null, 2) : ""}
-                language="javascript"
-                style={{ marginTop: 8 }}
-              />
-            ),
+            children: jsonExpanded
+              ? (
+                <CodeEditor
+                  readOnly={true}
+                  value={props.value ? JSON.stringify(props.value, null, 2) : ""}
+                  language="javascript"
+                  style={{ marginTop: 8 }}
+                />
+              )
+              : undefined,
           },
         ]}
       >

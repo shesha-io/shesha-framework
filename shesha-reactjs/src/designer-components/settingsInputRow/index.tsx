@@ -2,14 +2,12 @@
 import { IConfigurableFormComponent, UnwrapCodeEvaluators } from "@/interfaces";
 import { isDefined } from '@/utils/nullables';
 import { SettingOutlined } from "@ant-design/icons";
-import { FC, useRef } from 'react';
-import * as React from 'react';
+import { FC, useId } from 'react';
 import { useStyles } from '../inputComponent/styles';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { getWidth } from '../settingsInput/utils';
 import { IInputRowProps, ISettingsInputRowProps, SettingsInputRowDefinition } from './interfaces';
 import { useShaFormInstance } from "@/providers/form/providers/shaFormProvider";
-import { nanoid } from '@/utils/uuid';
 import { ISettingsInputProps } from '../settingsInput/interfaces';
 
 export const isSettingsInputRow = (component: IConfigurableFormComponent): component is ISettingsInputRowProps => isDefined(component) && component.type === 'settingsInputRow';
@@ -28,8 +26,8 @@ const InputRowInput = (props: IInputRowInputProps): React.JSX.Element => {
     readOnly,
   } = props;
   const width = getWidth(props.type, props.width);
-  // eslint-disable-next-line react-hooks/refs
-  const id = useRef(nanoid()).current;
+
+  const id = useId();
 
   return (
     <SettingInput

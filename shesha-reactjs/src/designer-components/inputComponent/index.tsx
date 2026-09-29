@@ -8,6 +8,7 @@ import { useDefaultModelActionsOrUndefined, useDefaultModelPropertyUpdateSubscri
 import { getValueByPropertyName } from '@/utils/object';
 import { renderValueForDisplay } from './utils';
 import { isNotNullOrWhiteSpace } from '@/utils';
+import CustomErrorBoundary from '@/components/customErrorBoundary';
 
 /** Stable reference so the Popover does not see a new array on every render. */
 const POPOVER_TRIGGERS: ('hover' | 'focus' | 'click')[] = ['hover', 'focus', 'click'];
@@ -109,7 +110,9 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
         mouseLeaveDelay={0.2}
       >
         <div> {/* div is required to make Popover work for some input components */}
-          <Editor key={newProps.id} {...newProps} />
+          <CustomErrorBoundary>
+            <Editor key={newProps.id} {...newProps} />
+          </CustomErrorBoundary>
         </div>
       </Popover>
     );

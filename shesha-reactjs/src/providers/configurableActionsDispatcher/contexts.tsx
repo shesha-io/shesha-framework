@@ -35,7 +35,7 @@ export interface IPrepareActionArgumentsPayload<TArguments extends ActionParamet
 
 export interface IRegisterActionPayload<TArguments extends object = object, TReponse = unknown, TExecutionContext extends IActionExecutionContext = IActionExecutionContext>
   extends IConfigurableActionDescriptor<TArguments, TReponse, TExecutionContext> {
-  isPermament?: boolean | undefined;
+  isPermanent?: boolean | undefined;
 }
 
 export interface RegisterActionType {
