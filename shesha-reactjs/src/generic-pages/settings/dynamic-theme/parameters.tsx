@@ -12,6 +12,7 @@ import TextsPreview from './textsPreview';
 import { FormItemLayout } from 'antd/es/form/Form';
 import { FormLabelAlign } from 'antd/es/form/interface';
 import { useDebouncedCallback } from 'use-debounce';
+import FormItem from '@/designer-components/_settings/components/formItem';
 
 /**
  * The theme settings tabs: theme-wide settings, the full per-component tree, then the four
@@ -272,14 +273,13 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
               </div>
             )}
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <FormItem name="showColon" label="Show colon" layout="vertical">
               <Switch
                 checked={theme.colon ?? true}
                 onChange={(checked) => changeThemeInternal({ ...theme, colon: checked })}
                 disabled={readOnly}
               />
-              <Typography.Text>Show Colon</Typography.Text>
-            </div>
+            </FormItem>
           </div>
 
           {/* Group Defaults: one shared appearance form for every input component */}

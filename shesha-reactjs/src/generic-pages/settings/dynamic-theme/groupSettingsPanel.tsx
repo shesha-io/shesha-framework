@@ -1,4 +1,4 @@
-import { Card, Form } from 'antd';
+import { Form } from 'antd';
 import { FC, useMemo } from 'react';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { DEFAULT_FORM_SETTINGS, FormMarkupWithSettings } from '@/providers/form/models';
@@ -64,18 +64,10 @@ export const GroupSettingsPanel: FC<IGroupSettingsPanelProps> = ({ group, value:
   };
 
   return (
-    <Card
-      title={(
-        <div>
-          <h4 style={{ marginBottom: 4 }}>{GROUP_LABELS[group]}</h4>
-          <span style={{ color: '#999', fontSize: '12px' }}>
-            Shared default appearance for every {isNotNullOrWhiteSpace(GROUP_LABELS[group]) ? GROUP_LABELS[group].toLowerCase() : 'component'} component. Individual components below can still override it.
-          </span>
-        </div>
-      )}
-      size="small"
-      className={styles.themeCardSettings}
-    >
+    <>
+      <span style={{ color: '#999', fontSize: '12px' }}>
+        Shared default appearance for every {isNotNullOrWhiteSpace(GROUP_LABELS[group]) ? GROUP_LABELS[group].toLowerCase() : 'component'} component. Individual components below can still override it.
+      </span>
       <ConfigurableForm
         key={group}
         form={form}
@@ -88,7 +80,8 @@ export const GroupSettingsPanel: FC<IGroupSettingsPanelProps> = ({ group, value:
         isSettingsForm
         layout="vertical"
       />
-    </Card>
+    </>
+
   );
 };
 

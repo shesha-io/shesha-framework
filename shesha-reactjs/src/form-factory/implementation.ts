@@ -575,7 +575,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
   };
 
   stdMarginPaddingPanel = (propertyName: string = 'stylingBoxJson', panelTitle: string = 'Margin & Padding'): FormBuilder => {
-    this.stdCollapsiblePanel(panelTitle, (f) => f.addStyleBox({ label: 'Margin Padding', hideLabel: true, propertyName: propertyName, format: 'json' }));
+    this.stdCollapsiblePanel(panelTitle, (f) => f.addStyleBox({ label: 'Margin Padding', hideLabel: true, propertyName: propertyName, format: 'json', jsSetting: false }));
     return this;
   };
 
