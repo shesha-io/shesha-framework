@@ -561,7 +561,10 @@ namespace Shesha.Web.FormsDesigner.Services
             var validationResults = new List<ValidationResult>();
 
             var entity = await GetEntityByIdAsync(input.Id);
-            var alreadyExist = await Repository.GetAll().Where(f => f.Id != input.Id && f.Origin.Id != entity.Origin.Id && f.Module == entity.Module && f.Application == entity.Application && f.Name == input.Name).AnyAsync();
+            var targetApplication = input.ApplicationId.HasValue
+                ? await _frontEndAppRepository.GetAsync(input.ApplicationId.Value)
+                : null;
+            var alreadyExist = await Repository.GetAll().Where(f => f.Id != input.Id && f.Origin.Id != entity.Origin.Id && f.Module == entity.Module && f.Application == targetApplication && f.Name == input.Name).AnyAsync();
             if (alreadyExist)
                 validationResults.Add(new ValidationResult(
                     input.ModelType != null
@@ -580,9 +583,7 @@ namespace Shesha.Web.FormsDesigner.Services
             entity.Description = input.Description;
             entity.Markup = input.Markup;
             entity.ModelType = input.ModelType;
-            entity.Application = input.ApplicationId.HasValue
-                ? await _frontEndAppRepository.GetAsync(input.ApplicationId.Value)
-                : null;
+            entity.Application = targetApplication;
             await Repository.UpdateAsync(entity);
 
             if (oldName != input.Name) 
