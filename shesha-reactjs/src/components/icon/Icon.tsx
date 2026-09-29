@@ -30,7 +30,7 @@ export const Icon = ({
   if (isKeyOf(icon, icons)) {
     return (
       <Tooltip title={hint}>
-        <span style={style}><ShaIcon iconName={icon} style={style} /></span>
+        <span style={style} className={className}><ShaIcon iconName={icon} style={style} /></span>
       </Tooltip>
     );
   }
@@ -38,7 +38,7 @@ export const Icon = ({
   if (isKeyOf(icon, customIcons)) {
     return (
       <Tooltip title={hint}>
-        <span style={style}>{customIcons[icon]}</span>
+        <span className={className} style={style}>{customIcons[icon]}</span>
       </Tooltip>
     );
   }

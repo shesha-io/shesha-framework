@@ -23,7 +23,7 @@ export const useStyles = createStyles(({ css, cx }) => {
         height: 100%;
         overflow: auto;
         transform-origin: top left;
-        box-shadow: 1px 1px 5px 5px #00000080;
+        box-shadow: 0px 1px 6px 0px #00000030;
     }
   `);
 

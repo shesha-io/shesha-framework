@@ -71,7 +71,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     headerControls,
     headerFormId,
   } = props;
-  const { theme: themeFromStorage, resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const { styles } = useStyles();
 
   // antd's Sider/Menu only understand 'light' | 'dark', so pass the resolved scheme.
@@ -209,9 +209,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
               className={classNames(styles.mainArea, styles.shaSiteLayoutBackground)}
               style={{
                 ...layoutBackgroundStyle,
-                ...(isNullOrWhiteSpace(themeFromStorage.layoutBackground)
-                  ? {}
-                  : { background: themeFromStorage.layoutBackground }),
               }}
             >
               {children}

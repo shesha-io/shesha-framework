@@ -12,7 +12,7 @@
       "tabs": [
         {
           "key": "common",
-          "title": "Common",
+          "title": "Main",
           "id": "commonTab1",
           "components": [
             {

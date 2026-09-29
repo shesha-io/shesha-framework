@@ -103,7 +103,9 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
         open={popupOpen}
         autoAdjustOverflow={true}
         placement="topLeft"
-        mouseEnterDelay={0.3}
+        // Long enough that sweeping the pointer down the properties panel to reach a further-down setting
+        // no longer pops this open over the settings in between; it only appears once you settle on an input.
+        mouseEnterDelay={0.9}
         mouseLeaveDelay={0.2}
       >
         <div> {/* div is required to make Popover work for some input components */}

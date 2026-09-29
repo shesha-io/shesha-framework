@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }) => {
+export const useStyles = createStyles(({ css, cx, token }) => {
   const wrapper = cx('sha-context-property-autocomplete', css`
     margin-bottom: 10px;
   `);
@@ -11,7 +11,7 @@ export const useStyles = createStyles(({ css, cx }) => {
 
   const label = cx("properties-label", css`
     font-size: 12px;
-    color: darkslategrey;
+    color: ${token.colorTextSecondary};
     font-weight: 500;
     position: relative;
     top: 8px;

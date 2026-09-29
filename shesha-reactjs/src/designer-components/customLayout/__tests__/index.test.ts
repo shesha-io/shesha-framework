@@ -50,4 +50,12 @@ describe('CustomLayoutComponent', () => {
     expect(model.componentName).toBe('customLayout1');
     expect(model.display).toBe('flex');
   });
+
+  // Refs #4804 QA - a hidden layout rendered its wrapper with the default min-height, leaving a gap
+  test('getWrapperStyle gives a hidden layout no dimensions', () => {
+    const dimensions = { minHeight: '32px' };
+
+    expect(CustomLayoutComponent.getWrapperStyle?.(buildModel({ hidden: true, dimensions }))).toEqual({});
+    expect(CustomLayoutComponent.getWrapperStyle?.(buildModel({ dimensions }))?.style?.dimensions?.minHeight).toBe('32px');
+  });
 });

@@ -51,8 +51,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
 
   const dateRestrictionOptions = [
     { value: 'none', label: 'None' },
-    { value: 'past', label: 'In the past' },
-    { value: 'future', label: 'In the future' },
+    { value: 'past', label: 'Past dates only' },
+    { value: 'future', label: 'Future dates only' },
   ];
 
   const timeRestrictionOptions = [
@@ -94,7 +94,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
         size: 'small',
         tabs: [
           {
-            key: 'common', title: 'Common', id: commonTabId,
+            key: 'common', title: 'Main', id: commonTabId,
             components: [
               ...fbf(commonTabId)
                 .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })

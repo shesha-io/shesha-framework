@@ -100,7 +100,7 @@ export const ConfigurableFormRenderer = <Values extends object = object>({
           onFinishFailed={onFinishFailedInternal}
           onValuesChange={onValuesChangeInternal}
           {...(initialValues ? { initialValues } : {})}
-          className={classNames(styles.shaForm, props.className)}
+          className={classNames(styles.shaForm, { [styles.shaConfiguredForm]: !followsAppTheme }, props.className)}
           {...mergedProps}
           {...(shaForm.form
             ? {

@@ -49,7 +49,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
         size: 'small',
         tabs: [
           {
-            key: 'common', title: 'Common', id: commonTabId,
+            key: 'common', title: 'Main', id: commonTabId,
             components: [
               ...fbf(commonTabId)
                 .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
@@ -106,7 +106,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                       { type: 'codeEditor', propertyName: 'incomeCustomJs', label: 'Key Value (legacy)', labelAlign: 'right', tooltip: 'Return key from the value. Legacy setting, retained for forms saved with the removed Custom value format.' },
                       { type: 'codeEditor', propertyName: 'outcomeCustomJs', label: 'Custom Value (legacy)', labelAlign: 'right', tooltip: 'Return value that will be stored as field value. Legacy setting, retained for forms saved with the removed Custom value format.' },
                     ],
-                  }), true)
+                  }), true, refListVisibleJs)
                 .stdCollapsiblePanel('Validations', (fb) => fb
                   .addSettingsInput({ inputType: 'switch', propertyName: 'validate.required', label: 'Required', size: 'small', layout: 'horizontal', jsSetting: true })
                   .addSettingsInputRow({
