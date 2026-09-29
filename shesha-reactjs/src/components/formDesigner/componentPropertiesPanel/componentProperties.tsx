@@ -38,7 +38,7 @@ export const ComponentProperties: FC<IComponentPropertiesEditrorProps> = (props)
 
   return (
     <SourceFilesFolderProvider folder={sourcesFolder}>
-      <ParentProvider model={{ readOnly: readOnly }}>
+      <ParentProvider model={{ readOnly: readOnly, disabled: false }}>
         <ComponentPropertiesEditor
           key={id}
           componentModel={componentModel}
