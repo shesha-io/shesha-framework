@@ -11,6 +11,7 @@ import { IConfigurableFormComponent } from '@/interfaces';
 import { useFormActionsOrUndefined } from '@/providers/form';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 import { isNonEmptyArray } from '@/utils/array';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 // Remembers the last selected tab per tab set, so it survives the component being remounted
 // (e.g. when the settings form re-renders) without depending on any host such as the form designer.
@@ -93,7 +94,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
 
     if (component.inputs) {
       const visibleInputs = component.inputs.filter((input) => {
-        if (!input.propertyName) return true;
+        if (isNullOrWhiteSpace(input.propertyName)) return true;
         return isComponentFiltered(input);
       });
       if (visibleInputs.length === 0) return null;
@@ -154,7 +155,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
             </ParentProvider>
           ),
         forceRender: false,
-        hidden: tab.hidden || (searchQuery.trim() !== '' && !hasVisibleComponents),
+        hidden: (isDefined(tab.hidden) && tab.hidden !== false) || (searchQuery.trim() !== '' && !hasVisibleComponents),
       };
     })
     .filter((tab) => !tab.hidden);
@@ -174,7 +175,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   const localTabs = useMemo(() => (
     <Tabs
       key="searchable-tabs"
-      {...(effectiveActiveKey ? { defaultActiveKey: effectiveActiveKey } : {})}
+      {...(isNotNullOrWhiteSpace(effectiveActiveKey) ? { activeKey: effectiveActiveKey } : {})}
       onChange={handleTabChange}
       size={model.size}
       type={model.tabType || 'card'}
