@@ -106,6 +106,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   formMode: FormMode;
 
+  isFormSettingsVisible: boolean = false;
+
   activeSettingsTabKey: string | undefined;
 
   validationCollector: IValidationCollector;
@@ -127,6 +129,16 @@ export class FormDesignerInstance implements IFormDesignerInstance {
   get state(): FormDesignerFormState {
     return this.undoableState.getState();
   }
+
+  closeFormSettings = (): void => {
+    this.isFormSettingsVisible = false;
+    this.notifySubscribers(['settings']);
+  };
+
+  openFormSettings = (): void => {
+    this.isFormSettingsVisible = true;
+    this.notifySubscribers(['settings']);
+  };
 
   constructor(args: FormDesignerArgs) {
     this.toolboxComponentGroups = args.toolboxComponentGroups;
@@ -631,6 +643,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     await this.validateAllComponentsAsync();
     await this.validateFormSettingsAsync();
   };
+
+  getValidationResults = (): FieldValidationError[] => this.validationCollector.validationResults;
 
   updateValidationResults = (payload: IValidationResultsPayload): void => {
     const results: FieldValidationError[] = [];

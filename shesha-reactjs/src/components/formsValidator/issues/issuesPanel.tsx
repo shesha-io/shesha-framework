@@ -5,8 +5,9 @@ import { IssuesTree } from './issuesTree';
 import { useAllValidationResults } from '@/providers/validator/hooks';
 import CustomErrorBoundary from '@/components/customErrorBoundary';
 import { FieldValidationError } from '@/interfaces';
-import { isNullOrWhiteSpace } from '@/utils';
+import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { useFormDesigner } from '@/providers/formDesigner';
+import { isNonEmptyArray } from '@/utils/array';
 
 type CommonIssuesProps = {
   issues: FieldValidationError[];
@@ -23,10 +24,15 @@ export const IssuesPanel: FC = () => {
   const common: CommonIssuesProps = {
     issues: data,
     showFilter: false,
-    onSelect: (componentId) => {
+
+    onSelect: (componentId, issue) => {
       if (!isNullOrWhiteSpace(componentId)) {
         formDesigner.setSelectedComponent(componentId);
         // form.scrollToField('bio')
+      } else {
+        if (isDefined(issue) && isNonEmptyArray(issue.path) && issue.path[0].kind === "form-settings") {
+          formDesigner.openFormSettings();
+        }
       }
     },
     selectedId: formDesigner.selectedComponentId,

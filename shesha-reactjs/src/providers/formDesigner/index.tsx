@@ -163,6 +163,10 @@ const useFormDesignerSettings = (): IFormSettings => {
   useFormDesignerSubscription('markup');
   return useFormDesigner().state.formSettings;
 };
+const useFormDesignerSettingsEditorVisible = (): boolean => {
+  useFormDesignerSubscription('settings');
+  return useFormDesigner().isFormSettingsVisible;
+};
 const useFormDesignerSelectedComponentId = (): string | undefined => {
   useFormDesignerSubscription('selection');
   return useFormDesigner().selectedComponentId;
@@ -229,4 +233,5 @@ export {
   useFormDesignerSettings,
   useFormDesignerSettingsPanelElement,
   useFormDesignerUndoRedo,
+  useFormDesignerSettingsEditorVisible,
 };

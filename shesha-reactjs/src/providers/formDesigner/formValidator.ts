@@ -21,6 +21,7 @@ export type ComponentValidationContext = {
   formFlatMarkup: IFlatComponentsStructure;
   appContext: IApplicationContext;
   scopeProvider?: IAmbientScopeProvider<object>;
+  validateDependencies?: boolean;
 };
 
 export type OnComponentValidated = (component: IConfigurableFormComponent, errors: IAsyncValidationError[]) => void;
@@ -179,18 +180,24 @@ export class FormValidator implements IFormValidator {
 
   validateFormSettingsAsync = async (formSettings: IFormSettings, markup: FormMarkup): Promise<IAsyncValidationError[]> => {
     const validationErrors: IAsyncValidationError[] = [];
+    const rootPath: ValidationNodeRef[] = [{
+      id: '',
+      kind: 'form-settings',
+      name: 'settings',
+      label: 'Form Settings',
+    }];
     try {
       await validateConfigurableComponentSettings(markup, formSettings, {
         validator: this,
         contextConfigurableActionGetter: () => null,
         componentId: "",
         appContext: this.#appContext,
-        path: [],
+        path: rootPath,
       });
     } catch (error: unknown) {
       if (isValidationError(error)) {
         error.errors.forEach((fieldError) => {
-          validationErrors.push({ field: fieldError.field ?? "", message: fieldError.message ?? "Unknown error" });
+          validationErrors.push(ComponentValidationError.wrap(fieldError, rootPath));
         });
       } else {
         console.error('Unknown error ocurred while validating settings', error);

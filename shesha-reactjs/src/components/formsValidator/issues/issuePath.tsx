@@ -4,6 +4,8 @@ import { Breadcrumb } from 'antd';
 import type { BreadcrumbItemType } from 'antd/es/breadcrumb/Breadcrumb';
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { ComponentIcon } from './componentIcon';
+import { SettingOutlined } from '@ant-design/icons';
+import { firstNonEmptyString } from '@/utils/string';
 
 export interface IIssuePathProps {
   path: ValidationNodeRef[];
@@ -21,15 +23,18 @@ export const IssuePath: FC<IIssuePathProps> = ({
       const componentId = segment.kind === 'component' && isDefined(segment.id)
         ? segment.id
         : '';
+      const displayText = firstNonEmptyString(segment.label, segment.name);
       return {
         key: segment.id ?? index,
         title: !isNullOrWhiteSpace(componentId)
           ? (
             <>
-              <ComponentIcon componentId={componentId} /> {segment.name}
+              <ComponentIcon componentId={componentId} /> {displayText}
             </>
           )
-          : segment.name,
+          : segment.kind === 'form-settings'
+            ? <><SettingOutlined /> {displayText}</>
+            : displayText,
         onClick: () => onNavigate?.(segment),
       } satisfies BreadcrumbItemType;
     });
