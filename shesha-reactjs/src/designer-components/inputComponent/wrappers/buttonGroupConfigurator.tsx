@@ -1,7 +1,7 @@
 import { IButtonGroupConfiguratorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import { ButtonGroupConfigurator } from '@/components/buttonGroupConfigurator';
 import { ValidatableComponentUnwrapped } from './models';
-import { isDefined, isNullOrWhiteSpace } from '@/utils';
+import { isDefined } from '@/utils';
 import { getItemSettings } from '@/components/buttonGroupConfigurator/itemSettings';
 import { getGroupSettings } from '@/components/buttonGroupConfigurator/itemGroupSettings';
 import { appendValidationPath } from '@/providers/form/utils/validation';
@@ -22,15 +22,10 @@ export const ButtonGroupConfiguratorWrapper: ValidatableComponentUnwrapped<IButt
   );
 };
 
-ButtonGroupConfiguratorWrapper.validate = async (model, value, context): Promise<Error[]> => {
+ButtonGroupConfiguratorWrapper.validate = async (_model, value, context): Promise<Error[]> => {
   const typedValue = value as IButtonGroupConfiguratorSettingsInputProps["value"];
   if (isDefined(typedValue)) {
     const allErrors: Error[] = [];
-    const itemsContext = appendValidationPath(context, {
-      kind: 'setting',
-      label: typeof (model.label) === "string" && !isNullOrWhiteSpace(model.label) ? model.label : model.propertyName,
-      name: !isNullOrWhiteSpace(model.propertyName) ? model.propertyName : "buttons",
-    });
 
     for (const [index, item] of typedValue.entries()) {
       const markup = item.itemType === 'item'
@@ -39,7 +34,7 @@ ButtonGroupConfiguratorWrapper.validate = async (model, value, context): Promise
           ? getGroupSettings({ fbf: context.validator.formBuilderFactory })
           : [];
 
-      const itemContext = appendValidationPath(itemsContext, {
+      const itemContext = appendValidationPath(context, {
         kind: 'setting',
         id: item.id,
         label: typeof (item.label) === "string" ? item.label : "",

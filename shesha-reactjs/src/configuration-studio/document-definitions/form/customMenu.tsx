@@ -12,7 +12,7 @@ export type ICustomActionsProps = Pick<ButtonProps, 'size'>;
 
 export const CustomActions: FC<ICustomActionsProps> = (props) => {
   const { formProps, loadForm } = useFormPersister();
-  const { validateFormAsync } = useFormDesigner();
+  const { validateFormAsync, getValidationResults } = useFormDesigner();
   const formId = formProps?.id;
   const httpClient = useHttpClient();
   const { open: openModal } = useDynamicModals();
@@ -58,6 +58,19 @@ export const CustomActions: FC<ICustomActionsProps> = (props) => {
       label: 'Validate Form',
       onClick: () => {
         return validateFormAsync();
+      },
+    },
+    {
+      key: 'copyValidationResults',
+      label: 'Copy form problems to clipboard',
+      onClick: async () => {
+        const results = getValidationResults();
+        if (results.length === 0) {
+          message.info('No problems found');
+        }
+
+        await navigator.clipboard.writeText(JSON.stringify(results, null, 2));
+        message.info('Form problems copied to clipboard');
       },
     },
   ];

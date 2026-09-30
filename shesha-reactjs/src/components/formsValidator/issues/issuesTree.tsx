@@ -2,7 +2,7 @@ import React from 'react';
 import { Empty, Tree } from 'antd';
 import { SeverityFilter, useSeverityFilter } from './issueFilter';
 import { FieldValidationError } from '@/interfaces';
-import { isDefined, isNullOrWhiteSpace } from '@/utils';
+import { isDefined } from '@/utils';
 import { buildGroups, toTreeData } from './utils';
 import { Group, IssueTreeNode, TreeContext } from './models';
 
@@ -69,8 +69,7 @@ export const IssuesTree: React.FC<IssuesTreeProps> = ({
               return;
 
             const { issue, componentId } = info.node;
-            if (!isNullOrWhiteSpace(componentId))
-              onSelect(componentId, issue);
+            onSelect(componentId ?? "", issue);
           }}
         />
       )}

@@ -6,6 +6,7 @@ import { editorRegistry } from "../inputComponent/wrappers";
 import { ISettingsInputProps, isSettingsInputProps } from "../settingsInput/interfaces";
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { ComponentValidationError } from "@/utils/validation";
+import { appendValidationPath } from "@/providers/form/utils/validation";
 
 export const getSettingsInputValidator = <TValues = unknown>(model: ISettingsInputProps, context?: IFormValidationRulesOptions<TValues>): ValidatorFunc => {
   const { jsSetting } = model;
@@ -42,7 +43,13 @@ export const getSettingsInputValidator = <TValues = unknown>(model: ISettingsInp
           const editor = editorRegistry[unwrappedType];
           if (isDefined(editor.validate) && isDefined(context)) {
             try {
-              const errors = await editor.validate(model, value, context, callback);
+              const nestedContext = appendValidationPath(context, {
+                kind: 'setting',
+                label: typeof (model.label) === "string" && !isNullOrWhiteSpace(model.label) ? model.label : model.propertyName,
+                name: !isNullOrWhiteSpace(model.propertyName) ? model.propertyName : "buttons",
+              });
+
+              const errors = await editor.validate(model, value, nestedContext, callback);
               allErrors.push(...errors);
             } catch (error) {
               console.error("Validation failed", error);

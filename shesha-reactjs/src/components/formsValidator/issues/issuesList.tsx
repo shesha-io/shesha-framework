@@ -52,8 +52,8 @@ export const IssuesList: FC<IssuesListProps> = ({
             <List.Item
               key={key}
               onClick={() => {
-                if (!isNullOrWhiteSpace(componentId) && onSelect)
-                  onSelect(componentId, issue);
+                if (onSelect)
+                  onSelect(componentId ?? "", issue);
               }}
               style={{
                 cursor: onSelect ? 'pointer' : 'default',

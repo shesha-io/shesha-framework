@@ -18,6 +18,8 @@ export const removeUndefinedProperties = <T extends object>(obj: T): RemoveUndef
 
 export type NonEmptyArray<T> = [T, ...T[]];
 
+export type ArrayOrSingle<T> = T[] | T;
+
 /**
  * Checks if the given value is an array with at least one element.
  * @returns true if the value is an array with at least one element, false otherwise.

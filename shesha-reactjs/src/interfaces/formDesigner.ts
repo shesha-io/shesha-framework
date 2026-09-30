@@ -344,7 +344,7 @@ export interface IAsyncValidationError {
 }
 
 export interface ValidationNodeRef {
-  kind: 'form' | 'component' | 'setting';
+  kind: 'form-settings' | 'form-markup' | 'component' | 'setting';
   /** index among siblings; ignored for the form node */
   index?: number;
   /** stable component id, if any */
