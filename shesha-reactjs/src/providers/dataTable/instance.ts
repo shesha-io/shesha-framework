@@ -349,6 +349,7 @@ export class DatasetInstance implements IDatasetInstance {
           accessor: state.strictSortBy,
           header: '',
           isVisible: false,
+          show: false,
           isFilterable: false,
           isSortable: false,
         });
