@@ -10,6 +10,7 @@ import { evaluateDynamicFilters } from '@/utils/datatable';
 import { useNestedPropertyMetadatAccessor } from '@/providers';
 import { ConfigItemAutocomplete } from '@/components/configurableItemAutocomplete';
 import { isDefined } from '@/utils/nullables';
+import { validateConfigurationItemReference } from './utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -101,6 +102,18 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
   },
   actualModelPropertyFilter: (name) => name !== 'filter',
   settingsFormMarkup: settingsForm,
+  getExtraValidationRules: (model, context) => {
+    if (!isDefined(context))
+      return [];
+
+    return [
+      {
+        validator: async (_rule, value: ConfigurableItemFullName | ConfigurableItemFullName[]): Promise<void> => {
+          await validateConfigurationItemReference(model.entityType, value, context);
+        },
+      },
+    ];
+  },
 
   migrator: (m) => m
     .add<IConfigurableItemAutocompleteComponentProps>(0, (prev) => ({

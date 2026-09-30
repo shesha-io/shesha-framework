@@ -1,4 +1,5 @@
 import {
+  FieldValidationError,
   IAsyncValidationError,
   IComponentSettingsFormFactory, ISettingsFormFactory,
 } from '@/interfaces';
@@ -100,6 +101,8 @@ export type FormDesignerState = {
   settingsPanelElement: HTMLDivElement | null;
   validationCollector: IValidationCollector;
   formSettingsFormMarkup: FormMarkup;
+
+  isFormSettingsVisible: boolean;
 };
 
 export type FormDesignerActions = {
@@ -137,7 +140,9 @@ export type FormDesignerActions = {
 
   setSettingsPanelElement: (element: HTMLDivElement | null) => void;
   validateFormAsync: () => Promise<void>;
-  validateComponentAsync: <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(component: TModel) => Promise<void>;
+  getValidationResults: () => FieldValidationError[];
+  openFormSettings: () => void;
+  closeFormSettings: () => void;
 };
 
 

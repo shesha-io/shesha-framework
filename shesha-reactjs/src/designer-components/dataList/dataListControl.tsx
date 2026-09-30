@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { DataList } from '@/components/dataList';
 import { IDataListWithDataSourceProps } from './model';
-import { FCUnwrapped, useConfigurableAction, useConfigurableActionDispatcher, useForm } from '@/providers';
+import { FCUnwrapped, useConfigurableActionDispatcher, useConfigurableActionImplementation, useForm } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
 import { executeScript, useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
@@ -18,6 +18,7 @@ import { useEnsureFetchColumns } from '@/designer-components/dataTable/table/use
 import { MAX_NUMBER_OF_FETCH_COLS, SUPPORTED_FETCH_DATA_TYPES } from '@/designer-components/dataTable/table/utils';
 import { asPropertiesArray } from '@/interfaces/metadata';
 import { toCamelCase } from '@/utils/string';
+import { AddNewItem } from './configurableActions';
 
 const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInstance"> = (props) => {
   const {
@@ -174,20 +175,17 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
 
 
   const dataListRef = useRef<ActionRefType>(undefined);
-  useConfigurableAction(
-    {
-      name: 'Add new item (if allowed)',
-      owner: props.componentName ?? "Data List",
-      ownerUid: props.id,
-      hasArguments: false,
-      executer: () => {
-        if (dataListRef.current?.addNewItem)
-          dataListRef.current.addNewItem();
-        return Promise.resolve();
-      },
+
+  const actionOwnerId = props.id;
+  const actionOwnerName = props.componentName ?? "Data List";
+  useConfigurableActionImplementation(actionOwnerId, AddNewItem, {
+    owner: actionOwnerName,
+    executer: () => {
+      if (dataListRef.current?.addNewItem)
+        dataListRef.current.addNewItem();
+      return Promise.resolve();
     },
-    [],
-  );
+  }, [actionOwnerId, actionOwnerName]);
 
   const data = useDeepCompareMemo<ITableRowData[]>(() => {
     if (isDesignMode) {

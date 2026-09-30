@@ -13,7 +13,7 @@ const nextConfig = (phase) => {
   /** @type {import('next').NextConfig} */
   const config = {
     output: 'standalone',
-    reactStrictMode: false,
+    reactStrictMode: true,
     transpilePackages: [
       'antd',
       '@ant-design',

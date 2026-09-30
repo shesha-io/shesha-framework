@@ -80,7 +80,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
         hideLabel: props.hideLabel,
         propertyName: name,
         label: <div className={styles.label}>{label}</div>,
-        type: '',
+        type: props.type ?? "",
         id: '',
         description: labelTooltip,
         validate: { required: required === true && valueInfo?.state !== 'usedDefault' },

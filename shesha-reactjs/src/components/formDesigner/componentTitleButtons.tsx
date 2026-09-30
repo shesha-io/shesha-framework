@@ -1,15 +1,12 @@
 import { FC } from 'react';
 import { Button } from 'antd';
-import { BugOutlined, CopyOutlined, DeleteFilled } from '@ant-design/icons';
+import { CopyOutlined, DeleteFilled } from '@ant-design/icons';
 import { useFormDesigner, useFormDesignerReadOnly, useFormDesignerSelectedComponent } from '@/providers/formDesigner';
-import { isDefined } from '@/utils';
-import { useSheshaApplication } from '@/providers';
 
 export const ComponentTitleButtons: FC = ({}) => {
-  const { isDebugMode } = useSheshaApplication();
   const component = useFormDesignerSelectedComponent();
   const readOnly = useFormDesignerReadOnly();
-  const { deleteComponent, duplicateComponent, validateComponentAsync } = useFormDesigner();
+  const { deleteComponent, duplicateComponent } = useFormDesigner();
 
   const onDeleteClick = (): void => {
     if (!readOnly && component)
@@ -21,23 +18,9 @@ export const ComponentTitleButtons: FC = ({}) => {
       duplicateComponent({ componentId: component.id });
   };
 
-  const onDebugClick = (): void => {
-    if (isDefined(component))
-      void validateComponentAsync(component);
-  };
-
   return component && !readOnly
     ? (
       <>
-        {isDebugMode && (
-          <Button
-            type="text"
-            icon={<BugOutlined />}
-            onClick={onDebugClick}
-            size="small"
-            title="Debug"
-          />
-        )}
         <Button
           type="text"
           icon={<CopyOutlined />}

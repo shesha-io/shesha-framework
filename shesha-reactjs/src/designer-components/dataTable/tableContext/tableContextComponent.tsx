@@ -7,6 +7,7 @@ import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/uti
 import { isNullOrWhiteSpace } from '@/utils';
 import { migratePermissionsToVisiblePermissions } from '@/designer-components/_common-migrations/migratePermissionsToVisiblePermissions';
 import { migrateHiddenToVisible } from '@/designer-components/_common-migrations';
+import { ExportToExcelAction, RefreshTableAction, ToggleAdvancedFilterAction, ToggleColumnsSelectorAction } from '@/providers/dataTable/configurableActions';
 
 /**
  * Data Context component (dataContext)
@@ -57,6 +58,7 @@ const TableContextComponent: TableContextComponentDefinition = {
   },
   migrator: (m) => m
     .add<ITableContextComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+  actions: [RefreshTableAction, ExportToExcelAction, ToggleAdvancedFilterAction, ToggleColumnsSelectorAction],
 };
 
 export default TableContextComponent;

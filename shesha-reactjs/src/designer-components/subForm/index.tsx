@@ -19,6 +19,7 @@ import SubForm from './subForm';
 import { useMemo } from 'react';
 import { useStyles } from './styles';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
+import { GetFormDataAction, PostFormDataAction, UpdateFormDataAction } from '@/providers/subForm/configurableActions';
 
 export interface ISubFormComponentProps extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol'>, IConfigurableFormComponent {
   labelCol?: number;
@@ -163,6 +164,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
       return ownFields;
     }
   },
+  actions: [GetFormDataAction, PostFormDataAction, UpdateFormDataAction],
 };
 
 export default SubFormComponent;

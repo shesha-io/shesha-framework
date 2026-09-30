@@ -54,7 +54,7 @@ export const ConfigurableFormItemSetting = <TValue = unknown>({
       model={{
         propertyName: model.propertyName,
         label: model.label,
-        type: '',
+        type: model.type,
         id: '',
         description: model.description,
         validate: { required: model.validate?.required },

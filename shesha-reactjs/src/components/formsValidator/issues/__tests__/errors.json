@@ -1,0 +1,337 @@
+[
+  {
+    "propertyName": "buttons!.items..name",
+    "propertyLabel": "Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "VRmoJr8m8w-igSIgu3zi8",
+        "kind": "component",
+        "name": "buttons!"
+      },
+      {
+        "kind": "setting",
+        "label": "Button group",
+        "name": "items"
+      },
+      {
+        "kind": "setting",
+        "label": "Add",
+        "name": "",
+        "index": 0
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "buttons!.items..name",
+    "propertyLabel": "Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "VRmoJr8m8w-igSIgu3zi8",
+        "kind": "component",
+        "name": "buttons!"
+      },
+      {
+        "kind": "setting",
+        "label": "Button group",
+        "name": "items"
+      },
+      {
+        "kind": "setting",
+        "label": "Open",
+        "name": "",
+        "index": 2
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "buttons!.items..name",
+    "propertyLabel": "Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "VRmoJr8m8w-igSIgu3zi8",
+        "kind": "component",
+        "name": "buttons!"
+      },
+      {
+        "kind": "setting",
+        "label": "Button group",
+        "name": "items"
+      },
+      {
+        "kind": "setting",
+        "label": "Edit",
+        "name": "",
+        "index": 3
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "buttons!.items..name",
+    "propertyLabel": "Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "VRmoJr8m8w-igSIgu3zi8",
+        "kind": "component",
+        "name": "buttons!"
+      },
+      {
+        "kind": "setting",
+        "label": "Button group",
+        "name": "items"
+      },
+      {
+        "kind": "setting",
+        "label": "Export",
+        "name": "",
+        "index": 5
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "buttons!.items.button7.actionConfiguration.arguments.formId",
+    "severity": "error",
+    "path": [
+      {
+        "id": "VRmoJr8m8w-igSIgu3zi8",
+        "kind": "component",
+        "name": "buttons!"
+      },
+      {
+        "kind": "setting",
+        "label": "Button group",
+        "name": "items"
+      },
+      {
+        "kind": "setting",
+        "label": "Button 7",
+        "name": "button7",
+        "index": 6
+      },
+      {
+        "kind": "setting",
+        "label": "On Click",
+        "name": "actionConfiguration"
+      },
+      {
+        "kind": "setting",
+        "label": "Arguments",
+        "name": "arguments"
+      }
+    ],
+    "message": "This field is required"
+  },
+  {
+    "propertyName": "buttons!.items.button7.actionConfiguration.onSuccess.arguments.url",
+    "severity": "error",
+    "path": [
+      {
+        "id": "VRmoJr8m8w-igSIgu3zi8",
+        "kind": "component",
+        "name": "buttons!"
+      },
+      {
+        "kind": "setting",
+        "label": "Button group",
+        "name": "items"
+      },
+      {
+        "kind": "setting",
+        "label": "Button 7",
+        "name": "button7",
+        "index": 6
+      },
+      {
+        "kind": "setting",
+        "label": "On Click",
+        "name": "actionConfiguration"
+      },
+      {
+        "kind": "setting",
+        "label": "On Success",
+        "name": "onSuccess"
+      },
+      {
+        "kind": "setting",
+        "label": "Arguments",
+        "name": "arguments"
+      }
+    ],
+    "message": "This field is required"
+  },
+  {
+    "propertyName": "no-name.componentName",
+    "propertyLabel": "Component Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "FzEzk13Dd8OY_H8u3OOaX",
+        "kind": "component",
+        "name": "no-name",
+        "label": "Horizontal Container7"
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "no-name.componentName",
+    "propertyLabel": "Component Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "5vEWns1G0FsJHsS2lODRv",
+        "kind": "component",
+        "name": "no-name",
+        "label": "Horizontal Container7"
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "no-name.componentName",
+    "propertyLabel": "Component Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "S9-g4uSLTDD5qcTUrtKxG",
+        "kind": "component",
+        "name": "no-name",
+        "label": "Table view selector1"
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "no-name.componentName",
+    "propertyLabel": "Component Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "p9-EW76iOWUqZquf3KRFw",
+        "kind": "component",
+        "name": "no-name",
+        "label": "Horizontal Container7"
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "no-name.componentName",
+    "propertyLabel": "Component Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "kvwX85q1M9V5uDd9tKYSE",
+        "kind": "component",
+        "name": "no-name",
+        "label": "Quick Search1"
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "no-name.componentName",
+    "propertyLabel": "Component Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "AQ6P_BI3b1CbgcBJ4L46c",
+        "kind": "component",
+        "name": "no-name",
+        "label": "Horizontal Container7"
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "no-name.componentName",
+    "propertyLabel": "Component Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "y7YSEzUcBj-uMzZY7W0rs",
+        "kind": "component",
+        "name": "no-name",
+        "label": "Horizontal Container7"
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "no-name.componentName",
+    "propertyLabel": "Component Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "g6jUyNyHrito_0sRS2MLm",
+        "kind": "component",
+        "name": "no-name",
+        "label": "Horizontal Container7"
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "no-name.componentName",
+    "propertyLabel": "Component Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "4nhcaXgVCPWhNHDdvbvWZ",
+        "kind": "component",
+        "name": "no-name",
+        "label": ""
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "no-name.componentName",
+    "propertyLabel": "Component Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "9-5ySCLPtbwCGOsr5vmPW",
+        "kind": "component",
+        "name": "no-name",
+        "label": ""
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "no-name.componentName",
+    "propertyLabel": "Component Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "P6kS0M3nSt7_VXwwlhTRh",
+        "kind": "component",
+        "name": "no-name",
+        "label": ""
+      }
+    ],
+    "message": "Value is required."
+  },
+  {
+    "propertyName": "no-name.componentName",
+    "propertyLabel": "Component Name",
+    "severity": "error",
+    "path": [
+      {
+        "id": "wdZ4mnKj6si87HbfYxvs3",
+        "kind": "component",
+        "name": "no-name",
+        "label": "DataTable1"
+      }
+    ],
+    "message": "Value is required."
+  }
+]

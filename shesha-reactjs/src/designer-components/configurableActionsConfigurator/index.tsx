@@ -6,8 +6,10 @@ import { ConfigurableActionConfiguratorComponentDefinition, IConfigurableActionC
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { ThunderboltOutlined } from '@ant-design/icons';
-
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { IConfigurableActionConfiguration } from '@/providers';
+import { validateActionConfiguration } from '@/providers/configurableActionsDispatcher/utils';
+import { appendValidationPath } from '@/providers/form/utils/validation';
 
 const ConfigurableActionConfiguratorComponent: ConfigurableActionConfiguratorComponentDefinition = {
   type: 'configurableActionConfigurator',
@@ -38,6 +40,24 @@ const ConfigurableActionConfiguratorComponent: ConfigurableActionConfiguratorCom
     );
   },
   settingsFormMarkup: getSettings,
+  getExtraValidationRules: (model, context) => {
+    if (!isDefined(context))
+      return [];
+
+    const isRequired = model.validate?.required === true;
+    return [
+      {
+        validator: async (_rule, value: IConfigurableActionConfiguration): Promise<void> => {
+          const actionContext = appendValidationPath(context, {
+            kind: 'setting',
+            label: typeof (model.label) === "string" && !isNullOrWhiteSpace(model.label) ? model.label : model.propertyName,
+            name: model.propertyName ?? "action",
+          });
+          await validateActionConfiguration(value, isRequired, actionContext);
+        },
+      },
+    ];
+  },
 
   migrator: (m) => m
     .add<IConfigurableActionConfiguratorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

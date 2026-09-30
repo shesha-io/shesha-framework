@@ -4,6 +4,7 @@ import { FC } from 'react';
 import { Alert, Typography } from 'antd';
 import { IQueryBuilderComponentPropsUnwrapped } from './interfaces';
 import { useForm, useQueryBuilderOrUndefined } from '@/providers';
+import { isNullOrWhiteSpace } from '@/utils';
 
 export const QueryBuilderRenderer: FC<IQueryBuilderComponentPropsUnwrapped> = (props) => {
   const { formMode } = useForm();
@@ -12,7 +13,7 @@ export const QueryBuilderRenderer: FC<IQueryBuilderComponentPropsUnwrapped> = (p
   const queryBuilder = useQueryBuilderOrUndefined();
   const fieldsAvailable = Boolean(queryBuilder);
 
-  if (!fieldsAvailable && formMode === 'designer' && !fieldsUnavailableHint)
+  if (!fieldsAvailable && formMode === 'designer' && isNullOrWhiteSpace(fieldsUnavailableHint))
     return (
       <Alert
         className="sha-designer-warning"
@@ -21,7 +22,7 @@ export const QueryBuilderRenderer: FC<IQueryBuilderComponentPropsUnwrapped> = (p
       />
     );
 
-  return !fieldsAvailable && fieldsUnavailableHint ? (
+  return !fieldsAvailable && !isNullOrWhiteSpace(fieldsUnavailableHint) ? (
     <ConfigurableFormItem model={props}>
       <Typography.Text type="secondary">{fieldsUnavailableHint}</Typography.Text>
     </ConfigurableFormItem>
