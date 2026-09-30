@@ -118,7 +118,7 @@ export interface FormApi<Values extends object = object> {
    *   setTimeout(() => loader.close(), 2000);
    * }
    */
-  showLoader: (message?: string) => { updateMessage(message: string): void; close(): void };
+  showLoader: (message?: string, isBlocking?: boolean) => { updateMessage(message: string): void; close(): void; block(): void; unblock(): void };
 
   /**
    * Hide all active loaders

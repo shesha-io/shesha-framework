@@ -1,7 +1,6 @@
 import { TypeDefinition } from '@/interfaces/metadata';
 import { messageApiDefinition } from "@/providers/sourceFileManager/api-utils/message";
 import { modalApiDefinition } from "@/providers/sourceFileManager/api-utils/modal";
-import { loaderApiDefinition } from "@/providers/sourceFileManager/api-utils/loader";
 import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
 import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE, fileSaverCode, globalStateCode, queryStringCode, pageCode, formCode, storageCode } from '@/publicJsApis/apis';
 
@@ -70,17 +69,6 @@ export const registerFileSaverAction: MetadataBuilderAction = (builder, name = "
     return Promise.resolve(definition);
   });
 };
-
-export const registerLoaderAction: MetadataBuilderAction = (builder, name = "loader") => {
-  builder.addCustom(name, "API for showing and hiding blocking loaders", () => {
-    const definition: TypeDefinition = {
-      typeName: 'LoaderApi',
-      files: [{ content: loaderApiDefinition, fileName: 'apis/loader.ts' }],
-    };
-    return Promise.resolve(definition);
-  });
-};
-
 
 export const registerMomentAction: MetadataBuilderAction = (builder, name = "moment") => {
   builder.addCustom(name, "The moment.js object", () => {

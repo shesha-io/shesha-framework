@@ -22,7 +22,7 @@ import { ISubFormProviderProps } from './interfaces';
 import { StandardEntityActions } from '@/interfaces/metadata';
 import { ISubFormActionsContext, ISubFormStateContext, SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
 import { subFormReducer } from './reducer';
-import { ConditionalMetadataProvider, IConfigurableFormComponent, isConfigurableFormComponent, useHttpClient, useMetadataOrUndefined } from '@/providers';
+import { BlockingLoaderProvider, ConditionalMetadataProvider, IConfigurableFormComponent, isConfigurableFormComponent, useHttpClient, useMetadataOrUndefined } from '@/providers';
 import { useConfigurableActionImplementation } from '@/providers/configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useDebouncedCallback } from 'use-debounce';
@@ -63,6 +63,7 @@ import { useEffectOnce } from 'react-use';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { GetFormDataAction, PostFormDataAction, UpdateFormDataAction } from './configurableActions';
+import { ILoaderInstance } from '../blockingLoader/instance';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -223,8 +224,8 @@ const SubFormWithMetadataProvider: FC<PropsWithChildren<ISubForWithMetadataProvi
     setValidationErrors: function (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error): void {
       parentFormApi.setValidationErrors(payload);
     },
-    showLoader: function (message?: string) {
-      return parentFormApi.showLoader(message);
+    showLoader: function (message?: string, isBlocking?: boolean): ILoaderInstance {
+      return parentFormApi.showLoader(message, isBlocking);
     },
     hideLoaders: function (): void {
       parentFormApi.hideLoaders();
@@ -811,20 +812,22 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   //#endregion
 
   return (
-    <ConditionalMetadataProvider modelType={state.formSettings?.modelType}>
-      <SubFormWithMetadataProvider
-        {...props}
-        onChange={onChangeInternal}
-        state={state}
-        parentFormApi={parentFormApi}
-        fetchData={debouncedFetchData}
-        postData={postData}
-        putData={putData}
-        formLoadingState={formLoadingState}
-      >
-        {children}
-      </SubFormWithMetadataProvider>
-    </ConditionalMetadataProvider>
+    <BlockingLoaderProvider level="component">
+      <ConditionalMetadataProvider modelType={state.formSettings?.modelType}>
+        <SubFormWithMetadataProvider
+          {...props}
+          onChange={onChangeInternal}
+          state={state}
+          parentFormApi={parentFormApi}
+          fetchData={debouncedFetchData}
+          postData={postData}
+          putData={putData}
+          formLoadingState={formLoadingState}
+        >
+          {children}
+        </SubFormWithMetadataProvider>
+      </ConditionalMetadataProvider>
+    </BlockingLoaderProvider>
   );
 };
 

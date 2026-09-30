@@ -52,7 +52,7 @@ import { ApplicationContextsProvider } from './context';
 import { useApplicationPlugin, usePublicApplicationApi } from './context/applicationContext';
 import { DEFAULT_ACCESS_TOKEN_NAME, IHttpHeadersDictionary, ISheshaRoutes } from './contexts';
 import { ProgressBar } from './progressBar';
-import { GlobalLoaderProvider } from '../globalLoader';
+import { BlockingLoaderProvider } from '../blockingLoader';
 
 export interface IShaApplicationProviderProps {
   isDebugMode?: boolean;
@@ -149,7 +149,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                                 <FormDataLoadersProvider>
                                                   <FormDataSubmittersProvider>
                                                     <DataSourcesProvider>
-                                                      <GlobalLoaderProvider>
+                                                      <BlockingLoaderProvider level="page">
                                                         <DynamicModalProvider>
                                                           {(status === 'inprogress' || status === 'waiting') && (
                                                             <SheshaLoader message={hint ?? 'Initializing...'} />
@@ -169,7 +169,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                                             />
                                                           )}
                                                         </DynamicModalProvider>
-                                                      </GlobalLoaderProvider>
+                                                      </BlockingLoaderProvider>
                                                     </DataSourcesProvider>
                                                   </FormDataSubmittersProvider>
                                                 </FormDataLoadersProvider>

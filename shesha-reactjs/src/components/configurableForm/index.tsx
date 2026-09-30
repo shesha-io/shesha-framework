@@ -4,7 +4,7 @@ import EditViewMsg from '../appConfigurator/editViewMsg';
 import { RefObject, ReactElement, useEffect, useLayoutEffect, useState } from 'react';
 import { IConfigurableFormProps, SheshaFormProps } from './models';
 import { Form, FormInstance } from 'antd';
-import { useAppConfigurator, useShaRoutingOrUndefined, useSheshaApplication } from '@/providers';
+import { BlockingLoaderProvider, useAppConfigurator, useShaRoutingOrUndefined, useSheshaApplication } from '@/providers';
 import { useFormDesignerUrl } from '@/providers/form/hooks';
 import { FormWithFlatMarkup } from './formWithFlatMarkup';
 import { IShaFormDataSource, useShaForm } from '@/providers/form/store/shaFormInstance';
@@ -17,7 +17,6 @@ import { ShaSpin } from '..';
 import { DataLoadingError } from './dataLoadingError';
 import { IFormActionsContext } from '@/providers/form/contexts';
 import { isDefined } from '@/utils/nullables';
-import { FormLoaderProvider } from '@/providers/form/formLoaderProvider';
 
 export type ConfigurableFormProps<Values extends object = object> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
   form?: FormInstance<Values>;
@@ -213,9 +212,9 @@ const ConfigurableFormInner = <Values extends object = object>(props: Configurab
 export const ConfigurableForm = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
   return (
     <ParentProvider model={null} name={isDefined(props.formId) ? configurableItemIdentifierToString(props.formId) : `form`} isScope>
-      <FormLoaderProvider>
+      <BlockingLoaderProvider level="form">
         <ConfigurableFormInner {...props} />
-      </FormLoaderProvider>
+      </BlockingLoaderProvider>
     </ParentProvider>
   );
 };

@@ -14,16 +14,18 @@ export const useStyles = createStyles(({ css, cx }) => {
   // switching between blocking and non-blocking is a smooth CSS transition
   // rather than a structural DOM change.
   const base = css`
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: ${OVERLAY_Z_INDEX};
     transition: background 0.3s ease-in-out;
+    border-radius: inherit; /* Inherit border radius from form container */
 
     .${contentContainer} {
       text-align: center;
@@ -55,7 +57,7 @@ export const useStyles = createStyles(({ css, cx }) => {
 
   // Non-blocking: transparent backdrop so the user can still interact with the page.
   // The card appears centred but clicks pass straight through the overlay.
-  const globalLoaderOverlay = cx("global-loader-overlay", base, css`
+  const loaderOverlay = cx("global-loader-overlay", base, css`
     background: transparent;
     pointer-events: none;
 
@@ -65,7 +67,7 @@ export const useStyles = createStyles(({ css, cx }) => {
   `);
 
   // Blocking: dark dimmed backdrop that prevents all user interaction.
-  const globalLoaderOverlayBlocking = cx("global-loader-overlay-blocking", base, css`
+  const loaderOverlayBlocking = cx("global-loader-overlay-blocking", base, css`
     background: rgba(0, 0, 0, 0.45);
     pointer-events: auto;
     cursor: not-allowed;
@@ -76,8 +78,8 @@ export const useStyles = createStyles(({ css, cx }) => {
   `);
 
   return {
-    globalLoaderOverlay,
-    globalLoaderOverlayBlocking,
+    loaderOverlay,
+    loaderOverlayBlocking,
     contentContainer,
     loaderImage,
     loaderMessage,

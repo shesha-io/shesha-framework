@@ -6,6 +6,7 @@ import { ISubmitActionArguments, ISubmitActionExecutionContext, IValidateActionE
 import { useRef } from "react";
 import { isDefined } from "@/utils/nullables";
 import { extractErrorInfo } from "@/utils/errors";
+import { useBlockingLoaderActions } from "@/providers/blockingLoader";
 import { CancelEditAction, RefreshAction, ResetAction, ResetValidationErrorsAction, SetValidationErrorsAction, StartEditAction, SubmitAction, ValidateAction } from "./descriptors";
 
 
@@ -18,6 +19,8 @@ export const useShaFormActions = <TData extends object = object>({ name, isActio
   const actionsOwnerId = isActionsOwner ? SheshaActionOwners.Form : "";
   const actionDependencies = [actionsOwnerId];
   const prevFormData = useRef<TData>(undefined);
+
+  useBlockingLoaderActions('form', name, actionsOwnerId);
 
   const actionOwnerName = name;
 
