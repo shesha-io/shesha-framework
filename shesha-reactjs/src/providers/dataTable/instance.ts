@@ -395,7 +395,7 @@ export class DatasetInstance implements IDatasetInstance {
   };
 
   toggleColumnVisibility = (columnId: string): void => {
-    this.updateColumn(columnId, (column) => ({ ...column, isVisible: !column.isVisible }));
+    this.updateColumn(columnId, (column) => ({ ...column, show: column.show !== true }));
     void this.saveUserConfigAsync();
   };
 
