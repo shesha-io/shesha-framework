@@ -9,16 +9,15 @@ import { useConstantsEvaluator } from '../codeEditor/hooks/useConstantsEvaluator
 import { IObjectMetadata } from '@/interfaces/metadata';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { nanoid } from '@/utils/uuid';
-import { Collapse, Form } from 'antd';
+import { Form } from 'antd';
+import { CollapsiblePanel } from '@/components/panel';
 import { FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import FormItem from '../_settings/components/formItem';
-import { StyledLabel } from '../_settings/utils/utils';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { ActionArgumentsEditor } from './actionArgumensEditor';
 import { ActionSelect } from './actionSelect';
 import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 
-const { Panel } = Collapse;
 
 const getActionFullName = (actionOwner: string, actionName: string | undefined): string | null => {
   return !isNullOrWhiteSpace(actionName)
@@ -171,25 +170,21 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
             <SettingInput propertyName="handleSuccess" label="Handle Success" type="switch" id={nanoid()} />
             {
               value?.handleSuccess === true && (
-                <Collapse defaultActiveKey={['1']}>
-                  <Panel header={<StyledLabel label="On Success Handler" />} key="1">
-                    <Form.Item name="onSuccess">
-                      <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
-                    </Form.Item>
-                  </Panel>
-                </Collapse>
+                <CollapsiblePanel header="On Success Handler" expandIconPlacement="start" ghost collapsible="header" showArrow>
+                  <Form.Item name="onSuccess">
+                    <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
+                  </Form.Item>
+                </CollapsiblePanel>
               )
             }
             <SettingInput propertyName="handleFail" label="Handle Fail" type="switch" id={nanoid()} />
             {
               value?.handleFail === true && (
-                <Collapse defaultActiveKey={['1']}>
-                  <Panel header={<StyledLabel label="On Fail Handler" />} key="1">
-                    <Form.Item name="onFail">
-                      <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
-                    </Form.Item>
-                  </Panel>
-                </Collapse>
+                <CollapsiblePanel header="On Fail Handler" expandIconPlacement="start" ghost collapsible="header" showArrow>
+                  <Form.Item name="onFail">
+                    <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
+                  </Form.Item>
+                </CollapsiblePanel>
               )
             }
           </>
