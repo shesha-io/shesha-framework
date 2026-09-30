@@ -30,15 +30,11 @@ namespace Shesha.Configuration
                         SidebarBackground = "#4d192b",
                         LabelSpan = 6,
                         ComponentSpan = 18,
-                        MarginPadding = new MarginPaddingSettings()
-                        {
-                            FormFields = "",
-                            Layout = "",
-                            Grid = "",
-                            Standard = "",
-                            Inline = "",
-                        },
-                        Components = new JObject()
+                        LabelAlign = "right",
+                        Layout = "horizontal",
+                        Colon = true,
+                        Components = new JObject(),
+                        ComponentGroups = new JObject()
                     };
             }
         }
@@ -57,15 +53,6 @@ namespace Shesha.Configuration
             public string? Secondary { get; set; }
         }
 
-        public class MarginPaddingSettings
-        {
-            public string? FormFields { get; set; }
-            public string? Layout { get; set; }
-            public string? Grid { get; set; }
-            public string? Standard { get; set; }
-            public string? Inline { get; set; }
-        }
-
         public ThemeSettings.ApplicationSettings? Application { get; set; }
         public string? Sidebar { get; set; }
         public string? LayoutBackground { get; set; }
@@ -73,7 +60,19 @@ namespace Shesha.Configuration
         public string? SidebarBackground { get; set; }
         public int? LabelSpan { get; set; }
         public int? ComponentSpan { get; set; }
-        public ThemeSettings.MarginPaddingSettings? MarginPadding { get; set; }
+        /// <summary>Label alignment for input (form-item) components: "left" | "right".</summary>
+        public string? LabelAlign { get; set; }
+        /// <summary>Form layout: "horizontal" | "vertical".</summary>
+        public string? Layout { get; set; }
+        /// <summary>Whether input labels show a trailing colon.</summary>
+        public bool? Colon { get; set; }
+        /// <summary>Per-component-type appearance overrides, keyed by toolbox component type.</summary>
         public JObject Components { get; set; }
+        /// <summary>
+        /// Per-style-group appearance defaults (Input/Inline/Standard/Layout Components tabs), keyed
+        /// by <c>ThemeComponentGroup</c> ("input" | "inline" | "standard" | "layout"). Every component
+        /// whose <c>styleGroup</c> maps to one of these tiers inherits from it.
+        /// </summary>
+        public JObject ComponentGroups { get; set; }
     }
 }
