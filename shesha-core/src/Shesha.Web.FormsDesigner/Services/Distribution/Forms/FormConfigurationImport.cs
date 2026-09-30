@@ -84,9 +84,11 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         protected async Task<ConfigurationItemBase> ImportFormAsync(DistributedFormConfiguration item, IConfigurationItemsImportContext context)
         {
             // check if form exists
+            var hasModule = !string.IsNullOrWhiteSpace(item.ModuleName);
+            var hasApp = !string.IsNullOrWhiteSpace(item.FrontEndApplication);
             var existingForm = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name &&
-                (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) &&
-                (f.Application == null && item.FrontEndApplication == null || f.Application.AppKey == item.FrontEndApplication) &&
+                (hasModule ? f.Module.Name == item.ModuleName : f.Module == null) &&
+                (hasApp ? f.Application.AppKey == item.FrontEndApplication : f.Application == null) &&
                 f.IsLast);
 
             // use status specified in the context with fallback to imported value
