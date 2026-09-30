@@ -95,8 +95,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   formMode: FormMode;
 
-  activeSettingsTabKey: string | undefined;
-
   validationCollector: IValidationCollector;
 
   formBuilderFactory: FormBuilderFactory;
@@ -122,7 +120,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     this.isDragging = false;
     this.hasDragged = false;
     this.isDataModified = false;
-    this.activeSettingsTabKey = undefined;
     this.subscriptions = new Map<FormDesignerSubscriptionType, Set<FormDesignerSubscription>>();
     this.validationCollector = new ValidationCollector();
     this.formBuilderFactory = args.formBuilderFactory;
@@ -173,7 +170,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       formSettings: settings,
     });
     this.selectedComponentId = undefined;
-    this.activeSettingsTabKey = undefined;
     this.isDataModified = false;
     this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
     void this.validateFormAsync();
@@ -403,7 +399,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
       if (this.selectedComponentId === payload.componentId) {
         this.selectedComponentId = undefined; // clear selection if we delete current component
-        this.activeSettingsTabKey = undefined;
       }
       return {
         ...state,
@@ -472,7 +467,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       };
 
       this.selectedComponentId = clone.id;
-      this.activeSettingsTabKey = undefined;
 
       return {
         ...state,
@@ -725,7 +719,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       const newStructure = this.addComponentToFlatStructure(newFlatMarkup, newComponents, containerId, index);
 
       this.selectedComponentId = newComponents[0]?.id;
-      this.activeSettingsTabKey = undefined;
 
       return {
         ...state,
@@ -796,7 +789,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
   setSelectedComponent = (id: string): void => {
     if (this.selectedComponentId === id) return;
     this.selectedComponentId = id;
-    this.activeSettingsTabKey = undefined;
     this.notifySubscribers(['selection']);
   };
 
@@ -838,7 +830,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       const newStructure = this.addComponentToFlatStructure(newFlatMarkup, [formComponent], containerId, index);
 
       this.selectedComponentId = formComponent.id;
-      this.activeSettingsTabKey = undefined;
 
       return {
         ...state,
@@ -865,12 +856,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     if (this.formMode === value) return;
     this.formMode = value;
     this.notifySubscribers(['mode']);
-  };
-
-  setActiveSettingsTabKey = (key: string): void => {
-    if (this.activeSettingsTabKey === key) return;
-    this.activeSettingsTabKey = key;
-    this.notifySubscribers(['settings-tab']);
   };
 
   componentEditors: IComponentSettingsEditorsCache = {};

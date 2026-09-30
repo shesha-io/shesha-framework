@@ -21,12 +21,19 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     flex: 1 1 auto;
     min-height: 0;
     
-    &&&& .ant-collapse-body, .ant-collapse-header  {
-      padding: 0px !important;
+    /* Properties-panel CollapsiblePanels share one inset: 8px top and left only. Scoped to the panel
+       component (ant-collapse-component) so plain antd collapses and panels elsewhere are untouched. */
+    .ant-collapse-component > .ant-collapse-item > .ant-collapse-panel,
+    .ant-collapse-component > .ant-collapse-item > .ant-collapse-content {
+      padding: 8px 0 0 8px;
+
+      > .ant-collapse-body {
+        padding: 0 !important;
+      }
     }
 
-    &&&& .ant-collapse-body  {
-      padding: 8px 0px !important;
+    &&&& .ant-collapse-header  {
+      padding: 0px !important;
     }
 
     /* Tab strip: fixed. */
