@@ -67,13 +67,16 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
         private async Task<FormConfiguration> GetLiveVersionForAsync(DistributedFormConfiguration item)
         {
+            var moduleName = item.ModuleName?.ToLower();
+            var appKey = item.FrontEndApplication?.ToLower();
+
             var query = _formConfigRepo.GetAll().Where(f => f.Name == item.Name && f.VersionStatus == ConfigurationItemVersionStatus.Live);
-            query = query.Where(!string.IsNullOrWhiteSpace(item.ModuleName)
-                ? f => f.Module.Name == item.ModuleName
+            query = query.Where(!string.IsNullOrWhiteSpace(moduleName)
+                ? f => f.Module.Name.ToLower() == moduleName
                 : f => f.Module == null
             );
-            query = query.Where(!string.IsNullOrWhiteSpace(item.FrontEndApplication)
-                ? f => f.Application.AppKey == item.FrontEndApplication
+            query = query.Where(!string.IsNullOrWhiteSpace(appKey)
+                ? f => f.Application.AppKey.ToLower() == appKey
                 : f => f.Application == null
             );
 
@@ -86,9 +89,11 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             // check if form exists
             var hasModule = !string.IsNullOrWhiteSpace(item.ModuleName);
             var hasApp = !string.IsNullOrWhiteSpace(item.FrontEndApplication);
+            var moduleName = item.ModuleName?.ToLower();
+            var appKey = item.FrontEndApplication?.ToLower();
             var existingForm = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name &&
-                (hasModule ? f.Module.Name == item.ModuleName : f.Module == null) &&
-                (hasApp ? f.Application.AppKey == item.FrontEndApplication : f.Application == null) &&
+                (hasModule ? f.Module.Name.ToLower() == moduleName : f.Module == null) &&
+                (hasApp ? f.Application.AppKey.ToLower() == appKey : f.Application == null) &&
                 f.IsLast);
 
             // use status specified in the context with fallback to imported value
