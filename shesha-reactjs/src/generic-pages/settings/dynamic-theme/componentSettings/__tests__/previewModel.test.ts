@@ -106,13 +106,20 @@ describe('getPreviewComponentModel', () => {
 describe('getPreviewVariants', () => {
   it('lists the dropdown modes so tag styling is visible, not just plain text', () => {
     const labels = getPreviewVariants('dropdown')?.map((v) => v.label);
-    expect(labels).toEqual(['Single', 'Multiple', 'Tags', 'Free-text tags']);
+    expect(labels).toEqual(['Single', 'Multiple', 'Tag', 'Multiple tags']);
   });
 
-  it('lists the file list display styles', () => {
+  it('lists the file list display styles, including the custom thumbnail whose dimensions are editable', () => {
     const variants = getPreviewVariants('attachmentsEditor');
     expect(variants?.map((v) => v.model['displayStyle'])).toEqual([
-      'text', 'thumbnailSmall', 'thumbnailMedium', 'thumbnailLarge', 'text',
+      'text', 'thumbnailSmall', 'thumbnailMedium', 'thumbnailLarge', 'thumbnailCustom', 'text',
+    ]);
+  });
+
+  it('lists the file upload display styles, including the custom thumbnail whose dimensions are editable', () => {
+    const variants = getPreviewVariants('fileUpload');
+    expect(variants?.map((v) => v.model['displayStyle'])).toEqual([
+      'text', 'thumbnailSmall', 'thumbnailMedium', 'thumbnailLarge', 'thumbnailCustom', 'text',
     ]);
   });
 
@@ -126,8 +133,8 @@ describe('getPreviewComponentModel - variants', () => {
   const dropdownDef = makeDefinition('dropdown');
 
   it('applies the variant properties over the base model', () => {
-    const tags = getPreviewVariants('dropdown')?.find((v) => v.label === 'Tags');
-    const model = getPreviewComponentModel(dropdownDef, tags) as Record<string, unknown>;
+    const tags = getPreviewVariants('dropdown')?.find((v) => v.label === 'Multiple tags');
+    const model = getPreviewComponentModel(dropdownDef, tags) as unknown as Record<string, unknown>;
 
     expect(model['mode']).toBe('multiple');
     expect(model['displayStyle']).toBe('tags');
