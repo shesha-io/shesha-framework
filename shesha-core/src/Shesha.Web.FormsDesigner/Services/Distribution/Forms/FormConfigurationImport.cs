@@ -65,18 +65,23 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             }
         }
 
+        private static string NormalizeImportKey(string value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? null : value.ToLowerInvariant();
+        }
+
         private async Task<FormConfiguration> GetLiveVersionForAsync(DistributedFormConfiguration item)
         {
-            var moduleName = item.ModuleName?.ToLower();
-            var appKey = item.FrontEndApplication?.ToLower();
+            var moduleName = NormalizeImportKey(item.ModuleName);
+            var appKey = NormalizeImportKey(item.FrontEndApplication);
 
             var query = _formConfigRepo.GetAll().Where(f => f.Name == item.Name && f.VersionStatus == ConfigurationItemVersionStatus.Live);
-            query = query.Where(!string.IsNullOrWhiteSpace(moduleName)
-                ? f => f.Module.Name.ToLower() == moduleName
+            query = query.Where(moduleName != null
+                ? f => f.Module.Name.ToLowerInvariant() == moduleName
                 : f => f.Module == null
             );
-            query = query.Where(!string.IsNullOrWhiteSpace(appKey)
-                ? f => f.Application.AppKey.ToLower() == appKey
+            query = query.Where(appKey != null
+                ? f => f.Application.AppKey.ToLowerInvariant() == appKey
                 : f => f.Application == null
             );
 
@@ -87,13 +92,11 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         protected async Task<ConfigurationItemBase> ImportFormAsync(DistributedFormConfiguration item, IConfigurationItemsImportContext context)
         {
             // check if form exists
-            var hasModule = !string.IsNullOrWhiteSpace(item.ModuleName);
-            var hasApp = !string.IsNullOrWhiteSpace(item.FrontEndApplication);
-            var moduleName = item.ModuleName?.ToLower();
-            var appKey = item.FrontEndApplication?.ToLower();
+            var moduleName = NormalizeImportKey(item.ModuleName);
+            var appKey = NormalizeImportKey(item.FrontEndApplication);
             var existingForm = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name &&
-                (hasModule ? f.Module.Name.ToLower() == moduleName : f.Module == null) &&
-                (hasApp ? f.Application.AppKey.ToLower() == appKey : f.Application == null) &&
+                (moduleName != null ? f.Module.Name.ToLowerInvariant() == moduleName : f.Module == null) &&
+                (appKey != null ? f.Application.AppKey.ToLowerInvariant() == appKey : f.Application == null) &&
                 f.IsLast);
 
             // use status specified in the context with fallback to imported value
