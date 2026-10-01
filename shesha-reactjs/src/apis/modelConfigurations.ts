@@ -1,4 +1,3 @@
-import { IconType } from '@/components';
 import { IReferenceListIdentifier } from '@/interfaces';
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
@@ -53,8 +52,8 @@ export interface IAdditionalInfoFormatting {
   placeholder?: string;
   prefix?: string;
   suffix?: string;
-  suffixIcon?: IconType;
-  prefixIcon?: IconType;
+  suffixIcon?: string;
+  prefixIcon?: string;
 }
 
 export interface IDecimalFormatting extends INumberFormatting {
