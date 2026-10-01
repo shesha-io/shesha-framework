@@ -31,5 +31,10 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// Type of the form model
         /// </summary>
         public string ModelType { get; set; }
+
+        /// <summary>
+        /// Front-end application the form configuration belongs to
+        /// </summary>
+        public Guid? ApplicationId { get; set; }
     }
 }

@@ -50,6 +50,7 @@ namespace Shesha.Web.FormsDesigner.Services
         private readonly IEntityConfigManager _entityConfigManager;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IFormCacheHolder _cacheHolder;
+        private readonly IRepository<FrontEndApp, Guid> _frontEndAppRepository;
 
         public FormConfigurationAppService(
             IRepository<FormConfiguration, Guid> repository,
@@ -59,7 +60,8 @@ namespace Shesha.Web.FormsDesigner.Services
             IConfigurationItemClientSideCache clientSideCache,
             IEntityConfigManager entityConfigManager,
             IPermissionedObjectManager permissionedObjectManager,
-            IFormCacheHolder cacheHolder
+            IFormCacheHolder cacheHolder,
+            IRepository<FrontEndApp, Guid> frontEndAppRepository
         ) : base(repository)
         {
             _moduleRepository = moduleRepository;
@@ -69,6 +71,7 @@ namespace Shesha.Web.FormsDesigner.Services
             _entityConfigManager = entityConfigManager;
             _permissionedObjectManager = permissionedObjectManager;
             _cacheHolder = cacheHolder;
+            _frontEndAppRepository = frontEndAppRepository;
         }
 
         private async Task<string[]> GetFormPermissionsAsync(string module, string name)
@@ -558,7 +561,18 @@ namespace Shesha.Web.FormsDesigner.Services
             var validationResults = new List<ValidationResult>();
 
             var entity = await GetEntityByIdAsync(input.Id);
-            var alreadyExist = await Repository.GetAll().Where(f => f.Id != input.Id && f.Module == entity.Module && f.Application == entity.Application && f.Name == input.Name).AnyAsync();
+            var targetApplication = input.ApplicationId.HasValue
+                ? await _frontEndAppRepository.GetAsync(input.ApplicationId.Value)
+                : null;
+            var entityFamilyKey = entity.Origin != null ? entity.Origin.Id : entity.Id;
+            var alreadyExist = await Repository.GetAll().Where(f =>
+                f.Id != input.Id
+                && f.Origin.Id != entityFamilyKey
+                && f.Id != entityFamilyKey
+                && f.Module == entity.Module
+                && f.Application == targetApplication
+                && f.Name == input.Name
+            ).AnyAsync();
             if (alreadyExist)
                 validationResults.Add(new ValidationResult(
                     input.ModelType != null
@@ -577,6 +591,7 @@ namespace Shesha.Web.FormsDesigner.Services
             entity.Description = input.Description;
             entity.Markup = input.Markup;
             entity.ModelType = input.ModelType;
+            entity.Application = targetApplication;
             await Repository.UpdateAsync(entity);
 
             if (oldName != input.Name) 
