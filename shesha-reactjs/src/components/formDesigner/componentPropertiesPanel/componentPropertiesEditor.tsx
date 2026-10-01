@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/static-components */
-import { ReactNode, RefObject } from 'react';
+import { ReactNode, RefObject, useEffect } from 'react';
 import { IComponentSettingsFormFactoryArgs, IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponent, SettingsFormMarkupFactory } from '@/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
 import { FormMarkup } from '@/providers/form/models';
@@ -77,6 +77,10 @@ export const ComponentPropertiesEditor = <TModel extends IConfigurableFormCompon
     // delay in ms
     150,
   );
+
+  // Deselecting the component (or switching it) unmounts this editor; without flushing, a save still
+  // pending from the last edit is silently dropped instead of reaching the component model.
+  useEffect(() => () => debouncedSave.flush(), [debouncedSave]);
 
   const onCancel = (): void => {
     // not used
