@@ -564,7 +564,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var targetApplication = input.ApplicationId.HasValue
                 ? await _frontEndAppRepository.GetAsync(input.ApplicationId.Value)
                 : null;
-            var alreadyExist = await Repository.GetAll().Where(f => f.Id != input.Id && f.Origin.Id != entity.Origin.Id && f.Module == entity.Module && f.Application == targetApplication && f.Name == input.Name).AnyAsync();
+            var alreadyExist = await Repository.GetAll().Where(f => f.Id != input.Id && f.Module == entity.Module && f.Application == targetApplication && f.Name == input.Name).AnyAsync();
             if (alreadyExist)
                 validationResults.Add(new ValidationResult(
                     input.ModelType != null
