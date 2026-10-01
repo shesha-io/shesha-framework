@@ -5,6 +5,8 @@ import { useApiCallAction } from './api-call';
 import { useConfigurationItemsExportAction } from './configuration-items-export';
 import { useConfigurationItemsImportAction } from './configuration-items-import';
 import { useShowMessageAction } from "./show-message";
+import { useBlockingLoaderActions } from "@/providers/blockingLoader";
+import { SheshaActionOwners } from "@/providers/configurableActionsDispatcher/models";
 
 export const ApplicationActionsProcessor: FC<PropsWithChildren> = ({ children }) => {
   useExecuteScriptAction();
@@ -13,6 +15,7 @@ export const ApplicationActionsProcessor: FC<PropsWithChildren> = ({ children })
   useShowMessageAction();
   useConfigurationItemsExportAction();
   useConfigurationItemsImportAction();
+  useBlockingLoaderActions('page', 'Common', SheshaActionOwners.Common);
 
   return (
     <>{children}</>

@@ -8,8 +8,9 @@ import {
 } from '@/interfaces/configurableAction';
 import { getActualActionArguments } from '@/providers/configurableActionsDispatcher';
 import { ActionParametersDictionary, FormMarkup } from '@/providers/form/models';
-import { CollapsiblePanel } from '@/components/panel';
+import { Collapse } from 'antd';
 import { ReactNode, useMemo } from 'react';
+import { useStyles } from '../_settings/styles/styles';
 import GenericArgumentsEditor from './genericArgumentsEditor';
 import { isDefined } from '@/utils/nullables';
 
@@ -59,6 +60,7 @@ export const ActionArgumentsEditor = <TArguments extends ActionParametersDiction
   readOnly = false,
   availableConstants,
 }: IActionArgumentsEditorProps<TArguments>): ReactNode => {
+  const { styles } = useStyles();
   const fbf = useFormBuilderFactory();
 
   const argumentsEditor = useMemo(() => {
@@ -99,15 +101,11 @@ export const ActionArgumentsEditor = <TArguments extends ActionParametersDiction
   if (!isDefined(argumentsEditor)) return null;
 
   return (
-    <CollapsiblePanel
+    <Collapse
+      defaultActiveKey={['1']}
       key={action.name}
-      header="Arguments"
-      expandIconPlacement="start"
-      ghost
-      collapsible="header"
-      showArrow
-    >
-      {argumentsEditor}
-    </CollapsiblePanel>
+      items={[{ key: "1", label: <div className={styles.label}>Arguments</div>, children: argumentsEditor }]}
+      className={styles.actionCollapse}
+    />
   );
 };

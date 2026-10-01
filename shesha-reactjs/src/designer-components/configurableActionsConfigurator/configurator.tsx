@@ -17,7 +17,7 @@ import { ActionArgumentsEditor } from './actionArgumensEditor';
 import { ActionSelect } from './actionSelect';
 import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 import { StyledLabel } from '../_settings/utils/utils';
-import { useStyles } from './styles';
+import { useStyles } from '../_settings/styles/styles';
 
 const { Panel } = Collapse;
 
@@ -170,7 +170,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
             <SettingInput propertyName="handleSuccess" label="Handle Success" type="switch" id={nanoid()} />
             {
               value?.handleSuccess === true && (
-                <Collapse defaultActiveKey={['1']} className={styles.handlerCollapse}>
+                <Collapse defaultActiveKey={['1']} className={styles.actionCollapse}>
                   <Panel header={<StyledLabel label="On Success Handler" />} key="1">
                     <Form.Item name="onSuccess">
                       <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
@@ -182,7 +182,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
             <SettingInput propertyName="handleFail" label="Handle Fail" type="switch" id={nanoid()} />
             {
               value?.handleFail === true && (
-                <Collapse defaultActiveKey={['1']} className={styles.handlerCollapse}>
+                <Collapse defaultActiveKey={['1']} className={styles.actionCollapse}>
                   <Panel header={<StyledLabel label="On Fail Handler" />} key="1">
                     <Form.Item name="onFail">
                       <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />

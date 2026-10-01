@@ -23,6 +23,7 @@ import {
   RootContexts,
   STYLE_BOX_CSS_POPERTIES,
   StyleBoxValue,
+  useBlockingLoader,
   useDataTableStateOrUndefined,
   useGlobalState,
   useHttpClient,
@@ -111,6 +112,7 @@ import { ContextConfigurableActionGetter, IGetContextualConfigurableActionPayloa
 import { FormDesignerComponentGetter } from './hooks';
 import { IConfigurableActionDescriptor } from '@/interfaces/configurableAction';
 import { RuleObject } from 'antd/es/form';
+import { IBlockingLoader, ILoaderInstance } from '../blockingLoader/instance';
 
 export {
   executeExpression, executeScript,
@@ -128,6 +130,17 @@ type MomentType = typeof moment;
 export interface IPageApi {
   readonly state: IDataContextFull | undefined;
   location: Location | undefined;
+  /**
+   * Show blocking loader overlay scoped to this form
+   * @param message Optional message to display
+   * @param isBlocking Optional blocking mode
+   * @returns Loader instance with methods for progressive feedback
+   */
+  showLoader: (message?: string, isBlocking?: boolean) => ILoaderInstance;
+  /**
+   * Hide all active loaders
+   */
+  hideLoaders: () => void;
 }
 
 /** Interface to get all avalilable data */
@@ -215,6 +228,7 @@ export type AvailableConstantsContext = {
   message: MessageInstance;
   modal: IModalApi;
   httpClient: HttpClientApi;
+  pageLoader: IBlockingLoader;
 };
 
 
@@ -234,6 +248,8 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   // get selected row if exists
   const selectedRow = useDataTableStateOrUndefined()?.selectedRow;
   const httpClient = useHttpClient();
+  const pageLoader = useBlockingLoader('page');
+
 
   const result: AvailableConstantsContext = {
     closestShaFormApi: undefined,
@@ -246,6 +262,7 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
     httpClient,
     message,
     modal,
+    pageLoader,
   };
   return result;
 };
@@ -317,6 +334,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     message,
     metadataDispatcher,
     modal,
+    pageLoader,
   } = fullContext;
   const shaFormApi = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
 
@@ -356,7 +374,12 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     },
     page: () => {
       // get page context
-      return { state: pageContext, location: typeof window !== 'undefined' ? window.location : undefined } as IPageApi;
+      return {
+        state: pageContext,
+        location: typeof window !== 'undefined' ? window.location : undefined,
+        showLoader: pageLoader.showLoader,
+        hideLoaders: pageLoader.hideLoaders,
+      } as IPageApi;
     },
     pageContext: () => pageContext,
     storage: () => webStorageContext,
