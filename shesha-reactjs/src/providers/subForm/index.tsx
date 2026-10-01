@@ -22,8 +22,8 @@ import { ISubFormProviderProps } from './interfaces';
 import { StandardEntityActions } from '@/interfaces/metadata';
 import { ISubFormActionsContext, ISubFormStateContext, SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
 import { subFormReducer } from './reducer';
-import { ConditionalMetadataProvider, IConfigurableFormComponent, isConfigurableFormComponent, useHttpClient, useMetadataOrUndefined } from '@/providers';
-import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
+import { BlockingLoaderProvider, ConditionalMetadataProvider, IConfigurableFormComponent, isConfigurableFormComponent, useHttpClient, useMetadataOrUndefined } from '@/providers';
+import { useConfigurableActionImplementation } from '@/providers/configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useDebouncedCallback } from 'use-debounce';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
@@ -62,6 +62,8 @@ import { SubFormApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from 'react-use';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { GetFormDataAction, PostFormDataAction, UpdateFormDataAction } from './configurableActions';
+import { ILoaderInstance } from '../blockingLoader/instance';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -221,6 +223,12 @@ const SubFormWithMetadataProvider: FC<PropsWithChildren<ISubForWithMetadataProvi
     },
     setValidationErrors: function (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error): void {
       parentFormApi.setValidationErrors(payload);
+    },
+    showLoader: function (message?: string, isBlocking?: boolean): ILoaderInstance {
+      return parentFormApi.showLoader(message, isBlocking);
+    },
+    hideLoaders: function (): void {
+      parentFormApi.hideLoaders();
     },
     formSettings: state.formSettings,
     modelType: state.formSettings?.modelType,
@@ -760,47 +768,33 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   const actionDependencies = [id];
   const actionsOwnerName = componentName ?? `subForm-${id}`;
-  useConfigurableAction(
-    {
-      name: 'Get form data',
-      owner: actionsOwnerName,
-      ownerUid: id,
-      hasArguments: false,
-      executer: () => {
-        debouncedFetchData(true); // TODO: return real promise
-        return Promise.resolve();
-      },
+  const actionsOwnerUid = id;
+  useConfigurableActionImplementation(actionsOwnerUid, GetFormDataAction, {
+    owner: actionsOwnerName,
+    executer: () => {
+      debouncedFetchData(true); // TODO: return real promise
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
+  },
+  actionDependencies);
 
-  useConfigurableAction(
-    {
-      name: 'Post form data',
-      owner: actionsOwnerName,
-      ownerUid: id,
-      hasArguments: false,
-      executer: () => {
-        postData(); // TODO: return real promise
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation(actionsOwnerUid, PostFormDataAction, {
+    owner: actionsOwnerName,
+    executer: () => {
+      postData(); // TODO: return real promise
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
 
-  useConfigurableAction(
-    {
-      name: 'Update form data',
-      owner: actionsOwnerName,
-      ownerUid: id,
-      hasArguments: false,
-      executer: () => {
-        putData(); // TODO: return real promise
-        return Promise.resolve();
-      },
+  }, actionDependencies);
+
+  useConfigurableActionImplementation(actionsOwnerUid, UpdateFormDataAction, {
+    owner: actionsOwnerName,
+    executer: () => {
+      putData(); // TODO: return real promise
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
+  },
+  actionDependencies);
 
   // register subform api
 
@@ -818,20 +812,22 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   //#endregion
 
   return (
-    <ConditionalMetadataProvider modelType={state.formSettings?.modelType}>
-      <SubFormWithMetadataProvider
-        {...props}
-        onChange={onChangeInternal}
-        state={state}
-        parentFormApi={parentFormApi}
-        fetchData={debouncedFetchData}
-        postData={postData}
-        putData={putData}
-        formLoadingState={formLoadingState}
-      >
-        {children}
-      </SubFormWithMetadataProvider>
-    </ConditionalMetadataProvider>
+    <BlockingLoaderProvider level="component">
+      <ConditionalMetadataProvider modelType={state.formSettings?.modelType}>
+        <SubFormWithMetadataProvider
+          {...props}
+          onChange={onChangeInternal}
+          state={state}
+          parentFormApi={parentFormApi}
+          fetchData={debouncedFetchData}
+          postData={postData}
+          putData={putData}
+          formLoadingState={formLoadingState}
+        >
+          {children}
+        </SubFormWithMetadataProvider>
+      </ConditionalMetadataProvider>
+    </BlockingLoaderProvider>
   );
 };
 

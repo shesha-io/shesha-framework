@@ -105,6 +105,7 @@ export const ActionArgumentsEditor = <TArguments extends ActionParametersDiction
       defaultActiveKey={['1']}
       key={action.name}
       items={[{ key: "1", label: <div className={styles.label}>Arguments</div>, children: argumentsEditor }]}
+      className={styles.actionCollapse}
     />
   );
 };

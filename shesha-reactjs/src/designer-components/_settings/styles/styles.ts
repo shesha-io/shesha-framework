@@ -1,6 +1,6 @@
 import { createStyles, sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, responsive, token }) => {
+export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }) => {
   const formItem = cx(css`
     margin: 0px !important;
 
@@ -151,6 +151,17 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
     }
   `);
 
+  const actionCollapse = cx("sha-action-handler-collapse", css`
+    && > .${prefixCls}-collapse-item > .${prefixCls}-collapse-header {
+      padding: 8px;
+    }
+
+    && > .${prefixCls}-collapse-item > .${prefixCls}-collapse-panel > .${prefixCls}-collapse-body {
+      padding: 8px;
+    }
+  `);
+
+
   return {
     contentJs,
     contentCode,
@@ -160,5 +171,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
     formItem,
     inheritedValue,
     overriddenValue,
+    actionCollapse,
   };
 });

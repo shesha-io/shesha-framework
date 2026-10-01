@@ -1,16 +1,13 @@
 import { FC, PropsWithChildren, useContext, useState } from 'react';
 import { FormFullName, FormIdentifier } from '@/interfaces';
-import { IConfigurableActionConfiguration, useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { IKeyValue } from '@/interfaces/keyValue';
-import { getNavigateArgumentsForm } from './actions/navigate-arguments';
+import { IConfigurableActionConfiguration, useConfigurableActionImplementation } from '@/providers/configurableActionsDispatcher';
 import { IShaRouter, ShaRouterContext } from './contexts';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { ShaRouter } from './router';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { isValidFormFullName } from '../form/utils';
-import { IHasVersion } from '@/utils/fluentMigrator/migrator';
+import { INavigateActoinArguments, NavigateAction } from './actions/navigate';
 
-export type NavigationType = 'url' | 'form';
 
 const SCRIPT_ACTION_NAME = 'Execute Script';
 const NAVIGATE_ACTION_NAME = 'Navigate';
@@ -27,12 +24,6 @@ interface IRouter {
   path: string;
 }
 
-export interface INavigateActoinArguments extends IHasVersion {
-  navigationType: NavigationType;
-  url?: string | undefined;
-  formId?: FormIdentifier | undefined;
-  queryParameters?: IKeyValue[] | undefined;
-}
 
 export interface IScriptActionArguments {
   expression: string;
@@ -51,13 +42,10 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
   });
   shaRouter.updateRouter({ router, getFormUrlFunc, getIsLoggedIn, urlOverrideFunc });
 
-  useConfigurableAction<INavigateActoinArguments>(
+  useConfigurableActionImplementation<INavigateActoinArguments>(SheshaActionOwners.Common,
+    NavigateAction,
     {
-      name: NAVIGATE_ACTION_NAME,
       owner: 'Common',
-      ownerUid: SheshaActionOwners.Common,
-      sortOrder: 2,
-      hasArguments: true,
       executer: async (request) => {
         const url = shaRouter.getUrlFromNavigationRequest(request);
 
@@ -66,8 +54,6 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
 
         await shaRouter.goingToRoute(url);
       },
-      argumentsFormMarkup: getNavigateArgumentsForm,
-      migrator: (m) => m.add<INavigateActoinArguments>(0, (prev) => ({ ...prev, navigationType: !isNullOrWhiteSpace(prev.navigationType) ? prev.navigationType : 'form' })),
     },
   );
 
@@ -104,4 +90,4 @@ const isScriptActionConfiguration = (actionConfig: IConfigurableActionConfigurat
   return isDefined(actionConfig) && actionConfig.actionOwner === SheshaActionOwners.Common && actionConfig.actionName === SCRIPT_ACTION_NAME;
 };
 
-export { ShaRoutingProvider, useShaRouting, useShaRoutingOrUndefined, isNavigationActionConfiguration, isScriptActionConfiguration, tryExtractNavigationValidForm, type IRouter };
+export { ShaRoutingProvider, useShaRouting, useShaRoutingOrUndefined, isNavigationActionConfiguration, isScriptActionConfiguration, tryExtractNavigationValidForm, type IRouter, type INavigateActoinArguments };

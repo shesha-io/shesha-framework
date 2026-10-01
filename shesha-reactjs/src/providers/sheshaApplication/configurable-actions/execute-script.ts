@@ -1,6 +1,6 @@
-import { FormMarkupFactory, IActionExecutionContext } from '@/interfaces/configurableAction';
+import { FormMarkupFactory, IActionDescriptor, IActionExecutionContext } from '@/interfaces/configurableAction';
 import { nanoid } from '@/utils/uuid';
-import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
+import { useConfigurableActionImplementation } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { executeScript } from '../../form/utils';
 
@@ -27,16 +27,20 @@ const executeScriptArgumentsForm: FormMarkupFactory = ({ availableConstants, fbf
     .toJson();
 };
 
+export const ExecuteScript: IActionDescriptor<IExecuteScriptArguments> = {
+  name: 'Execute Script',
+  sortOrder: 1,
+  hasArguments: true,
+  argumentsFormMarkup: (formArgs) => executeScriptArgumentsForm(formArgs),
+};
+
 export const useExecuteScriptAction = (): void => {
-  useConfigurableAction<IExecuteScriptArguments>(
+  useConfigurableActionImplementation<IExecuteScriptArguments>(
+    SheshaActionOwners.Common,
+    ExecuteScript,
     {
-      isPermament: true,
+      isPermanent: true,
       owner: 'Common',
-      ownerUid: SheshaActionOwners.Common,
-      name: 'Execute Script',
-      sortOrder: 1,
-      hasArguments: true,
-      argumentsFormMarkup: (formArgs) => executeScriptArgumentsForm(formArgs),
       executer: ({ expression, executer }, context) => {
         if (executer) {
           return executer(context);

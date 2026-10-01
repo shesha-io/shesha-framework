@@ -1,10 +1,11 @@
 import { isNonEmptyArray } from "@/utils/array";
-import { ItemValidationResult, IValidationCollector, OnValidationResultsChanged, ValidationCollectorSubscription, ValidationResult } from "./interfaces";
+import { IValidationCollector, OnValidationResultsChanged, ValidationCollectorSubscription } from "./interfaces";
 import { isDefined } from "@/utils/nullables";
 import { ReactNode } from "react";
+import { FieldValidationError } from "../..";
 
 export class ValidationCollector implements IValidationCollector {
-  validationResults: ItemValidationResult[];
+  validationResults: FieldValidationError[];
 
   onValidationResultsChanged?: OnValidationResultsChanged;
 
@@ -25,7 +26,7 @@ export class ValidationCollector implements IValidationCollector {
     return () => this.subscriptions.delete(callback);
   };
 
-  clear = (predicate?: (item: ItemValidationResult) => boolean): void => {
+  clear = (predicate?: (item: FieldValidationError) => boolean): void => {
     if (isDefined(predicate)) {
       this.validationResults = this.validationResults.filter((item) => !predicate(item));
     } else
@@ -34,22 +35,20 @@ export class ValidationCollector implements IValidationCollector {
   };
 
   clearValidationResults = (itemType: string, itemId: string): void => {
-    this.validationResults = this.validationResults.filter((item) => !(item.itemType === itemType && item.itemId === itemId));
+    this.validationResults = this.validationResults.filter((item) => !(isNonEmptyArray(item.path) && item.path[0].kind === itemType && item.path[0].id === itemId));
     this.notifySubscribers();
   };
 
-  updateValidationResults = (itemType: string, itemId: string, displayName: string | ReactNode, results: ValidationResult[]): void => {
+  updateValidationResults = (itemType: string, itemId: string, _displayName: string | ReactNode, results: FieldValidationError[]): void => {
     this.clearValidationResults(itemType, itemId);
     if (isNonEmptyArray(results)) {
-      results.forEach((result, index) => this.validationResults.push({
-        key: `${itemType}-${itemId}-${index}`,
-        itemType: itemType,
-        itemId: itemId,
-        itemName: "",
-        displayName: displayName,
+      results.forEach((result) => this.validationResults.push({
         propertyName: result.propertyName,
         propertyLabel: result.propertyLabel,
-        ...result,
+        severity: result.severity,
+        path: result.path,
+        code: result.code,
+        message: result.message,
       }));
     }
     this.notifySubscribers();

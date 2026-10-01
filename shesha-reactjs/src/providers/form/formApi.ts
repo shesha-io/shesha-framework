@@ -8,6 +8,15 @@ import { AxiosResponse } from "axios";
 import { FieldValueSetter } from "@/utils/dotnotation";
 import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 import { FormData } from "./store/shaFormInstance";
+import { ILoaderInstance } from "../blockingLoader/instance";
+
+/**
+ * Form loader instance with progressive feedback methods
+ */
+export interface IFormLoaderInstanceApi {
+  updateMessage(message: string): void;
+  close(): void;
+}
 
 export interface IFormSettings {
   modelType?: string | IEntityTypeIdentifier | undefined;
@@ -46,6 +55,17 @@ export interface IFormApi<Values extends object = object> {
    * @returns The deferred update data
    */
   addDelayedUpdateData: (data: Values) => IDelayedUpdateGroup[];
+  /**
+   * Show blocking loader overlay scoped to this form
+   * @param message Optional message to display
+   * @param isBlocking Optional blocking mode
+   * @returns Loader instance with methods for progressive feedback
+   */
+  showLoader: (message?: string, isBlocking?: boolean) => ILoaderInstance;
+  /**
+   * Hide all active loaders
+   */
+  hideLoaders: () => void;
   /** antd form instance */
   readonly formInstance?: FormInstance<Values> | undefined;
   readonly shaForm?: IShaFormInstance<Values> | undefined;

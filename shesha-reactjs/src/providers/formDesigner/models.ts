@@ -28,7 +28,7 @@ export type IComponentSettingsEditorsCache = Record<string, ISettingsFormFactory
 export type RerenderTrigger = () => void;
 
 export type FormDesignerSubscription = (designer: IFormDesignerInstance) => void;
-export type FormDesignerSubscriptionType = 'markup' | 'selection' | 'readonly' | 'mode' | 'debug' | 'history' | 'data-modified' | 'settings-tab';
+export type FormDesignerSubscriptionType = 'markup' | 'selection' | 'readonly' | 'mode' | 'debug' | 'history' | 'data-modified' | 'settings-tab' | 'settings';
 
 export interface AddComponentPayloadBase {
   index: number;
@@ -146,4 +146,13 @@ export const FormDesignerContext = createNamedContext<IFormDesignerInstance | un
 export type BaseHistoryItem = {
   description: string;
   time: Date;
+};
+
+export type IssueSeverity = 'warning' | 'error';
+export type ConfigurationIssue = {
+  severity: IssueSeverity;
+  location: string;
+  property: string;
+  message: string;
+  code?: string | undefined;
 };

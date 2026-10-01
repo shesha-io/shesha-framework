@@ -33,7 +33,7 @@ import { makeObservableProxy } from "../observableProxy";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
-import { DataContextTopLevels, useMetadataDispatcher } from "@/providers";
+import { DataContextTopLevels, useBlockingLoader, useMetadataDispatcher } from "@/providers";
 import { isEmpty } from 'lodash';
 import { getQueryParams } from "@/utils/url";
 import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
@@ -48,6 +48,7 @@ import { IDataContextDescriptor, SheshaCommonContexts } from "@/providers/dataCo
 import { useComponentApiProvider } from "@/providers/componentApi/provider";
 import { useDataContextManagerActions } from "@/providers/dataContextManager/hooks";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { IBlockingLoader, ILoaderInstance } from "@/providers/blockingLoader/instance";
 
 interface ShaFormInstanceArguments<Values extends object = object> {
   forceRootUpdate: ForceUpdateTrigger;
@@ -59,6 +60,7 @@ interface ShaFormInstanceArguments<Values extends object = object> {
   context: IDataContextDescriptor | undefined;
   componentApi: IComponentApi | undefined;
   dataSource: IShaFormDataSource<Values> | undefined;
+  blockingLoader: IBlockingLoader;
 }
 
 export type FormData<Values extends object = object> = Values & {
@@ -75,11 +77,14 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
 
   #componentApi: IComponentApi | undefined;
 
-  constructor(form: IShaFormInstance<Values>, context: IDataContextDescriptor | undefined, componentApi: IComponentApi | undefined) {
+  #blockingLoader: IBlockingLoader;
+
+  constructor(form: IShaFormInstance<Values>, context: IDataContextDescriptor | undefined, componentApi: IComponentApi | undefined, blockingLoader: IBlockingLoader) {
     this.#form = form;
     this.#data = GetShaFormDataAccessor<Values>(this) as Values;
     this.#context = context;
     this.#componentApi = componentApi;
+    this.#blockingLoader = blockingLoader;
   }
 
   addDelayedUpdateData = (data: Values): IDelayedUpdateGroup[] => {
@@ -118,6 +123,14 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
 
   setValidationErrors = (payload: IFormValidationErrors): void => {
     this.#form.setValidationErrors(payload);
+  };
+
+  showLoader = (message?: string, isBlocking?: boolean): ILoaderInstance => {
+    return this.#blockingLoader.showLoader(message, isBlocking);
+  };
+
+  hideLoaders = (): void => {
+    this.#blockingLoader.hideLoaders();
   };
 
   get formInstance(): FormInstance<Values> {
@@ -220,6 +233,8 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   private componentApi: IComponentApi | undefined;
 
+  private blockingLoader: IBlockingLoader;
+
   formDataSetter: ((data: Values | undefined) => void) | undefined;
 
   formDataGetter: (() => (Values | undefined) | undefined) | undefined;
@@ -304,6 +319,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.expressionExecuter = undefined;
     this.context = args.context;
     this.componentApi = args.componentApi;
+    this.blockingLoader = args.blockingLoader;
 
     this.logEnabled = false;
     this.isSettingsForm = false;
@@ -429,7 +445,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   #publicFormApi: PublicFormApi<Values> | undefined;
 
   getPublicFormApi = (): IFormApi<Values> => {
-    return this.#publicFormApi ?? (this.#publicFormApi = new PublicFormApi<Values>(this, this.context, this.componentApi));
+    return this.#publicFormApi ?? (this.#publicFormApi = new PublicFormApi<Values>(this, this.context, this.componentApi, this.blockingLoader));
   };
 
   //#region Antd methods
@@ -932,6 +948,9 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
   const componentApi = useComponentApiProvider();
   const formContext = useDataContextManagerActions().getNearestDataContext(SheshaCommonContexts.FormContext, 'form');
 
+  // Get form loader context if available (returns no-op implementation if provider not found)
+  const blockingLoader = useBlockingLoader('form');
+
   const [formInstance] = useState<IShaFormInstance<Values>>(() => {
     if (form) {
       return form;
@@ -951,6 +970,7 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
         metadataDispatcher: metadataDispatcher,
         componentApi: componentApi,
         context: formContext,
+        blockingLoader,
       });
       const accessors = wrapConstantsData<Values>({
         topContextId: DataContextTopLevels.Full,

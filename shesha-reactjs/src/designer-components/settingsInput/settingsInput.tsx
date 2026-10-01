@@ -7,6 +7,7 @@ import { InputComponent } from '../inputComponent';
 import { evaluateString } from '@/providers/form/utils';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { isDefined } from '@/utils';
+import { addPx } from '@/utils/style';
 
 export type ISettingsComponent = IToolboxComponent & {
   component?: ComponentType<UnwrapCodeEvaluators<Omit<ISettingsInputProps, 'type' | 'propertyName' | 'label' | 'value'>>>;
@@ -18,7 +19,7 @@ export interface ISettingsComponentGroup {
 }
 
 export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
-  const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden, visible, size, validate, validationDependencies, inline, width, hasExplicitWidth, availableConstantsExpression, permissionSettings, ...rest } = props;
+  const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden = false, visible, size, validate, validationDependencies, inline = false, width, hasExplicitWidth, availableConstantsExpression, permissionSettings, ...rest } = props;
 
   const { formData } = useShaFormInstance();
   const settingsComponents = useSettingsComponents();
@@ -52,7 +53,7 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
     // it grow, otherwise a width-constrained field stretches to fill the row and the width stops
     // meaning anything. Everything else keeps the shared flex basis and shares the row as before.
     return hasExplicitWidth === true
-      ? { flex: `0 0 ${typeof width === 'number' ? `${width}px` : width}`, width }
+      ? { flex: `0 0 ${addPx(width)}`, width }
       : { flex: `${inline === true ? 0 : 1} 1 120px`, width };
   }, [unwrappedType, inline, width, hasExplicitWidth]);
 
@@ -61,6 +62,7 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
       <div key={propertyName} style={style}>
         <ConditionalMetadataProvider modelType={evaluatedModelType}>
           <FormItem
+            type={unwrappedType}
             id={props.id ?? props.propertyName}
             name={propertyName}
             hideLabel={hideLabel}

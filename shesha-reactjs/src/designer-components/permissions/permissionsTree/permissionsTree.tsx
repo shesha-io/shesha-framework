@@ -2,13 +2,13 @@ import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { ApartmentOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
-
 import { PermissionsTree, PermissionsTreeMode } from '@/components/permissionsTree';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { CreateChildAction, CreateRootAction, DeleteItemAction, UpdateItemAction } from '@/components/permissionsTree/configurableActions';
 
 export interface IPermissionsTreeComponentProps extends IConfigurableFormComponent {
   /**
@@ -62,6 +62,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
     .add<IPermissionsTreeComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IPermissionsTreeComponentProps)
     .add<IPermissionsTreeComponentProps>(1, (prev) => migrateReadOnly(prev))
     .add<IPermissionsTreeComponentProps>(2, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
+  actions: [CreateChildAction, CreateRootAction, DeleteItemAction, UpdateItemAction],
 };
 
 export default PermissionedObjectsTreeComponent;

@@ -2,10 +2,10 @@ import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { ApartmentOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
-
 import PermissionedObjectsTree from '@/components/permissionedObjectsTree';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { SetGroupingAction, SetSearchTextAction, UpdateItemAction } from '@/components/permissionedObjectsTree/configurableActions';
 
 export interface IPermissionedObjectsTreeComponentProps extends IConfigurableFormComponent {
   objectsType?: string;
@@ -44,6 +44,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionedObjectsTr
   },
   migrator: (m) => m
     .add<IPermissionedObjectsTreeComponentProps>(0, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
+  actions: [SetGroupingAction, SetSearchTextAction, UpdateItemAction],
 };
 
 export default PermissionedObjectsTreeComponent;

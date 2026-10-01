@@ -20,6 +20,7 @@ import { defaultStyles } from './utils';
 import { isDefined } from '@/utils/nullables';
 import { getStringPropertyOrUndefined } from '@/utils/object';
 import { isNonEmptyArray } from '@/utils/array';
+import { Back, Cancel, Close, Done, Next, ResetSteps, Validate } from './configurableActions';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   styleGroup: 'common-containers',
@@ -137,6 +138,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
     return [...containers, ...footerContainers];
   },
+  actions: [Back, Next, Cancel, Close, Done, ResetSteps, Validate],
 };
 
 export default TabsComponent;

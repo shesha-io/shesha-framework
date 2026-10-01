@@ -15,11 +15,12 @@ import {
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { IHasVersion, Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
-import { IAjaxResponseBase, IApplicationContext, IErrorInfo, IObjectMetadata, IShaFormInstance, IStyleValue, UnwrapCodeEvaluators } from '..';
+import { FormMarkupFactory, FormMarkupFactoryArgs, IAjaxResponseBase, IApplicationContext, IErrorInfo, IFormValidationRulesOptions, IObjectMetadata, IShaFormInstance, IStyleValue, UnwrapCodeEvaluators } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
-import { FormBuilderFactory } from '@/form-factory/interfaces';
 import { UnwrapFunc } from '@/providers/form/utils/js-settings';
+import { IActionDescriptorBase } from './configurableAction';
+import { ISheshaErrorTypes } from '@/utils/errors';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -76,11 +77,10 @@ export type ISettingsFormFactory<TModel extends IConfigurableFormComponent = ICo
 
 export type IComponentSettingsFormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = FC<IComponentSettingsFormFactoryArgs<TModel>>;
 
-export type SettingsFormMarkupFactoryArgs = {
-  fbf: FormBuilderFactory;
+export type SettingsFormMarkupFactoryArgs = FormMarkupFactoryArgs & {
   removeStyleRouter?: boolean;
 };
-export type SettingsFormMarkupFactory = (args: SettingsFormMarkupFactoryArgs) => FormMarkup;
+export type SettingsFormMarkupFactory = FormMarkupFactory<SettingsFormMarkupFactoryArgs>;
 
 export interface IApiContext<TModel> {
   updateApiModel: (value: Partial<TModel>) => void;
@@ -193,7 +193,7 @@ export type IToolboxComponentBase = {
   /**
    * Markup of the settings form. Applied when the @settingsFormFactory is not specified, in this case you can render settings for in the designer itself
    */
-  settingsFormMarkup?: FormMarkup | SettingsFormMarkupFactory;
+  settingsFormMarkup?: FormMarkup | SettingsFormMarkupFactory | undefined;
   /**
    * Return true to indicate that the data type is supported by the component
    */
@@ -229,102 +229,109 @@ export interface IWrapperStyle {
 
 export type ComponentValidator<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = (model: TModel) => Promise<unknown>;
 
-export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = never> = IToolboxComponentBase & {
+export type ComplexValidationRules = Record<string, Rule[]>;
+
+export type IMayHaveConfigurableActions = {
+  actions?: IActionDescriptorBase[];
+};
+
+export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = never> = IToolboxComponentBase &
+  IMayHaveConfigurableActions & {
   /**
    * Component factory. Renders the component according to the passed model (props)
    */
-  Factory: FormFactory<TModel, TCalculatedModel>;
-  /**
-   * A Hook for calculating component-specific values (executed before calculateModel)
-   * @param model - component model
-   * @param allData - application context
-   * @returns - calculated model
-   */
-  useCalculateModel?: (model: TModel, allData: IApplicationContext) => TCalculatedModel;
-  /**
-   * A method for calculating component-specific values
-   * @param useCalculatedModel - model calculated in useCalculateModel method (Hook)
-   * @param model - component model
-   * @param allData - application context
-   * @returns - calculated model
-   */
-  calculateModel?: ((model: TModel, allData: IApplicationContext, useCalculatedModel?: TCalculatedModel) => TCalculatedModel) | undefined;
+    Factory: FormFactory<TModel, TCalculatedModel>;
+    /**
+     * A Hook for calculating component-specific values (executed before calculateModel)
+     * @param model - component model
+     * @param allData - application context
+     * @returns - calculated model
+     */
+    useCalculateModel?: (model: TModel, allData: IApplicationContext) => TCalculatedModel;
+    /**
+     * A method for calculating component-specific values
+     * @param useCalculatedModel - model calculated in useCalculateModel method (Hook)
+     * @param model - component model
+     * @param allData - application context
+     * @returns - calculated model
+     */
+    calculateModel?: ((model: TModel, allData: IApplicationContext, useCalculatedModel?: TCalculatedModel) => TCalculatedModel) | undefined;
 
-  /**
-   * Returns true if the property should be calculated for the actual model (calculated from JS code)
-   */
-  actualModelPropertyFilter?: (name: string, value: unknown) => boolean;
+    /**
+     * Returns true if the property should be calculated for the actual model (calculated from JS code)
+     */
+    actualModelPropertyFilter?: (name: string, value: unknown) => boolean;
 
-  actualModelFilteredPropertyProcessor?: UnwrapFunc;
+    actualModelFilteredPropertyProcessor?: UnwrapFunc;
 
-  /**
-   * Fills the component properties with some default values. Fired when the user drops a component to the form
-   */
-  initModel?: (model: TModel) => TModel;
-  /**
-   * Returns default component styles
-   */
-  getDefaultStyles?: (model?: TModel) => IStyleValue;
-  /**
-   * Link component to a model metadata
-   */
-  linkToModelMetadata?: (model: TModel, metadata: IPropertyMetadata) => TModel;
-  /**
-   * Init model from metadata. Fired when the user drops a component to the form and bind component to the Entity property
-   * @param currentModel - current component model
-   * @param newModel - new component model
-   * @param metadata - property metadata
-   * @returns - component model
-   */
-  initModelFromMetadata?: (currentModel: TModel, newModel: TModel, metadata: IPropertyMetadata) => Promise<TModel>;
-  /**
-   * Returns nested component containers. Is used in the complex components like tabs, panels etc.
-   */
-  getContainers?: ((model: TModel) => IFormComponentContainer[]) | undefined;
-  /**
-   * Settings form factory. Renders the component settings form
-   */
-  settingsFormFactory?: IComponentSettingsFormFactory<TModel>;
-  /**
-   * Settings validator
-   */
-  validateSettings?: ComponentValidator<TModel> | undefined;
+    /**
+     * Fills the component properties with some default values. Fired when the user drops a component to the form
+     */
+    initModel?: (model: TModel) => TModel;
+    /**
+     * Returns default component styles
+     */
+    getDefaultStyles?: (model?: TModel) => IStyleValue;
+    /**
+     * Link component to a model metadata
+     */
+    linkToModelMetadata?: (model: TModel, metadata: IPropertyMetadata) => TModel;
+    /**
+     * Init model from metadata. Fired when the user drops a component to the form and bind component to the Entity property
+     * @param currentModel - current component model
+     * @param newModel - new component model
+     * @param metadata - property metadata
+     * @returns - component model
+     */
+    initModelFromMetadata?: (currentModel: TModel, newModel: TModel, metadata: IPropertyMetadata) => Promise<TModel>;
+    /**
+     * Returns nested component containers. Is used in the complex components like tabs, panels etc.
+     */
+    getContainers?: ((model: TModel) => IFormComponentContainer[]) | undefined;
+    /**
+     * Settings form factory. Renders the component settings form
+     */
+    settingsFormFactory?: IComponentSettingsFormFactory<TModel>;
 
-  /**
-   * Settings migrations. Returns last version of settings
-   */
-  migrator?: SettingsMigrator<TModel>;
+    /**
+     * Settings migrations. Returns last version of settings
+     */
+    migrator?: SettingsMigrator<TModel>;
 
-  /**
-   * Returns fields to fetch, used when it is necessary to get additional fields, and not just what is specified in the propertyName field
-   */
-  getFieldsToFetch?: ((propertyName: string, rawModel: TModel, metadata: IModelMetadata) => string[]) | undefined;
+    /**
+     * Returns fields to fetch, used when it is necessary to get additional fields, and not just what is specified in the propertyName field
+     */
+    getFieldsToFetch?: ((propertyName: string, rawModel: TModel, metadata: IModelMetadata) => string[]) | undefined;
 
-  /**
-   * Asynchronous version of `getFieldsToFetch`, is used by the components that render nested forms and can't
-   * calculate the list of fields without loading those forms. Takes precedence over `getFieldsToFetch`
-   */
-  getFieldsToFetchAsync?: ((propertyName: string, rawModel: TModel, metadata: IModelMetadata, context: IGetFieldsToFetchContext) => Promise<string[]>) | undefined;
+    /**
+     * Asynchronous version of `getFieldsToFetch`, is used by the components that render nested forms and can't
+     * calculate the list of fields without loading those forms. Takes precedence over `getFieldsToFetch`
+     */
+    getFieldsToFetchAsync?: ((propertyName: string, rawModel: TModel, metadata: IModelMetadata, context: IGetFieldsToFetchContext) => Promise<string[]>) | undefined;
 
-  /**
-   * Validate model before rendering a component, used to add user-friendly messages about the need to correctly configure the component fields in the designer
-   */
-  validateModel?: (model: TModel, addModelError: (propertyName: string, error: string) => void) => void;
+    /**
+     * Validate model before rendering a component, used to add user-friendly messages about the need to correctly configure the component fields in the designer
+     */
+    validateModel?: (model: TModel, addModelError: (propertyName: string, error: string) => void) => void;
 
-  /**
-   * Returns additional Form.Item validation rules contributed by the component itself (e.g. intrinsic
-   * value-format validity), merged with the generic rules built from `model.validate`
-   */
-  getExtraValidationRules?: (model: TModel) => Rule[];
+    /**
+     * If true, the standard validation rules will be used for component settings validation. Default: true
+     */
+    useStandardValidation?: boolean | undefined;
+    /**
+     * Returns additional Form.Item validation rules contributed by the component itself (e.g. intrinsic
+     * value-format validity), merged with the generic rules built from `model.validate`
+     */
+    getExtraValidationRules?: <TValues = unknown>(model: TModel, context?: IFormValidationRulesOptions<TValues>) => Rule[] | ComplexValidationRules;
 
-  /**
-   * Configuration is used to show a preview of the component in the some places (like theme component configurator)
-   */
-  previewConfiguration?: TModel;
+    /**
+     * Configuration is used to show a preview of the component in the some places (like theme component configurator)
+     */
+    previewConfiguration?: TModel;
 
-  /** Drag handle dimensions */
-  getWrapperStyle?: ((model: TModel) => IWrapperStyle | undefined) | undefined;
-} & ToolboxComponentAsTemplate;
+    /** Drag handle dimensions */
+    getWrapperStyle?: ((model: TModel) => IWrapperStyle | undefined) | undefined;
+  } & ToolboxComponentAsTemplate;
 
 export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> =
   Omit<IToolboxComponent<TModel, TCalculatedModel>, 'type'> & {
@@ -360,6 +367,29 @@ export { type IConfigurableFormComponent as IConfigurableFormComponent, type IFo
 export interface IAsyncValidationError {
   field: string;
   fieldLabel?: string | ReactNode;
+  message: string;
+  path?: ValidationNodeRef[];
+}
+
+export interface ValidationNodeRef {
+  kind: 'form-settings' | 'form-markup' | 'component' | 'setting';
+  /** index among siblings; ignored for the form node */
+  index?: number;
+  /** stable component id, if any */
+  id?: string;
+  name: string;
+  /** human readable label, e.g. "Email field" */
+  label?: string | undefined;
+}
+
+export interface FieldValidationError {
+  severity: ISheshaErrorTypes;
+  /** Address of the settings owner. Must be non-empty. */
+  path: ValidationNodeRef[];
+  code?: string | undefined;
+
+  propertyName: string;
+  propertyLabel?: string | ReactNode;
   message: string;
 }
 

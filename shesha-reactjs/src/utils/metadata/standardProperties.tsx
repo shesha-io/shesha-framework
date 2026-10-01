@@ -10,6 +10,7 @@ export const SheshaConstants = {
   utils: "shesha:utils",
   http: "shesha:http",
   message: "shesha:message",
+  loader: "shesha:loader",
   modal: "shesha:modal",
   fileSaver: "shesha:fileSaver",
   moment: "shesha:moment",
@@ -68,7 +69,6 @@ export const registerFileSaverAction: MetadataBuilderAction = (builder, name = "
     return Promise.resolve(definition);
   });
 };
-
 
 export const registerMomentAction: MetadataBuilderAction = (builder, name = "moment") => {
   builder.addCustom(name, "The moment.js object", () => {

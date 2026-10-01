@@ -1,4 +1,4 @@
-import { useConfigurableAction } from "@/providers/configurableActionsDispatcher";
+import { useConfigurableActionImplementation } from "@/providers/configurableActionsDispatcher";
 import { IShaFormInstance } from "../store/interfaces";
 import { SheshaActionOwners } from "@/providers/configurableActionsDispatcher/models";
 import { hasPreviousActionError } from "@/interfaces/configurableAction";
@@ -6,6 +6,8 @@ import { ISubmitActionArguments, ISubmitActionExecutionContext, IValidateActionE
 import { useRef } from "react";
 import { isDefined } from "@/utils/nullables";
 import { extractErrorInfo } from "@/utils/errors";
+import { useBlockingLoaderActions } from "@/providers/blockingLoader";
+import { CancelEditAction, RefreshAction, ResetAction, ResetValidationErrorsAction, SetValidationErrorsAction, StartEditAction, SubmitAction, ValidateAction } from "./descriptors";
 
 
 export type UseShaFormActionsArgs<TData extends object = object> = {
@@ -14,146 +16,98 @@ export type UseShaFormActionsArgs<TData extends object = object> = {
   shaForm: IShaFormInstance<TData>;
 };
 export const useShaFormActions = <TData extends object = object>({ name, isActionsOwner, shaForm }: UseShaFormActionsArgs<TData>): void => {
-  const actionsOwnerUid = isActionsOwner ? SheshaActionOwners.Form : "";
-  const actionDependencies = [actionsOwnerUid];
+  const actionsOwnerId = isActionsOwner ? SheshaActionOwners.Form : "";
+  const actionDependencies = [actionsOwnerId];
   const prevFormData = useRef<TData>(undefined);
 
-  useConfigurableAction(
-    {
-      name: 'Start Edit',
-      owner: name,
-      ownerUid: actionsOwnerUid,
-      hasArguments: false,
-      executer: () => {
-        prevFormData.current = shaForm.formData;
-        shaForm.setFormMode('edit');
-        return Promise.resolve();
-      },
+  useBlockingLoaderActions('form', name, actionsOwnerId);
+
+  const actionOwnerName = name;
+
+  useConfigurableActionImplementation(actionsOwnerId, StartEditAction, {
+    owner: actionOwnerName,
+    executer: () => {
+      prevFormData.current = shaForm.formData;
+      shaForm.setFormMode('edit');
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
+  }, actionDependencies);
 
-  useConfigurableAction(
-    {
-      name: 'Cancel Edit',
-      owner: name,
-      ownerUid: actionsOwnerUid,
-      hasArguments: false,
-      executer: () => {
-        shaForm.resetFields();
-        shaForm.setFormData({ values: prevFormData.current ?? {} as TData, mergeValues: true });
-        shaForm.setFormMode('readonly');
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation(actionsOwnerId, CancelEditAction, {
+    owner: actionOwnerName,
+    executer: () => {
+      shaForm.resetFields();
+      shaForm.setFormData({ values: prevFormData.current ?? {} as TData, mergeValues: true });
+      shaForm.setFormMode('readonly');
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
+  }, actionDependencies);
 
-  useConfigurableAction<ISubmitActionArguments, unknown, ISubmitActionExecutionContext>(
-    {
-      name: 'Submit',
-      owner: name,
-      ownerUid: actionsOwnerUid,
-      hasArguments: false,
-      executer: async (args: ISubmitActionArguments, actionContext) => {
-        var formInstance = (actionContext.form?.formInstance ?? shaForm.antdForm);
+  useConfigurableActionImplementation<ISubmitActionArguments, ISubmitActionExecutionContext>(actionsOwnerId, SubmitAction, {
+    owner: actionOwnerName,
+    executer: async (args: ISubmitActionArguments, actionContext) => {
+      var formInstance = (actionContext.form?.formInstance ?? shaForm.antdForm);
 
-        var skipValidation = args.validateFields === false;
-        if (!skipValidation) {
-          if (isDefined(actionContext.fieldsToValidate)) {
-            if (actionContext.fieldsToValidate.length > 0)
-              await formInstance.validateFields(actionContext.fieldsToValidate);
-          } else
-            await formInstance.validateFields();
-        }
-
-        const realShaForm = actionContext.form?.shaForm ?? shaForm;
-        await realShaForm.submitData();
-      },
-    },
-    actionDependencies,
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Reset',
-      owner: name,
-      ownerUid: actionsOwnerUid,
-      hasArguments: false,
-      executer: () => {
-        shaForm.resetFields();
-        return Promise.resolve();
-      },
-    },
-    actionDependencies,
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Refresh',
-      description: 'Refresh the form data by fetching it from the back-end',
-      owner: name,
-      ownerUid: actionsOwnerUid,
-      hasArguments: false,
-      executer: () => {
-        return shaForm.fetchData();
-      },
-    },
-    actionDependencies,
-  );
-
-  useConfigurableAction<object, unknown, IValidateActionExecutionContext>(
-    {
-      name: 'Validate',
-      description: 'Validate the form data and show validation errors if any',
-      owner: name,
-      ownerUid: actionsOwnerUid,
-      hasArguments: false,
-      executer: async (_, actionContext) => {
-        var formInstance = actionContext.form?.formInstance ?? shaForm.antdForm;
-
+      var skipValidation = args.validateFields === false;
+      if (!skipValidation) {
         if (isDefined(actionContext.fieldsToValidate)) {
           if (actionContext.fieldsToValidate.length > 0)
             await formInstance.validateFields(actionContext.fieldsToValidate);
         } else
           await formInstance.validateFields();
-      },
+      }
+
+      const realShaForm = actionContext.form?.shaForm ?? shaForm;
+      await realShaForm.submitData();
     },
-    actionDependencies,
-  );
+  }, actionDependencies);
 
-  useConfigurableAction<{ data: object }>(
-    {
-      name: 'Set validation errors',
-      description: 'Errors are displayed on the Validation Errors component attached to the form',
-      owner: name,
-      ownerUid: actionsOwnerUid,
-      hasArguments: false,
-      executer: (_args, actionContext) => {
-        if (hasPreviousActionError(actionContext)) {
-          const error = extractErrorInfo(actionContext.actionError);
-
-          shaForm.setValidationErrors(error);
-        }
-
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation(actionsOwnerId, ResetAction, {
+    owner: actionOwnerName,
+    executer: () => {
+      shaForm.resetFields();
+      return Promise.resolve();
     },
-    actionDependencies,
-  );
+  }, actionDependencies);
 
-  useConfigurableAction(
-    {
-      name: 'Reset validation errors',
-      description: 'Clear errors displayed on the Validation Errors component attached to the form',
-      owner: name,
-      ownerUid: actionsOwnerUid,
-      hasArguments: false,
-      executer: () => {
-        shaForm.setValidationErrors(undefined);
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation(actionsOwnerId, RefreshAction, {
+    owner: actionOwnerName,
+    executer: () => {
+      return shaForm.fetchData();
     },
-    actionDependencies,
-  );
+  }, actionDependencies);
+
+  useConfigurableActionImplementation<object, IValidateActionExecutionContext>(actionsOwnerId, ValidateAction, {
+    owner: actionOwnerName,
+    executer: async (_, actionContext) => {
+      var formInstance = actionContext.form?.formInstance ?? shaForm.antdForm;
+
+      if (isDefined(actionContext.fieldsToValidate)) {
+        if (actionContext.fieldsToValidate.length > 0)
+          await formInstance.validateFields(actionContext.fieldsToValidate);
+      } else
+        await formInstance.validateFields();
+    },
+  }, actionDependencies);
+
+  useConfigurableActionImplementation(actionsOwnerId, SetValidationErrorsAction, {
+    owner: actionOwnerName,
+    executer: (_args, actionContext) => {
+      if (hasPreviousActionError(actionContext)) {
+        const error = extractErrorInfo(actionContext.actionError);
+
+        shaForm.setValidationErrors(error);
+      }
+
+      return Promise.resolve();
+    },
+  }, actionDependencies);
+
+  useConfigurableActionImplementation(actionsOwnerId, ResetValidationErrorsAction, {
+    owner: actionOwnerName,
+    executer: () => {
+      shaForm.setValidationErrors(undefined);
+      return Promise.resolve();
+    },
+  }, actionDependencies);
 };

@@ -104,6 +104,27 @@ export interface FormApi<Values extends object = object> {
    */
   addDelayedUpdateData: (data: Values) => IDelayedUpdateGroup[];
 
+  /**
+   * Show loader overlay
+   * @param message Optional message to display
+   * @returns Loader instance with methods for progressive feedback
+   * @example
+   * const loader = form.showLoader("Saving...");
+   * try {
+   *   await http.post('/api/save', data);
+   *   loader.close();
+   * } catch (error) {
+   *   loader.updateMessage("Failed to save");
+   *   setTimeout(() => loader.close(), 2000);
+   * }
+   */
+  showLoader: (message?: string, isBlocking?: boolean) => { updateMessage(message: string): void; close(): void; block(): void; unblock(): void };
+
+  /**
+   * Hide all active loaders
+   */
+  hideLoaders: () => void;
+
   /** antd form instance */
   readonly formInstance?: FormInstance;
   /** Configurable form settings */

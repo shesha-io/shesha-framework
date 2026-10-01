@@ -10,12 +10,11 @@ import { ConfigurableActionConfiguratorComponentDefinition } from '@/designer-co
 import { EntityTypeAutocompleteComponentDefinition } from '@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete/interfaces';
 import { ContainerComponentDefinition } from '@/designer-components/container/interfaces';
 import { ContextPropertyAutocompleteComponentDefinition } from '@/designer-components/contextPropertyAutocomplete/interfaces';
-import { DataContextComponentDefinition } from '@/designer-components/dataContextComponent/interfaces';
 import { PagerComponentDefinition } from '@/designer-components/dataTable/pager/interfaces';
 import { QuickSearchComponentDefinition } from '@/designer-components/dataTable/quickSearch/interfaces';
 import { ColumnsEditorComponentDefinition } from '@/designer-components/dataTable/table/columnsEditor/interfaces';
 import { TableComponentDefinition } from '@/designer-components/dataTable/table/models';
-import { TableContextComponentDefinition, TableContextComponentLegacyDefinition as DataTableContextComponentDefinition } from '@/designer-components/dataTable/tableContext/models';
+import { TableContextComponentDefinition } from '@/designer-components/dataTable/tableContext/models';
 import { TableViewSelectorComponentDefinition } from '@/designer-components/dataTable/tableViewSelector/models';
 import { DateFieldDefinition } from '@/designer-components/dateField/interfaces';
 import { DropdownComponentDefinition } from '@/designer-components/dropdown/model';
@@ -66,12 +65,11 @@ type AllComponentDefinitions =
   EntityTypeAutocompleteComponentDefinition |
   ContainerComponentDefinition |
   ContextPropertyAutocompleteComponentDefinition |
-  DataContextComponentDefinition |
+  TableContextComponentDefinition |
   PagerComponentDefinition |
   QuickSearchComponentDefinition |
   TableComponentDefinition |
   ColumnsEditorComponentDefinition |
-  TableContextComponentDefinition |
   TableViewSelectorComponentDefinition |
   DateFieldDefinition |
   DropdownComponentDefinition |
@@ -105,8 +103,7 @@ type AllComponentDefinitions =
   SearchableTabsDefinition |
   LinkComponentDefinition |
   EditModeSelectorComponentDefinition |
-  KeyInformationBarComponentDefinition |
-  DataTableContextComponentDefinition;
+  KeyInformationBarComponentDefinition;
 
 export type ComponentTypes = AllComponentDefinitions["type"];
 

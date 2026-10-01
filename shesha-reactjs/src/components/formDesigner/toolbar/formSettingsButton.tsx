@@ -1,8 +1,8 @@
-import { useFormDesignerReadOnly } from '@/providers/formDesigner';
+import { useFormDesigner, useFormDesignerReadOnly, useFormDesignerSettingsEditorVisible } from '@/providers/formDesigner';
 import { SettingOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback } from 'react';
 import { FormSettingsEditor } from '../formSettingsEditor';
 
 export interface IFormSettingsButtonProps {
@@ -11,15 +11,17 @@ export interface IFormSettingsButtonProps {
 }
 
 export const FormSettingsButton: FC<IFormSettingsButtonProps> = ({ buttonText, size }) => {
-  const [settingsVisible, setSettingsVisible] = useState(false);
+  // const [settingsVisible, setSettingsVisible] = useState(false);
+  const settingsVisible = useFormDesignerSettingsEditorVisible();
   const readOnly = useFormDesignerReadOnly();
+  const formDesigner = useFormDesigner();
 
   const onSettingsClick = (): void => {
-    setSettingsVisible(true);
+    formDesigner.openFormSettings();
   };
   const onClose = useCallback(() => {
-    setSettingsVisible(false);
-  }, [setSettingsVisible]);
+    formDesigner.closeFormSettings();
+  }, [formDesigner]);
 
   return (
     <>

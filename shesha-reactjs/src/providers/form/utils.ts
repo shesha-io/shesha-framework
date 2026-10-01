@@ -9,6 +9,7 @@ import {
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents, SettingsMigrationContext,
+  ValidationNodeRef,
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import {
@@ -22,6 +23,7 @@ import {
   RootContexts,
   STYLE_BOX_CSS_POPERTIES,
   StyleBoxValue,
+  useBlockingLoader,
   useDataTableStateOrUndefined,
   useGlobalState,
   useHttpClient,
@@ -62,6 +64,8 @@ import {
   FormFullName,
   FormIdentifier,
   FormMarkup,
+  FormMarkupFactory,
+  FormMarkupFactoryArgs,
   FormMarkupWithSettings,
   FormRawMarkup,
   FormUid,
@@ -73,6 +77,7 @@ import {
   IFormValidationRulesOptions,
   IPersistedFormProps,
   IPropertySetting,
+  MESSAGES,
   ROOT_COMPONENT_KEY,
 } from './models';
 import { isHasPropsAccessor, makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
@@ -102,8 +107,12 @@ import { IUtilsApi } from '@/publicJsApis/apis/utils';
 import { IActionsApi } from '@/publicJsApis/apis/actions';
 import { ICurrentUserApi } from '@/publicJsApis/apis/user';
 import { isEqual } from 'lodash';
-import { getComponentValidationRules } from '../formValidator/utils';
+import { getComponentComplexValidationRules, getComponentValidationRules } from '../formValidator/utils';
+import { ContextConfigurableActionGetter, IGetContextualConfigurableActionPayload } from '../configurableActionsDispatcher/models';
 import { FormDesignerComponentGetter } from './hooks';
+import { IConfigurableActionDescriptor } from '@/interfaces/configurableAction';
+import { RuleObject } from 'antd/es/form';
+import { IBlockingLoader, ILoaderInstance } from '../blockingLoader/instance';
 
 export {
   executeExpression, executeScript,
@@ -121,6 +130,17 @@ type MomentType = typeof moment;
 export interface IPageApi {
   readonly state: IDataContextFull | undefined;
   location: Location | undefined;
+  /**
+   * Show blocking loader overlay scoped to this form
+   * @param message Optional message to display
+   * @param isBlocking Optional blocking mode
+   * @returns Loader instance with methods for progressive feedback
+   */
+  showLoader: (message?: string, isBlocking?: boolean) => ILoaderInstance;
+  /**
+   * Hide all active loaders
+   */
+  hideLoaders: () => void;
 }
 
 /** Interface to get all avalilable data */
@@ -208,6 +228,7 @@ export type AvailableConstantsContext = {
   message: MessageInstance;
   modal: IModalApi;
   httpClient: HttpClientApi;
+  pageLoader: IBlockingLoader;
 };
 
 
@@ -227,6 +248,8 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   // get selected row if exists
   const selectedRow = useDataTableStateOrUndefined()?.selectedRow;
   const httpClient = useHttpClient();
+  const pageLoader = useBlockingLoader('page');
+
 
   const result: AvailableConstantsContext = {
     closestShaFormApi: undefined,
@@ -239,6 +262,7 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
     httpClient,
     message,
     modal,
+    pageLoader,
   };
   return result;
 };
@@ -310,6 +334,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     message,
     metadataDispatcher,
     modal,
+    pageLoader,
   } = fullContext;
   const shaFormApi = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
 
@@ -349,7 +374,12 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     },
     page: () => {
       // get page context
-      return { state: pageContext, location: typeof window !== 'undefined' ? window.location : undefined } as IPageApi;
+      return {
+        state: pageContext,
+        location: typeof window !== 'undefined' ? window.location : undefined,
+        showLoader: pageLoader.showLoader,
+        hideLoaders: pageLoader.hideLoaders,
+      } as IPageApi;
     },
     pageContext: () => pageContext,
     storage: () => webStorageContext,
@@ -556,6 +586,10 @@ const getParentComponentOrUndefined = (markup: IFlatComponentsStructure, id: str
   let parentId = markup.parents[id];
   while (!isNullOrWhiteSpace(parentId)) {
     const component = markup.allComponents[parentId];
+
+    if (isDefined(component) && component.id === id)
+      throw new Error(`Component with id ${id} has itself as a parent`);
+
     if (isConfigurableFormComponent(component)) return component;
     parentId = markup.parents[parentId];
   }
@@ -564,18 +598,42 @@ const getParentComponentOrUndefined = (markup: IFlatComponentsStructure, id: str
 };
 
 export const getComponentsChain = (markup: IFlatComponentsStructure, id: string): IConfigurableFormComponent[] => {
-  const result: IConfigurableFormComponent[] = [];
-  const component = markup.allComponents[id];
-  if (!isConfigurableFormComponent(component))
-    return result;
+  try {
+    const result: IConfigurableFormComponent[] = [];
+    const component = markup.allComponents[id];
+    if (!isConfigurableFormComponent(component))
+      return result;
 
-  let currentComponent: IConfigurableFormComponent | undefined = component;
-  while (isDefined(currentComponent)) {
-    result.push(currentComponent);
+    let currentComponent: IConfigurableFormComponent | undefined = component;
+    while (isDefined(currentComponent)) {
+      result.push(currentComponent);
 
-    currentComponent = getParentComponentOrUndefined(markup, currentComponent.id);
+      currentComponent = getParentComponentOrUndefined(markup, currentComponent.id);
+    }
+    return result.reverse();
+  } catch (error) {
+    console.error(`getComponentsChain FAILED for '${id}'`, error);
+    throw error;
   }
-  return result.reverse();
+};
+
+export const isComponentVisibleItself = (c: Omit<IConfigurableFormComponent, "type" | "id">, allData: object): boolean => {
+  const visibleJs = getStringPropertyOrUndefined(c, "visibleJs");
+  const visibleFixed: IPropertySetting<boolean> | undefined = !isNullOrWhiteSpace(visibleJs)
+    ? { _mode: 'code', _code: visibleJs }
+    : isPropertySettings<boolean>(c.visible) // already converted
+      ? c.visible
+      : typeof (c.visible) === "boolean"
+        ? { _mode: 'value', _value: c.visible }
+        : undefined;
+
+  const componentWithActualProps = getActualModel('', { ...c, visible: visibleFixed }, allData, undefined, (name) => name === "hidden" || name === "visible" || name === "visibleJs");
+
+  const { visible, hidden } = componentWithActualProps;
+
+  return isDefined(visible)
+    ? visible
+    : hidden !== true;
 };
 
 /**
@@ -585,24 +643,7 @@ export const getComponentsChain = (markup: IFlatComponentsStructure, id: string)
  */
 export const isComponentHidden = (markup: IFlatComponentsStructure, id: string, allData: object): boolean => {
   const chain = getComponentsChain(markup, id);
-  const isVisible = chain.every((c) => {
-    const visibleJs = getStringPropertyOrUndefined(c, "visibleJs");
-    const visibleFixed: IPropertySetting<boolean> | undefined = !isNullOrWhiteSpace(visibleJs)
-      ? { _mode: 'code', _code: visibleJs }
-      : isPropertySettings<boolean>(c.visible) // already converted
-        ? c.visible
-        : typeof (c.visible) === "boolean"
-          ? { _mode: 'value', _value: c.visible }
-          : undefined;
-
-    const componentWithActualProps = getActualModel('', { ...c, visible: visibleFixed }, allData, undefined, (name) => name === "hidden" || name === "visible" || name === "visibleJs");
-
-    const { visible, hidden } = componentWithActualProps;
-
-    return isDefined(visible)
-      ? visible
-      : hidden !== true;
-  });
+  const isVisible = chain.every((c) => isComponentVisibleItself(c, allData));
   return !isVisible;
 };
 
@@ -1124,8 +1165,11 @@ export const hasBoolean = (value: unknown): boolean => {
   return false;
 };
 
-type ValidatorCallback = (error?: string | Error) => void;
-type ValidatorFunc = (rule: InternalRuleItem, value: unknown, callback: ValidatorCallback, data: unknown) => unknown;
+export type ValidationErrorCallback = (error?: string) => void;
+
+export type ValidatorFunc = (rule: RuleObject, value: unknown, callback: ValidationErrorCallback) => Promise<void>;
+
+type InternalValidatorFunc = (rule: InternalRuleItem, value: unknown, callback: ValidationErrorCallback, data: unknown) => Promise<void>;
 
 const toValidationMessage = (error: unknown): string => error instanceof Error ? error.message : String(error);
 
@@ -1138,7 +1182,7 @@ const toValidationMessage = (error: unknown): string => error instanceof Error ?
  * Contract for asynchronous checks: return the promise. A `callback` made after the script has returned
  * is not awaited, because a script that returned nothing is already treated as complete.
  */
-export const runCustomValidator = (validatorFunc: ValidatorFunc, rule: InternalRuleItem, value: unknown, data: unknown): Promise<void> =>
+export const runCustomValidator = (validatorFunc: InternalValidatorFunc, rule: InternalRuleItem, value: unknown, data: unknown): Promise<void> =>
   new Promise<void>((resolve, reject) => {
     let settled = false;
     const settle = (error?: unknown): void => {
@@ -1190,7 +1234,7 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
     if (validate.required === true && canBeRequired)
       rules.push({
         required: true,
-        message: firstNonEmptyString(validate.message, 'This field is required'),
+        message: firstNonEmptyString(validate.message, MESSAGES.THIS_FIELD_IS_REQUIRED),
       });
 
     if (validate.minValue !== undefined)
@@ -1218,7 +1262,7 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
       });
 
     if (!isNullOrWhiteSpace(validate.validator) && options) {
-      const validatorFunc = new Function('rule', 'value', 'callback', 'data', validate.validator) as ValidatorFunc;
+      const validatorFunc = new Function('rule', 'value', 'callback', 'data', validate.validator) as InternalValidatorFunc;
 
       rules.push({
         asyncValidator: (rule, value) => {
@@ -1368,15 +1412,16 @@ export const setRuleAtPath = (rules: RulesDescriptor, path: string, rule: RuleIt
       if (!current[segment]) {
         // Create a default object node with a `fields` child
         const newContainer: RuleItem = { type: 'object', fields: {} };
-        // propogate required flag. async-validator skips empty objects
-        if (isRequired)
-          newContainer.required = true;
         current[segment] = newContainer;
       }
 
       // Ensure the node has a `fields` property to dive deeper
       const currentSegment = current[segment];
       if (isRuleItem(currentSegment)) {
+        // propogate required flag. async-validator skips empty objects
+        if (isRequired)
+          currentSegment.required = true;
+
         if (!currentSegment.fields) {
           // If it's a rule without fields, we convert it to a container
           // (this keeps the existing type if present, but adds fields)
@@ -1409,7 +1454,8 @@ type ValidationSettings = {
   friendlyNames: Record<string, string | ReactNode>;
 };
 
-export const getFormValidationSettings = (markup: FormMarkup, values: Values, componentGetter: FormDesignerComponentGetter): ValidationSettings => {
+
+export const getFormValidationSettings = <TData extends object = object>(markup: FormMarkup, values: TData, options: IFormValidationRulesOptions): ValidationSettings => {
   const components = getComponentsFromMarkup(markup);
 
   const designerComponents: IToolboxComponents = Object.fromEntries(getComponentDefinitions());
@@ -1422,17 +1468,31 @@ export const getFormValidationSettings = (markup: FormMarkup, values: Values, co
     if (flatStructure.allComponents.hasOwnProperty(key)) {
       const item = flatStructure.allComponents[key];
 
-      if (isConfigurableFormComponent(item) && !isNullOrWhiteSpace(item.propertyName)) {
-        if (isDefined(item.label))
+      if (isConfigurableFormComponent(item)) {
+        if (!isNullOrWhiteSpace(item.propertyName) && isDefined(item.label))
           friendlyNames[item.propertyName] = item.label;
 
-        const itemRules = getComponentValidationRules(item, componentGetter, { getFormData: () => values }) as RuleItem[];
+        // TODO: pass all contexts
+        const hidden = isComponentHidden(flatStructure, item.id, { ...options.appContext, data: values });
+        if (!hidden) {
+          if (!isNullOrWhiteSpace(item.propertyName)) {
+            const itemRules = getComponentValidationRules(item, { ...options, getFormData: () => values }) as RuleItem[];
+            if (isNonEmptyArray(itemRules)) {
+              setRuleAtPath(rules, item.propertyName, itemRules);
+            }
+          }
 
-        if (isNonEmptyArray(itemRules)) {
-          // validate only when component is not hidden
-          const hidden = isComponentHidden(flatStructure, item.id, { data: values });
-          if (!hidden) {
-            setRuleAtPath(rules, item.propertyName, itemRules);
+          // handle complex validation
+          const complexRules = getComponentComplexValidationRules(item, { ...options, getFormData: () => values });
+          if (isDefined(complexRules)) {
+            for (const key in complexRules) {
+              if (complexRules.hasOwnProperty(key)) {
+                const rule = complexRules[key];
+                if (isNonEmptyArray(rule)) {
+                  setRuleAtPath(rules, key, rule as RuleItem[]);
+                }
+              }
+            }
           }
         }
       }
@@ -1445,22 +1505,47 @@ export const getFormValidationSettings = (markup: FormMarkup, values: Values, co
   };
 };
 
-export type ValidateErrorWithFriendlyName = ValidateError & {
+export type EnhancedValidateError = ValidateError & {
   fieldLabel?: string | ReactNode;
+  path?: ValidationNodeRef[];
 };
 
+export const getFormMarkup = <Args extends FormMarkupFactoryArgs = FormMarkupFactoryArgs>(markupOrFactory: FormMarkup | FormMarkupFactory | undefined, args: Args): FormMarkup | undefined => {
+  return typeof markupOrFactory === 'function'
+    ? markupOrFactory(args)
+    : markupOrFactory;
+};
 
-export const validateConfigurableComponentSettings = (markup: FormMarkup, values: Values, componentGetter: FormDesignerComponentGetter): Promise<Values> => {
-  const validationSettings = getFormValidationSettings(markup, values, componentGetter);
+export const validateConfigurableComponentSettings = (markup: FormMarkup, values: Values, options: IFormValidationRulesOptions<Values>): Promise<Values> => {
+  const validationSettings = getFormValidationSettings(markup, values, options);
   const validator = new RawAsyncValidator(validationSettings.rules);
   return validator.validate(values, undefined, (errors, _fields) => {
     if (isDefined(errors)) {
       errors.forEach((error) => {
-        if (!isNullOrWhiteSpace(error.field))
-          (error as ValidateErrorWithFriendlyName).fieldLabel = validationSettings.friendlyNames[error.field];
+        const errorWithFriendlyName = error as EnhancedValidateError;
+
+        if (!isNullOrWhiteSpace(errorWithFriendlyName.field) && !isDefined(errorWithFriendlyName.fieldLabel))
+          errorWithFriendlyName.fieldLabel = validationSettings.friendlyNames[errorWithFriendlyName.field];
       });
     }
   });
+};
+
+export const getContextualConfigurableActionGetter = (flatStructure: IFlatComponentsStructure, componentGetter: FormDesignerComponentGetter): ContextConfigurableActionGetter => {
+  const result: ContextConfigurableActionGetter = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>({ componentId, owner, name }: IGetContextualConfigurableActionPayload) => {
+    const chain = getComponentsChain(flatStructure, componentId).reverse();
+
+    for (const component of chain) {
+      const definition = componentGetter(component.type);
+      if (isDefined(definition) && component.id === owner && isNonEmptyArray(definition.actions)) {
+        const action = definition.actions.find((action) => action.name === name);
+        if (isDefined(action))
+          return action as IConfigurableActionDescriptor<TArguments>;
+      }
+    }
+    return null;
+  };
+  return result;
 };
 
 export function linkComponentToModelMetadata<TModel extends IConfigurableFormComponent>(

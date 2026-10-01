@@ -13,7 +13,9 @@ import {
   ConfigurableActionArgumentsMigrationContext,
   DynamicContextHook,
   EMPTY_DYNAMIC_CONTEXT_HOOK,
+  IActionDescriptor,
   IActionExecutionContext,
+  IActionImplementation,
   IConfigurableActionConfiguration,
   IConfigurableActionDescriptor,
   IConfigurableActionIdentifier,
@@ -24,7 +26,7 @@ import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { mergeActionGroups } from './utils';
 
-const getActualActionArguments = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(action: IConfigurableActionDescriptor<TArguments>, actionArguments: TArguments | undefined): TArguments | undefined => {
+const getActualActionArguments = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(action: IActionDescriptor<TArguments>, actionArguments: TArguments | undefined): TArguments | undefined => {
   const { migrator } = action;
   if (!migrator)
     return actionArguments;
@@ -233,7 +235,6 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren> = ({
     useActionDynamicContext,
   };
 
-
   return (
     <ConfigurableActionDispatcherActionsContext.Provider value={configurableActionActions}>
       {children}
@@ -252,13 +253,13 @@ function useConfigurableAction<TArguments extends object = object, TResponse = u
 ): void {
   const { registerAction, unregisterAction } = useConfigurableActionDispatcher();
 
-  const { owner, ownerUid, isPermament = false } = payload;
+  const { owner, ownerUid, isPermanent = false } = payload;
   useEffect(() => {
     if (isNullOrWhiteSpace(owner) || isNullOrWhiteSpace(ownerUid)) return undefined;
 
     registerAction(payload);
 
-    return !isPermament
+    return !isPermanent
       ? () => {
         unregisterAction(payload);
       }
@@ -267,10 +268,51 @@ function useConfigurableAction<TArguments extends object = object, TResponse = u
   }, deps);
 }
 
+/**
+ * Register implementation of configurable action
+ */
+function useConfigurableActionImplementation<TArguments extends object = object,
+  TExecutionContext extends IActionExecutionContext = IActionExecutionContext,
+  TResponse = unknown,
+  TDesc extends IActionDescriptor<TArguments> = IActionDescriptor<TArguments>,
+>(
+  ownerUid: string,
+  desc: TDesc,
+  impl: IActionImplementation<TArguments, TResponse, TExecutionContext> & {
+    /**
+     * Action owner name (component responsible for the action execution)
+     */
+    owner?: string;
+    isPermanent?: boolean;
+  },
+  deps?: DependencyList,
+): void {
+  const { registerAction, unregisterAction } = useConfigurableActionDispatcher();
+
+  useEffect(() => {
+    if (isNullOrWhiteSpace(impl.owner) || isNullOrWhiteSpace(ownerUid)) return undefined;
+
+    const { isPermanent = false } = impl;
+    const fullDesc = { ...desc, ...impl, ownerUid, owner: impl.owner };
+    registerAction(fullDesc);
+
+    return !isPermanent
+      ? () => {
+        unregisterAction(fullDesc);
+      }
+      : undefined;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+}
+
 export {
   ConfigurableActionDispatcherConsumer,
-  ConfigurableActionDispatcherProvider, getActualActionArguments, useConfigurableAction,
+  ConfigurableActionDispatcherProvider,
+  getActualActionArguments,
+  useConfigurableAction,
+  useConfigurableActionImplementation,
   useConfigurableActionDispatcher,
-  useConfigurableActionDispatcherProxy, type IConfigurableActionConfiguration,
+  useConfigurableActionDispatcherProxy,
+  type IConfigurableActionConfiguration,
 };
 

@@ -53,7 +53,7 @@ export interface ISettingsInputBase<TValue = unknown> extends IComponentLabelPro
   label: string | React.ReactNode;
   propertyName: string;
   defaultModelPropertyName?: string | undefined;
-  readOnly?: ValueOrCodeEvaluator<boolean> | undefined;
+  readOnly?: boolean | undefined;
   value?: TValue | undefined;
   onChange?: ((value: TValue | undefined | null) => void) | undefined;
   onChangeSetting?: ((value: unknown, data: unknown, setFormData: (data: ISetFormDataPayload) => void, tempData?: unknown) => unknown) | undefined;
@@ -568,6 +568,7 @@ export type ISettingsInputSettingsInputProps = {
 
 export type ISettingsInputProps = (BaseInputProps | ISettingsInputSettingsInputProps) & {
   permissionSettings?: boolean;
+  debug?: boolean | undefined;
 };
 
 export const isSettingsInputProps = (value: unknown): value is ISettingsInputSettingsInputProps => isDefined(value) && typeof (value) === 'object' && 'type' in value && value.type === 'settingsInput';

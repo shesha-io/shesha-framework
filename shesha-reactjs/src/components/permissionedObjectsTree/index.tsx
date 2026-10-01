@@ -1,20 +1,21 @@
 import GrouppedObjectsTree from '@/components/grouppedObjectsTree';
 import { FC, useEffect, useState } from 'react';
-import * as React from 'react';
 import { ApiOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { PermissionedObjectDto } from '@/apis/permissionedObject';
-import { IConfigurableActionConfiguration, useConfigurableAction, useConfigurableActionDispatcher, useHttpClient } from '@/providers';
+import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useConfigurableActionImplementation, useHttpClient } from '@/providers';
 import { useLocalStorage } from '@/hooks';
 import { InterfaceOutlined } from '@/icons/interfaceOutlined';
-import { ISetGroupingArguments, getSetGroupingArgumentsForm } from './set-grouping-arguments';
-import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
-import { ISetSearchTextArguments, setSearchTextArgumentsForm } from './set-search-text-arguments';
+import { ISetGroupingArguments } from './set-grouping-arguments';
+import { IUpdateItemArguments } from './update-item-arguments';
+import { ISetSearchTextArguments } from './set-search-text-arguments';
 import { extractAjaxResponse, IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import ShaSpin from '../shaSpin';
 import { isDefined } from '@/utils/nullables';
 import { buildUrl } from '@/utils';
+import { SetGroupingAction, SetSearchTextAction, UpdateItemAction } from './configurableActions';
+import { firstNonEmptyString } from '@/utils/string';
 
 export interface IPermissionedObjectsTreeProps {
   objectsType?: string | undefined;
@@ -93,59 +94,39 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
   };
 
   const actionsOwnerUid = props.formComponentId ?? "";
+  const ownerFriendlyName = firstNonEmptyString(props.formComponentName, "Permissioned objects tree");
 
-  useConfigurableAction(
-    {
-      name: 'Update item',
-      description: 'Update Permissioned object Tree item',
-      owner: props.formComponentName || "Permissioned objects tree",
-      ownerUid: actionsOwnerUid,
-      hasArguments: true,
-      argumentsFormMarkup: updateItemArgumentsForm,
-      executer: (arg: IUpdateItemArguments) => {
-        const item = isDefined(arg.object) ? findItem(allItems, arg.object) : undefined;
-        if (item) {
-          item.access = Number(arg.access);
-          item.category = arg.category;
-          item.description = arg.description ?? null;
-          setAllItems([...allItems]);
-          setSearchText('');
-        }
+  useConfigurableActionImplementation<IUpdateItemArguments>(actionsOwnerUid, UpdateItemAction, {
+    owner: ownerFriendlyName,
+    executer: (arg) => {
+      const item = isDefined(arg.object) ? findItem(allItems, arg.object) : undefined;
+      if (item) {
+        item.access = Number(arg.access);
+        item.category = arg.category;
+        item.description = arg.description ?? null;
+        setAllItems([...allItems]);
+        setSearchText('');
+      }
 
-        return Promise.resolve();
-      },
+      return Promise.resolve();
     },
-  );
+  });
 
-  useConfigurableAction(
-    {
-      name: 'Set grouping',
-      description: 'Set grouping',
-      owner: props.formComponentName || "Permissioned objects tree",
-      ownerUid: actionsOwnerUid,
-      hasArguments: true,
-      argumentsFormMarkup: getSetGroupingArgumentsForm,
-      executer: (arg: ISetGroupingArguments) => {
-        setGroupBy(arg.group ?? "");
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation<ISetGroupingArguments>(actionsOwnerUid, SetGroupingAction, {
+    owner: ownerFriendlyName,
+    executer: (arg) => {
+      setGroupBy(arg.group ?? "");
+      return Promise.resolve();
     },
-  );
+  });
 
-  useConfigurableAction(
-    {
-      name: 'Set search text',
-      description: 'Set grsearch textuping',
-      owner: props.formComponentName || "Permissioned objects tree",
-      ownerUid: actionsOwnerUid,
-      hasArguments: true,
-      argumentsFormMarkup: setSearchTextArgumentsForm,
-      executer: (arg: ISetSearchTextArguments) => {
-        setSearchText(arg.searchText ?? "");
-        return Promise.resolve();
-      },
+  useConfigurableActionImplementation<ISetSearchTextArguments>(actionsOwnerUid, SetSearchTextAction, {
+    owner: ownerFriendlyName,
+    executer: (arg) => {
+      setSearchText(arg.searchText ?? "");
+      return Promise.resolve();
     },
-  );
+  });
 
   const onChangeAction = (selectedRow: PermissionedObjectDto): void => {
     if (props.onSelectAction?.actionName) {

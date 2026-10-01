@@ -118,7 +118,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
         id: 'abc5bfe4-ee69-431e-931b-b0e0b9ceee6f',
         components: [...fbf()
           .addCheckbox({
-            id: 'abc5bfe4-ee69-431e-931b-b0e0b9ceee6f',
+            id: '9vS6lbKy-V',
             propertyName: 'validate.required',
             parentId: 'root',
             label: 'Required',

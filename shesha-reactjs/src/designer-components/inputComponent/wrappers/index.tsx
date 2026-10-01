@@ -48,13 +48,14 @@ import { RequestConfigButtonWrapper } from "./requestConfigButton";
 import { SectionSeparatorWrapper } from "./sectionSeparator";
 import { UnwrapCodeEvaluators } from "@/providers/form/models";
 import { DimensionFieldWrapper } from "./dimensionField";
+import { ValidatableComponent } from "./models";
 
 type InputType = Exclude<ISettingsInputProps['type'], undefined | "settingsInput">;
 
 export type EditorComponent = FC<ISettingsInputProps>;
 
 type EditorDictionary = {
-  [K in InputType]: FC<UnwrapCodeEvaluators<BaseInputProps & { type: K }>> | FC<BaseInputProps & { type: K }>;
+  [K in InputType]: ValidatableComponent<UnwrapCodeEvaluators<BaseInputProps & { type: K }>>;
 };
 
 export const editorRegistry: EditorDictionary = {

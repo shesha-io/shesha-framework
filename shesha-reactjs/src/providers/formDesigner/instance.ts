@@ -1,7 +1,7 @@
+/* eslint-disable no-console */
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import {
-  ComponentValidator,
-  FormMarkup,
+  ActionParametersDictionary, FieldValidationError, FormMarkup,
   FormMarkupWithSettings,
   FormMode,
   IAsyncValidationError,
@@ -11,18 +11,20 @@ import {
   IFlatComponentsStructure,
   IFormSettings, IRawComponentsContainer,
   isConfigurableFormComponent,
+  ISettingsComponent,
   ISettingsFormFactory,
   isRawComponentsContainer,
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
   ROOT_COMPONENT_KEY,
+  ValidationNodeRef,
 } from "@/interfaces";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { camelcaseDotNotation } from '@/utils/string';
 import { nanoid } from "@/utils/uuid";
 import { FormDesignerComponentGetter, toolbarGroupsToComponents } from "../form/hooks";
-import { componentsFlatStructureToTree, createComponentModelForDataProperty, isValidationError, processRecursive, upgradeComponent, validateConfigurableComponentSettings, ValidateErrorWithFriendlyName } from "../form/utils";
+import { componentsFlatStructureToTree, createComponentModelForDataProperty, IApplicationContext, processRecursive, upgradeComponent } from "../form/utils";
 import {
   FormDesignerFormState,
   IAddDataPropertyPayload,
@@ -39,17 +41,22 @@ import { BaseHistoryItem, FormDesignerSubscription, FormDesignerSubscriptionType
 import { IUndoRedoManager, UndoRedoManager } from "./undoRedoManager";
 import { IFormPersisterContext } from "../formPersisterProvider/contexts";
 import { ValidationCollector } from "../validator";
-import { IValidationCollector, ValidationResult } from "../validator/interfaces";
+import { IValidationCollector } from "../validator/interfaces";
 import { FormBuilderFactory } from "@/form-factory/interfaces";
 import { getFormSettingsFormMarkup } from "@/components/formDesigner/formSettings";
 import { ReactNode } from "react";
-import { getEffectiveStyle } from "@/utils/style";
 import { IConfigurableTheme } from "../theme";
 import { DeviceTypes } from "../canvas/contexts";
+import { IGetConfigurableActionPayload } from "../configurableActionsDispatcher/contexts";
+import { IConfigurableActionDescriptor } from "@/interfaces/configurableAction";
+import { ComponentValidationContext, FormValidator } from "./formValidator";
+import { isNonEmptyArray } from "@/utils/array";
+import { AmbientScopeProvider } from "@/utils/ambientScopeProvider";
 
 export type FormDesignerArgs = {
   readOnly: boolean;
   toolboxComponentGroups: IToolboxComponentGroup[];
+  settingsComponents: ISettingsComponent[];
   formFlatMarkup: IFlatComponentsStructure;
   formSettings: IFormSettings;
   logEnabled?: boolean;
@@ -57,6 +64,8 @@ export type FormDesignerArgs = {
   formBuilderFactory: FormBuilderFactory;
   theme: IConfigurableTheme;
   activeDevice: DeviceTypes | undefined;
+  getConfigurableActionOrNull: <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IGetConfigurableActionPayload) => IConfigurableActionDescriptor<TArguments> | null;
+  appContext: IApplicationContext;
 };
 
 const isComponentsArray = (value: unknown): value is IConfigurableFormComponent[] => {
@@ -83,6 +92,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   toolboxComponents: IToolboxComponents;
 
+  settingsComponents: ISettingsComponent[];
+
   formPersister: IFormPersisterContext;
 
   isDragging: boolean;
@@ -95,7 +106,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   formMode: FormMode;
 
-  activeSettingsTabKey: string | undefined;
+  isFormSettingsVisible: boolean = false;
 
   validationCollector: IValidationCollector;
 
@@ -105,16 +116,32 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   activeDevice: DeviceTypes | undefined;
 
+  getConfigurableActionOrNull: <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IGetConfigurableActionPayload) => IConfigurableActionDescriptor<TArguments> | null;
+
+  formValidator: FormValidator;
+
+  appContext: IApplicationContext;
+
   formSettingsFormMarkup: FormMarkup;
 
   get state(): FormDesignerFormState {
     return this.undoableState.getState();
   }
 
+  closeFormSettings = (): void => {
+    this.isFormSettingsVisible = false;
+    this.notifySubscribers(['settings']);
+  };
+
+  openFormSettings = (): void => {
+    this.isFormSettingsVisible = true;
+    this.notifySubscribers(['settings']);
+  };
 
   constructor(args: FormDesignerArgs) {
     this.toolboxComponentGroups = args.toolboxComponentGroups;
     this.toolboxComponents = toolbarGroupsToComponents(args.toolboxComponentGroups);
+    this.settingsComponents = args.settingsComponents;
     this.formPersister = args.formPersister;
     this.readOnly = args.readOnly;
     this.isDebug = false;
@@ -122,16 +149,24 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     this.isDragging = false;
     this.hasDragged = false;
     this.isDataModified = false;
-    this.activeSettingsTabKey = undefined;
     this.subscriptions = new Map<FormDesignerSubscriptionType, Set<FormDesignerSubscription>>();
     this.validationCollector = new ValidationCollector();
     this.formBuilderFactory = args.formBuilderFactory;
     this.theme = args.theme;
     this.activeDevice = args.activeDevice;
+    this.getConfigurableActionOrNull = args.getConfigurableActionOrNull;
+    this.formValidator = new FormValidator({
+      toolboxComponents: this.toolboxComponents,
+      settingsComponentGetter: this.getSettingsComponentOrUndefined,
+      formBuilderFactory: this.formBuilderFactory,
+      getConfigurableActionOrNull: this.getConfigurableActionOrNull,
+      appContext: args.appContext,
+    });
+    this.appContext = args.appContext;
 
     this.formSettingsFormMarkup = getFormSettingsFormMarkup({ fbf: this.formBuilderFactory });
 
-    // eslint-disable-next-line no-console
+
     this.log = args.logEnabled === true ? console.log : () => { };
 
     const initialState: FormDesignerFormState = {
@@ -173,7 +208,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       formSettings: settings,
     });
     this.selectedComponentId = undefined;
-    this.activeSettingsTabKey = undefined;
     this.isDataModified = false;
     this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
     void this.validateFormAsync();
@@ -190,6 +224,10 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   private getToolboxComponentOrUndefined = (type: string): IToolboxComponent | undefined => {
     return this.toolboxComponents[type];
+  };
+
+  private getSettingsComponentOrUndefined = (type: string): ISettingsComponent | undefined => {
+    return this.settingsComponents.find((c) => c.type === type);
   };
 
   private getToolboxComponent = (type: string): IToolboxComponent => {
@@ -403,7 +441,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
       if (this.selectedComponentId === payload.componentId) {
         this.selectedComponentId = undefined; // clear selection if we delete current component
-        this.activeSettingsTabKey = undefined;
       }
       return {
         ...state,
@@ -472,7 +509,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       };
 
       this.selectedComponentId = clone.id;
-      this.activeSettingsTabKey = undefined;
 
       return {
         ...state,
@@ -546,60 +582,17 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     return this.toolboxComponents[type];
   };
 
-  validateComponentAsync = async <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(component: TModel): Promise<void> => {
-    const toolboxComponent = this.getToolboxComponentOrUndefined(component.type);
-    const validationErrors: IAsyncValidationError[] = [];
-    if (isDefined(toolboxComponent)) {
-      if (isDefined(toolboxComponent.validateModel)) {
-        toolboxComponent.validateModel(component, (propertyName, error) => {
-          validationErrors.push({ field: propertyName, message: error });
-        });
-      }
-
-      // todo: implement default validation
-      const validator: ComponentValidator<TModel> = isDefined(toolboxComponent.validateSettings)
-        ? toolboxComponent.validateSettings
-        : (model) => {
-          if (!isDefined(toolboxComponent.settingsFormMarkup))
-            return Promise.resolve();
-
-          const settingsFormMarkup = typeof toolboxComponent.settingsFormMarkup === 'function'
-            ? toolboxComponent.settingsFormMarkup({ fbf: this.formBuilderFactory, removeStyleRouter: true })
-            : toolboxComponent.settingsFormMarkup;
-          const { formSettings } = this.state;
-          const effectiveStyle = getEffectiveStyle(model, this.activeDevice ?? 'desktop', this.theme, toolboxComponent, formSettings.isSettingsForm);
-          const modelWithInheritedValues = { ...model, ...effectiveStyle };
-
-          return validateConfigurableComponentSettings(settingsFormMarkup, modelWithInheritedValues, this.getComponentDefinition);
-        };
-
-      if (isDefined(validator)) {
-        try {
-          await validator(component);
-        } catch (error: unknown) {
-          if (isValidationError(error)) {
-            error.errors.forEach((fieldError) => {
-              const fieldLabel = (fieldError as ValidateErrorWithFriendlyName).fieldLabel;
-              validationErrors.push({ field: fieldError.field ?? "", fieldLabel: fieldLabel, message: fieldError.message ?? "Unknown error" });
-            });
-          } else {
-            console.error('Unknown error ocurred while validating settings', error);
-          }
-        }
-      }
-    } else
-      validationErrors.push({
-        message: "Unknown component type",
-        field: "",
-      });
-
-
-    this.updateValidationResults({
-      type: VALIDATABLE_ITEM_TYPES.COMPONENT,
-      componentId: component.id,
-      displayName: this.getComponentDisplayName(component.id),
-      validationErrors: validationErrors,
-    });
+  makeComponentValidationContext = (): ComponentValidationContext => {
+    const { formSettings } = this.state;
+    return {
+      deviceType: this.activeDevice,
+      theme: this.theme,
+      isSettingsForm: formSettings.isSettingsForm === true,
+      formFlatMarkup: this.state.formFlatMarkup,
+      appContext: this.appContext,
+      path: [],
+      scopeProvider: new AmbientScopeProvider<object>(),
+    };
   };
 
   getComponentDisplayName = (componentId: string): string | ReactNode => {
@@ -607,44 +600,32 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       return `unknown component ${componentId}`;
 
     const component = this.getComponent(componentId);
-    return isDefined(component.label)
-      ? component.label
-      : `${component.type} (no name)`;
+    const { label, componentName, type } = component;
+    return typeof (label) === "string" && !isNullOrWhiteSpace(label)
+      ? label
+      : !isNullOrWhiteSpace(component.componentName)
+        ? componentName
+        : `${type} (no name)`;
   };
 
   validateAllComponentsAsync = async (): Promise<void> => {
     this.log('FD: validateComponentAllComponents');
 
-    this.validationCollector.clear((item) => item.itemType === "component");
+    this.validationCollector.clear((item) => isNonEmptyArray(item.path) && item.path[0].kind === "component");
 
     const { formFlatMarkup } = this.state;
-    const { allComponents } = formFlatMarkup;
-    for (const key in allComponents) {
-      if (allComponents.hasOwnProperty(key)) {
-        const item = allComponents[key];
-        if (isConfigurableFormComponent(item))
-          await this.validateComponentAsync(item);
-      }
-    }
+    // make root context
+    const context = this.makeComponentValidationContext();
+
+    await this.formValidator.validateAllComponentsAsync(formFlatMarkup, context, (component, validationErrors) => {
+      this.updateComponentValidationResults(component, validationErrors);
+    });
   };
 
   validateFormSettingsAsync = async (): Promise<void> => {
-    this.log('FD: validateFormSettings');
     const { formSettings } = this.state;
+    const validationErrors = await this.formValidator.validateFormSettingsAsync(formSettings, this.formSettingsFormMarkup);
 
-    const validationErrors: IAsyncValidationError[] = [];
-    try {
-      this.log('FD: validateFormSettingsAsync');
-      await validateConfigurableComponentSettings(this.formSettingsFormMarkup, formSettings, this.getComponentDefinition);
-    } catch (error: unknown) {
-      if (isValidationError(error)) {
-        error.errors.forEach((fieldError) => {
-          validationErrors.push({ field: fieldError.field ?? "", message: fieldError.message ?? "Unknown error" });
-        });
-      } else {
-        console.error('Unknown error ocurred while validating settings', error);
-      }
-    }
     this.updateValidationResults({
       type: VALIDATABLE_ITEM_TYPES.FORM_SETTINGS,
       validationErrors: validationErrors,
@@ -657,21 +638,35 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     await this.validateFormSettingsAsync();
   };
 
+  getValidationResults = (): FieldValidationError[] => this.validationCollector.validationResults;
+
   updateValidationResults = (payload: IValidationResultsPayload): void => {
-    // update validation collector
-    const results: ValidationResult[] = [];
+    const results: FieldValidationError[] = [];
     payload.validationErrors.forEach((err) => {
+      if (typeof (err.message) === "object") {
+        console.warn('Incorrect data format: object found', err.message);
+      }
+      const path: ValidationNodeRef[] = err.path ?? [];
+
       results.push({
         message: err.message,
-        type: 'error',
-        description: undefined,
-        documentationUrl: undefined,
+        severity: 'error',
+        path: path,
         propertyName: err.field,
         propertyLabel: err.fieldLabel,
       });
     });
 
     this.validationCollector.updateValidationResults(payload.type, payload.type === "component" ? payload.componentId : "", payload.displayName, results);
+  };
+
+  updateComponentValidationResults = (component: IConfigurableFormComponent, validationErrors: IAsyncValidationError[]): void => {
+    this.updateValidationResults({
+      type: VALIDATABLE_ITEM_TYPES.COMPONENT,
+      componentId: component.id,
+      displayName: this.getComponentDisplayName(component.id),
+      validationErrors: validationErrors,
+    });
   };
 
   addComponent = (payload: IComponentAddPayload): void => {
@@ -725,7 +720,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       const newStructure = this.addComponentToFlatStructure(newFlatMarkup, newComponents, containerId, index);
 
       this.selectedComponentId = newComponents[0]?.id;
-      this.activeSettingsTabKey = undefined;
 
       return {
         ...state,
@@ -796,7 +790,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
   setSelectedComponent = (id: string): void => {
     if (this.selectedComponentId === id) return;
     this.selectedComponentId = id;
-    this.activeSettingsTabKey = undefined;
     this.notifySubscribers(['selection']);
   };
 
@@ -838,7 +831,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       const newStructure = this.addComponentToFlatStructure(newFlatMarkup, [formComponent], containerId, index);
 
       this.selectedComponentId = formComponent.id;
-      this.activeSettingsTabKey = undefined;
 
       return {
         ...state,
@@ -865,12 +857,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     if (this.formMode === value) return;
     this.formMode = value;
     this.notifySubscribers(['mode']);
-  };
-
-  setActiveSettingsTabKey = (key: string): void => {
-    if (this.activeSettingsTabKey === key) return;
-    this.activeSettingsTabKey = key;
-    this.notifySubscribers(['settings-tab']);
   };
 
   componentEditors: IComponentSettingsEditorsCache = {};

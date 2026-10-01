@@ -4,10 +4,10 @@ using Abp.Runtime.Validation;
 using Abp.Threading;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
 using Shesha.Authorization;
-using Shesha.ConfigurationItems.Cache;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
@@ -15,6 +15,7 @@ using Shesha.Extensions;
 using Shesha.Mvc;
 using Shesha.Permissions;
 using Shesha.Reflection;
+using Shesha.Services.VersionedFields;
 using Shesha.Web.FormsDesigner.Dtos;
 using Shesha.Web.FormsDesigner.Dtos.Forms;
 using Shesha.Web.FormsDesigner.Exceptions;
@@ -37,6 +38,8 @@ namespace Shesha.Web.FormsDesigner.Services
         private readonly IRepository<FrontEndApp, Guid> _applicationRepository;
         private readonly IFormManager _formManager;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
+        private readonly IVersionedFieldManager _versionedFieldManager;
+        
 
         public FormConfigurationAppService(
             IRepository<FormConfiguration, Guid> repository,
@@ -44,7 +47,8 @@ namespace Shesha.Web.FormsDesigner.Services
             IRepository<FrontEndApp, Guid> applicationRepository,
             IRepository<ConfigurationItemFolder, Guid> folderRepository,
             IFormManager formManager,
-            IPermissionedObjectManager permissionedObjectManager
+            IPermissionedObjectManager permissionedObjectManager,
+            IVersionedFieldManager versionedFieldManager
         ) : base(repository)
         {
             _moduleRepository = moduleRepository;
@@ -52,6 +56,7 @@ namespace Shesha.Web.FormsDesigner.Services
             _folderRepository = folderRepository;
             _formManager = formManager;
             _permissionedObjectManager = permissionedObjectManager;
+            _versionedFieldManager = versionedFieldManager;
         }
 
         private async Task<string[]> GetFormPermissionsAsync(string? module, string name)
@@ -159,7 +164,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPut]
-        public async Task UpdateMarkupAsync(FormUpdateMarkupInput input) 
+        public async Task UpdateMarkupAsync(FormUpdateMarkupInput input)
         {
             // todo: check rights
             var form = await Repository.GetAsync(input.Id);
@@ -167,6 +172,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
             form.Markup = input.Markup;
             form.ModelType = input.ModelType;
+            form.UpdateMarkupMd5();
 
             await Repository.UpdateAsync(form);
 
@@ -185,6 +191,28 @@ namespace Shesha.Web.FormsDesigner.Services
 
                 await _permissionedObjectManager.SetAsync(permisson);
             }
+        }
+
+        /// <summary>
+        /// Update form validation results
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task UpdateValidationResultsAsync(FormUpdateValidationResultsInput input) 
+        {
+            var form = await Repository.GetAsync(input.Id);
+            form.Module?.EnsureEditable();
+
+            form.IsMarkupValid = !input.Issues.Any();
+            form.MarkupIssuesCount = input.Issues.Count;
+            form.UpdateMarkupMd5();
+            form.ValidatedMarkupMd5 = form.MarkupMd5;
+
+            var issuesJson = JsonConvert.SerializeObject(input.Issues, Formatting.Indented);
+            await _versionedFieldManager.SetVersionedFieldValueAsync<FormConfiguration, Guid>(form, "issues", issuesJson, false);
+
+            await Repository.UpdateAsync(form);
         }
 
         /// <summary>
@@ -231,6 +259,7 @@ namespace Shesha.Web.FormsDesigner.Services
                 using (var reader = new StreamReader(fileStream)) 
                 {
                     item.Markup = await reader.ReadToEndAsync();
+                    item.UpdateMarkupMd5();
                     await Repository.UpdateAsync(item);
                 }
             }
@@ -268,6 +297,8 @@ namespace Shesha.Web.FormsDesigner.Services
             entity.Label = input.Label;
             entity.Description = input.Description;
             entity.Markup = input.Markup;
+            entity.UpdateMarkupMd5();
+
             entity.ConfigurationForm =  new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!);
             entity.ModelType = input.ModelType;
             entity.GenerationLogicTypeName = input.GenerationLogicTypeName;

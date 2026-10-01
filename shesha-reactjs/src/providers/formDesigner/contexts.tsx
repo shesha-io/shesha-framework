@@ -1,4 +1,5 @@
 import {
+  FieldValidationError,
   IAsyncValidationError,
   IComponentSettingsFormFactory, ISettingsFormFactory,
 } from '@/interfaces';
@@ -96,11 +97,12 @@ export type FormDesignerState = {
   isDebug: boolean;
   readOnly: boolean;
   formMode: FormMode;
-  activeSettingsTabKey: string | undefined;
 
   settingsPanelElement: HTMLDivElement | null;
   validationCollector: IValidationCollector;
   formSettingsFormMarkup: FormMarkup;
+
+  isFormSettingsVisible: boolean;
 };
 
 export type FormDesignerActions = {
@@ -128,7 +130,6 @@ export type FormDesignerActions = {
   setReadOnly: (value: boolean) => void;
   setActiveDevice: (value: DeviceTypes | undefined) => void;
   setFormMode: (value: FormMode) => void;
-  setActiveSettingsTabKey: (key: string) => void;
 
   getCachedComponentEditor: <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(type: string, evaluator: () => ISettingsFormFactory<TModel> | undefined) => (IComponentSettingsFormFactory<TModel> | undefined);
 
@@ -139,7 +140,9 @@ export type FormDesignerActions = {
 
   setSettingsPanelElement: (element: HTMLDivElement | null) => void;
   validateFormAsync: () => Promise<void>;
-  validateComponentAsync: <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(component: TModel) => Promise<void>;
+  getValidationResults: () => FieldValidationError[];
+  openFormSettings: () => void;
+  closeFormSettings: () => void;
 };
 
 

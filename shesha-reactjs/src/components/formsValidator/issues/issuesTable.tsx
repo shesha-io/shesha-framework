@@ -1,43 +1,44 @@
 import React, { ReactNode } from 'react';
-import { Table, Tag, Typography, Space, Badge, Button, Empty } from 'antd';
+import { Table, Tag, Typography, Space, Badge, Empty } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { ItemValidationResult } from '@/providers/validator/interfaces';
 import { ISheshaErrorTypes } from '@/utils/errors';
-import { useFormDesigner } from '@/providers/formDesigner';
-import { useAllValidationResults } from '@/providers/validator/hooks';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
+import { FieldValidationError } from '@/interfaces';
+import { IssuePath } from '@/components/formsValidator/issues/issuePath';
 
 const { Text } = Typography;
 
-export interface ValidationPanelProps {
+export interface IssuesTableProps {
   /** Show a summary with counts above the table */
   showSummary?: boolean;
   /** Table size – defaults to "middle" */
   size?: 'small' | 'middle' | 'large';
   /** If true, the table will be scrollable vertically */
   scrollY?: number;
+
+  issues: FieldValidationError[];
+  onSelect?: ((issue: FieldValidationError) => void) | undefined;
 }
 
-export const ValidationPanel: React.FC<ValidationPanelProps> = ({
+export const IssuesTable: React.FC<IssuesTableProps> = ({
   showSummary = true,
   size = 'small',
   scrollY,
+  issues,
 }) => {
-  const formDesigner = useFormDesigner();
-  const data = useAllValidationResults();
   const isDevMode = useIsDevMode();
 
   // Count results by type
   const counts = React.useMemo(() => {
-    return data.reduce(
+    return issues.reduce(
       (acc, item) => {
-        acc[item.type] = (acc[item.type] || 0) + 1;
+        acc[item.severity] = (acc[item.severity] || 0) + 1;
         return acc;
       },
       {} as Record<ISheshaErrorTypes, number>,
     );
-  }, [data]);
+  }, [issues]);
 
   // Render tag for type column
   const renderTypeTag = (type: ISheshaErrorTypes): ReactNode => {
@@ -55,10 +56,10 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
   };
 
   // Table columns
-  const columns: ColumnsType<ItemValidationResult> = [
+  const columns: ColumnsType<FieldValidationError> = [
     {
       title: 'Type',
-      dataIndex: 'type',
+      dataIndex: 'severity',
       key: 'type',
       width: 120,
       render: (type: ISheshaErrorTypes) => renderTypeTag(type),
@@ -67,33 +68,16 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
         { text: 'Warning', value: 'warning' },
         { text: 'Info', value: 'info' },
       ],
-      onFilter: (value, record) => record.type === value,
+      onFilter: (value, record) => record.severity === value,
     },
     {
-      title: 'Item',
-      key: 'itemName',
+      title: 'Path',
+      key: 'path',
       render: (_, record) => {
         return (
-          <Button
-            type="link"
-            onClick={(event) => {
-              event.stopPropagation();
-              if (record.itemType === "component") {
-                formDesigner.setSelectedComponent(record.itemId);
-                // form.scrollToField('bio')
-              }
-            }}
-          >
-            {record.displayName}
-          </Button>
+          <IssuePath path={record.path} />
         );
       },
-    },
-    {
-      title: 'Item Id',
-      dataIndex: 'itemId',
-      key: 'itemId',
-      hidden: !isDevMode,
     },
     {
       title: 'Message',
@@ -102,17 +86,27 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
       render: (_, record) => {
         const propName = typeof (record.propertyLabel) === "string" && !isNullOrWhiteSpace(record.propertyLabel)
           ? record.propertyLabel
-          : record.propertyName;
-        return isDefined(propName)
+          : String(record.propertyName);
+        return !isNullOrWhiteSpace(propName)
           ? `${propName}: ${record.message}`
           : record.message;
       },
     },
   ];
 
-  return data.length > 0
+  return issues.length > 0
     ? (
       <div>
+        {isDevMode && (
+          <div>
+            <Typography.Paragraph copyable={{
+              text: JSON.stringify(issues, null, 2),
+            }}
+            >
+              Copy JSON
+            </Typography.Paragraph>
+          </div>
+        )}
         {showSummary && (
           <Space size="large" style={{ marginBottom: 16 }}>
             <Badge count={counts.error || 0} style={{ backgroundColor: '#ff4d4f' }}>
@@ -125,14 +119,14 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
               <Text strong>Info</Text>
             </Badge>
             <Text type="secondary">|</Text>
-            <Text strong>Total: {data.length}</Text>
+            <Text strong>Total: {issues.length}</Text>
           </Space>
         )}
 
-        <Table<ItemValidationResult>
-          dataSource={data}
+        <Table<FieldValidationError>
+          dataSource={issues}
           columns={columns}
-          rowKey={(record) => record.key}
+          // rowKey={(record) => record.key}
           size={size}
           pagination={false}
           {...(isDefined(scrollY) ? { scroll: { y: scrollY } } : {})}

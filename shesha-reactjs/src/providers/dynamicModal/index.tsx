@@ -1,15 +1,14 @@
 import { App } from 'antd';
 import { FC, PropsWithChildren, useCallback, useContext, useMemo, useReducer } from 'react';
-import { useConfigurableAction, useConfigurableActionDispatcherProxy } from '@/providers/configurableActionsDispatcher';
+import { useConfigurableActionDispatcherProxy, useConfigurableActionImplementation } from '@/providers/configurableActionsDispatcher';
 import { IActionExecutionContext } from '@/interfaces/configurableAction';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { EvaluationContext, executeScript, isValidFormIdentifier, recursiveEvaluator } from '../form/utils';
 import { createModalAction, openAction, removeAllModalsAction, removeModalAction } from './actions';
 import {
   IShowConfirmationArguments,
-  getShowConfirmationArgumentsForm,
 } from './configurable-actions/show-confirmation-arguments';
-import { ICloseModalActionArguments, IShowModalActionArguments, closeDialogArgumentsForm } from './configurable-actions/dialog-arguments';
+import { ICloseModalActionArguments, IShowModalActionArguments } from './configurable-actions/dialog-arguments';
 import {
   DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
   DynamicModalActionsContext,
@@ -22,13 +21,14 @@ import {
 import { ICommonModalProps, IModalProps } from './models';
 import { reducer } from './reducer';
 import { nanoid } from '@/utils/uuid';
-import { migrateToV0 } from './migrations/ver0';
 import { DynamicModalRenderer } from './renderer';
-import { showDialogArgumentsFormFactory } from './configurable-actions/show-dialog-arguments';
 import { throwError } from '@/utils/errors';
 import { getLatestInstance } from './utils';
 import { createModalApi, IModalApi, createFallbackModalApi } from './modalApi';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { CloseDialog } from './configurable-actions/close-dialog';
+import { ShowDialog } from './configurable-actions/show-dialog';
+import { ShowConfirmationDialog } from './configurable-actions/show-confirmation-dialog';
 
 type IDynamicModalActionExecutionContext = IActionExecutionContext & {
   configurableActionsDispatcherProxy?: FC<PropsWithChildren>;
@@ -42,13 +42,12 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
   const actionDependencies = [state];
   const { modal } = App.useApp();
 
-  useConfigurableAction<IShowConfirmationArguments>(
+  // ShowConfirmationDialog
+  useConfigurableActionImplementation<IShowConfirmationArguments>(
+    SheshaActionOwners.Common,
+    ShowConfirmationDialog,
     {
-      name: 'Show Confirmation Dialog',
       owner: 'Common',
-      ownerUid: SheshaActionOwners.Common,
-      sortOrder: 7,
-      hasArguments: true,
       executer: (actionArgs, _context) => {
         return new Promise((resolve, reject) => {
           modal.confirm({
@@ -69,7 +68,6 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
           });
         });
       },
-      argumentsFormMarkup: getShowConfirmationArgumentsForm,
     },
     actionDependencies,
   );
@@ -95,13 +93,11 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
     dispatch(createModalAction({ modalProps: { ...modalProps, width: modalProps.width ?? '60%' } as ICommonModalProps }));
   }, []);
 
-  useConfigurableAction<IShowModalActionArguments, unknown, IDynamicModalActionExecutionContext>(
+  useConfigurableActionImplementation<IShowModalActionArguments, IDynamicModalActionExecutionContext, unknown>(
+    SheshaActionOwners.Common,
+    ShowDialog,
     {
-      name: 'Show Dialog',
       owner: 'Common',
-      ownerUid: SheshaActionOwners.Common,
-      sortOrder: 3,
-      hasArguments: true,
       executer: (actionArgs, context) => {
         const modalId = nanoid();
 
@@ -151,7 +147,6 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
           });
         });
       },
-      argumentsFormMarkup: showDialogArgumentsFormFactory,
       evaluateArguments: (argumentsConfiguration, evaluationData) => {
         const evaluationContext: EvaluationContext = {
           contextData: evaluationData,
@@ -164,23 +159,15 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
         const configurableActionsDispatcherProxy = useConfigurableActionDispatcherProxy();
         return { configurableActionsDispatcherProxy };
       },
-      migrator: (m) => m.add<IShowModalActionArguments>(0, migrateToV0)
-        .add<IShowModalActionArguments>(1, (prev) => ({
-          ...prev,
-          showCloseIcon: prev.showCloseIcon !== undefined ? prev.showCloseIcon : true,
-        })),
     },
     actionDependencies,
   );
 
   //#region Close the latest Dialog
-  useConfigurableAction<ICloseModalActionArguments>(
+  useConfigurableActionImplementation<ICloseModalActionArguments>(SheshaActionOwners.Common,
+    CloseDialog,
     {
-      name: 'Close Dialog',
       owner: 'Common',
-      ownerUid: SheshaActionOwners.Common,
-      sortOrder: 4,
-      hasArguments: true,
       executer: (actionArgs) => {
         return new Promise((resolve, reject) => {
           const latestInstance = getLatestInstance(state.instances, (inst) => inst.isVisible);
@@ -194,7 +181,6 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
           }
         });
       },
-      argumentsFormMarkup: closeDialogArgumentsForm,
     },
     actionDependencies,
   );

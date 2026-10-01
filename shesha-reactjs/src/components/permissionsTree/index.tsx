@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useState, FC, Key } from 'react';
 import SearchBox from '../formDesigner/toolboxSearchBox';
-import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
+import { IUpdateItemArguments } from './update-item-arguments';
 import {
   App,
   Space,
@@ -9,7 +9,7 @@ import {
   Tree,
   TreeProps,
 } from 'antd';
-import { IConfigurableActionConfiguration, useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
+import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useConfigurableActionImplementation } from '@/providers';
 import { useLocalStorage } from 'react-use';
 import {
   PermissionDto,
@@ -28,6 +28,7 @@ import { extractErrorInfo } from '@/utils/errors';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { isNonEmptyArray } from '@/utils/array';
 import { BasicDataNode, DataNode } from 'antd/es/tree';
+import { CreateChildAction, CreateRootAction, DeleteItemAction, UpdateItemAction } from './configurableActions';
 
 interface IDataNode {
   title: React.JSX.Element;
@@ -513,123 +514,101 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allItems, searchText, rest.hideSearch, rest.searchText]);
 
-  useConfigurableAction(
-    {
-      name: 'Update item',
-      description: 'Update Permission Tree item',
-      owner: rest.formComponentName,
-      ownerUid: rest.formComponentId,
-      hasArguments: true,
-      argumentsFormMarkup: updateItemArgumentsForm,
-      executer: (arg: IUpdateItemArguments) => {
-        const item = findItem(allItems, selected[0]);
-        if (rest.mode === 'Edit' && item) {
-          item.id = arg.name;
-          item.name = arg.name;
-          item.displayName = arg.displayName;
-          item.description = arg.description ?? null;
-          item.module = arg.moduleId ? { id: arg.moduleId, _displayName: arg.moduleName ?? null } : null;
-          setAllItems([...allItems]);
-          setSelected([item.id]);
-          setSearchText('');
-          updateTree();
-        }
+  const actionOwnerId = rest.formComponentId;
+  const actionOwnerName = rest.formComponentName;
 
-        return Promise.resolve();
-      },
-    },
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Create root',
-      description: 'Create root Permission Tree item',
-      owner: rest.formComponentName,
-      ownerUid: rest.formComponentId,
-      hasArguments: false,
-      executer: () => {
-        let s = findItem(allItems, emptyId);
-        if (!s) {
-          setAllItems((prev) => {
-            addPermission(null, prev);
-            return [...prev];
-          });
-        } else {
-          message.warning('A new permission is already added! Please edit it first.');
-          expandParent(allItems, s);
-        }
-        setDoSelect(emptyId);
+  useConfigurableActionImplementation(actionOwnerId, UpdateItemAction, {
+    owner: actionOwnerName,
+    executer: (arg: IUpdateItemArguments) => {
+      const item = findItem(allItems, selected[0]);
+      if (rest.mode === 'Edit' && item) {
+        item.id = arg.name;
+        item.name = arg.name;
+        item.displayName = arg.displayName;
+        item.description = arg.description ?? null;
+        item.module = arg.moduleId ? { id: arg.moduleId, _displayName: arg.moduleName ?? null } : null;
+        setAllItems([...allItems]);
+        setSelected([item.id]);
         setSearchText('');
-        setFormMode?.('edit');
+        updateTree();
+      }
 
-        return Promise.resolve();
-      },
+      return Promise.resolve();
     },
-  );
+  });
 
-  useConfigurableAction(
-    {
-      name: 'Create child',
-      description: 'Create child Permission Tree item',
-      owner: rest.formComponentName,
-      ownerUid: rest.formComponentId,
-      hasArguments: false,
-      executer: () => {
-        const newItems = [...allItems];
-        let s = findItem(newItems, emptyId);
-        if (!s) {
-          s = findItem(newItems, selected[0]);
-          if (s) {
-            if (!s.child) s.child = [];
-            s = addPermission(s, s.child);
-            setAllItems([...newItems]);
-          }
-        } else {
-          message.warning('A new permission is already added! Please edit it first.');
-        }
-        if (s)
-          expandParent(newItems, s);
-        setDoSelect(emptyId);
-        setSearchText('');
-        setFormMode?.('edit');
+  useConfigurableActionImplementation(actionOwnerId, CreateRootAction, {
+    owner: actionOwnerName,
+    executer: () => {
+      let s = findItem(allItems, emptyId);
+      if (!s) {
+        setAllItems((prev) => {
+          addPermission(null, prev);
+          return [...prev];
+        });
+      } else {
+        message.warning('A new permission is already added! Please edit it first.');
+        expandParent(allItems, s);
+      }
+      setDoSelect(emptyId);
+      setSearchText('');
+      setFormMode?.('edit');
 
-        return Promise.resolve();
-      },
+      return Promise.resolve();
     },
-  );
+  });
 
-  useConfigurableAction(
-    {
-      name: 'Delete item',
-      description: 'Delete Permission Tree item',
-      owner: rest.formComponentName,
-      ownerUid: rest.formComponentId,
-      hasArguments: false,
-      executer: () => {
-        const s = findItem(allItems, selected[0]);
+  useConfigurableActionImplementation(actionOwnerId, CreateChildAction, {
+    owner: actionOwnerName,
+    executer: () => {
+      const newItems = [...allItems];
+      let s = findItem(newItems, emptyId);
+      if (!s) {
+        s = findItem(newItems, selected[0]);
         if (s) {
-          if (!s.isDbPermission) {
-            message.warning('Permission "' + s.displayName + '" is a system permission and can not be deleted!');
-            return Promise.resolve();
-          }
-          if (s.id === emptyId) {
-            deletePermission();
-          } else {
-            if (isNullOrWhiteSpace(s.name))
-              throw new Error('Permission name is required.');
-
-            deleteRequest.mutate({ name: s.name }).catch((error) => {
-              console.error('Failed to delete', error);
-              throw error;
-            });
-          }
+          if (!s.child) s.child = [];
+          s = addPermission(s, s.child);
+          setAllItems([...newItems]);
         }
-        setSearchText('');
+      } else {
+        message.warning('A new permission is already added! Please edit it first.');
+      }
+      if (s)
+        expandParent(newItems, s);
+      setDoSelect(emptyId);
+      setSearchText('');
+      setFormMode?.('edit');
 
-        return Promise.resolve();
-      },
+      return Promise.resolve();
     },
-  );
+  });
+
+  useConfigurableActionImplementation(actionOwnerId, DeleteItemAction, {
+    owner: actionOwnerName,
+    executer: () => {
+      const s = findItem(allItems, selected[0]);
+      if (s) {
+        if (!s.isDbPermission) {
+          message.warning('Permission "' + s.displayName + '" is a system permission and can not be deleted!');
+          return Promise.resolve();
+        }
+        if (s.id === emptyId) {
+          deletePermission();
+        } else {
+          if (isNullOrWhiteSpace(s.name))
+            throw new Error('Permission name is required.');
+
+          deleteRequest.mutate({ name: s.name }).catch((error) => {
+            console.error('Failed to delete', error);
+            throw error;
+          });
+        }
+      }
+      setSearchText('');
+
+      return Promise.resolve();
+    },
+  });
 
   const getLoadingHint = (): string => {
     switch (true) {

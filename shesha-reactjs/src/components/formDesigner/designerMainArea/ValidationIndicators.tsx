@@ -24,7 +24,7 @@ export const ValidationIndicators: FC = () => {
   const counts = useMemo(() => {
     return data.reduce(
       (acc, item) => {
-        acc[item.type] = (acc[item.type] ?? 0) + 1;
+        acc[item.severity] = (acc[item.severity] ?? 0) + 1;
         return acc;
       },
       {} as Record<ISheshaErrorTypes, number | undefined>,
