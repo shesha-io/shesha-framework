@@ -97,7 +97,6 @@ export type FormDesignerState = {
   isDebug: boolean;
   readOnly: boolean;
   formMode: FormMode;
-  activeSettingsTabKey: string | undefined;
 
   settingsPanelElement: HTMLDivElement | null;
   validationCollector: IValidationCollector;
@@ -131,7 +130,6 @@ export type FormDesignerActions = {
   setReadOnly: (value: boolean) => void;
   setActiveDevice: (value: DeviceTypes | undefined) => void;
   setFormMode: (value: FormMode) => void;
-  setActiveSettingsTabKey: (key: string) => void;
 
   getCachedComponentEditor: <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(type: string, evaluator: () => ISettingsFormFactory<TModel> | undefined) => (IComponentSettingsFormFactory<TModel> | undefined);
 

@@ -213,15 +213,9 @@ const useFormDesignerUndoRedo = (): IUndoable => {
   };
 };
 
-const useFormDesignerActiveSettingsTabKey = (): string | undefined => {
-  useFormDesignerSubscription('settings-tab');
-  return useFormDesigner().activeSettingsTabKey;
-};
-
 export {
   FormDesignerProvider,
   useFormDesigner,
-  useFormDesignerActiveSettingsTabKey,
   useFormDesignerFormMode,
   useFormDesignerIsDebug,
   useFormDesignerIsModified,

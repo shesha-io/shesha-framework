@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, RefObject, useCallback, useEffect } from 'react';
+import { FC, PropsWithChildren, RefObject, useCallback, useContext, useEffect } from 'react';
 import * as React from 'react';
 import { Collapse, Skeleton } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
@@ -6,6 +6,13 @@ import classNames from 'classnames';
 import { IStyleValue } from "@/providers/form/models";
 import { useStyles } from './styles/styles';
 import { isDefined } from '@/utils';
+import { createNamedContext } from '@/utils/react';
+
+/**
+ * Opt-in for the compact settings look (8px top/left inset, no antd body padding). Hosts such as the
+ * properties panel wrap their content in this provider instead of restyling the panels from outside.
+ */
+export const CompactCollapsiblePanelContext = createNamedContext<boolean>(false, "CompactCollapsiblePanelContext");
 
 export interface ICollapseRef { collapsed: boolean; setCollapsed: (collapsed: boolean) => void }
 
@@ -28,6 +35,8 @@ export interface ICollapsiblePanelProps extends Omit<CollapseProps, 'onChange'>,
   dynamicBorderRadius?: number | undefined;
   headerStyles?: IStyleValue | undefined;
   accentStyle?: boolean | undefined;
+  /** Use the compact settings look. Defaults to the value from CompactCollapsiblePanelContext. */
+  compact?: boolean | undefined;
   onChange?: (isExpanded: boolean) => void;
   ref?: RefObject<ICollapseRef | undefined>;
 }
@@ -54,7 +63,8 @@ export const CollapsiblePanel: FC<PropsWithChildren<Omit<ICollapsiblePanelProps,
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event.stopPropagation();
 
-  const { styles } = useStyles(props);
+  const compactFromContext = useContext(CompactCollapsiblePanelContext);
+  const { styles } = useStyles({ ...props, compact: props.compact ?? compactFromContext });
 
   const [keys, setKeys] = React.useState<string[]>(collapsedByDefault ? [] : ['1']);
 

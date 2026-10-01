@@ -4,14 +4,19 @@ import { Tabs, Input, Empty, InputRef } from 'antd';
 import ParentProvider from '@/providers/parentProvider';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { useStyles } from './style';
+import { CompactCollapsiblePanelContext } from '@/components/panel';
 import { SearchOutlined } from '@ant-design/icons';
 import { filterDynamicComponents } from './utils';
 import { ITabPaneProps, IPropertiesTabsComponentProps } from './models';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useFormActionsOrUndefined } from '@/providers/form';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
-import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { isNonEmptyArray } from '@/utils/array';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+
+// Remembers the last selected tab per tab set, so it survives the component being remounted
+// (e.g. when the settings form re-renders) without depending on any host such as the form designer.
+const lastActiveTabKeys = new Map<string, string>();
 
 interface SearchableTabsProps {
   model: IPropertiesTabsComponentProps;
@@ -19,14 +24,13 @@ interface SearchableTabsProps {
 
 const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   const { tabs } = model;
-  const formDesigner = useFormDesignerOrUndefined();
   const [searchQuery, setSearchQuery] = useState('');
   // Chrome skips its load-time credential autofill for read-only fields, so keep the
   // search box read-only until the user focuses it. This prevents the saved username
   // (e.g. "admin") being injected, which would filter out every property and collapse
   // the settings panel.
   const [autofillGuard, setAutofillGuard] = useState(true);
-  const [localActiveTabKey, setLocalActiveTabKey] = useState<string>(formDesigner?.activeSettingsTabKey ?? '1');
+  const [localActiveTabKey, setLocalActiveTabKey] = useState<string>(lastActiveTabKeys.get(model.id) ?? '1');
   const { styles } = useStyles();
 
   const formActions = useFormActionsOrUndefined();
@@ -73,9 +77,9 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   };
 
   const handleTabChange = useCallback((newActiveKey: string): void => {
-    formDesigner?.setActiveSettingsTabKey(newActiveKey);
+    lastActiveTabKeys.set(model.id, newActiveKey);
     setLocalActiveTabKey(newActiveKey);
-  }, [formDesigner]);
+  }, [model.id]);
 
   // Applies the form-level component filter (e.g. permissions / modal settings)
   // on top of the search filter. For components that hold a list of `inputs`
@@ -91,7 +95,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
 
     if (component.inputs) {
       const visibleInputs = component.inputs.filter((input) => {
-        if (!input.propertyName) return true;
+        if (isNullOrWhiteSpace(input.propertyName)) return true;
         return isComponentFiltered(input);
       });
       if (visibleInputs.length === 0) return null;
@@ -152,7 +156,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
             </ParentProvider>
           ),
         forceRender: false,
-        hidden: tab.hidden || (searchQuery.trim() !== '' && !hasVisibleComponents),
+        hidden: (isDefined(tab.hidden) && tab.hidden !== false) || (searchQuery.trim() !== '' && !hasVisibleComponents),
       };
     })
     .filter((tab) => !tab.hidden);
@@ -162,19 +166,17 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
       return undefined;
     }
 
-    const persistedKey = formDesigner?.activeSettingsTabKey ?? localActiveTabKey;
-
-    if (newFilteredTabs.some((tab) => tab.key === persistedKey)) {
-      return persistedKey;
+    if (newFilteredTabs.some((tab) => tab.key === localActiveTabKey)) {
+      return localActiveTabKey;
     }
 
     return newFilteredTabs[0].key;
-  }, [newFilteredTabs, formDesigner, localActiveTabKey]);
+  }, [newFilteredTabs, localActiveTabKey]);
 
   const localTabs = useMemo(() => (
     <Tabs
       key="searchable-tabs"
-      {...(effectiveActiveKey ? { defaultActiveKey: effectiveActiveKey } : {})}
+      {...(isNotNullOrWhiteSpace(effectiveActiveKey) ? { activeKey: effectiveActiveKey } : {})}
       onChange={handleTabChange}
       size={model.size}
       type={model.tabType || 'card'}
@@ -193,7 +195,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
       })}
       {newFilteredTabs.length === 0 && searchQuery
         ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
-        : localTabs}
+        : <CompactCollapsiblePanelContext.Provider value={true}>{localTabs}</CompactCollapsiblePanelContext.Provider>}
     </div>
   );
 };
