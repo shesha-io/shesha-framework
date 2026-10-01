@@ -2,7 +2,7 @@ import { RefObject, useEffect, useRef } from 'react';
 import * as React from 'react';
 import { Form } from 'antd';
 import { IConfigurableFormComponent, FormMarkup, FormAction } from '@/providers/form/models';
-import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, getThemeGroupForStyleGroup, IFormLayoutSettings, ISettingsFormInstance, IShaFormInstance, IToolboxComponent } from '@/interfaces';
+import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, getThemeGroupForComponent, IFormLayoutSettings, ISettingsFormInstance, IShaFormInstance, IToolboxComponent } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { ConfigurableForm } from '../configurableForm';
@@ -59,7 +59,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       // Group tier (Input/Inline/Standard/Layout Components) sits between the hardcoded default and
       // the component's own theme override, so a component with no per-type override still inherits
       // its group's shared appearance.
-      const groupStyle = getComponentGroupStyle(getThemeGroupForStyleGroup(toolboxComponent.styleGroup));
+      const groupStyle = getComponentGroupStyle(getThemeGroupForComponent(toolboxComponent));
       defaultModel?.setDefaultModel('Theme group Style', { ['desktop']: groupStyle } as TModel);
       const themeStyle = getComponentStyle(toolboxComponent.type);
       defaultModel?.setDefaultModel('Theme component Style', { ['desktop']: themeStyle } as TModel);

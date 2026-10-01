@@ -1,6 +1,7 @@
 import { Col, Tabs } from 'antd';
-import { FC } from 'react';
-import ThemeParameters, { ThemeSettingsSection } from './parameters';
+import { FC, useCallback, useEffect, useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
+import ThemeParameters, { setUndefinedForEmptyProperties, ThemeSettingsSection } from './parameters';
 import { useStyles } from './styles/styles';
 import { IConfigurableTheme } from '@/providers/theme';
 
@@ -27,6 +28,26 @@ const SECTION_TABS: Array<{ key: ThemeSettingsSection; label: string }> = [
 export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ value, onChange, readOnly }) => {
   const { styles } = useStyles();
 
+  // Every tab edits this one draft, so a change made on one tab is visible to the next edit on any
+  // other tab even before the debounced save below has reached the parent.
+  const [draft, setDraft] = useState<IConfigurableTheme>(value);
+  useEffect(() => {
+    setDraft(value);
+  }, [value]);
+
+  // it is necessary to use debounce save because it changes the theme and it results in re-rendering of all components.
+  // One debounce for all tabs: per-tab debounces could each save a stale snapshot over the other's change.
+  const debouncedSave = useDebouncedCallback(
+    (theme: IConfigurableTheme) => onChange(setUndefinedForEmptyProperties(theme as Record<string, unknown | undefined>)),
+    // delay in ms
+    200,
+  );
+
+  const handleChange = useCallback((theme: IConfigurableTheme): void => {
+    setDraft(theme);
+    debouncedSave(theme);
+  }, [debouncedSave]);
+
   return (
     <Col span={24} className={styles.contentColumn}>
       <Tabs
@@ -34,7 +55,7 @@ export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ valu
         items={SECTION_TABS.map(({ key, label }) => ({
           key,
           label,
-          children: <ThemeParameters value={value} onChange={onChange} readOnly={readOnly} section={key} />,
+          children: <ThemeParameters value={draft} onChange={handleChange} readOnly={readOnly} section={key} />,
         }))}
         size="small"
         className={styles.themeParameters}

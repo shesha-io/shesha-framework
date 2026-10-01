@@ -43,7 +43,12 @@ export const ComponentDefaultsPreview: FC<IComponentDefaultsPreviewProps> = ({ c
       return {
         key: `${model.id}-${index}`,
         label: variant.label,
-        markup: { components: [model], formSettings } as FormMarkup,
+        // Only multi-variant components (dropdown's modes, file list's thumbnail sizes, ...) get the
+        // caption as their label — it names the state being previewed. A single-variant component has
+        // no caption ('') and keeps its own label/text untouched, otherwise components whose `label`
+        // is user-facing text rather than a form-item label (e.g. a button's own text) would render
+        // blank.
+        markup: { components: [variant.label === '' ? model : { ...model, label: variant.label }], formSettings } as FormMarkup,
       };
     }),
     [componentDefinition, variants, formSettings],
@@ -52,18 +57,14 @@ export const ComponentDefaultsPreview: FC<IComponentDefaultsPreviewProps> = ({ c
   return (
     <Card className={styles.previewSection}>
       <h4 style={{ marginBottom: 4 }}>{componentTitle} preview:</h4>
-      {markups.map(({ key, label, markup }) => (
-        <div key={key} className={styles.previewVariant}>
-          {label !== '' && <div className={styles.previewVariantLabel}>{label}</div>}
-          {/* Each variant is its own form so their values stay independent. */}
-          <ConfigurableForm
-            key={key}
-            mode="edit"
-            markup={markup}
-            initialValues={theme}
-            className={styles.appearanceForm}
-          />
-        </div>
+      {markups.map(({ key, markup }) => (
+        <ConfigurableForm
+          key={key}
+          mode="edit"
+          markup={markup}
+          initialValues={theme}
+          className={styles.appearanceForm}
+        />
       ))}
     </Card>
   );

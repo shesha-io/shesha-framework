@@ -14,6 +14,9 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
 
 const KeyInformationBarComponent: KeyInformationBarComponentDefinition = {
+  styleGroup: 'common-containers',
+  // Themed with the Standard Components tab; styleGroup stays as-is because it also selects the script style API.
+  themeGroup: 'standard',
   allowInherit: true,
   type: 'KeyInformationBar',
   isInput: false,

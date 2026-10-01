@@ -11,6 +11,7 @@ import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
 import { RefObject, ReactNode } from "react";
 import * as React from "react";
 import { isDefined, isNullOrWhiteSpace } from "../../utils/nullables";
+import { extractErrorInfo } from "@/utils/errors";
 import {
   createFolderAsync as createFolderApiAsync,
   deleteConfigurationItemAsync,
@@ -103,6 +104,8 @@ const STORAGE_KEYS = {
   ITEM_TYPE_FILTER: 'itemTypeFilter',
 };
 
+const EMPTY_PINNED_NODE_IDS: ReadonlySet<string> = new Set<string>();
+
 interface CreateItemResponse {
   id: string;
 }
@@ -176,6 +179,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
   private _itemTypeFilter: string[] = [];
 
   private _folderDraft?: FolderDraft | undefined;
+
+  private _pinnedNodeIds: ReadonlySet<string> = EMPTY_PINNED_NODE_IDS;
 
   private _itemTypes: ItemTypeDefinition[] = [];
 
@@ -277,6 +282,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   setQuickSearch = (value: string): void => {
     this._quickSearch = value;
+    this._pinnedNodeIds = EMPTY_PINNED_NODE_IDS;
     void this.saveQuickSearchAsync();
     this.notifySubscribers(['tree']);
   };
@@ -287,12 +293,21 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   setItemTypeFilter = (value: string[]): void => {
     this._itemTypeFilter = value;
+    this._pinnedNodeIds = EMPTY_PINNED_NODE_IDS;
     void this.saveItemTypeFilterAsync();
     this.notifySubscribers(['tree']);
   };
 
   get folderDraft(): FolderDraft | undefined {
     return this._folderDraft;
+  }
+
+  /**
+   * Nodes revealed after being created/renamed. The tree keeps them visible even when the active
+   * search or type filter would hide them, until the search or filter changes.
+   */
+  get pinnedNodeIds(): ReadonlySet<string> {
+    return this._pinnedNodeIds;
   }
 
   /**
@@ -335,6 +350,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this._folderDraft = undefined;
     this.notifySubscribers(['tree']);
 
+    const isRename = isDefined(draft.folderId);
     try {
       if (isDefined(draft.folderId)) {
         await renameFolderApiAsync(this.httpClient, { folderId: draft.folderId, name: trimmedName });
@@ -357,6 +373,12 @@ export class ConfigurationStudio implements IConfigurationStudio {
       }
     } catch (error) {
       console.error('Failed to save folder', error);
+      // Surface the server's reason (e.g. the module isn't editable) - the inline editor is already gone.
+      const errorInfo = extractErrorInfo(error);
+      this.notificationApi.error({
+        message: `Failed to ${isRename ? 'rename' : 'create'} folder '${trimmedName}'`,
+        description: errorInfo?.details ?? errorInfo?.message ?? undefined,
+      });
       await this.loadTreeAsync();
     }
   };
@@ -381,6 +403,9 @@ export class ConfigurationStudio implements IConfigurationStudio {
       this._treeExpandedKeys = [...this._treeExpandedKeys, ...keysToExpand];
       void this.saveTreeExpandedNodesAsync();
     }
+
+    // Keep the node visible even if the active search or type filter doesn't match it.
+    this._pinnedNodeIds = new Set([...this._pinnedNodeIds, node.id]);
 
     await this.doSelectTreeNodeAsync(node);
     this.notifySubscribers(['tree']);
@@ -498,10 +523,11 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this.toggleTreeNode(nodeId, true);
   };
 
+  /**
+   * @deprecated No-op. Selecting a node no longer expands/collapses it - only the chevron does (see
+   * issue #4783), so the tree no longer calls this. Kept so existing callers keep compiling.
+   */
   clickTreeNode = (_node: TreeNode): void => {
-    // Selecting a node no longer expands/collapses it - only the chevron does (see issue #4783).
-    // Clicking a folder to pick it as the target for "Create New" used to collapse it, which
-    // fought the user; expansion is now driven solely by the switcher icon.
   };
 
   navigateToRoot = (): void => {
@@ -949,13 +975,13 @@ export class ConfigurationStudio implements IConfigurationStudio {
    * Folders are now named inline in the tree rather than in a dialog (issue #4783), so this
    * just opens the inline editor - the folder is created when the draft is committed.
    */
-  createFolderAsync = async ({ moduleId, folderId }: CreateFolderArgs): Promise<void> => {
+  createFolderAsync = ({ moduleId, folderId }: CreateFolderArgs): Promise<void> => {
     this.beginFolderDraft({
       moduleId: moduleId,
       parentFolderId: folderId,
       initialName: '',
     });
-    await Promise.resolve();
+    return Promise.resolve();
   };
 
   deleteFolderAsync = async (node: FolderTreeNode): Promise<void> => {
@@ -985,14 +1011,14 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   /** Renaming reuses the same inline editor as creation (issue #4783). */
-  renameFolderAsync = async (node: FolderTreeNode): Promise<void> => {
+  renameFolderAsync = (node: FolderTreeNode): Promise<void> => {
     this.beginFolderDraft({
       moduleId: node.moduleId,
       parentFolderId: node.parentId,
       folderId: node.id,
       initialName: node.name,
     });
-    await Promise.resolve();
+    return Promise.resolve();
   };
 
   reloadDocumentAsync = async (docId: string): Promise<void> => {

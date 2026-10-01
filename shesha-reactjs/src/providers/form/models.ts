@@ -667,6 +667,13 @@ export const DEFAULT_FORM_SETTINGS: IFormSettings = {
   permissions: [],
 };
 
+/**
+ * Effective label colon for a form: the form's own Colon setting, falling back to the theme's Colon
+ * setting when the form has none. Settings forms are framework chrome, so they never use the theme's.
+ */
+export const resolveFormColon = (formColon: boolean | undefined, isSettingsForm: boolean, themeColon: boolean | undefined): boolean | undefined =>
+  formColon ?? (isSettingsForm ? undefined : themeColon);
+
 export type ActionParametersJs = string;
 export type ActionParametersDictionary = object;
 export type ActionParameters = ActionParametersJs | ActionParametersDictionary;

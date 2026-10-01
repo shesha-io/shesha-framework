@@ -43,6 +43,8 @@ export type UseCsTreeResponse = {
   onNodeExpand: OnTreeExpand;
   /** Folder currently being named inline in the tree (issue #4783). */
   folderDraft: FolderDraft | undefined;
+  /** Nodes kept visible through the active search/type filter (just created or renamed). */
+  pinnedNodeIds: ReadonlySet<string>;
 };
 export const useCsTree = (): UseCsTreeResponse => {
   const cs = useConfigurationStudio();
@@ -64,6 +66,7 @@ export const useCsTree = (): UseCsTreeResponse => {
     selectedItemNode: cs.treeSelectedItemNode,
     onNodeExpand: cs.onTreeNodeExpand,
     folderDraft: cs.folderDraft,
+    pinnedNodeIds: cs.pinnedNodeIds,
   };
 };
 

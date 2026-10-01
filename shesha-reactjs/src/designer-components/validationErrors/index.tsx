@@ -39,7 +39,9 @@ export interface IValidationErrorsComponentProps extends IConfigurableFormCompon
 }
 
 const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentProps> = {
-  styleGroup: 'common-containers',
+  styleGroup: 'common',
+  // Themed with the Layout Components tab; styleGroup stays as-is because it also selects the script style API.
+  themeGroup: 'layout',
   allowInherit: true,
   type: 'validationErrors',
   isInput: false,

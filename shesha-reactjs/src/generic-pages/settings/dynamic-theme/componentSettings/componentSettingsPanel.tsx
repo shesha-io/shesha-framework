@@ -19,7 +19,7 @@ import { SearchBox } from '@/components/formDesigner/toolboxSearchBox';
 import { ComponentDefaultsPreview } from './preview';
 import { ComponentDefaultsSettings } from './settings';
 import DefaultModelProvider from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
-import { getThemeGroupForStyleGroup, IToolboxComponent } from '../../../../interfaces/formDesigner';
+import { getThemeGroupForComponent, IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useFormBuilderFactory } from '../../../..';
 /** Markup node that wraps designer settings tabs (e.g. Appearance). */
@@ -112,7 +112,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
   const defaultStyles = useMemo(() => {
     const hardcodedDefaults = typeof componentDef?.getDefaultStyles === 'function' ? componentDef.getDefaultStyles() : {};
-    const groupStyle = theme?.componentGroups?.[getThemeGroupForStyleGroup(componentDef?.styleGroup)] as object | undefined ?? {};
+    const groupStyle = theme?.componentGroups?.[getThemeGroupForComponent(componentDef)] as object | undefined ?? {};
     return deepMergeValues(deepCopyViaJson(hardcodedDefaults) as object, groupStyle, deepMergeSkipUndefinedFunc);
   }, [componentDef, theme?.componentGroups]);
 
@@ -125,7 +125,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
     // If it's a function (SettingsFormMarkupFactory), execute it to get the markup
     const markup = typeof settingsFormMarkup === 'function'
-      ? settingsFormMarkup({ fbf: fbf, removeStyleRouter: true })
+      ? settingsFormMarkup({ fbf: fbf, removeStyleRouter: true, forceVisible: true })
       : settingsFormMarkup;
 
     // Handle both FormRawMarkup (array) and FormMarkupWithSettings (object with components)

@@ -6,6 +6,7 @@ import { useMemo } from "react";
 
 const emptyNodes: TreeNode[] = [];
 const emptyItemTypes: string[] = [];
+const emptyPinnedIds: ReadonlySet<string> = new Set<string>();
 
 // Keeps children.length > 0 so rc-tree treats an empty folder as a real drop target instead of a leaf.
 const createPlaceholderNode = (parent: TreeNode): TreeNode => ({
@@ -73,7 +74,30 @@ const insertFolderDraft = (nodes: TreeNode[], draft: FolderDraft): TreeNode[] =>
   return loop(nodes);
 };
 
-export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string, itemTypeFilter: string[] = emptyItemTypes, folderDraft?: FolderDraft | undefined): TreeNode[] => {
+/**
+ * Ids that must survive the search/type filter: nodes pinned after being created or renamed, plus the
+ * draft's container (and the folder being renamed) so the inline editor always has somewhere to render.
+ * Their ancestors survive too, since a container with a surviving child is never dropped.
+ */
+const getKeptNodeIds = (pinnedNodeIds: ReadonlySet<string>, folderDraft: FolderDraft | undefined): ReadonlySet<string> => {
+  if (!isDefined(folderDraft))
+    return pinnedNodeIds;
+  const ids = new Set(pinnedNodeIds);
+  ids.add(folderDraft.parentFolderId ?? folderDraft.moduleId);
+  if (isDefined(folderDraft.folderId))
+    ids.add(folderDraft.folderId);
+  return ids;
+};
+
+export const useFilteredTreeNodes = (
+  treeNodes: TreeNode[],
+  quickSearch?: string,
+  itemTypeFilter: string[] = emptyItemTypes,
+  folderDraft?: FolderDraft | undefined,
+  pinnedNodeIds: ReadonlySet<string> = emptyPinnedIds,
+): TreeNode[] => {
+  const keptIds = useMemo(() => getKeptNodeIds(pinnedNodeIds, folderDraft), [pinnedNodeIds, folderDraft]);
+
   const filteredTreeNodes = useMemo<TreeNode[]>(() => {
     if (treeNodes.length === 0)
       return emptyNodes;
@@ -86,8 +110,10 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string
     const loop = (data: TreeNode[]): TreeNode[] => {
       const result: TreeNode[] = [];
       data.forEach((node) => {
+        const isKept = keptIds.has(node.id);
+
         if (isConfigItemTreeNode(node)) {
-          if (isDefined(allowedTypes) && !allowedTypes.has(node.itemType))
+          if (isDefined(allowedTypes) && !allowedTypes.has(node.itemType) && !isKept)
             return;
 
           if (!hasQuickSearch) {
@@ -100,6 +126,8 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string
               ...node,
               title: renderCsTreeNode(node, newTitle),
             });
+          else if (isKept)
+            result.push(node);
           return;
         }
 
@@ -109,7 +137,7 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string
           if (!hasQuickSearch) {
             // While a type filter is active, a folder/module that ends up with no matching
             // item is noise - drop it instead of showing an "Empty" placeholder.
-            if (hasTypeFilter && nodeChildren.length === 0)
+            if (hasTypeFilter && nodeChildren.length === 0 && !isKept)
               return;
 
             result.push({
@@ -126,7 +154,7 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string
             ? getTitleWithHighlight(node, quickSearch)
             : undefined;
 
-          if (nodeChildren.length > 0 || isDefined(folderTitle))
+          if (nodeChildren.length > 0 || isDefined(folderTitle) || isKept)
             result.push({
               ...node,
               ...(isDefined(folderTitle) ? { title: renderCsTreeNode(node, folderTitle) } : {}),
@@ -143,7 +171,7 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string
     };
 
     return loop(treeNodes);
-  }, [treeNodes, quickSearch, itemTypeFilter]);
+  }, [treeNodes, quickSearch, itemTypeFilter, keptIds]);
 
   // Applied after filtering so the editor row is never filtered out of its own container.
   return useMemo<TreeNode[]>(

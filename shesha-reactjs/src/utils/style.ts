@@ -4,19 +4,21 @@ import { executeScriptSync } from '@/providers/form/utils';
 import { IPropertySetting } from '..';
 import { getStyleBoxValue } from "@/designer-components/styleBox/utils";
 import { IConfigurableFormComponent, IStyleValue, IToolboxComponent } from "@/interfaces";
-import { getThemeGroupForStyleGroup } from "@/interfaces/formDesigner";
+import { getThemeGroupForComponent } from "@/interfaces/formDesigner";
 import { IConfigurableTheme } from "@/providers";
 import { DeviceTypes } from "@/providers/canvas/contexts";
-import { deepMergeSkipUndefinedFunc, deepMergeValues } from "@/utils/object";
+import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from "@/utils/object";
 
 export const getEffectiveStyle = (model: IConfigurableFormComponent, effectiveDevice: DeviceTypes, theme?: IConfigurableTheme | undefined, toolboxComponent?: IToolboxComponent | undefined, isSettingsForm: boolean = false): IStyleValue => {
   // for settings form components should use their own styles
   if (isSettingsForm === true)
     return model;
 
-  // Default styles + Group theme styles (Input/Inline/Standard/Layout Components tabs)
-  const defStyle: IStyleValue = toolboxComponent?.getDefaultStyles?.() ?? { styleCss: {} };
-  const groupStyle = theme?.componentGroups?.[getThemeGroupForStyleGroup(toolboxComponent?.styleGroup)] as IStyleValue | undefined;
+  // Default styles + Group theme styles (Input/Inline/Standard/Layout Components tabs).
+  // deepMergeValues only shallow-copies its target, so merge into a deep copy: some components
+  // (e.g. tabs) return nested objects shared with module-level constants from getDefaultStyles.
+  const defStyle = deepCopyViaJson(toolboxComponent?.getDefaultStyles?.() ?? { styleCss: {} }) as IStyleValue;
+  const groupStyle = theme?.componentGroups?.[getThemeGroupForComponent(toolboxComponent)] as IStyleValue | undefined;
   const groupDefStyle: IStyleValue = isDefined(groupStyle)
     ? deepMergeValues(defStyle, groupStyle, deepMergeSkipUndefinedFunc)
     : defStyle;

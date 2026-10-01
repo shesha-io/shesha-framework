@@ -99,6 +99,7 @@ export interface IConfigurationStudio {
   //#region selection and tabs
   selectTreeNode: (node?: TreeNode) => void;
   setMultiSelection: (nodeIds: string[]) => Promise<void>;
+  /** @deprecated No-op: selecting a tree node no longer toggles its expansion. */
   clickTreeNode: (node: TreeNode) => void;
   /** Expand every ancestor of the node, then select and highlight it. */
   revealAndSelectTreeNodeAsync: (node: TreeNode) => Promise<void>;
@@ -106,6 +107,8 @@ export interface IConfigurationStudio {
   //#region inline folder editing (issue #4783)
   /** The folder currently being named inline in the tree, if any. */
   folderDraft: FolderDraft | undefined;
+  /** Nodes revealed after create/rename; kept visible through the active search/type filter. */
+  readonly pinnedNodeIds: ReadonlySet<string>;
   beginFolderDraft: (draft: FolderDraft) => void;
   cancelFolderDraft: () => void;
   commitFolderDraftAsync: (name: string) => Promise<void>;

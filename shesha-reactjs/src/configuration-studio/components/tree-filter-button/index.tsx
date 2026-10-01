@@ -24,17 +24,21 @@ export const TreeFilterButton: FC = () => {
       label: it.friendlyName,
     }));
 
+    const clearItem = {
+      key: CLEAR_KEY,
+      label: 'Clear filter',
+      disabled: itemTypeFilter.length === 0,
+    };
+
+    // No known types (they failed to load, or a restored filter names unregistered ones): still offer
+    // Clear filter, otherwise an active filter would hide the whole tree with no way to undo it.
     if (typeItems.length === 0)
-      return [];
+      return itemTypeFilter.length > 0 ? [clearItem] : [];
 
     return [
       ...typeItems,
       { type: 'divider' },
-      {
-        key: CLEAR_KEY,
-        label: 'Clear filter',
-        disabled: itemTypeFilter.length === 0,
-      },
+      clearItem,
     ];
   }, [itemTypes, itemTypeFilter]);
 
@@ -51,10 +55,10 @@ export const TreeFilterButton: FC = () => {
     setItemTypeFilter(next);
   };
 
-  if (itemTypes.length === 0)
-    return null;
-
   const isFiltered = itemTypeFilter.length > 0;
+
+  if (itemTypes.length === 0 && !isFiltered)
+    return null;
 
   // Name the active types, in menu order rather than the order they were clicked. Unknown
   // types (e.g. a filter restored from storage after a type was unregistered) are skipped.
@@ -65,7 +69,9 @@ export const TreeFilterButton: FC = () => {
   // "A", "A and B", "A, B, and C".
   const tooltipTitle = selectedNames.length > 0
     ? `Showing ${TYPE_LIST_FORMATTER.format(selectedNames)} only`
-    : 'Filter by type';
+    : isFiltered
+      ? 'Filtered by item types that are no longer available - clear the filter to show everything'
+      : 'Filter by type';
 
   return (
     <Dropdown

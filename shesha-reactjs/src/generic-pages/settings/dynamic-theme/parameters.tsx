@@ -11,8 +11,6 @@ import InputStatesPreview from './inputStatePreview';
 import TextsPreview from './textsPreview';
 import { FormItemLayout } from 'antd/es/form/Form';
 import { FormLabelAlign } from 'antd/es/form/interface';
-import { useDebouncedCallback } from 'use-debounce';
-import FormItem from '@/designer-components/_settings/components/formItem';
 
 /**
  * The theme settings tabs: theme-wide settings, the full per-component tree, then the four
@@ -61,7 +59,7 @@ const ColorCircle: FC<ColorCircleProps> = ({ color, onChange, label, readOnly })
 };
 
 /** Update empty properties to undefined. This is necessary for base theme values bucause there is no way to reset them */
-const setUndefinedForEmptyProperties = (data: Record<string, unknown | undefined>): Record<string, unknown | undefined> => {
+export const setUndefinedForEmptyProperties = (data: Record<string, unknown | undefined>): Record<string, unknown | undefined> => {
   for (const key in data) {
     if (!data.hasOwnProperty(key)) continue;
     if (typeof data[key] === 'object')
@@ -72,16 +70,14 @@ const setUndefinedForEmptyProperties = (data: Record<string, unknown | undefined
   return data;
 };
 
+/**
+ * One tab of the theme settings. `onChange` is expected to be debounced by the caller, which owns a
+ * single save for all tabs (see `ConfigurableThemeContent`) so edits made on different tabs in quick
+ * succession can't overwrite each other.
+ */
 const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readOnly, section = 'theme' }) => {
-  // it is necessary to use debounce save because it changes the theme and it results in re-rendering of all components.
-  const debouncedSave = useDebouncedCallback(
-    (values: IConfigurableTheme) => onChange(setUndefinedForEmptyProperties(values as Record<string, unknown | undefined>)),
-    // delay in ms
-    200,
-  );
-
   const changeThemeInternal = (theme: IConfigurableTheme): void => {
-    debouncedSave(theme);
+    onChange(theme);
   };
 
   const mergeThemeSection = (
@@ -273,13 +269,20 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
               </div>
             )}
 
-            <FormItem name="showColon" label="Show colon" layout="vertical">
+            {/* Same value as Form Settings > Appearance > Colon; a form's own setting takes precedence. */}
+            <Space align="center" style={{ display: 'flex' }}>
               <Switch
+                id="theme-colon"
+                size="small"
                 checked={theme.colon ?? true}
                 onChange={(checked) => changeThemeInternal({ ...theme, colon: checked })}
                 disabled={readOnly}
               />
-            </FormItem>
+              <label htmlFor="theme-colon">Colon</label>
+              <Tooltip title="Whether a colon is displayed after labels (only effective when layout is horizontal). Used by forms that don't set their own Colon in Form Settings.">
+                <QuestionCircleOutlined style={{ color: '#1890ff', cursor: 'help' }} />
+              </Tooltip>
+            </Space>
           </div>
 
           {/* Group Defaults: one shared appearance form for every input component */}

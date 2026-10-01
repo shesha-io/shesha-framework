@@ -51,10 +51,13 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
 
     // An explicitly declared width wins: lay the input out at exactly that width and don't let
     // it grow, otherwise a width-constrained field stretches to fill the row and the width stops
-    // meaning anything. Everything else keeps the shared flex basis and shares the row as before.
-    return hasExplicitWidth === true
-      ? { flex: `0 0 ${addPx(width)}`, width }
-      : { flex: `${inline === true ? 0 : 1} 1 120px`, width };
+    // meaning anything. Inline inputs without one keep their per-type default width (see getWidth),
+    // and everything else keeps the shared flex basis and shares the row as before.
+    if (hasExplicitWidth === true)
+      return { flex: `0 0 ${addPx(width)}`, width };
+    if (inline === true)
+      return { flex: width != null ? `0 1 ${addPx(width)}` : '1 1 auto', width };
+    return { flex: '1 1 120px', width };
   }, [unwrappedType, inline, width, hasExplicitWidth]);
 
   return isHidden ? null

@@ -67,14 +67,25 @@ const previewVariantsByType: Record<string, IPreviewVariant[]> = {
   dropdown: [
     { label: 'Single', model: { mode: 'single', displayStyle: 'text' } },
     { label: 'Multiple', model: { mode: 'multiple', displayStyle: 'text' } },
-    { label: 'Tags', model: { mode: 'multiple', displayStyle: 'tags' } },
-    { label: 'Free-text tags', model: { mode: 'tags', displayStyle: 'tags' } },
+    { label: 'Tag', model: { mode: 'single', displayStyle: 'tags' } },
+    { label: 'Multiple tags', model: { mode: 'multiple', displayStyle: 'tags' } },
   ],
   attachmentsEditor: [
     { label: 'File name', model: { displayStyle: 'text' } },
     { label: 'Thumbnail (small)', model: { displayStyle: 'thumbnailSmall' } },
     { label: 'Thumbnail (medium)', model: { displayStyle: 'thumbnailMedium' } },
     { label: 'Thumbnail (large)', model: { displayStyle: 'thumbnailLarge' } },
+    // Only mode whose dimensions are editable — the presets above size themselves.
+    { label: 'Thumbnail (custom)', model: { displayStyle: 'thumbnailCustom' } },
+    { label: 'Drag & drop', model: { displayStyle: 'text', isDragger: true } },
+  ],
+  fileUpload: [
+    { label: 'File name', model: { displayStyle: 'text' } },
+    { label: 'Thumbnail (small)', model: { displayStyle: 'thumbnailSmall' } },
+    { label: 'Thumbnail (medium)', model: { displayStyle: 'thumbnailMedium' } },
+    { label: 'Thumbnail (large)', model: { displayStyle: 'thumbnailLarge' } },
+    // Only mode whose dimensions are editable — the presets above size themselves.
+    { label: 'Thumbnail (custom)', model: { displayStyle: 'thumbnailCustom' } },
     { label: 'Drag & drop', model: { displayStyle: 'text', isDragger: true } },
   ],
 };

@@ -139,7 +139,6 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
 
       .ant-card {
         padding: 8px;
-        height: 100%;
 
         .ant-card-head {
           min-height: 40px;
