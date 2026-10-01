@@ -108,8 +108,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   isFormSettingsVisible: boolean = false;
 
-  activeSettingsTabKey: string | undefined;
-
   validationCollector: IValidationCollector;
 
   formBuilderFactory: FormBuilderFactory;
