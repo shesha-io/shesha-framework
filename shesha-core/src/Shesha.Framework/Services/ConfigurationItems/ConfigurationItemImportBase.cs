@@ -64,7 +64,7 @@ namespace Shesha.Services.ConfigurationItems
             if (string.IsNullOrWhiteSpace(appKey))
                 return null;
 
-            var application = await FrontendAppRepo.FirstOrDefaultAsync(m => m.AppKey == appKey);
+            var application = await FrontendAppRepo.FirstOrDefaultAsync(m => m.AppKey.ToLower() == appKey.ToLower());
             if (application == null)
             {
                 if (context.CreateFrontEndApplications)

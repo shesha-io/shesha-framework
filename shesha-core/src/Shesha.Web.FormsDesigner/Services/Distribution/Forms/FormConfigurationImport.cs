@@ -6,11 +6,13 @@ using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Services.ConfigurationItems;
 using Shesha.Web.FormsDesigner.Domain;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services.Distribution
@@ -63,11 +65,39 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             }
         }
 
+        private static string NormalizeImportKey(string value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? null : value.ToLowerInvariant();
+        }
+
+        private async Task<FormConfiguration> GetLiveVersionForAsync(DistributedFormConfiguration item)
+        {
+            var moduleName = NormalizeImportKey(item.ModuleName);
+            var appKey = NormalizeImportKey(item.FrontEndApplication);
+
+            var query = _formConfigRepo.GetAll().Where(f => f.Name == item.Name && f.VersionStatus == ConfigurationItemVersionStatus.Live);
+            query = query.Where(moduleName != null
+                ? f => f.Module.Name.ToLowerInvariant() == moduleName
+                : f => f.Module == null
+            );
+            query = query.Where(appKey != null
+                ? f => f.Application.AppKey.ToLowerInvariant() == appKey
+                : f => f.Application == null
+            );
+
+            return await query.FirstOrDefaultAsync();
+        }
+
         /// inheritedDoc
         protected async Task<ConfigurationItemBase> ImportFormAsync(DistributedFormConfiguration item, IConfigurationItemsImportContext context)
         {
             // check if form exists
-            var existingForm = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.IsLast);
+            var moduleName = NormalizeImportKey(item.ModuleName);
+            var appKey = NormalizeImportKey(item.FrontEndApplication);
+            var existingForm = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name &&
+                (moduleName != null ? f.Module.Name.ToLowerInvariant() == moduleName : f.Module == null) &&
+                (appKey != null ? f.Application.AppKey.ToLowerInvariant() == appKey : f.Application == null) &&
+                f.IsLast);
 
             // use status specified in the context with fallback to imported value
             var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
@@ -88,7 +118,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 {
                     var liveForm = existingForm.VersionStatus == ConfigurationItemVersionStatus.Live
                         ? existingForm
-                        : await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
+                        : await GetLiveVersionForAsync(item);
                     if (liveForm != null)
                     {
                         await _formManger.UpdateStatusAsync(liveForm, ConfigurationItemVersionStatus.Retired);
@@ -121,6 +151,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 // fill audit?
                 newForm.VersionNo = 1;
                 newForm.Module = await GetModuleAsync(item.ModuleName, context);
+                newForm.Application = await GetFrontEndAppAsync(item.FrontEndApplication, context);
 
                 // important: set status according to the context
                 newForm.VersionStatus = statusToImport;
