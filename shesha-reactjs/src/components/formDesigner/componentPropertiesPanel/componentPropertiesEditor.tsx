@@ -56,7 +56,8 @@ const getDefaultFactory = <TModel extends IConfigurableFormComponent = IConfigur
 export const ComponentPropertiesEditor = <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(props: IComponentPropertiesEditorProps<TModel>): ReactNode => {
   const { componentModel, readOnly, toolboxComponent, isInModal } = props;
 
-  const { getCachedComponentEditor } = useFormDesigner();
+  const formDesigner = useFormDesigner();
+  const { getCachedComponentEditor } = formDesigner;
   const fbf = useFormBuilderFactory();
 
   const SettingsForm = getCachedComponentEditor<TModel>(componentModel.type, () => {
@@ -79,8 +80,12 @@ export const ComponentPropertiesEditor = <TModel extends IConfigurableFormCompon
   );
 
   // Deselecting the component (or switching it) unmounts this editor; without flushing, a save still
-  // pending from the last edit is silently dropped instead of reaching the component model.
-  useEffect(() => () => debouncedSave.flush(), [debouncedSave]);
+  // pending from the last edit is silently dropped instead of reaching the component model. Skipped
+  // when the component itself was deleted, since updateComponent would throw for a missing id.
+  useEffect(() => () => {
+    if (isDefined(formDesigner.state.formFlatMarkup.allComponents[componentModel.id]))
+      debouncedSave.flush();
+  }, [debouncedSave, formDesigner, componentModel.id]);
 
   const onCancel = (): void => {
     // not used
