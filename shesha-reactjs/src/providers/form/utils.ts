@@ -1462,6 +1462,10 @@ export const getFormValidationSettings = <TData extends object = object>(markup:
 
   const flatStructure = componentsTreeToFlatStructure(designerComponents, components);
 
+  // migrate components to last version
+  const formSettings = getFromSettingsFromMarkup(markup);
+  upgradeComponents(designerComponents, formSettings, flatStructure);
+
   const rules: Rules = {};
   const friendlyNames: Record<string, string | ReactNode> = {};
   for (const key in flatStructure.allComponents) {

@@ -140,6 +140,7 @@ export type FormDesignerActions = {
 
   setSettingsPanelElement: (element: HTMLDivElement | null) => void;
   validateFormAsync: () => Promise<void>;
+  validateFormAndSaveResultsAsync: () => Promise<void>;
   getValidationResults: () => FieldValidationError[];
   openFormSettings: () => void;
   closeFormSettings: () => void;

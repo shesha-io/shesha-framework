@@ -21,7 +21,7 @@ import { useFormBuilderFactory } from '@/form-factory/hooks';
 import { useTheme } from '../theme';
 import { useCanvas } from '../canvas';
 import { useConfigurableActionDispatcher } from '../configurableActionsDispatcher';
-import { useAvailableConstantsDataNoRefresh, useSettingsComponents } from '../..';
+import { useAvailableConstantsDataNoRefresh, useConfigurationItemsLoader, useHttpClient, useSettingsComponents } from '../..';
 
 export interface IFormDesignerProviderProps {
   flatMarkup: IFlatComponentsStructure;
@@ -37,17 +37,19 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   } = props;
   const toolboxComponentGroups = useFormDesignerComponentGroups();
   const formPersister = useFormPersister();
+  const httpClient = useHttpClient();
   const { theme } = useTheme();
   const { activeDevice } = useCanvas();
-  // const devMode = useIsDevMode();
   const noPageContext = !Boolean(useDataContextManagerActionsOrUndefined()?.getPageContext());
   const formBuilderFactory = useFormBuilderFactory();
   const { getConfigurableActionOrNull } = useConfigurableActionDispatcher();
   const settingsComponents = useSettingsComponents();
   const allData = useAvailableConstantsDataNoRefresh();
+  const configurationLoader = useConfigurationItemsLoader();
 
   const [formDesigner] = useState<IFormDesignerInstance>(() => {
     return new FormDesignerInstance({
+      httpClient,
       readOnly,
       toolboxComponentGroups,
       settingsComponents: settingsComponents,
@@ -60,6 +62,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
       activeDevice,
       getConfigurableActionOrNull: getConfigurableActionOrNull,
       appContext: allData,
+      configurationLoader: configurationLoader,
     });
   });
 

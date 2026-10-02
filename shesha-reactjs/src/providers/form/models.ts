@@ -17,7 +17,7 @@ import { IActionExecutionContext } from '@/interfaces/configurableAction';
 import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/interfaces";
 import { StringSubtype } from '@/interfaces/utilityTypes';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
-import { IFormValidator } from '../formDesigner/formValidator';
+import { IDependenciesTracker, IFormValidator } from '../formDesigner/formValidator';
 import { ContextConfigurableActionGetter } from '../configurableActionsDispatcher/models';
 import { IApplicationContext, ValidationNodeRef } from '../..';
 
@@ -650,6 +650,7 @@ export interface IFormValidationRulesOptions<TData = unknown> {
   formData?: TData | undefined;
   getFormData?: (() => TData) | undefined;
   validator: IFormValidator;
+  dependencies: IDependenciesTracker;
   appContext: IApplicationContext;
 
   /* Component Id, is used to get hierarchy info */

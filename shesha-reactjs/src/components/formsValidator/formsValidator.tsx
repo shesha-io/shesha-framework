@@ -21,7 +21,7 @@ import {
   StopOutlined,
   UndoOutlined,
 } from '@ant-design/icons';
-import { isDefined, isNullOrWhiteSpace } from '@/utils';
+import { isDefined } from '@/utils';
 import { JsonLogicTree } from '@react-awesome-query-builder/antd';
 import { FormsFilter } from './formsFilter';
 import { useConfigurableActionDispatcher, useFormManager, useHttpClient, useSettingsComponents, useTheme } from '@/providers';
@@ -31,7 +31,7 @@ import { useFormDesignerComponentGroups } from '@/providers/form/hooks';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
 import { formatDuration, ProcessingStats, StatsSnapshot } from './processingStats';
 import { QuickEditDialog } from '../formDesigner/quickEdit/quickEditDialog';
-import { useAvailableConstantsDataNoRefresh } from '../..';
+import { useAvailableConstantsDataNoRefresh, useConfigurationItemsLoader } from '../..';
 import { isNonEmptyArray } from '@/utils/array';
 
 const { Text, Link } = Typography;
@@ -56,7 +56,7 @@ export const FormsValidator: FC = () => {
   const [filter, setFilter] = useState<JsonLogicTree | undefined>(
     // { "==": [{ var: "id" }, "229c6ed8-244b-448d-ada8-f7a3a6b86547"] },
   );
-  const [formId, setFormId] = useState<string | undefined>(undefined);
+  const [openedForm, setOpenedForm] = useState<FormProcessingItem | undefined>(undefined);
 
   const httpClient = useHttpClient();
   const formManager = useFormManager();
@@ -74,6 +74,7 @@ export const FormsValidator: FC = () => {
   }, []);
 
   const allData = useAvailableConstantsDataNoRefresh();
+  const configurationLoader = useConfigurationItemsLoader();
 
   const [validator] = useState<BatchFormsValidator>(() => new BatchFormsValidator({
     httpClient,
@@ -84,6 +85,7 @@ export const FormsValidator: FC = () => {
     formBuilderFactory,
     getConfigurableActionOrNull,
     appContext: allData,
+    configurationLoader: configurationLoader,
   }));
 
   const mountedRef = useRef(true);
@@ -100,16 +102,17 @@ export const FormsValidator: FC = () => {
   }, []);
 
   const patch = useCallback(
-    (id: string, changes: Partial<FormProcessingItem> & { status?: ItemStatus }) => {
+    (item: FormProcessingItem, changes: Partial<FormProcessingItem> & { status?: ItemStatus }) => {
       setForms((prev) =>
         prev.map((it) => {
-          if (it.id !== id) return it;
-          if (changes.status && changes.status !== it.status) {
-            statsRef.current.transition(it.status, changes.status);
-          }
+          if (it.id !== item.id) return it;
           return { ...it, ...changes };
         }),
       );
+
+      if (isDefined(changes.status) && changes.status !== item.status) {
+        statsRef.current.transition(item.status, changes.status);
+      }
       syncStats();
     },
     [syncStats],
@@ -165,10 +168,10 @@ export const FormsValidator: FC = () => {
       for (const item of queue) {
         if (cancelled()) break;
 
-        patch(item.id, { status: 'processing', result: undefined, errorMessage: undefined });
+        patch(item, { status: 'processing', result: undefined, errorMessage: undefined });
 
         if (cancelled()) {
-          patch(item.id, { status: 'pending' });
+          patch(item, { status: 'pending' });
           break;
         }
 
@@ -176,13 +179,13 @@ export const FormsValidator: FC = () => {
           const result = await validator.processItem(item);
 
           if (cancelled()) break;
-          patch(item.id, {
+          patch(item, {
             status: 'done',
             result,
           });
         } catch (err) {
           if (cancelled()) break;
-          patch(item.id, { status: 'error', errorMessage: (err as Error).message });
+          patch(item, { status: 'error', errorMessage: (err as Error).message });
         }
       }
     } finally {
@@ -238,10 +241,10 @@ export const FormsValidator: FC = () => {
         title: '',
         dataIndex: 'id',
         width: 30,
-        render: (v: string) => (
+        render: (_value, record) => (
           <Link onClick={(e): void => {
             e.stopPropagation();
-            setFormId(v);
+            setOpenedForm(record);
           }}
           >
             <BuildOutlined />
@@ -397,14 +400,14 @@ export const FormsValidator: FC = () => {
         />
       </Flex>
 
-      {!isNullOrWhiteSpace(formId) && (
+      {isDefined(openedForm) && (
         <QuickEditDialog
-          formId={formId}
+          formId={openedForm.id}
           open={true}
-          onCancel={() => setFormId(undefined)}
+          onCancel={() => setOpenedForm(undefined)}
           onUpdated={() => {
-            patch(formId, { status: 'pending' });
-            setFormId(undefined);
+            patch(openedForm, { status: 'pending' });
+            setOpenedForm(undefined);
           }}
         />
       )}

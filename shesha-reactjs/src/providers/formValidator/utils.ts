@@ -9,7 +9,9 @@ import { useSettingsComponents } from '@/providers/sheshaApplication/hooks/useSe
 import { isDefined } from "@/utils";
 import { FormRule } from "antd";
 import { useMemo } from "react";
-import { FormValidator, IFormValidator } from "../formDesigner/formValidator";
+import { FormValidator, IFormValidator, NULL_DEPENDENCIES_CONTEXT } from "../formDesigner/formValidator";
+import { useConfigurationItemsLoader } from '../configurationItemsLoader';
+import { useHttpClient } from '../sheshaApplication/publicApi';
 
 export const getComponentValidationRules = (model: IConfigurableFormComponent, options: IFormValidationRulesOptions): FormRule[] => {
   const { componentGetter } = options.validator;
@@ -47,17 +49,20 @@ export const useFormValidator = (): IFormValidator => {
   const { getConfigurableActionOrNull } = useConfigurableActionDispatcher();
   const fbf = useFormBuilderFactory();
   const allData = useAvailableConstantsDataNoRefresh();
+  const configurationLoader = useConfigurationItemsLoader();
+  const httpClient = useHttpClient();
 
   const validator = useMemo<IFormValidator>(() => {
     return new FormValidator({
-      // componentGetter: componentGetter,
+      httpClient: httpClient,
       toolboxComponents: toolboxComponents,
       settingsComponentGetter: (type) => settingsComponents.find((c) => c.type === type),
       formBuilderFactory: fbf,
       getConfigurableActionOrNull: getConfigurableActionOrNull,
       appContext: allData,
+      configurationLoader: configurationLoader,
     });
-  }, [allData, fbf, getConfigurableActionOrNull, settingsComponents, toolboxComponents]);
+  }, [allData, configurationLoader, fbf, getConfigurableActionOrNull, httpClient, settingsComponents, toolboxComponents]);
   return validator;
 };
 
@@ -77,6 +82,7 @@ export const useComponentValidationRules = (model: IConfigurableFormComponent): 
       componentId: model.id,
       appContext: allData,
       path: [],
+      dependencies: NULL_DEPENDENCIES_CONTEXT,
     });
   }, [model, getFormData, validator, allData]);
 

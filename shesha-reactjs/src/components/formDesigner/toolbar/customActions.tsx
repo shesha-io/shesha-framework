@@ -1,6 +1,7 @@
 import { useDynamicModals, useHttpClient } from "@/providers";
 import { useFormDesignerReadOnly } from "@/providers/formDesigner";
 import { useFormPersister } from "@/providers/formPersisterProvider";
+import { isNullOrWhiteSpace } from "@/utils";
 import { downloadAsJson } from "@/utils/configurationFramework/actions";
 import { MenuOutlined } from "@ant-design/icons";
 import { App, Button, Dropdown, MenuProps } from "antd";
@@ -17,7 +18,7 @@ export const CustomActions: FC = () => {
   const readOnly = useFormDesignerReadOnly();
 
   const formId = formProps?.id;
-  if (!formId)
+  if (isNullOrWhiteSpace(formId))
     return undefined;
 
   const items: MenuItem[] = [

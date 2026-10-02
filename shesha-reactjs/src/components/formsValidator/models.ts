@@ -26,3 +26,18 @@ export type FormProcessingItem = FormItem & {
 export type ValidationResult = {
   issues: ConfigurationIssue[];
 };
+
+export type FormDependencyType = 'entity' | 'ref-list' | 'form' | 'form-component';
+
+export type FormDependency = {
+  type: FormDependencyType;
+  module: string | null;
+  name: string;
+  isSatisfied: boolean;
+  hasIssues?: boolean;
+};
+
+export type UpdateFormDependenciesInput = {
+  id: string;
+  dependencies: FormDependency[];
+};

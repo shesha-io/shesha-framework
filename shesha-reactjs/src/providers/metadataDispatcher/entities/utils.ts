@@ -234,8 +234,6 @@ export const isValidEntityType = (modelType: string | IEntityTypeIdentifier | nu
 export const getEntityTypeIdentifier = (modelType: string | IEntityTypeIdentifier): IEntityTypeIdentifier =>
   (isEntityTypeIdentifier(modelType) ? modelType : { name: modelType, module: null });
 
-export const entityTypeIdentifierToString = (modelType: string | IEntityTypeIdentifier): string => isEntityTypeIdentifier(modelType) ? `${modelType.module}:${modelType.name}` : modelType;
-
 export const getEntityTypeIdentifierQueryParams = (modelType: string | IEntityTypeIdentifier | undefined): IEntityTypeIdentifierQueryParams => {
   return !isDefined(modelType)
     ? {}
