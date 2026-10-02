@@ -109,6 +109,7 @@ export const migratePasswordComboToTextField = (
  * All instances are automatically migrated to two separate textField components (password + confirm) via the migrator.
  */
 const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
+  styleGroup: 'inputs',
   type: 'passwordCombo',
   isInput: true,
   isHidden: true,

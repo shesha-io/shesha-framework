@@ -15,6 +15,8 @@ export enum TreeNodeType {
   Special = 4,
   // Synthetic child injected into empty folders/modules for drag-and-drop hit-testing (see filter.ts).
   Placeholder = 5,
+  // Synthetic node rendering the inline name editor for a folder being created (see issue #4783).
+  FolderDraft = 6,
 }
 
 export type DocumentFlags = {
@@ -104,6 +106,18 @@ export const isNodeWithChildren = (node?: DataNode): node is ModuleTreeNode | Fo
   return isModuleTreeNode(node) || isFolderTreeNode(node);
 };
 
+type FolderDraftBase = {
+  moduleId: string;
+  /** Folder that contains the draft; undefined means the module root. */
+  parentFolderId?: string | undefined;
+  /** Name the inline editor opens with. */
+  initialName: string;
+};
+
+/** Transient state describing the folder the user is currently naming inline in the tree. */
+export type FolderDraft = (FolderDraftBase & { kind: 'create' }) |
+  (FolderDraftBase & { kind: 'rename'; folderId: string });
+
 export type FrontEndAppDto = {
   id: string;
   name: string;
@@ -116,6 +130,9 @@ export const TREE_NODE_TYPES = {
   Folder: 3,
   Special: 4,
 };
+
+/** Key of the synthetic node that hosts the inline folder-name editor. */
+export const FOLDER_DRAFT_NODE_KEY = '__cs-folder-draft__';
 
 export const ITEM_TYPES = {
   FORM: 'form',

@@ -13,7 +13,7 @@ const disabledValuesHiddenOrNotRefListJs = "return getSettingValue(data.dataSour
 const tagsVisibleJs = 'return getSettingValue(data?.displayStyle) === "tags";';
 const tagsHiddenJs = 'return getSettingValue(data?.displayStyle) !== "tags";';
 
-export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter, forceVisible }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
@@ -152,8 +152,10 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                         .stdCustomStylePanel(undefined, 'tag.style'),
                       true,
                       /* Plain text hands antd the raw label, so nothing in this panel reaches the
-                         DOM — hidden rather than left inert, like Show Item Name / Show Icon. */
-                      tagsVisibleJs,
+                         DOM — hidden rather than left inert, like Show Item Name / Show Icon.
+                         forceVisible (theme editor) always shows it, so every style the component
+                         can expose is editable regardless of the currently selected mode. */
+                      forceVisible === true ? undefined : tagsVisibleJs,
                       )
                       .toJson()],
                 })

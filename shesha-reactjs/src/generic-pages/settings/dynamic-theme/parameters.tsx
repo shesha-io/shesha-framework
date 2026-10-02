@@ -1,22 +1,28 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Radio, Row, Slider, Space, Tooltip, Typography } from 'antd';
+import { Button, Card, Col, Radio, Row, Slider, Space, Switch, Tooltip, Typography } from 'antd';
 import { FC } from 'react';
 import { ColorPicker } from '@/components/colorPicker';
 import { ColorScheme, IConfigurableTheme, normalizeColorScheme } from '@/providers/theme/contexts';
 import { ComponentDefaultsPanel } from './componentSettings/componentSettingsPanel';
+import { GroupSettingsPanel } from './groupSettingsPanel';
 import { useStyles } from './styles/styles';
 import AlertsExample from './alertsPreview';
 import InputStatesPreview from './inputStatePreview';
 import TextsPreview from './textsPreview';
 import { FormItemLayout } from 'antd/es/form/Form';
 import { FormLabelAlign } from 'antd/es/form/interface';
-import { useDebouncedCallback } from 'use-debounce';
+
+/**
+ * The theme settings tabs: theme-wide settings, the full per-component tree, then the four
+ * component groups by style (see `StyleGroups`).
+ */
+export type ThemeSettingsSection = 'theme' | 'components' | 'input' | 'inline' | 'standard' | 'layout';
 
 export interface ThemeParametersProps {
   value: IConfigurableTheme;
   onChange: (theme: IConfigurableTheme) => void;
   readOnly: boolean;
-  themeLevel?: number | undefined;
+  section?: ThemeSettingsSection | undefined;
 }
 
 const PRESET_COLORS = [
@@ -53,7 +59,7 @@ const ColorCircle: FC<ColorCircleProps> = ({ color, onChange, label, readOnly })
 };
 
 /** Update empty properties to undefined. This is necessary for base theme values bucause there is no way to reset them */
-const setUndefinedForEmptyProperties = (data: Record<string, unknown | undefined>): Record<string, unknown | undefined> => {
+export const setUndefinedForEmptyProperties = (data: Record<string, unknown | undefined>): Record<string, unknown | undefined> => {
   for (const key in data) {
     if (!data.hasOwnProperty(key)) continue;
     if (typeof data[key] === 'object')
@@ -64,32 +70,23 @@ const setUndefinedForEmptyProperties = (data: Record<string, unknown | undefined
   return data;
 };
 
-const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readOnly, themeLevel = 1 }) => {
-  // it is necessary to use debounce save because it changes the theme and it results in re-rendering of all components.
-  const debouncedSave = useDebouncedCallback(
-    (values: IConfigurableTheme) => onChange(setUndefinedForEmptyProperties(values as Record<string, unknown | undefined>)),
-    // delay in ms
-    200,
-  );
-
+/**
+ * One tab of the theme settings. `onChange` is expected to be debounced by the caller, which owns a
+ * single save for all tabs (see `ConfigurableThemeContent`) so edits made on different tabs in quick
+ * succession can't overwrite each other.
+ */
+const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readOnly, section = 'theme' }) => {
   const changeThemeInternal = (theme: IConfigurableTheme): void => {
-    debouncedSave(theme);
+    onChange(theme);
   };
 
-  const mergeThemeSection = (
-    section: keyof IConfigurableTheme,
-    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>,
-  ): IConfigurableTheme => {
-    return { ...(theme[section] as unknown as Record<string, unknown>), ...(update as Record<string, unknown>) };
-  };
-
-  const updateTheme = (
-    section: keyof IConfigurableTheme,
-    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>,
+  const updateTheme = <TSection extends 'application' | 'text'>(
+    section: TSection,
+    update: NonNullable<IConfigurableTheme[TSection]>,
   ): void => {
     changeThemeInternal({
       ...theme,
-      [section]: mergeThemeSection(section, update),
+      [section]: { ...theme[section], ...update },
     });
   };
 
@@ -114,14 +111,9 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
 
   return (
     <div style={{ padding: '0 0 0px' }}>
-      {themeLevel === 1 && (
+      {section === 'theme' && (
         <>
-          <Typography.Title level={4} style={{ marginBottom: 4 }}>Theme Settings</Typography.Title>
-          <Typography.Text type="secondary">
-            Customize the look and feel of your workspace.
-          </Typography.Text>
-
-          <Typography.Title level={5} style={{ marginBottom: 12 }}>Theme</Typography.Title>
+          <Typography.Title level={5} style={{ margin: 0 }}>Theme</Typography.Title>
           <Radio.Group
             value={normalizeColorScheme(theme.sidebar)}
             onChange={(e) => {
@@ -139,10 +131,10 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             <Radio.Button value="system">System</Radio.Button>
           </Radio.Group>
 
-          <Row gutter={[32, 24]} style={{ marginTop: 32 }}>
+          <Row gutter={[32, 24]}>
             <Col xs={24} md={8}>
               <Typography.Title level={5} style={{ marginBottom: 4 }}>Colours</Typography.Title>
-              <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 12, fontSize: 12 }}>
+              <Typography.Text type="secondary" style={{ display: 'block', fontSize: 12 }}>
                 Select a circle below to choose your desired colour.
               </Typography.Text>
               <Space size={16} wrap>
@@ -176,8 +168,46 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             </Col>
           </Row>
 
-          {/* Form Span Settings */}
+          {/* Preview Card */}
           <div style={{ marginTop: 32 }}>
+            <Typography.Title level={5} style={{ marginBottom: 12 }}>Preview Card</Typography.Title>
+            <Card style={{ background: theme.layoutBackground ?? '#f0f2f5' }}>
+              <Row gutter={24}>
+                <Col xs={24} md={8}>
+                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Alerts</Typography.Text>
+                  <AlertsExample />
+                </Col>
+
+                <Col xs={24} md={8}>
+                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Forms</Typography.Text>
+                  <InputStatesPreview />
+                </Col>
+
+                <Col xs={24} md={8}>
+                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Buttons</Typography.Text>
+                  <Space orientation="vertical" style={{ width: '100%' }} size="small">
+                    <Button type="primary" block style={{ background: primaryColor, borderColor: primaryColor }}>Primary</Button>
+                    <Button danger block>Error</Button>
+                    <Button block style={{ color: successColor, borderColor: successColor }}>Secondary</Button>
+                    <Button block>Default</Button>
+                    <TextsPreview />
+                  </Space>
+                </Col>
+              </Row>
+            </Card>
+          </div>
+        </>
+      )}
+      {section === 'components' && (
+        <>
+          {/* Component Defaults Section: the full component tree, unfiltered */}
+          <ComponentDefaultsPanel value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
+        </>
+      )}
+      {section === 'input' && (
+        <>
+          {/* Form Span Settings: label layout/spacing only affects input (form-item) components */}
+          <div style={{ marginBottom: 24 }}>
             <Space align="center" style={{ marginBottom: 4 }}>
               <Typography.Title level={5} style={{ margin: 0 }}>Form Span Settings</Typography.Title>
               <Tooltip title="The layout uses a 24-column grid system by default. Choose between vertical or horizontal layout. You can customize how much space each element takes by setting the label span and wrapper span.">
@@ -231,48 +261,31 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 </Radio.Group>
               </div>
             )}
+
+            {/* Same value as Form Settings > Appearance > Colon; a form's own setting takes precedence. */}
+            <Space align="center" style={{ display: 'flex' }}>
+              <Switch
+                id="theme-colon"
+                size="small"
+                checked={theme.colon ?? true}
+                onChange={(checked) => changeThemeInternal({ ...theme, colon: checked })}
+                disabled={readOnly}
+              />
+              <label htmlFor="theme-colon">Colon</label>
+              <Tooltip title="Whether a colon is displayed after labels (only effective when layout is horizontal). Used by forms that don't set their own Colon in Form Settings.">
+                <QuestionCircleOutlined style={{ color: '#1890ff', cursor: 'help' }} />
+              </Tooltip>
+            </Space>
           </div>
 
-          {/* Preview Card */}
-          <div style={{ marginTop: 32 }}>
-            <Typography.Title level={5} style={{ marginBottom: 12 }}>Preview Card</Typography.Title>
-            <Card style={{ background: theme.layoutBackground ?? '#f0f2f5' }}>
-              <Row gutter={24}>
-                <Col xs={24} md={8}>
-                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Alerts</Typography.Text>
-                  <AlertsExample />
-                </Col>
-
-                <Col xs={24} md={8}>
-                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Forms</Typography.Text>
-                  <InputStatesPreview />
-                </Col>
-
-                <Col xs={24} md={8}>
-                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Buttons</Typography.Text>
-                  <Space orientation="vertical" style={{ width: '100%' }} size="small">
-                    <Button type="primary" block style={{ background: primaryColor, borderColor: primaryColor }}>Primary</Button>
-                    <Button danger block>Error</Button>
-                    <Button block style={{ color: successColor, borderColor: successColor }}>Secondary</Button>
-                    <Button block>Default</Button>
-                    <TextsPreview />
-                  </Space>
-                </Col>
-              </Row>
-            </Card>
-          </div>
+          {/* Group Defaults: one shared appearance form for every input component */}
+          <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
         </>
       )}
-      {themeLevel === 2 && (
+      {(section === 'inline' || section === 'standard' || section === 'layout') && (
         <>
-          {/* Component Defaults Section */}
-          <div style={{ marginTop: 0 }}>
-            <Typography.Title level={4} style={{ marginBottom: 4 }}>Component Settings</Typography.Title>
-            <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
-              Configure default appearance styles for individual components. Select a component from the tree to customize its appearance settings.
-            </Typography.Text>
-            <ComponentDefaultsPanel value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
-          </div>
+          {/* Group Defaults: one shared appearance form for every component in this style group */}
+          <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
         </>
       )}
     </div>

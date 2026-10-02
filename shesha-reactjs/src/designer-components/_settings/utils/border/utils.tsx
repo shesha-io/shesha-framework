@@ -161,21 +161,12 @@ export const getBorderInputs = (fbf: FormBuilderFactory, propertyName = 'border'
       inputs: [
         {
           id: nanoid(),
-          type: 'tooltip',
-          label: '',
-          hideLabel: true,
-          propertyName: '',
-          icon: 'BorderOutlined',
-          tooltip: `Styles will apply to all border`,
-          width: 24,
-        },
-        {
-          id: nanoid(),
           type: 'textField',
           label: "Width",
           hideLabel: true,
           placeholder: '0',
           propertyName: `${borderProp}.all.width`,
+          width: 85,
         },
         {
           id: nanoid(),
@@ -226,6 +217,7 @@ export const getBorderInputs = (fbf: FormBuilderFactory, propertyName = 'border'
                 hideLabel: true,
                 placeholder: '0',
                 propertyName: `${borderProp}.${side}.width`,
+                width: 85,
               },
               {
                 id: nanoid(),

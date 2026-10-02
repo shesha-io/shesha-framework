@@ -7,6 +7,7 @@ import { InputComponent } from '../inputComponent';
 import { evaluateString } from '@/providers/form/utils';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { isDefined } from '@/utils';
+import { addPx } from '@/utils/style';
 
 export type ISettingsComponent = IToolboxComponent & {
   component?: ComponentType<UnwrapCodeEvaluators<Omit<ISettingsInputProps, 'type' | 'propertyName' | 'label' | 'value'>>>;
@@ -18,7 +19,7 @@ export interface ISettingsComponentGroup {
 }
 
 export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
-  const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden = false, visible, size, validate, validationDependencies, inline = false, width, availableConstantsExpression, permissionSettings, ...rest } = props;
+  const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden = false, visible, size, validate, validationDependencies, inline = false, width, hasExplicitWidth, availableConstantsExpression, permissionSettings, ...rest } = props;
 
   const { formData } = useShaFormInstance();
   const settingsComponents = useSettingsComponents();
@@ -45,13 +46,19 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
   } as BaseInputProps;
 
   const style = useMemo(() => {
-    // Inline inputs with an explicit width must not flex-grow, otherwise a single
-    // width-constrained field (e.g. a radius/width box) stretches to fill the whole row.
-    const grow = inline && width != null ? 0 : 1;
-    return unwrappedType === 'button' || unwrappedType === 'radio' || unwrappedType === 'iconPicker' || unwrappedType === 'colorPicker' || unwrappedType === 'multiColorPicker'
-      ? { width: 'auto' }
-      : { flex: `${grow} 1 ${inline === true ? (width ?? 'auto') : '120px'}`, width };
-  }, [unwrappedType, inline, width]);
+    if (unwrappedType === 'button' || unwrappedType === 'radio' || unwrappedType === 'iconPicker' || unwrappedType === 'colorPicker' || unwrappedType === 'multiColorPicker')
+      return { width: 'auto' };
+
+    // An explicitly declared width wins: lay the input out at exactly that width and don't let
+    // it grow, otherwise a width-constrained field stretches to fill the row and the width stops
+    // meaning anything. Inline inputs without one keep their per-type default width (see getWidth),
+    // and everything else keeps the shared flex basis and shares the row as before.
+    if (hasExplicitWidth === true)
+      return { flex: `0 0 ${addPx(width)}`, width };
+    if (inline === true)
+      return { flex: width != null ? `0 1 ${addPx(width)}` : '1 1 auto', width };
+    return { flex: '1 1 120px', width };
+  }, [unwrappedType, inline, width, hasExplicitWidth]);
 
   return isHidden ? null
     : (

@@ -11,18 +11,32 @@ import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
 import { RefObject, ReactNode } from "react";
 import * as React from "react";
 import { isDefined, isNullOrWhiteSpace } from "../../utils/nullables";
-import { deleteConfigurationItemAsync, deleteFolderAsync, duplicateItemAsync, fetchFlatTreeAsync, fetchItemTypesAsync, getRevisionJsonAsync, MoveNodePayload, moveTreeNodeAsync, restoreItemRevisionAsync } from "../apis";
+import { extractErrorInfo } from "@/utils/errors";
+import {
+  createFolderAsync as createFolderApiAsync,
+  deleteConfigurationItemAsync,
+  deleteFolderAsync,
+  duplicateItemAsync,
+  fetchFlatTreeAsync,
+  fetchItemTypesAsync,
+  getRevisionJsonAsync,
+  MoveNodePayload,
+  moveTreeNodeAsync,
+  renameFolderAsync as renameFolderApiAsync,
+  restoreItemRevisionAsync,
+} from "../apis";
 import { confirmSaveDocumentAsync } from "../components/save-confirmation";
 import {
   CIDocument,
   CloseDocumentResponse,
   ConfigItemTreeNode,
   DocumentBase,
+  FolderDraft,
   FolderTreeNode,
   ForceRenderFunc, IDocumentInstance,
   isCIDocument,
   isConfigItemTreeNode,
-  isFolderTreeNode, isModuleTreeNode, isSpecialTreeNode, ItemTypeDefinition,
+  isSpecialTreeNode, ItemTypeDefinition,
   SaveDocumentResponse,
   SpecialTreeNode,
   StoredDocumentInfo,
@@ -73,12 +87,10 @@ type DynamicProperties<K extends string | number | symbol, T> = {
   [P in K]: T;
 };
 
-type FormIds = 'CREATE_FOLDER' | 'RENAME_FOLDER' | 'EXPOSE_EXISTING' | 'RENAME_REVISION';
+type FormIds = 'EXPOSE_EXISTING' | 'RENAME_REVISION';
 
 const FORMS: DynamicProperties<FormIds, FormFullName> = {
   // TODO: move to metadata
-  CREATE_FOLDER: { module: 'Shesha', name: 'cs-folder-create' },
-  RENAME_FOLDER: { module: 'Shesha', name: 'cs-folder-rename' },
   EXPOSE_EXISTING: { module: 'Shesha', name: 'cs-expose-existing' },
   RENAME_REVISION: { module: 'Shesha', name: 'cs-revision-rename' },
 };
@@ -89,13 +101,12 @@ const STORAGE_KEYS = {
   TREE_EXPANDED_KEYS: 'treeExpandedKeys',
   // TREE_SELECTION: 'treeSelection',
   QUICK_SEARCH: 'quickSearch',
+  ITEM_TYPE_FILTER: 'itemTypeFilter',
 };
 
-interface CreateItemResponse {
-  id: string;
-}
+const EMPTY_PINNED_NODE_IDS: ReadonlySet<string> = new Set<string>();
 
-interface CreateFolderResponse {
+interface CreateItemResponse {
   id: string;
 }
 
@@ -164,6 +175,12 @@ export class ConfigurationStudio implements IConfigurationStudio {
   private _treeExpandedKeys: React.Key[] = [];
 
   private _quickSearch?: string;
+
+  private _itemTypeFilter: string[] = [];
+
+  private _folderDraft?: FolderDraft | undefined;
+
+  private _pinnedNodeIds: ReadonlySet<string> = EMPTY_PINNED_NODE_IDS;
 
   private _itemTypes: ItemTypeDefinition[] = [];
 
@@ -265,8 +282,144 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   setQuickSearch = (value: string): void => {
     this._quickSearch = value;
+    this._pinnedNodeIds = EMPTY_PINNED_NODE_IDS;
     void this.saveQuickSearchAsync();
     this.notifySubscribers(['tree']);
+  };
+
+  get itemTypeFilter(): string[] {
+    return this._itemTypeFilter;
+  }
+
+  setItemTypeFilter = (value: string[]): void => {
+    this._itemTypeFilter = value;
+    this._pinnedNodeIds = EMPTY_PINNED_NODE_IDS;
+    void this.saveItemTypeFilterAsync();
+    this.notifySubscribers(['tree']);
+  };
+
+  get folderDraft(): FolderDraft | undefined {
+    return this._folderDraft;
+  }
+
+  /**
+   * Nodes revealed after being created/renamed. The tree keeps them visible even when the active
+   * search or type filter would hide them, until the search or filter changes.
+   */
+  get pinnedNodeIds(): ReadonlySet<string> {
+    return this._pinnedNodeIds;
+  }
+
+  /**
+   * Start naming a folder inline in the tree instead of opening the create/rename dialog (issue #4783).
+   * The draft is rendered as a synthetic node by `filter.ts`; committing it calls the folder API.
+   */
+  beginFolderDraft = (draft: FolderDraft): void => {
+    this._folderDraft = draft;
+    // The draft row lives inside its parent container, so make sure that container is open.
+    if (isDefined(draft.parentFolderId) && !this.isTreeNodeExpanded(draft.parentFolderId))
+      this.expandTreeNode(draft.parentFolderId);
+    else if (!isDefined(draft.parentFolderId) && !this.isTreeNodeExpanded(draft.moduleId))
+      this.expandTreeNode(draft.moduleId);
+
+    this.notifySubscribers(['tree']);
+  };
+
+  cancelFolderDraft = (): void => {
+    if (!isDefined(this._folderDraft))
+      return;
+    this._folderDraft = undefined;
+    this.notifySubscribers(['tree']);
+  };
+
+  /**
+   * Commit the inline folder editor. An empty/unchanged name just cancels, matching the
+   * behaviour of file explorers. The resulting folder is selected and highlighted in the tree.
+   *
+   * Resolves `false` when the save fails: the draft stays open with the typed name so the user can
+   * correct it and retry. Resolves `true` once the draft is settled (saved or cancelled).
+   */
+  commitFolderDraftAsync = async (name: string): Promise<boolean> => {
+    const draft = this._folderDraft;
+    if (!isDefined(draft))
+      return true;
+
+    const trimmedName = name.trim();
+    if (isNullOrWhiteSpace(trimmedName) || (draft.kind === 'rename' && trimmedName === draft.initialName)) {
+      this.cancelFolderDraft();
+      return true;
+    }
+
+    let savedFolderId: string | undefined;
+    try {
+      if (draft.kind === 'rename') {
+        await renameFolderApiAsync(this.httpClient, { folderId: draft.folderId, name: trimmedName });
+        savedFolderId = draft.folderId;
+      } else {
+        const response = await createFolderApiAsync(this.httpClient, {
+          moduleId: draft.moduleId,
+          folderId: draft.parentFolderId,
+          name: trimmedName,
+        });
+        savedFolderId = response.result?.id;
+      }
+    } catch (error) {
+      console.error('Failed to save folder', error);
+      // Surface the server's reason (e.g. the module isn't editable); the editor keeps the typed name.
+      const errorInfo = extractErrorInfo(error);
+      this.notificationApi.error({
+        message: `Failed to ${draft.kind} folder '${trimmedName}'`,
+        description: errorInfo?.details ?? errorInfo?.message ?? undefined,
+      });
+      return false;
+    }
+
+    // Another draft may have been started while the request was in flight - leave that one alone.
+    if (this._folderDraft === draft) {
+      this._folderDraft = undefined;
+      this.notifySubscribers(['tree']);
+    }
+
+    await this.loadTreeAsync();
+    const saved = isNullOrWhiteSpace(savedFolderId) ? undefined : this._treeNodesMap.get(savedFolderId);
+    if (isDefined(saved))
+      await this.revealAndSelectTreeNodeAsync(saved);
+    return true;
+  };
+
+  /**
+   * Expand every ancestor of a node, then select and highlight it. Used after creating any
+   * node so the new item is immediately visible and selected in the tree (issue #4783).
+   */
+  revealAndSelectTreeNodeAsync = async (node: TreeNode): Promise<void> => {
+    this.revealTreeNode(node);
+    await this.doSelectTreeNodeAsync(node);
+    this.notifySubscribers(['tree']);
+  };
+
+  /**
+   * Expand every ancestor of a node and keep it visible through the active search/type filter,
+   * without selecting it. Used before opening the node's tab, which selects it and navigates.
+   */
+  private revealTreeNode = (node: TreeNode): void => {
+    const keysToExpand: React.Key[] = [];
+    let parentId = node.parentId;
+    // Guard against a malformed parent chain looping forever.
+    const seen = new Set<string>();
+    while (isDefined(parentId) && !seen.has(parentId)) {
+      seen.add(parentId);
+      if (!this.isTreeNodeExpanded(parentId))
+        keysToExpand.push(parentId);
+      parentId = this._treeNodesMap.get(parentId)?.parentId;
+    }
+
+    if (keysToExpand.length > 0) {
+      this._treeExpandedKeys = [...this._treeExpandedKeys, ...keysToExpand];
+      void this.saveTreeExpandedNodesAsync();
+    }
+
+    // Keep the node visible even if the active search or type filter doesn't match it.
+    this._pinnedNodeIds = new Set([...this._pinnedNodeIds, node.id]);
   };
 
   get treeExpandedKeys(): React.Key[] {
@@ -314,6 +467,10 @@ export class ConfigurationStudio implements IConfigurationStudio {
     await this.storage.setAsync(STORAGE_KEYS.QUICK_SEARCH, this._quickSearch);
   };
 
+  private saveItemTypeFilterAsync = async (): Promise<void> => {
+    await this.storage.setAsync(STORAGE_KEYS.ITEM_TYPE_FILTER, this._itemTypeFilter);
+  };
+
   private loadTreeExpandedNodesAsync = async (): Promise<void> => {
     this._treeExpandedKeys = (await this.storage.getAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS)) ?? [];
   };
@@ -322,8 +479,13 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this._quickSearch = (await this.storage.getAsync<string>(STORAGE_KEYS.QUICK_SEARCH, false)) ?? "";
   };
 
+  private loadItemTypeFilterAsync = async (): Promise<void> => {
+    this._itemTypeFilter = (await this.storage.getAsync<string[]>(STORAGE_KEYS.ITEM_TYPE_FILTER)) ?? [];
+  };
+
   private loadTreeStateAsync = async (): Promise<void> => {
     await this.loadQuickSearchAsync();
+    await this.loadItemTypeFilterAsync();
     await this.loadTreeExpandedNodesAsync();
     // await this.loadTreeSelectionAsync();
   };
@@ -372,11 +534,11 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this.toggleTreeNode(nodeId, true);
   };
 
-  clickTreeNode = (node: TreeNode): void => {
-    if (isFolderTreeNode(node) || isModuleTreeNode(node)) {
-      const expanded = this.isTreeNodeExpanded(node.id);
-      this.toggleTreeNode(node.id, !expanded);
-    }
+  /**
+   * @deprecated No-op. Selecting a node no longer expands/collapses it - only the chevron does (see
+   * issue #4783), so the tree no longer calls this. Kept so existing callers keep compiling.
+   */
+  clickTreeNode = (_node: TreeNode): void => {
   };
 
   navigateToRoot = (): void => {
@@ -820,29 +982,18 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   //#region crud operations
 
-  createFolderAsync = async ({ moduleId, folderId }: CreateFolderArgs): Promise<void> => {
-    const response = await this.modalApi.showModalFormAsync<CreateFolderResponse>({
-      title: 'Create Folder',
-      formId: FORMS.CREATE_FOLDER,
-      formArguments: {
-        moduleId: moduleId,
-        folderId: folderId,
-      },
+  /**
+   * Folders are now named inline in the tree rather than in a dialog (issue #4783), so this
+   * just opens the inline editor - the folder is created when the draft is committed.
+   */
+  createFolderAsync = ({ moduleId, folderId }: CreateFolderArgs): Promise<void> => {
+    this.beginFolderDraft({
+      kind: 'create',
+      moduleId: moduleId,
+      parentFolderId: folderId,
+      initialName: '',
     });
-    await this.loadTreeAsync();
-    if (!isNullOrWhiteSpace(response?.id)) {
-      const treeNode = this._treeNodesMap.get(response.id);
-
-      if (treeNode) {
-        if (isDefined(treeNode.parentId) && !(this.isTreeNodeExpanded(treeNode.parentId))) {
-          this.expandTreeNode(treeNode.parentId);
-        }
-
-        // select new tab
-        await this.doSelectTreeNodeAsync(treeNode);
-        this.notifySubscribers(['tree']);
-      }
-    }
+    return Promise.resolve();
   };
 
   deleteFolderAsync = async (node: FolderTreeNode): Promise<void> => {
@@ -871,21 +1022,16 @@ export class ConfigurationStudio implements IConfigurationStudio {
     }
   };
 
-  renameFolderAsync = async (node: FolderTreeNode): Promise<void> => {
-    try {
-      await this.modalApi.showModalFormAsync({
-        title: 'Rename Folder',
-        formId: FORMS.RENAME_FOLDER,
-        formArguments: {
-          folderId: node.id,
-          name: node.name,
-        },
-      });
-
-      await this.loadTreeAsync();
-    } catch (error) {
-      console.error(`Failed to rename folder '${node.name}' (id: '${node.id}')`, error);
-    }
+  /** Renaming reuses the same inline editor as creation (issue #4783). */
+  renameFolderAsync = (node: FolderTreeNode): Promise<void> => {
+    this.beginFolderDraft({
+      kind: 'rename',
+      moduleId: node.moduleId,
+      parentFolderId: node.parentId,
+      folderId: node.id,
+      initialName: node.name,
+    });
+    return Promise.resolve();
   };
 
   reloadDocumentAsync = async (docId: string): Promise<void> => {
@@ -922,9 +1068,9 @@ export class ConfigurationStudio implements IConfigurationStudio {
       const treeNode = this._treeNodesMap.get(response.id);
 
       if (treeNode && isConfigItemTreeNode(treeNode)) {
-        if (isDefined(treeNode.parentId) && !(this.isTreeNodeExpanded(treeNode.parentId))) {
-          this.expandTreeNode(treeNode.parentId);
-        }
+        // Reveal the new node in the tree (issue #4783). Selecting the tab below selects the node and
+        // navigates to it - preselecting here would make selectTabAsync skip that navigation.
+        this.revealTreeNode(treeNode);
 
         // load item, add new tab and select
         const newTab = await this.createNewCiTabAsync(treeNode);
@@ -991,9 +1137,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
         const treeNode = this._treeNodesMap.get(duplicateId);
 
         if (treeNode && isConfigItemTreeNode(treeNode)) {
-          if (isDefined(treeNode.parentId) && !(this.isTreeNodeExpanded(treeNode.parentId))) {
-            this.expandTreeNode(treeNode.parentId);
-          }
+          // Reveal the duplicate in the tree (issue #4783); selecting its tab below selects and navigates.
+          this.revealTreeNode(treeNode);
 
           // load item, add new tab and select
           const newTab = await this.createNewCiTabAsync(treeNode);

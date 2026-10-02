@@ -17,6 +17,7 @@ import classNames from 'classnames';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 
 const LinkComponent: LinkComponentDefinition = {
+  styleGroup: 'common',
   allowInherit: true,
   type: 'link',
   isInput: false,

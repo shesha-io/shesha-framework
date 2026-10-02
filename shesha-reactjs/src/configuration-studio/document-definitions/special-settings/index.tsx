@@ -1,12 +1,12 @@
 import { DocumentDefinition, DocumentInstanceFactoryArgs, IDocumentInstance } from "@/configuration-studio/models";
 import { DocumentInstance } from "@/configuration-studio/cs/documentInstance";
 import { SettingsPageDocument } from "./editor";
-import { SettingOutlined } from "@ant-design/icons";
+import { CsSettingsIcon } from "@/icons/configurationStudioIcons";
 
 
 export const SettingsDocumentDefinition: DocumentDefinition = {
   documentType: "settings",
-  icon: <SettingOutlined />,
+  icon: <CsSettingsIcon />,
   Editor: () => <SettingsPageDocument />,
   documentInstanceFactory: function (args: DocumentInstanceFactoryArgs): IDocumentInstance {
     const doc = new DocumentInstance({

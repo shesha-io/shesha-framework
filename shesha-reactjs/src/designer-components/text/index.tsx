@@ -15,6 +15,7 @@ import { getComponentEvents } from '../_common/events';
 import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 
 const TextComponent: TextComponentDefinition = {
+  styleGroup: 'common',
   allowInherit: true,
   type: 'text',
   name: 'Text',

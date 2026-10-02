@@ -13,6 +13,7 @@ import { migrateHiddenToVisible, migrateStylingBoxToJson } from '../_common-migr
 import { isDefined } from '@/utils';
 
 const ChevronComponent: IToolboxComponent<IChevronProps> = {
+  styleGroup: 'common',
   allowInherit: true,
   type: 'chevron',
   isInput: true,

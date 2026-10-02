@@ -3,7 +3,7 @@ import { nanoid } from '@/utils/uuid';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
 import { FILE_EVENTS } from '../_common/events';
 
-export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter, forceVisible }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
@@ -101,19 +101,23 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     // Font applies in every display type, but Align does not: in thumbnail mode the
                     // content is forced to centre, so the input would collect a value that never
                     // renders. Two variants of the panel, one with Align and one without, keep it
-                    // visible only where it does something (matching releases/0.45).
-                    .stdContainer((fb) => fb.stdFontPanel(undefined, 'font'), FILE_NAME_WITH_ALIGN_JS)
-                    .stdContainer((fb) => fb.stdFontPanel(undefined, 'font', ['font.align']), NO_ALIGN_JS)
+                    // visible only where it does something (matching releases/0.45). In the theme
+                    // editor (forceVisible) only the Align variant renders - it is the superset of
+                    // the two, so every font style the component can expose stays editable, and
+                    // showing both at once would create two panels bound to the same properties.
+                    .stdContainer((fb) => fb.stdFontPanel(undefined, 'font'), forceVisible === true ? undefined : FILE_NAME_WITH_ALIGN_JS)
+                    .stdContainer((fb) => fb.stdFontPanel(undefined, 'font', ['font.align']), forceVisible === true ? 'return false;' : NO_ALIGN_JS)
                     // The box styles describe the thumbnail tile, which only exists in thumbnail
                     // mode. In file-name mode the component is a plain file name and an upload
                     // button with no box to style, so these panels are hidden rather than left to
-                    // collect values that never render.
-                    .stdContainer((fb) => fb.stdDimensionsPanel('dimensions'), CUSTOM_THUMBNAIL_ONLY_JS)
+                    // collect values that never render. forceVisible (theme editor) always shows
+                    // them, so every style the component can expose is editable.
+                    .stdContainer((fb) => fb.stdDimensionsPanel('dimensions'), forceVisible === true ? undefined : CUSTOM_THUMBNAIL_ONLY_JS)
                     .stdContainer((fb) => fb
                       .stdBorderPanel(removeStyleRouter !== true, 'border')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'background')
                       .stdShadowPanel('shadow'),
-                    THUMBNAIL_ONLY_JS)
+                    forceVisible === true ? undefined : THUMBNAIL_ONLY_JS)
                     // Spacing and the Custom style apply to the component as a whole, so they stay.
                     .stdMarginPaddingPanel('stylingBoxJson')
                     .stdCustomStylePanel(undefined, 'style')

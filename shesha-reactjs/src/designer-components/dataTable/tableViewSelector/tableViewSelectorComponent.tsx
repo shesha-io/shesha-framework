@@ -17,6 +17,7 @@ import { migratePermissionsToVisiblePermissions } from '@/designer-components/_c
 const outsideContextValidationError = validationError('Table View Selector');
 
 const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
+  styleGroup: 'common',
   allowInherit: true,
   type: 'tableViewSelector',
   isInput: false,

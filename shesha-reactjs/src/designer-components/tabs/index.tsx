@@ -34,6 +34,7 @@ import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 type TabItem = Required<TabsProps>['items'][number];
 
 const TabsComponent: TabsComponentDefinition = {
+  styleGroup: 'common-containers',
   allowInherit: true,
   type: 'tabs',
   isInput: false,

@@ -5,6 +5,7 @@ import { GroupOutlined } from '@ant-design/icons';
 import { ButtonsComponentDefinition } from './interfaces';
 
 const ButtonsComponent: ButtonsComponentDefinition = {
+  styleGroup: 'common',
   type: 'buttons',
   isInput: true,
   name: 'Buttons',
