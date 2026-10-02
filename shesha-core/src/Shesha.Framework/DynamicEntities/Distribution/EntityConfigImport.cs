@@ -189,7 +189,7 @@ namespace Shesha.DynamicEntities.Distribution
             HashSet<Guid> importedIds
         )
         {
-            foreach (var src in properties)
+            foreach (var src in ExcludeLeakedItemsTypes(properties))
             {
                 var dbItem = await MapPropertyAsync(item, src, parentProperty);
                 importedIds.Add(dbItem.Id);
@@ -199,6 +199,17 @@ namespace Shesha.DynamicEntities.Distribution
                 if (src.Properties != null && src.Properties.Any())
                     await MapPropertiesAsync(item, src.Properties, dbItem, importedIds);
             }
+        }
+
+        /// <summary>
+        /// Packages exported before the exporter skipped child rows list an array's items type a second time,
+        /// as a sibling of the array with the same name. Importing it would overwrite the array property and
+        /// then duplicate its items type row, so it is skipped - the items type is imported from the array itself.
+        /// </summary>
+        private static IEnumerable<DistributedEntityConfigProperty> ExcludeLeakedItemsTypes(List<DistributedEntityConfigProperty> properties)
+        {
+            var arrayNames = properties.Where(p => p.ItemsType != null).Select(p => p.Name).ToHashSet();
+            return properties.Where(p => p.ItemsType != null || !arrayNames.Contains(p.Name));
         }
 
         private async Task<EntityProperty> MapPropertyAsync(
