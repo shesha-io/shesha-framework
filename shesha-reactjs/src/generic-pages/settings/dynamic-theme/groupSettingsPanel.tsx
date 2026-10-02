@@ -50,7 +50,7 @@ export const GroupSettingsPanel: FC<IGroupSettingsPanelProps> = ({ group, value:
     formSettings: { ...DEFAULT_FORM_SETTINGS, isSettingsForm: true },
   }), [fbf, group]);
 
-  const initialModel = useMemo(() => (theme?.componentGroups?.[group] as object | undefined) ?? {}, [theme?.componentGroups, group]);
+  const initialModel = useMemo(() => theme?.componentGroups?.[group] ?? {}, [theme?.componentGroups, group]);
 
   const handleChange = (changedValues: Record<string, unknown>): void => {
     if (!onChange) return;

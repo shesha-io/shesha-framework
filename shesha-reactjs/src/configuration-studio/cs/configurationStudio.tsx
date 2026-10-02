@@ -335,52 +335,56 @@ export class ConfigurationStudio implements IConfigurationStudio {
   /**
    * Commit the inline folder editor. An empty/unchanged name just cancels, matching the
    * behaviour of file explorers. The resulting folder is selected and highlighted in the tree.
+   *
+   * Resolves `false` when the save fails: the draft stays open with the typed name so the user can
+   * correct it and retry. Resolves `true` once the draft is settled (saved or cancelled).
    */
-  commitFolderDraftAsync = async (name: string): Promise<void> => {
+  commitFolderDraftAsync = async (name: string): Promise<boolean> => {
     const draft = this._folderDraft;
     if (!isDefined(draft))
-      return;
+      return true;
 
     const trimmedName = name.trim();
-    if (isNullOrWhiteSpace(trimmedName) || trimmedName === draft.initialName) {
+    if (isNullOrWhiteSpace(trimmedName) || (draft.kind === 'rename' && trimmedName === draft.initialName)) {
       this.cancelFolderDraft();
-      return;
+      return true;
     }
 
-    this._folderDraft = undefined;
-    this.notifySubscribers(['tree']);
-
-    const isRename = isDefined(draft.folderId);
+    let savedFolderId: string | undefined;
     try {
-      if (isDefined(draft.folderId)) {
+      if (draft.kind === 'rename') {
         await renameFolderApiAsync(this.httpClient, { folderId: draft.folderId, name: trimmedName });
-        await this.loadTreeAsync();
-        const renamed = this._treeNodesMap.get(draft.folderId);
-        if (isDefined(renamed))
-          await this.revealAndSelectTreeNodeAsync(renamed);
+        savedFolderId = draft.folderId;
       } else {
         const response = await createFolderApiAsync(this.httpClient, {
           moduleId: draft.moduleId,
           folderId: draft.parentFolderId,
           name: trimmedName,
         });
-        await this.loadTreeAsync();
-
-        const newId = response.result?.id;
-        const created = isNullOrWhiteSpace(newId) ? undefined : this._treeNodesMap.get(newId);
-        if (isDefined(created))
-          await this.revealAndSelectTreeNodeAsync(created);
+        savedFolderId = response.result?.id;
       }
     } catch (error) {
       console.error('Failed to save folder', error);
-      // Surface the server's reason (e.g. the module isn't editable) - the inline editor is already gone.
+      // Surface the server's reason (e.g. the module isn't editable); the editor keeps the typed name.
       const errorInfo = extractErrorInfo(error);
       this.notificationApi.error({
-        message: `Failed to ${isRename ? 'rename' : 'create'} folder '${trimmedName}'`,
+        message: `Failed to ${draft.kind} folder '${trimmedName}'`,
         description: errorInfo?.details ?? errorInfo?.message ?? undefined,
       });
-      await this.loadTreeAsync();
+      return false;
     }
+
+    // Another draft may have been started while the request was in flight - leave that one alone.
+    if (this._folderDraft === draft) {
+      this._folderDraft = undefined;
+      this.notifySubscribers(['tree']);
+    }
+
+    await this.loadTreeAsync();
+    const saved = isNullOrWhiteSpace(savedFolderId) ? undefined : this._treeNodesMap.get(savedFolderId);
+    if (isDefined(saved))
+      await this.revealAndSelectTreeNodeAsync(saved);
+    return true;
   };
 
   /**
@@ -388,6 +392,16 @@ export class ConfigurationStudio implements IConfigurationStudio {
    * node so the new item is immediately visible and selected in the tree (issue #4783).
    */
   revealAndSelectTreeNodeAsync = async (node: TreeNode): Promise<void> => {
+    this.revealTreeNode(node);
+    await this.doSelectTreeNodeAsync(node);
+    this.notifySubscribers(['tree']);
+  };
+
+  /**
+   * Expand every ancestor of a node and keep it visible through the active search/type filter,
+   * without selecting it. Used before opening the node's tab, which selects it and navigates.
+   */
+  private revealTreeNode = (node: TreeNode): void => {
     const keysToExpand: React.Key[] = [];
     let parentId = node.parentId;
     // Guard against a malformed parent chain looping forever.
@@ -406,9 +420,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
     // Keep the node visible even if the active search or type filter doesn't match it.
     this._pinnedNodeIds = new Set([...this._pinnedNodeIds, node.id]);
-
-    await this.doSelectTreeNodeAsync(node);
-    this.notifySubscribers(['tree']);
   };
 
   get treeExpandedKeys(): React.Key[] {
@@ -977,6 +988,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
    */
   createFolderAsync = ({ moduleId, folderId }: CreateFolderArgs): Promise<void> => {
     this.beginFolderDraft({
+      kind: 'create',
       moduleId: moduleId,
       parentFolderId: folderId,
       initialName: '',
@@ -1013,6 +1025,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   /** Renaming reuses the same inline editor as creation (issue #4783). */
   renameFolderAsync = (node: FolderTreeNode): Promise<void> => {
     this.beginFolderDraft({
+      kind: 'rename',
       moduleId: node.moduleId,
       parentFolderId: node.parentId,
       folderId: node.id,
@@ -1055,8 +1068,9 @@ export class ConfigurationStudio implements IConfigurationStudio {
       const treeNode = this._treeNodesMap.get(response.id);
 
       if (treeNode && isConfigItemTreeNode(treeNode)) {
-        // Reveal, select and highlight the new node in the tree (issue #4783).
-        await this.revealAndSelectTreeNodeAsync(treeNode);
+        // Reveal the new node in the tree (issue #4783). Selecting the tab below selects the node and
+        // navigates to it - preselecting here would make selectTabAsync skip that navigation.
+        this.revealTreeNode(treeNode);
 
         // load item, add new tab and select
         const newTab = await this.createNewCiTabAsync(treeNode);
@@ -1123,8 +1137,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
         const treeNode = this._treeNodesMap.get(duplicateId);
 
         if (treeNode && isConfigItemTreeNode(treeNode)) {
-          // Reveal, select and highlight the duplicate in the tree (issue #4783).
-          await this.revealAndSelectTreeNodeAsync(treeNode);
+          // Reveal the duplicate in the tree (issue #4783); selecting its tab below selects and navigates.
+          this.revealTreeNode(treeNode);
 
           // load item, add new tab and select
           const newTab = await this.createNewCiTabAsync(treeNode);

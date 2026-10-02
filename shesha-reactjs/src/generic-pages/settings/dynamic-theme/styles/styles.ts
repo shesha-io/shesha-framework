@@ -24,8 +24,8 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
    * element laid out as the grid, so the grid rule and the breakpoints below all share
    * this selector.
    *
-   * Descendant (not child) combinators, because a container rendered with
-   * `noDefaultStyling` omits the `.sha-components-container` wrapper.
+   * Both levels always render the `.sha-components-container` wrapper: the form root and
+   * the property router never set `noDefaultStyling`, which is the only thing that omits it.
    */
   const panelGrid =
     '> .sha-components-container .sha-components-container-inner' +

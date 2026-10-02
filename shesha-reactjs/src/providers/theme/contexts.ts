@@ -3,6 +3,7 @@ import { Theme } from 'antd/lib/config-provider/context';
 import { FormItemLayout } from 'antd/lib/form/Form';
 import { FormLabelAlign } from 'antd/lib/form/interface';
 import { ThemeComponentGroup } from '@/interfaces/formDesigner';
+import type { IStyleValue } from '@/providers/form/models';
 
 interface ITextTheme {
   default?: string;
@@ -58,7 +59,7 @@ export interface IConfigurableTheme {
    * component whose `styleGroup` maps to one of these tiers inherits from it, between the
    * component's hardcoded defaults and its own per-type override in `components`.
    */
-  componentGroups?: Partial<Record<ThemeComponentGroup, unknown>>;
+  componentGroups?: Partial<Record<ThemeComponentGroup, IStyleValue>>;
 }
 
 export interface IThemeStateContext {
@@ -80,7 +81,7 @@ export interface IThemeActionsContext {
   resetToApplicationTheme: () => void;
   getComponentStyle: (componentName: string) => unknown;
   /** Group-tier theme styles for a style group (Input/Inline/Standard/Layout Components), or {} when unset. */
-  getComponentGroupStyle: (group: ThemeComponentGroup | undefined) => unknown;
+  getComponentGroupStyle: (group: ThemeComponentGroup | undefined) => IStyleValue;
 
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
 }

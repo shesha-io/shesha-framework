@@ -106,18 +106,17 @@ export const isNodeWithChildren = (node?: DataNode): node is ModuleTreeNode | Fo
   return isModuleTreeNode(node) || isFolderTreeNode(node);
 };
 
-/**
- * Transient state describing the folder the user is currently naming inline in the tree.
- * `folderId` is set when renaming an existing folder and undefined when creating a new one.
- */
-export type FolderDraft = {
+type FolderDraftBase = {
   moduleId: string;
-  /** Parent folder the new folder goes into; undefined means the module root. */
+  /** Folder that contains the draft; undefined means the module root. */
   parentFolderId?: string | undefined;
-  /** Set only when renaming an existing folder. */
-  folderId?: string | undefined;
+  /** Name the inline editor opens with. */
   initialName: string;
 };
+
+/** Transient state describing the folder the user is currently naming inline in the tree. */
+export type FolderDraft = (FolderDraftBase & { kind: 'create' }) |
+  (FolderDraftBase & { kind: 'rename'; folderId: string });
 
 export type FrontEndAppDto = {
   id: string;

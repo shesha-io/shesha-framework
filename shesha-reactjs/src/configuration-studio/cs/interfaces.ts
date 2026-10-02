@@ -111,7 +111,8 @@ export interface IConfigurationStudio {
   readonly pinnedNodeIds: ReadonlySet<string>;
   beginFolderDraft: (draft: FolderDraft) => void;
   cancelFolderDraft: () => void;
-  commitFolderDraftAsync: (name: string) => Promise<void>;
+  /** Resolves `false` when saving fails and the draft stays open for another attempt. */
+  commitFolderDraftAsync: (name: string) => Promise<boolean>;
   //#endregion
 
   docs: IDocumentInstance[];

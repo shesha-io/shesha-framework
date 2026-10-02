@@ -80,20 +80,13 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
     onChange(theme);
   };
 
-  const mergeThemeSection = (
-    section: keyof IConfigurableTheme,
-    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>,
-  ): IConfigurableTheme => {
-    return { ...(theme[section] as unknown as Record<string, unknown>), ...(update as Record<string, unknown>) };
-  };
-
-  const updateTheme = (
-    section: keyof IConfigurableTheme,
-    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>,
+  const updateTheme = <TSection extends 'application' | 'text'>(
+    section: TSection,
+    update: NonNullable<IConfigurableTheme[TSection]>,
   ): void => {
     changeThemeInternal({
       ...theme,
-      [section]: mergeThemeSection(section, update),
+      [section]: { ...theme[section], ...update },
     });
   };
 

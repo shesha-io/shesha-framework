@@ -112,7 +112,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
   const defaultStyles = useMemo(() => {
     const hardcodedDefaults = typeof componentDef?.getDefaultStyles === 'function' ? componentDef.getDefaultStyles() : {};
-    const groupStyle = theme?.componentGroups?.[getThemeGroupForComponent(componentDef)] as object | undefined ?? {};
+    const groupStyle = theme?.componentGroups?.[getThemeGroupForComponent(componentDef)] ?? {};
     return deepMergeValues(deepCopyViaJson(hardcodedDefaults) as object, groupStyle, deepMergeSkipUndefinedFunc);
   }, [componentDef, theme?.componentGroups]);
 

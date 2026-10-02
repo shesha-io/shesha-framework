@@ -30,7 +30,11 @@ export const FolderNameEditor: FC<IFolderNameEditorProps> = ({ initialName }) =>
     if (isSettledRef.current)
       return;
     isSettledRef.current = true;
-    void cs.commitFolderDraftAsync(value);
+    void cs.commitFolderDraftAsync(value).then((settled) => {
+      // A failed save leaves the draft open with the typed name, so allow another attempt.
+      if (!settled)
+        isSettledRef.current = false;
+    });
   };
 
   const cancel = (): void => {
@@ -43,6 +47,9 @@ export const FolderNameEditor: FC<IFolderNameEditorProps> = ({ initialName }) =>
   const onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
     // The tree owns Enter/Escape/arrows, so keep them from reaching it while editing.
     e.stopPropagation();
+    // An IME uses Enter to confirm a candidate and Escape to abandon it; neither ends the edit.
+    if (e.nativeEvent.isComposing)
+      return;
     if (e.key === 'Enter') {
       e.preventDefault();
       commit();

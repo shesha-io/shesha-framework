@@ -56,13 +56,13 @@ const insertFolderDraft = (nodes: TreeNode[], draft: FolderDraft): TreeNode[] =>
 
   const loop = (data: TreeNode[]): TreeNode[] => data.map((node) => {
     // Rename: swap the target folder for the editor row.
-    if (isDefined(draft.folderId) && node.id === draft.folderId)
+    if (draft.kind === 'rename' && node.id === draft.folderId)
       return draftNode;
 
     if (!isNodeWithChildren(node))
       return node;
 
-    if (node.id === containerId && !isDefined(draft.folderId)) {
+    if (node.id === containerId && draft.kind === 'create') {
       // Drop the "Empty" placeholder - the draft row now occupies the folder.
       const realChildren = node.children.filter((c: TreeNode) => c.nodeType !== TreeNodeType.Placeholder);
       return { ...node, children: [...loop(realChildren), draftNode] };
@@ -84,7 +84,7 @@ const getKeptNodeIds = (pinnedNodeIds: ReadonlySet<string>, folderDraft: FolderD
     return pinnedNodeIds;
   const ids = new Set(pinnedNodeIds);
   ids.add(folderDraft.parentFolderId ?? folderDraft.moduleId);
-  if (isDefined(folderDraft.folderId))
+  if (folderDraft.kind === 'rename')
     ids.add(folderDraft.folderId);
   return ids;
 };
