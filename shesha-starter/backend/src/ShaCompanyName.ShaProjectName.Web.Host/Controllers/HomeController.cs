@@ -6,7 +6,6 @@ using Shesha.Controllers;
 
 namespace ShaCompanyName.ShaProjectName.Web.Host.Controllers
 {
-    [AllowAnonymous]
     public class HomeController : SheshaControllerBase
     {
         private readonly INotificationPublisher _notificationPublisher;
@@ -17,7 +16,7 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Controllers
             _notificationPublisher = notificationPublisher;
             _iocResolver = iocResolver;
         }
-
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return Redirect("/swagger");
