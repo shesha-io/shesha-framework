@@ -1,7 +1,4 @@
-/* eslint-disable no-console */
-import { ConfigurableItemIdentifier, FormMarkup, IToolboxComponents } from "@/interfaces";
-import { convertFormMarkupToFlatStructure, getComponentsFromMarkup, getFromSettingsFromMarkup } from "@/providers/form/utils";
-import { isDefined } from "../nullables";
+
 
 export type NestedPropertyPaths<T, Target> = T extends Target
   ? '' // If the type itself is the target, empty path
@@ -28,33 +25,3 @@ export type NestedPropertyPaths<T, Target> = T extends Target
 export type PathsToArray<T, Target> = NestedPropertyPaths<T, Target> extends string
   ? Array<NestedPropertyPaths<T, Target>>
   : never[];
-
-
-type ConfigurationItemDependency = ConfigurableItemIdentifier & {
-  type: string;
-};
-
-export const collectDependencies = (formMarkup: FormMarkup, designerComponents: IToolboxComponents): ConfigurationItemDependency[] => {
-  const components = getComponentsFromMarkup(formMarkup);
-  const formSettings = getFromSettingsFromMarkup(formMarkup);
-  const flatMarkup = convertFormMarkupToFlatStructure(components, formSettings, designerComponents);
-  const { allComponents } = flatMarkup;
-
-  for (const id in allComponents) {
-    if (allComponents.hasOwnProperty(id)) {
-      const component = flatMarkup.allComponents[id];
-      console.log('LOG: collectDependencies: ', component);
-
-      for (const propName in component) {
-        if (component.hasOwnProperty(propName)) {
-          const propValue = component[propName as keyof typeof component];
-          if (isDefined(propValue) && typeof propValue === 'object') {
-            console.log('LOG: property value is an object: ', propValue);
-          }
-        }
-      }
-    }
-  }
-
-  return [];
-};

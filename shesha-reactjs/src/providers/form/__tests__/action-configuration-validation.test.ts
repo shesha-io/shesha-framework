@@ -6,7 +6,7 @@ import { isDefined } from '@/utils';
 import { toolbarComponentsMapToComponents } from '../hooks';
 import { IActionDescriptorBase, IConfigurableActionConfiguration, IConfigurableActionDescriptor } from '@/interfaces/configurableAction';
 import { IGetConfigurableActionPayload } from '@/providers/configurableActionsDispatcher/contexts';
-import { FormValidator } from '@/providers/formDesigner/formValidator';
+import { FormValidator, NULL_DEPENDENCIES_CONTEXT } from '@/providers/formDesigner/formValidator';
 import { validateActionConfiguration } from '@/providers/configurableActionsDispatcher/utils';
 import { NavigateAction } from '@/providers/shaRouting/actions/navigate';
 import { ConfigurableActionGetter, SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
@@ -14,6 +14,7 @@ import { ExecuteScript } from '@/providers/sheshaApplication/configurable-action
 import { ShowDialog } from '@/providers/dynamicModal/configurable-actions/show-dialog';
 import { ShowConfirmationDialog } from '@/providers/dynamicModal/configurable-actions/show-confirmation-dialog';
 import { CloseDialog } from '@/providers/dynamicModal/configurable-actions/close-dialog';
+import { createConfigurationLoaderMock, createHttpClientMock } from './mocks';
 
 const standardActions: Record<string, IActionDescriptorBase[]> = {
   [SheshaActionOwners.Common]: [NavigateAction, ExecuteScript, ShowDialog, CloseDialog, ShowConfirmationDialog],
@@ -38,6 +39,8 @@ describe('validateActionConfiguration()', () => {
     formBuilderFactory: makeFormBuliderFactory(componentDefinitions),
     getConfigurableActionOrNull: getStandardActions,
     appContext: appContext,
+    httpClient: createHttpClientMock(),
+    configurationLoader: createConfigurationLoaderMock(),
   });
 
   it('should validate nested actions', async () => {
@@ -66,6 +69,7 @@ describe('validateActionConfiguration()', () => {
         componentId: '',
         path: [],
         contextConfigurableActionGetter: () => null,
+        dependencies: NULL_DEPENDENCIES_CONTEXT,
       });
       expect.fail('Expected validation error but none was thrown');
     } catch (error) {

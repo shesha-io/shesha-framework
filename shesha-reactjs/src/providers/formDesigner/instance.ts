@@ -49,11 +49,14 @@ import { IConfigurableTheme } from "../theme";
 import { DeviceTypes } from "../canvas/contexts";
 import { IGetConfigurableActionPayload } from "../configurableActionsDispatcher/contexts";
 import { IConfigurableActionDescriptor } from "@/interfaces/configurableAction";
-import { ComponentValidationContext, FormValidator } from "./formValidator";
+import { ComponentValidationContext, FormValidator, NULL_DEPENDENCIES_CONTEXT, ValidationEnvironment } from "./formValidator";
 import { isNonEmptyArray } from "@/utils/array";
 import { AmbientScopeProvider } from "@/utils/ambientScopeProvider";
+import { IConfigurationLoader } from "../configurationItemsLoader/configurationLoader";
+import { HttpClientApi } from "../sheshaApplication/publicApi";
 
 export type FormDesignerArgs = {
+  httpClient: HttpClientApi;
   readOnly: boolean;
   toolboxComponentGroups: IToolboxComponentGroup[];
   settingsComponents: ISettingsComponent[];
@@ -66,6 +69,7 @@ export type FormDesignerArgs = {
   activeDevice: DeviceTypes | undefined;
   getConfigurableActionOrNull: <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IGetConfigurableActionPayload) => IConfigurableActionDescriptor<TArguments> | null;
   appContext: IApplicationContext;
+  configurationLoader: IConfigurationLoader;
 };
 
 const isComponentsArray = (value: unknown): value is IConfigurableFormComponent[] => {
@@ -156,11 +160,13 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     this.activeDevice = args.activeDevice;
     this.getConfigurableActionOrNull = args.getConfigurableActionOrNull;
     this.formValidator = new FormValidator({
+      httpClient: args.httpClient,
       toolboxComponents: this.toolboxComponents,
       settingsComponentGetter: this.getSettingsComponentOrUndefined,
       formBuilderFactory: this.formBuilderFactory,
       getConfigurableActionOrNull: this.getConfigurableActionOrNull,
       appContext: args.appContext,
+      configurationLoader: args.configurationLoader,
     });
     this.appContext = args.appContext;
 
@@ -582,16 +588,24 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     return this.toolboxComponents[type];
   };
 
-  makeComponentValidationContext = (): ComponentValidationContext => {
-    const { formSettings } = this.state;
+  getValidationEnvironment = (): ValidationEnvironment => {
     return {
       deviceType: this.activeDevice,
       theme: this.theme,
+      appContext: this.appContext,
+    };
+  };
+
+  makeComponentValidationContext = (): ComponentValidationContext => {
+    const { formSettings } = this.state;
+    const env = this.getValidationEnvironment();
+    return {
+      ...env,
       isSettingsForm: formSettings.isSettingsForm === true,
       formFlatMarkup: this.state.formFlatMarkup,
-      appContext: this.appContext,
       path: [],
       scopeProvider: new AmbientScopeProvider<object>(),
+      dependencies: NULL_DEPENDENCIES_CONTEXT,
     };
   };
 
@@ -636,6 +650,16 @@ export class FormDesignerInstance implements IFormDesignerInstance {
   validateFormAsync = async (): Promise<void> => {
     await this.validateAllComponentsAsync();
     await this.validateFormSettingsAsync();
+  };
+
+  validateFormAndSaveResultsAsync = async (): Promise<void> => {
+    const id = this.formPersister.formProps?.id;
+    if (isNullOrWhiteSpace(id))
+      throw new Error('Form has no id');
+
+    const { formFlatMarkup, formSettings } = this.state;
+    const env = this.getValidationEnvironment();
+    await this.formValidator.validateFormAsync(id, formFlatMarkup, formSettings, env);
   };
 
   getValidationResults = (): FieldValidationError[] => this.validationCollector.validationResults;
