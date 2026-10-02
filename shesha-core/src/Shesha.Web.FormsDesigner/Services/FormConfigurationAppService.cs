@@ -252,6 +252,7 @@ namespace Shesha.Web.FormsDesigner.Services
                 }
                 else { 
                     dbDep.IsSatisfied = inputDep.IsSatisfied;
+                    dbDep.HasIssues = inputDep.HasIssues;
                     await _dependencyRepository.UpdateAsync(dbDep);
                 }
             }

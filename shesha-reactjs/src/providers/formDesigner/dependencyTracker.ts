@@ -19,7 +19,7 @@ export class DependenciesTracker implements IDependenciesTracker {
     const existing = this.#dependencies.get(key);
     if (isDefined(existing)) {
       existing.isSatisfied = existing.isSatisfied && dependency.isSatisfied;
-      existing.hasIssues = (existing.hasIssues ?? false) || dependency.isSatisfied;
+      existing.hasIssues = (existing.hasIssues ?? false) || (dependency.hasIssues ?? false);
     } else
       this.#dependencies.set(key, dependency);
   };
