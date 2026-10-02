@@ -349,6 +349,7 @@ export class DatasetInstance implements IDatasetInstance {
           accessor: state.strictSortBy,
           header: '',
           isVisible: false,
+          show: false,
           isFilterable: false,
           isSortable: false,
         });
@@ -395,7 +396,7 @@ export class DatasetInstance implements IDatasetInstance {
   };
 
   toggleColumnVisibility = (columnId: string): void => {
-    this.updateColumn(columnId, (column) => ({ ...column, isVisible: !column.isVisible }));
+    this.updateColumn(columnId, (column) => ({ ...column, show: column.show !== true }));
     void this.saveUserConfigAsync();
   };
 
