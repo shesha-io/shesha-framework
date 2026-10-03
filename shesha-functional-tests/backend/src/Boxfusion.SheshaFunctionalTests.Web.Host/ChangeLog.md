@@ -1,1 +1,1 @@
-Hlayi you add your change log data in here.
+Please add your change log data here.
