@@ -21,8 +21,7 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
   /**
    * The settings panels sit two container levels deep:
    * container > inner > component > container > inner. That innermost `inner` is the
-   * element laid out as the grid, so the grid rule and the breakpoints below all share
-   * this selector.
+   * element laid out as the grid, so the responsive column breakpoints below target it.
    *
    * Both levels always render the `.sha-components-container` wrapper: the form root and
    * the property router never set `noDefaultStyling`, which is the only thing that omits it.
@@ -34,10 +33,10 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
   const appearanceForm = cx(
     'sha-appearance-form',
     css`
-        padding-top: 8px;
+      padding-top: 8px;
 
-      /* The grid above supplies the spacing between the grouping panels (Border, Radius,
-         Background, ...), so drop antd's padding inside each one. The header and body are
+      /* Spacing between the grouping panels (Border, Radius, Background, ...) comes from the
+         container gaps below, so drop antd's padding inside each one. The header and body are
          siblings under the item, so the body is addressed via the panel, not the header. */
       .ant-collapse-item > .ant-collapse-panel > .ant-collapse-body,
       .ant-collapse-item > .ant-collapse-panel > .ant-collapse-header {
@@ -135,15 +134,16 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
       .ant-tabs-body-holder {
         padding: 8px;
 
+        /* Carry the height down to each tab's columns so the Components tab's menu card can fill it. */
         > .ant-tabs-body {
-          height:100%;
+          height: 100%;
 
           > .ant-tabs-content {
-            height:100%;
+            height: 100%;
 
             > div {
               height: 100%;
-              
+
               > .ant-row {
                 height: 100%;
 
@@ -203,7 +203,7 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
 
   /* Represents the canvas, so it must stay light regardless of the app theme - the components
      inside are rendered the way an end user will see them (see ConfigurableFormRenderer). The
-     antd Card paints its own themed body background, so that is overridden too. */
+     antd Card paints its own themed head and body, so those are overridden too. */
   const previewSection = cx(
     'preview-section',
     css`
@@ -215,6 +215,11 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
 
       h4 {
         margin-top: 0px;
+      }
+
+      .ant-card-head {
+        color: ${CANVAS_PREVIEW_TEXT};
+        border-bottom-color: ${CANVAS_PREVIEW_BORDER};
       }
 
       .ant-card-body {
