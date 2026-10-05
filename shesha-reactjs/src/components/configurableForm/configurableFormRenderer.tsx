@@ -65,6 +65,7 @@ export const ConfigurableFormRenderer = <Values extends object = object>({
     layout: props.layout ?? formSettings.layout,
     labelCol: props.labelCol ?? formSettings.labelCol,
     wrapperCol: props.wrapperCol ?? formSettings.wrapperCol,
+    // Omit the key when unresolved: exactOptionalPropertyTypes rejects an explicit `colon: undefined` on FormProps.
     ...(colon !== undefined ? { colon } : {}),
   };
 

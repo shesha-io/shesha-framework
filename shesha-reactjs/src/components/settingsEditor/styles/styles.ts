@@ -1,5 +1,8 @@
 import { createStyles, sheshaStyles } from '@/styles';
 
+// Vertical space taken by the page header and settings toolbar above the editor panels.
+const EDITOR_CHROME_HEIGHT = '120px';
+
 export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
   const shaSettingsEditorToolbar = "sha-settings-editor-toolbar";
   const shaSettingsEditorToolbarLeft = "sha-settings-editor-toolbar-left";
@@ -143,7 +146,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
 
   const container = cx(prefix, css`
       width: 100%;
-      height: calc(100vh - 120px);
+      height: calc(100vh - ${EDITOR_CHROME_HEIGHT});
       display: flex;
       flex-direction: row;
       -webkit-box-sizing: border-box;
@@ -154,7 +157,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         overflow-x: hidden;
         overflow-y: auto;
         padding-right: 5px;
-        height: calc(100vh - 120px);
+        height: calc(100vh - ${EDITOR_CHROME_HEIGHT});
         ${sheshaStyles.thinScrollbars}
         
         .ant-spin-nested-loading {
@@ -169,7 +172,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         overflow-x: hidden;
         overflow-y: auto;
         background: ${token.colorBgContainer};
-        height: calc(100vh - 120px);
+        height: calc(100vh - ${EDITOR_CHROME_HEIGHT});
         
         .${propsPanelContent} {
           display: flex;

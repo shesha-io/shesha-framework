@@ -110,6 +110,8 @@ export const useFilteredTreeNodes = (
     const loop = (data: TreeNode[]): TreeNode[] => {
       const result: TreeNode[] = [];
       data.forEach((node) => {
+        // Kept nodes (see getKeptNodeIds) bypass the type and search checks below, but are still
+        // walked normally so their own children are filtered as usual.
         const isKept = keptIds.has(node.id);
 
         if (isConfigItemTreeNode(node)) {

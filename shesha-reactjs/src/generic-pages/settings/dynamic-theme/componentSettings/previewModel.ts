@@ -1,22 +1,37 @@
-import { IToolboxComponent } from '@/interfaces/formDesigner';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IFormValidationErrors, IToolboxComponent } from '@/interfaces/formDesigner';
+import { getEmptyFlatMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { upgradeComponent } from '@/providers/form/utils';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 /** Sample entity used to give data-driven components something to render in the preview. */
 const DUMMY_ENTITY_TYPE = { name: 'DummyTable', module: 'Shesha' };
 
+/** A reference list seeded in every Shesha install (Male = 1, Female = 2, Not disclosed = 3). */
+const SAMPLE_REFERENCE_LIST = { module: 'Shesha', name: 'Shesha.Core.Gender' };
+
+/** A small landscape placeholder, inlined as an SVG data URI. */
+const SAMPLE_IMAGE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="240" height="150" viewBox="0 0 240 150">' +
+  '<rect width="240" height="150" fill="#dbe7f3"/>' +
+  '<circle cx="180" cy="42" r="16" fill="#f6c453"/>' +
+  '<path d="M0 150 L70 70 L120 120 L160 85 L240 150 Z" fill="#7aa5cf"/>' +
+  '</svg>',
+)}`;
+
 /**
- * Charts refuse to render and show "Chart control properties not set correctly!" until they have an
- * entity plus an axis and value property. DummyTable's country/population make a readable sample:
- * a categorical axis and a numeric value, aggregated so repeated countries collapse into one bar.
+ * Components previewed exactly as the designer creates them when dropped: `initModel`, then their
+ * migrator run as for a new component, which is where these get their defaults. A chart's type,
+ * title, legend and default data source all come from its migrator, and in the preview it draws the
+ * same sample data as on the designer canvas (see `ComponentPreviewContext`).
  */
-const chartPreviewExtras: Record<string, unknown> = {
-  dataMode: 'entityType',
-  entityType: DUMMY_ENTITY_TYPE,
-  simpleOrPivot: 'simple',
-  axisProperty: 'country',
-  valueProperty: 'population',
-  aggregationMethod: 'sum',
+const PREVIEW_AS_NEW_COMPONENT: ReadonlySet<string> = new Set(['barChart', 'lineChart', 'pieChart', 'polarAreaChart']);
+
+/** The model the designer gives `definition` when it is dropped onto a form. */
+const createNewComponentModel = (definition: IToolboxComponent, model: IConfigurableFormComponent): IConfigurableFormComponent => {
+  // No version, so every migration runs, as for a freshly dropped component.
+  const { version: _version, ...unversioned } = model;
+  const initialised = definition.initModel ? definition.initModel(unversioned) : unversioned;
+  return upgradeComponent(initialised, definition, undefined, getEmptyFlatMarkup(), true);
 };
 
 /**
@@ -33,11 +48,22 @@ const previewModelExtrasByType: Record<string, Record<string, unknown>> = {
     displayPropName: 'city',
     fields: ['city'],
   },
-  barChart: chartPreviewExtras,
-  lineChart: chartPreviewExtras,
-  pieChart: chartPreviewExtras,
-  polarAreaChart: chartPreviewExtras,
+  // An embedded picture, so the preview never fetches anything over the network.
+  image: { dataSource: 'base64', base64: SAMPLE_IMAGE },
+  refListStatus: { referenceListId: SAMPLE_REFERENCE_LIST },
 };
+
+/**
+ * Preview-only field values, keyed by component type, for components that display their value and
+ * draw nothing without one - a reference list status has no tag to show until it has an item.
+ */
+const previewValueByType: Record<string, unknown> = {
+  refListStatus: 1,
+};
+
+/** Sample field value for the given component type, `undefined` when it renders without one. */
+export const getPreviewValue = (componentType: string | undefined): unknown =>
+  isNullOrWhiteSpace(componentType) ? undefined : previewValueByType[componentType];
 
 /**
  * Extra preview-only model properties for the given component type, `undefined` when it needs none.
@@ -51,6 +77,11 @@ export interface IPreviewVariant {
   label: string;
   /** Model properties that put the component into this state. */
   model: Record<string, unknown>;
+  /**
+   * Validation errors to put on this rendering's form. Some states are driven by the form rather
+   * than the component's own model - Validation Errors draws nothing until the form has errors.
+   */
+  formErrors?: IFormValidationErrors | undefined;
 }
 
 /**
@@ -88,6 +119,32 @@ const previewVariantsByType: Record<string, IPreviewVariant[]> = {
     { label: 'Thumbnail (custom)', model: { displayStyle: 'thumbnailCustom' } },
     { label: 'Drag & drop', model: { displayStyle: 'text', isDragger: true } },
   ],
+  // A sample percentage so each shape is drawn part-filled rather than empty.
+  progress: [
+    { label: 'Line', model: { progressType: 'line', percent: 60 } },
+    { label: 'Circle', model: { progressType: 'circle', percent: 60 } },
+    { label: 'Dashboard', model: { progressType: 'dashboard', percent: 60 } },
+  ],
+  // One per layout the alert renders: a list of field errors, a message with details, a bare message.
+  validationErrors: [
+    {
+      label: 'Field errors',
+      model: {},
+      formErrors: {
+        message: 'Please correct the errors and try again:',
+        validationErrors: [
+          { message: 'Name is required', members: ['name'] },
+          { message: 'Email must be a valid email address', members: ['email'] },
+        ],
+      },
+    },
+    {
+      label: 'Error with details',
+      model: {},
+      formErrors: { message: 'Unable to save the record', details: 'Another user changed this record while you were editing it.' },
+    },
+    { label: 'Error message', model: {}, formErrors: 'Something went wrong while saving.' },
+  ],
 };
 
 /**
@@ -107,7 +164,7 @@ export const getPreviewComponentModel = (
   variant?: IPreviewVariant | undefined,
 ): IConfigurableFormComponent => {
   const componentType = componentDefinition.type;
-  const baseModel: IConfigurableFormComponent = componentDefinition.previewConfiguration ?? {
+  const genericModel: IConfigurableFormComponent = {
     type: componentType,
     id: componentType,
     propertyName: `${componentType}Appearance`,
@@ -116,6 +173,8 @@ export const getPreviewComponentModel = (
     hidden: false,
     version: 'latest',
   };
+  const baseModel: IConfigurableFormComponent = componentDefinition.previewConfiguration ??
+    (PREVIEW_AS_NEW_COMPONENT.has(componentType) ? createNewComponentModel(componentDefinition, genericModel) : genericModel);
 
   const extras = getPreviewModelExtras(componentType);
   const model = isNullOrWhiteSpace(componentType) || !extras

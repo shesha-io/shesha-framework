@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 
 namespace Shesha.Configuration
 {
@@ -53,6 +54,16 @@ namespace Shesha.Configuration
             public string? Secondary { get; set; }
         }
 
+        [Obsolete("Never consumed by the frontend; kept only so existing code referencing it still compiles. Will be removed in a future release.")]
+        public class MarginPaddingSettings
+        {
+            public string? FormFields { get; set; }
+            public string? Layout { get; set; }
+            public string? Grid { get; set; }
+            public string? Standard { get; set; }
+            public string? Inline { get; set; }
+        }
+
         public ThemeSettings.ApplicationSettings? Application { get; set; }
         public string? Sidebar { get; set; }
         public string? LayoutBackground { get; set; }
@@ -60,6 +71,14 @@ namespace Shesha.Configuration
         public string? SidebarBackground { get; set; }
         public int? LabelSpan { get; set; }
         public int? ComponentSpan { get; set; }
+        /// <summary>
+        /// Legacy margin/padding presets. No longer seeded or read; kept so existing stored values
+        /// round-trip through the backend instead of being silently dropped.
+        /// </summary>
+#pragma warning disable CS0618 // MarginPaddingSettings is obsolete
+        [Obsolete("Never consumed by the frontend; kept only so existing code referencing it still compiles. Will be removed in a future release.")]
+        public ThemeSettings.MarginPaddingSettings? MarginPadding { get; set; }
+#pragma warning restore CS0618
         /// <summary>Label alignment for input (form-item) components: "left" | "right".</summary>
         public string? LabelAlign { get; set; }
         /// <summary>Form layout: "horizontal" | "vertical".</summary>
