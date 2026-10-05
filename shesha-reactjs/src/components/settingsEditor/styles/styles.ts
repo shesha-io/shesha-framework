@@ -7,6 +7,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
   const shaSettingsEditorMain = "sha-settings-editor-main";
   const shaSettingsEditorToolbox = "sha-settings-editor-toolbox";
   const shaSettingSearch = "sha-setting-search";
+  const shaSettingsAppSelector = "sha-settings-app-selector";
   const shaToolboxPanel = "sha-toolbox-panel";
   const shaToolboxComponent = "sha-toolbox-component";
   const shaSettingsEditorHeader = "sha-settings-editor-header";
@@ -63,6 +64,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             margin-bottom: 4px !important;
           }
       
+          .${shaSettingsAppSelector} {
+            width: 100%;
+            margin-bottom: 4px;
+          }
+
           .${shaSettingSearch} {
             margin-bottom: 4px;
           }
@@ -137,7 +143,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
 
   const container = cx(prefix, css`
       width: 100%;
-      height: calc(100vh - 160px);
+      height: calc(100vh - 120px);
       display: flex;
       flex-direction: row;
       -webkit-box-sizing: border-box;
@@ -148,7 +154,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         overflow-x: hidden;
         overflow-y: auto;
         padding-right: 5px;
-        height: calc(100vh - 160px);
+        height: calc(100vh - 120px);
         ${sheshaStyles.thinScrollbars}
         
         .ant-spin-nested-loading {
@@ -163,7 +169,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         overflow-x: hidden;
         overflow-y: auto;
         background: ${token.colorBgContainer};
-        height: calc(100vh - 160px);
+        height: calc(100vh - 120px);
         
         .${propsPanelContent} {
           display: flex;
@@ -211,6 +217,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
     shaSettingsEditorMain,
     shaSettingsEditorToolbox,
     shaSettingSearch,
+    shaSettingsAppSelector,
     shaToolboxPanel,
     shaToolboxComponent,
     shaSettingsEditorHeader,

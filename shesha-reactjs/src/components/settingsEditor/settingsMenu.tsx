@@ -2,6 +2,7 @@ import { Menu, Collapse, Empty, Spin, Checkbox, Divider } from 'antd';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from '@/hooks';
 import SearchBox from './searchBox';
+import AppSelector from './appSelector';
 import { useSettingsEditor } from './provider/index';
 import { IFrontEndApplication, ISettingConfiguration } from './provider/models';
 import type { MenuProps } from 'antd';
@@ -122,6 +123,7 @@ export const SettingsMenu: FC = () => {
   const activeKey = openedKeys[selectedApplication?.appKey ?? 'general'];
   return (
     <div className="sha-settings-editor-toolbox">
+      <AppSelector />
       <Spin spinning={configsLoadingState === 'loading'}>
         <SearchBox value={searchText} onChange={setSearchText} placeholder="Search setting" />
         {filteredGroups.length > 0 && (

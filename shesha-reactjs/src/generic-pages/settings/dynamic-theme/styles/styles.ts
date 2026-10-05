@@ -34,9 +34,7 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
   const appearanceForm = cx(
     'sha-appearance-form',
     css`
-      ${panelGrid} {
-        padding: 8px;
-      }
+        padding-top: 8px;
 
       /* The grid above supplies the spacing between the grouping panels (Border, Radius,
          Background, ...), so drop antd's padding inside each one. The header and body are
@@ -121,6 +119,7 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
   const themeParameters = cx(
     'theme-parameters',
     css`
+      height: 100%;
 
       &::-webkit-scrollbar {
         display: none;
@@ -135,6 +134,26 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
 
       .ant-tabs-body-holder {
         padding: 8px;
+
+        > .ant-tabs-body {
+          height:100%;
+
+          > .ant-tabs-content {
+            height:100%;
+
+            > div {
+              height: 100%;
+              
+              > .ant-row {
+                height: 100%;
+
+                > .ant-col {
+                  height: 100%;
+                }
+              }
+            }
+          }
+        }
       }
 
       .ant-card {
@@ -194,6 +213,10 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
       border: 1px solid ${CANVAS_PREVIEW_BORDER};
       color: ${CANVAS_PREVIEW_TEXT};
 
+      h4 {
+        margin-top: 0px;
+      }
+
       .ant-card-body {
         background: transparent;
       }
@@ -203,15 +226,17 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
   const themeCardSettings = cx(
     'theme-card',
     css`
-      margin-bottom: 16px;
       height: 400px;
+
+      h4 {
+        margin-top: 0px;
+      }
     `,
   );
 
   const themeCardMenu = cx(
     'theme-card',
     css`
-      margin-bottom: 16px;
       height: 200px;
     `,
   );
@@ -250,7 +275,7 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
   const contentColumn = cx(
     'theme-content-container',
     css`
-      height: 100%;
+      height: calc(100vh - 160px);
       overflow-y: auto;  
       ${sheshaStyles.thinScrollbars}
     `,

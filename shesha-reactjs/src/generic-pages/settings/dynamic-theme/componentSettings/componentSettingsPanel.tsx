@@ -1,4 +1,4 @@
-import { Card, Col, Empty, Menu, Row } from 'antd';
+import { Card, Col, Empty, Menu, Row, Space } from 'antd';
 import { CSSProperties, FC, useCallback, useMemo, useState } from 'react';
 import * as React from 'react';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
@@ -48,7 +48,7 @@ export interface IComponentDefaultsPanelProps {
   readOnly?: boolean;
 }
 
-const componentMenuCardStyle = { height: '600px', overflowY: 'auto' } as CSSProperties;
+const componentMenuCardStyle = { height: '100%', overflowY: 'auto' } as CSSProperties;
 
 /** Filters the component tree by name, keeping groups that match or that contain a match. */
 export const filterMenuItems = (items: IMenuItem[], searchText: string): IMenuItem[] => {
@@ -204,12 +204,13 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
         {/* updateModelIfChanged keeps the instance's model in step with the stored theme entry —
             without it the provider never registers the theme values as the model, so every value
             reports as 'Inherited' and Reset to default/Override state never reflects reality. */}
-        <DefaultModelProvider key={componentType ?? 'none'} name="Component Default Styles" model={initialModel} defaultModel={defaultStyles} updateModelIfChanged>
-
-          <ComponentDefaultsSettings componentTitle={componentTitle} componentType={componentType} markup={appearanceMarkup} initialModel={initialModel} readonly={readonly ?? false} onChange={handleFormDataChange} />
-        </DefaultModelProvider>
-        {/* Preview Card: renders the component with the current theme to show a live preview */}
-        {isDefined(componentDef) && isDefined(theme) && <ComponentDefaultsPreview componentDefinition={componentDef} theme={theme} />}
+        <Space orientation="vertical" size={16} style={{ width: '100%', height: '100%', flexWrap: 'nowrap' }}>
+          <DefaultModelProvider key={componentType ?? 'none'} name="Component Default Styles" model={initialModel} defaultModel={defaultStyles} updateModelIfChanged>
+            <ComponentDefaultsSettings componentTitle={componentTitle} componentType={componentType} markup={appearanceMarkup} initialModel={initialModel} readonly={readonly ?? false} onChange={handleFormDataChange} />
+          </DefaultModelProvider>
+          {/* Preview Card: renders the component with the current theme to show a live preview */}
+          {isDefined(componentDef) && isDefined(theme) && <ComponentDefaultsPreview componentDefinition={componentDef} theme={theme} />}
+        </Space>
       </Col>
     </Row>
   );

@@ -5,6 +5,7 @@ import { useStyles } from "../styles/styles";
 import { Card } from "antd";
 import { IToolboxComponent } from "../../../../interfaces/formDesigner";
 import { getPreviewComponentModel, getPreviewVariants, IPreviewVariant } from "./previewModel";
+import { isNotNullOrWhiteSpace } from "@/utils";
 
 export interface IComponentDefaultsPreviewProps {
   componentDefinition: IToolboxComponent;
@@ -55,8 +56,17 @@ export const ComponentDefaultsPreview: FC<IComponentDefaultsPreviewProps> = ({ c
   );
 
   return (
-    <Card className={styles.previewSection}>
-      <h4 style={{ marginBottom: 4 }}>{componentTitle} preview:</h4>
+    <Card
+      className={styles.previewSection}
+      title={(
+        <div>
+          <h4 style={{ marginBottom: 4 }}>{isNotNullOrWhiteSpace(componentTitle) ? componentTitle : 'Component'} Preview</h4>
+          <span style={{ color: '#999', fontSize: '12px' }}>
+            Preview the default appearance for {isNotNullOrWhiteSpace(componentTitle) ? componentTitle : 'component'}
+          </span>
+        </div>
+      )}
+    >
       {markups.map(({ key, markup }) => (
         <ConfigurableForm
           key={key}
