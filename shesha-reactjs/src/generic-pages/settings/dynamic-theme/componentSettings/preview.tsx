@@ -16,7 +16,8 @@ export interface IComponentDefaultsPreviewProps {
 const SINGLE_VARIANT: IPreviewVariant[] = [{ label: '', model: {} }];
 
 export const ComponentDefaultsPreview: FC<IComponentDefaultsPreviewProps> = ({ componentDefinition, theme }) => {
-  const { styles } = useStyles();
+  // The preview section paints the theme being edited's Page colour, so pass that theme in.
+  const { styles } = useStyles(theme);
 
   const componentTitle = componentDefinition.name;
 

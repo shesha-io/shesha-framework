@@ -113,89 +113,104 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
     <div style={{ padding: '0 0 0px' }}>
       {section === 'theme' && (
         <>
-          <Typography.Title level={5} style={{ margin: 0 }}>Theme</Typography.Title>
-          <Radio.Group
-            value={normalizeColorScheme(theme.sidebar)}
-            onChange={(e) => {
-              changeThemeInternal({
-                ...theme,
-                sidebar: e.target.value as ColorScheme,
-              });
-            }}
-            disabled={readOnly}
-            optionType="button"
-            buttonStyle="solid"
+          <Card
+            title={(
+              <div>
+                <h4 style={{ marginBottom: 4 }}>Theme</h4>
+                <span style={{ color: '#999', fontSize: '12px' }}>
+                  Select a theme to apply to your application.
+                </span>
+              </div>
+            )}
           >
-            <Radio.Button value="light">Light</Radio.Button>
-            <Radio.Button value="dark">Dark</Radio.Button>
-            <Radio.Button value="system">System</Radio.Button>
-          </Radio.Group>
+            <Radio.Group
+              value={normalizeColorScheme(theme.sidebar)}
+              onChange={(e) => {
+                changeThemeInternal({
+                  ...theme,
+                  sidebar: e.target.value as ColorScheme,
+                });
+              }}
+              disabled={readOnly}
+              optionType="button"
+              buttonStyle="solid"
+            >
+              <Radio.Button value="light">Light</Radio.Button>
+              <Radio.Button value="dark">Dark</Radio.Button>
+              <Radio.Button value="system">System</Radio.Button>
+            </Radio.Group>
 
-          <Row gutter={[32, 24]}>
-            <Col xs={24} md={8}>
-              <Typography.Title level={5} style={{ marginBottom: 4 }}>Colours</Typography.Title>
-              <Typography.Text type="secondary" style={{ display: 'block', fontSize: 12 }}>
-                Select a circle below to choose your desired colour.
-              </Typography.Text>
-              <Space size={16} wrap>
-                <ColorCircle color={primaryColor} onChange={(c) => updateTheme('application', { ...theme.application, primaryColor: c })} label="Primary" readOnly={readOnly} />
-                <ColorCircle color={errorColor} onChange={(c) => updateTheme('application', { ...theme.application, errorColor: c })} label="Error" readOnly={readOnly} />
-                <ColorCircle color={warningColor} onChange={(c) => updateTheme('application', { ...theme.application, warningColor: c })} label="Warning" readOnly={readOnly} />
-                <ColorCircle color={successColor} onChange={(c) => updateTheme('application', { ...theme.application, successColor: c })} label="Success" readOnly={readOnly} />
-                <ColorCircle color={infoColor} onChange={(c) => updateTheme('application', { ...theme.application, infoColor: c })} label="Info" readOnly={readOnly} />
-              </Space>
-            </Col>
+            <Row gutter={[32, 24]}>
+              <Col xs={24} md={8}>
+                <h4>Colours</h4>
+                <Typography.Text type="secondary" style={{ display: 'block', fontSize: 12 }}>
+                  Select a circle below to choose your desired colour.
+                </Typography.Text>
+                <Space size={16} wrap>
+                  <ColorCircle color={primaryColor} onChange={(c) => updateTheme('application', { ...theme.application, primaryColor: c })} label="Primary" readOnly={readOnly} />
+                  <ColorCircle color={errorColor} onChange={(c) => updateTheme('application', { ...theme.application, errorColor: c })} label="Error" readOnly={readOnly} />
+                  <ColorCircle color={warningColor} onChange={(c) => updateTheme('application', { ...theme.application, warningColor: c })} label="Warning" readOnly={readOnly} />
+                  <ColorCircle color={successColor} onChange={(c) => updateTheme('application', { ...theme.application, successColor: c })} label="Success" readOnly={readOnly} />
+                  <ColorCircle color={infoColor} onChange={(c) => updateTheme('application', { ...theme.application, infoColor: c })} label="Info" readOnly={readOnly} />
+                </Space>
+              </Col>
 
-            <Col xs={24} md={8}>
-              <Typography.Title level={5} style={{ marginBottom: 4 }}>Text Colours</Typography.Title>
-              <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 12, fontSize: 12 }}>
-                Select a circle below to choose your desired colour.
-              </Typography.Text>
-              <Space size={16} wrap>
-                <ColorCircle color={theme.text?.default} onChange={(c) => updateTheme('text', { ...theme.text, default: c })} label="Default" readOnly={readOnly} />
-                <ColorCircle color={theme.text?.secondary} onChange={(c) => updateTheme('text', { ...theme.text, secondary: c })} label="Secondary" readOnly={readOnly} />
-              </Space>
-            </Col>
+              <Col xs={24} md={8}>
+                <h4>Text Colours</h4>
+                <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 12, fontSize: 12 }}>
+                  Select a circle below to choose your desired colour.
+                </Typography.Text>
+                <Space size={16} wrap>
+                  <ColorCircle color={theme.text?.default} onChange={(c) => updateTheme('text', { ...theme.text, default: c })} label="Default" readOnly={readOnly} />
+                  <ColorCircle color={theme.text?.secondary} onChange={(c) => updateTheme('text', { ...theme.text, secondary: c })} label="Secondary" readOnly={readOnly} />
+                </Space>
+              </Col>
 
-            <Col xs={24} md={8}>
-              <Typography.Title level={5} style={{ marginBottom: 4 }}>Component and Page</Typography.Title>
-              <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 12, fontSize: 12 }}>
-                Select a circle below to choose your desired colour.
-              </Typography.Text>
-              <Space size={16} wrap>
-                <ColorCircle color={theme.layoutBackground} onChange={(c) => changeThemeInternal({ ...theme, layoutBackground: c })} label="Page" readOnly={readOnly} />
-              </Space>
-            </Col>
-          </Row>
-
+              <Col xs={24} md={8}>
+                <h4>Component and Page</h4>
+                <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 12, fontSize: 12 }}>
+                  Select a circle below to choose your desired colour.
+                </Typography.Text>
+                <Space size={16} wrap>
+                  <ColorCircle color={theme.layoutBackground} onChange={(c) => changeThemeInternal({ ...theme, layoutBackground: c })} label="Page" readOnly={readOnly} />
+                </Space>
+              </Col>
+            </Row>
+          </Card>
           {/* Preview Card */}
-          <div style={{ marginTop: 32 }}>
-            <Typography.Title level={5} style={{ marginBottom: 12 }}>Preview Card</Typography.Title>
-            <Card style={{ background: theme.layoutBackground ?? '#f0f2f5' }}>
-              <Row gutter={24}>
-                <Col xs={24} md={8}>
-                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Alerts</Typography.Text>
-                  <AlertsExample />
-                </Col>
+          <Card
+            title={(
+              <div>
+                <h4 style={{ marginBottom: 4 }}>Preview Card</h4>
+                <span style={{ color: '#999', fontSize: '12px' }}>
+                  Preview the default appearance for theme settings.
+                </span>
+              </div>
+            )}
+          >
+            <Row gutter={24}>
+              <Col xs={24} md={8}>
+                <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Alerts</Typography.Text>
+                <AlertsExample />
+              </Col>
 
-                <Col xs={24} md={8}>
-                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Forms</Typography.Text>
-                  <InputStatesPreview />
-                </Col>
+              <Col xs={24} md={8}>
+                <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Forms</Typography.Text>
+                <InputStatesPreview />
+              </Col>
 
-                <Col xs={24} md={8}>
-                  <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Buttons</Typography.Text>
-                  <Space orientation="vertical" style={{ width: '100%' }} size="small">
-                    <Button type="primary" block style={{ background: primaryColor, borderColor: primaryColor }}>Primary</Button>
-                    <Button danger block>Error</Button>
-                    <Button block style={{ color: successColor, borderColor: successColor }}>Secondary</Button>
-                    <Button block>Default</Button>
-                    <TextsPreview />
-                  </Space>
-                </Col>
-              </Row>
-            </Card>
-          </div>
+              <Col xs={24} md={8}>
+                <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Buttons</Typography.Text>
+                <Space orientation="vertical" style={{ width: '100%' }} size="small">
+                  <Button type="primary" block style={{ background: primaryColor, borderColor: primaryColor }}>Primary</Button>
+                  <Button danger block>Error</Button>
+                  <Button block style={{ color: successColor, borderColor: successColor }}>Secondary</Button>
+                  <Button block>Default</Button>
+                  <TextsPreview />
+                </Space>
+              </Col>
+            </Row>
+          </Card>
         </>
       )}
       {section === 'components' && (

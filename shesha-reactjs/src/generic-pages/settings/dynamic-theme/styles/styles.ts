@@ -124,6 +124,11 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
         display: none;
       }
 
+      /* Card and section titles across every tab; spacing comes from the layout, not the heading. */
+      h4 {
+        margin: 0;
+      }
+
       /* Outer panel only - the content inside brings its own padding. Scoped with child
          combinators so the nested appearance panels keep antd's default body padding.
          (antd 6 renders item then panel then body; there is no -content element.) */
@@ -143,6 +148,9 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
 
             > div {
               height: 100%;
+              display: flex;
+              flex-direction: column;
+              gap: 16px;
 
               > .ant-row {
                 height: 100%;
@@ -170,7 +178,7 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
         }
 
         .ant-card-body {
-          padding: 0px;
+          padding: 8px;
         }
       }
 
@@ -213,10 +221,6 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
       border: 1px solid ${CANVAS_PREVIEW_BORDER};
       color: ${CANVAS_PREVIEW_TEXT};
 
-      h4 {
-        margin-top: 0px;
-      }
-
       .ant-card-head {
         color: ${CANVAS_PREVIEW_TEXT};
         border-bottom-color: ${CANVAS_PREVIEW_BORDER};
@@ -232,10 +236,6 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
     'theme-card',
     css`
       height: 400px;
-
-      h4 {
-        margin-top: 0px;
-      }
     `,
   );
 
