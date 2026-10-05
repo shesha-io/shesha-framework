@@ -564,11 +564,8 @@ namespace Shesha.Web.FormsDesigner.Services
             var targetApplication = input.ApplicationId.HasValue
                 ? await _frontEndAppRepository.GetAsync(input.ApplicationId.Value)
                 : null;
-            var entityFamilyKey = entity.Origin != null ? entity.Origin.Id : entity.Id;
             var alreadyExist = await Repository.GetAll().Where(f =>
                 f.Id != input.Id
-                && f.Origin.Id != entityFamilyKey
-                && f.Id != entityFamilyKey
                 && f.Module == entity.Module
                 && f.Application == targetApplication
                 && f.Name == input.Name
