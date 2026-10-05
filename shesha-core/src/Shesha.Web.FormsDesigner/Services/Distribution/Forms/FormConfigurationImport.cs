@@ -72,11 +72,11 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
             var query = _formConfigRepo.GetAll().Where(f => f.Name == item.Name && f.VersionStatus == ConfigurationItemVersionStatus.Live);
             query = query.Where(hasModule
-                ? f => f.Module.Name == item.ModuleName
+                ? f => f.Module != null && f.Module.Name == item.ModuleName
                 : f => f.Module == null
             );
             query = query.Where(hasApp
-                ? f => f.Application.AppKey == item.FrontEndApplication
+                ? f => f.Application != null && f.Application.AppKey == item.FrontEndApplication
                 : f => f.Application == null
             );
 
@@ -90,8 +90,8 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             var hasModule = !string.IsNullOrWhiteSpace(item.ModuleName);
             var hasApp = !string.IsNullOrWhiteSpace(item.FrontEndApplication);
             var existingForm = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name &&
-                (hasModule ? f.Module.Name == item.ModuleName : f.Module == null) &&
-                (hasApp ? f.Application.AppKey == item.FrontEndApplication : f.Application == null) &&
+                (hasModule ? f.Module != null && f.Module.Name == item.ModuleName : f.Module == null) &&
+                (hasApp ? f.Application != null && f.Application.AppKey == item.FrontEndApplication : f.Application == null) &&
                 f.IsLast);
 
             // use status specified in the context with fallback to imported value
