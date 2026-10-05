@@ -596,6 +596,89 @@ namespace Shesha.Tests.ConfigurationItems
             importedArray.ItemsType.Id.ShouldBe(dstItemsType.Id, "the existing items type row should be updated, not replaced by a new one");
         }
 
+        [Fact]
+        public async Task When_Import_LegacyPackageWithItemsTypeLeakedAsChild_ShouldKeepSingleItemsType_TestAsync()
+        {
+            // some packages exported before the exporter fix also list the items type row inside the array's own
+            // Properties, as a child with the array's name (seen in the wild for Case.ChildCases and
+            // Case.SlaPolicyConditionLogs). The importer maps the items type from ItemsType and then maps that child
+            // under the same parent, so a second items type row is added and uq_Frwk_EntityProperties_Path is violated
+            var arrayProp = new DistributedEntityConfigProperty
+            {
+                Name = "ChildCases",
+                Label = "Child Cases",
+                DataType = "array",
+                DataFormat = "entity",
+                EntityType = "SM.Case",
+                Source = MetadataSourceType.ApplicationCode,
+                SortOrder = 13,
+                ItemsType = new DistributedEntityConfigProperty
+                {
+                    Name = "ChildCases",
+                    Label = "Child Case",
+                    DataType = "entity",
+                    EntityType = "SM.Case",
+                    Source = MetadataSourceType.ApplicationCode,
+                    SortOrder = 0,
+                    Suppress = false,
+                },
+                // the leaked copy is stale, so it differs from ItemsType - it must not be applied to the items type row
+                Properties = new List<DistributedEntityConfigProperty>
+                {
+                    new DistributedEntityConfigProperty
+                    {
+                        Name = "ChildCases",
+                        Label = "leaked",
+                        DataType = "entity",
+                        EntityType = "SM.Case",
+                        Source = MetadataSourceType.ApplicationCode,
+                        SortOrder = 0,
+                        Suppress = true,
+                    },
+                },
+            };
+            var legacyPackage = new DistributedEntityConfig
+            {
+                Name = "test-entity",
+                ClassName = Cls,
+                Namespace = Ns,
+                ModuleName = "test-module",
+                Properties = new List<DistributedEntityConfigProperty> { arrayProp },
+            };
+
+            // fresh destination (blank database). Under NHibernate the items type row created from ItemsType is not
+            // flushed yet when the nested child is looked up, so the child becomes a second row; the in-memory
+            // repository does find it, so there the leaked child overwrites the items type instead
+            var dst = PrepareImportContext();
+
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var uowManager = Resolve<IUnitOfWorkManager>();
+            var modelConfigsCacheHolder = Resolve<IModelConfigsCacheHolder>();
+            var importer = new EntityConfigImport(dst.ModuleRepo, dst.FrontEndAppRepo, dst.EntityConfigRepo, dst.EntityPropertyRepo, permissionedObjectManager, null, uowManager, modelConfigsCacheHolder)
+            {
+                UnitOfWorkManager = uowManager,
+            };
+            var importContext = new PackageImportContext { CreateModules = true };
+
+            EntityConfig imported;
+            using (var uow = uowManager.Begin())
+            {
+                imported = await importer.ImportItemAsync(legacyPackage, importContext) as EntityConfig;
+                await uow.CompleteAsync();
+            }
+            imported.ShouldNotBeNull();
+
+            var childCasesRows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported && p.Name == "ChildCases").ToList();
+            var importedArray = childCasesRows.Where(p => p.ParentProperty == null).ShouldHaveSingleItem("exactly one top-level ChildCases property");
+            importedArray.DataType.ShouldBe("array");
+            importedArray.ItemsType.ShouldNotBeNull("the items type should be imported from ItemsType");
+            importedArray.ItemsType.Label.ShouldBe("Child Case", "the items type must come from ItemsType, not from the leaked child");
+            importedArray.ItemsType.Suppress.ShouldBeFalse("the items type must come from ItemsType, not from the leaked child");
+
+            childCasesRows.Where(p => p.ParentProperty == importedArray && p != importedArray.ItemsType)
+                .ShouldBeEmpty("the items type repeated as a child of the array must not add a second items type row");
+        }
+
         #region private declarations
 
         private TestImportContext PrepareImportContext()

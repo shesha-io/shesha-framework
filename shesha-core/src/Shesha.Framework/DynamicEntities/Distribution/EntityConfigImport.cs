@@ -196,8 +196,9 @@ namespace Shesha.DynamicEntities.Distribution
                 if (dbItem.ItemsType != null)
                     importedIds.Add(dbItem.ItemsType.Id);
 
-                if (src.Properties != null && src.Properties.Any())
-                    await MapPropertiesAsync(item, src.Properties, dbItem, importedIds);
+                var children = ExcludeLeakedItemsTypeChildren(src);
+                if (children.Any())
+                    await MapPropertiesAsync(item, children, dbItem, importedIds);
             }
         }
 
@@ -210,6 +211,21 @@ namespace Shesha.DynamicEntities.Distribution
         {
             var arrayNames = properties.Where(p => p.ItemsType != null).Select(p => p.Name).ToHashSet();
             return properties.Where(p => p.ItemsType != null || !arrayNames.Contains(p.Name));
+        }
+
+        /// <summary>
+        /// The same legacy packages can also repeat an array's items type among the array's own Properties. That
+        /// row is already mapped from ItemsType, and on a fresh database it is not flushed yet when the child is
+        /// looked up, so mapping the child would insert a second items type row - it is skipped as well.
+        /// </summary>
+        private static List<DistributedEntityConfigProperty> ExcludeLeakedItemsTypeChildren(DistributedEntityConfigProperty src)
+        {
+            if (src.Properties == null)
+                return new List<DistributedEntityConfigProperty>();
+
+            return src.ItemsType == null
+                ? src.Properties
+                : src.Properties.Where(p => p.ItemsType != null || p.Name != src.ItemsType.Name).ToList();
         }
 
         private async Task<EntityProperty> MapPropertyAsync(
