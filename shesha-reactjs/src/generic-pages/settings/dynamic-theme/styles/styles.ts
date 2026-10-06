@@ -8,28 +8,6 @@ const CANVAS_PREVIEW_BORDER = '#f0f0f0';
 const CANVAS_PREVIEW_TEXT = 'rgba(0, 0, 0, 0.88)';
 
 export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) => {
-  const slider = cx(
-    'slider',
-    css`
-      width: 100%;
-      .ant-slider-handle {
-        border-color: #d9d9d9;
-      }
-    `,
-  );
-
-  /**
-   * The settings panels sit two container levels deep:
-   * container > inner > component > container > inner. That innermost `inner` is the
-   * element laid out as the grid, so the responsive column breakpoints below target it.
-   *
-   * Both levels always render the `.sha-components-container` wrapper: the form root and
-   * the property router never set `noDefaultStyling`, which is the only thing that omits it.
-   */
-  const panelGrid =
-    '> .sha-components-container .sha-components-container-inner' +
-    ' .sha-component .sha-components-container .sha-components-container-inner';
-
   const appearanceForm = cx(
     'sha-appearance-form',
     css`
@@ -43,7 +21,7 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
         padding: 0px;
       }
 
-      /* Adjust form items within the grid panels */
+      /* Spacing between form items within the panels */
       .ant-collapse {
         .sha-components-container-inner {
           gap: 12px;
@@ -56,42 +34,6 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
           }
         }
       }
-
-      /* Two columns on medium screens */
-      @media (min-width: 769px) and (max-width: 1200px) {
-        ${panelGrid} {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-
-      /* Responsive grid - single column on smaller screens */
-      @media (max-width: 768px) {
-        ${panelGrid} {
-          grid-template-columns: 1fr;
-        }
-      }
-    `,
-  );
-
-  /** One labelled rendering inside the preview card (dropdown tag mode, thumbnail size, ...). */
-  const previewVariant = cx(
-    'preview-variant',
-    css`
-      /* Separator between consecutive variants only, so a single-variant preview is unchanged. */
-      & + & {
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px dashed ${CANVAS_PREVIEW_BORDER};
-      }
-    `,
-  );
-
-  const previewVariantLabel = cx(
-    'preview-variant-label',
-    css`
-      font-size: 12px;
-      color: #999;
-      margin-bottom: 4px;
     `,
   );
 
@@ -113,6 +55,13 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
       flex-direction: column;
       align-items: center;
       gap: 8px;
+    `,
+  );
+
+  const colorCircleLabel = cx(
+    'color-circle-label',
+    css`
+      font-size: 12px;
     `,
   );
   const themeParameters = cx(
@@ -157,6 +106,8 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
 
                 > .ant-col {
                   height: 100%;
+                  overflow-y: auto;
+                  ${sheshaStyles.thinScrollbars}
                 }
               }
             }
@@ -201,14 +152,59 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
     `,
   );
 
-  const themeHeader = cx(
-    'theme-header',
+  /** Heading + description shown as the title of every theme settings card (see CardTitle). */
+  const cardTitle = cx(
+    'theme-card-title',
     css`
-      font-size: 18px;
-      font-weight: 700;
+      /* Doubled to beat the panel-wide h4 { margin: 0 } reset in themeParameters. */
+      && > h4 {
+        margin-bottom: 4px;
+      }
     `,
   );
 
+  const description = cx(
+    'theme-parameters-description',
+    css`
+      font-size: 12px;
+      color: #999;
+    `,
+  );
+
+  /** Bold label above a block of preview content (Alerts, Forms, Buttons). */
+  const sectionLabel = cx(
+    'theme-section-label',
+    css`
+      display: block;
+      margin-bottom: 12px;
+    `,
+  );
+
+  /** Small hint under a section heading ("Select a circle below ..."). */
+  const sectionHint = cx(
+    'theme-section-hint',
+    css`
+      display: block;
+      margin-bottom: 12px;
+      font-size: 12px;
+    `,
+  );
+
+  const fullWidth = cx(
+    'theme-full-width',
+    css`
+      width: 100%;
+    `,
+  );
+
+  const emptyState = cx(
+    'theme-empty-state',
+    css`
+      padding: 16px;
+      text-align: center;
+      color: #999;
+    `,
+  );
   /* Represents the canvas, so it must stay light regardless of the app theme - the components
      inside are rendered the way an end user will see them (see ConfigurableFormRenderer). The
      antd Card paints its own themed head and body, so those are overridden too. */
@@ -235,7 +231,8 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
   const themeCardSettings = cx(
     'theme-card',
     css`
-      height: 400px;
+      height: 450px;
+      overflow-y: auto;
     `,
   );
 
@@ -246,21 +243,6 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
     `,
   );
 
-  const themeColorPicker = cx(
-    'theme-color-picker',
-    css`
-      > .ant-color-picker-color-block {
-       border-radius: 50%;
-      }
-    `,
-  );
-
-  const themeColorSpace = cx(
-    'theme-color-space',
-    css`
-     align-items: center;
-    `,
-  );
   const space = cx(
     'theme-space',
     css`
@@ -271,12 +253,6 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
     `,
   );
 
-  const contentContainer = cx(
-    'theme-content-container',
-    css`
-      height: calc(100vh - 205px);
-    `,
-  );
   const contentColumn = cx(
     'theme-content-container',
     css`
@@ -288,20 +264,20 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
 
   return {
     themeParameters,
-    themeHeader,
     previewSection,
     themeCardMenu,
     themeCardSettings,
-    themeColorPicker,
-    themeColorSpace,
     space,
-    contentContainer,
     contentColumn,
     colorCircle,
     colorCircleContainer,
-    slider,
+    colorCircleLabel,
     appearanceForm,
-    previewVariant,
-    previewVariantLabel,
+    cardTitle,
+    description,
+    sectionLabel,
+    sectionHint,
+    emptyState,
+    fullWidth,
   };
 });

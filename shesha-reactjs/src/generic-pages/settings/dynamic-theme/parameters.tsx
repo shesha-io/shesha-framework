@@ -1,16 +1,15 @@
-import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Radio, Row, Slider, Space, Switch, Tooltip, Typography } from 'antd';
+import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd';
 import { FC } from 'react';
 import { ColorPicker } from '@/components/colorPicker';
 import { ColorScheme, IConfigurableTheme, normalizeColorScheme } from '@/providers/theme/contexts';
 import { ComponentDefaultsPanel } from './componentSettings/componentSettingsPanel';
 import { GroupSettingsPanel } from './groupSettingsPanel';
+import { CardTitle } from './cardTitle';
+import { FormLayoutSettingsPanel } from './formLayoutSettingsPanel';
 import { useStyles } from './styles/styles';
 import AlertsExample from './alertsPreview';
 import InputStatesPreview from './inputStatePreview';
 import TextsPreview from './textsPreview';
-import { FormItemLayout } from 'antd/es/form/Form';
-import { FormLabelAlign } from 'antd/es/form/interface';
 
 /**
  * The theme settings tabs: theme-wide settings, the full per-component tree, then the four
@@ -53,7 +52,7 @@ const ColorCircle: FC<ColorCircleProps> = ({ color, onChange, label, readOnly })
         presets={[{ label: 'Presets', defaultOpen: true, colors: PRESET_COLORS }]}
         className={styles.colorCircle}
       />
-      <Typography.Text style={{ fontSize: 12 }}>{label}</Typography.Text>
+      <Typography.Text className={styles.colorCircleLabel}>{label}</Typography.Text>
     </div>
   );
 };
@@ -92,16 +91,6 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
 
   const { styles } = useStyles();
 
-  const labelSpan = theme.labelSpan ?? 6;
-  const layout = theme.layout;
-
-  const handleSpanChange = (val: number): void => {
-    changeThemeInternal({
-      ...theme,
-      labelSpan: val,
-      componentSpan: 24 - val,
-    });
-  };
 
   const primaryColor = theme.application?.primaryColor;
   const errorColor = theme.application?.errorColor;
@@ -110,18 +99,11 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
   const infoColor = theme.application?.infoColor;
 
   return (
-    <div style={{ padding: '0 0 0px' }}>
+    <div>
       {section === 'theme' && (
         <>
           <Card
-            title={(
-              <div>
-                <h4 style={{ marginBottom: 4 }}>Theme</h4>
-                <span style={{ color: '#999', fontSize: '12px' }}>
-                  Select a theme to apply to your application.
-                </span>
-              </div>
-            )}
+            title={<CardTitle title="Theme" description="Select a theme to apply to your application." />}
           >
             <Radio.Group
               value={normalizeColorScheme(theme.sidebar)}
@@ -143,7 +125,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             <Row gutter={[32, 24]}>
               <Col xs={24} md={8}>
                 <h4>Colours</h4>
-                <Typography.Text type="secondary" style={{ display: 'block', fontSize: 12 }}>
+                <Typography.Text type="secondary" className={styles.sectionHint}>
                   Select a circle below to choose your desired colour.
                 </Typography.Text>
                 <Space size={16} wrap>
@@ -157,7 +139,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
 
               <Col xs={24} md={8}>
                 <h4>Text Colours</h4>
-                <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 12, fontSize: 12 }}>
+                <Typography.Text type="secondary" className={styles.sectionHint}>
                   Select a circle below to choose your desired colour.
                 </Typography.Text>
                 <Space size={16} wrap>
@@ -168,7 +150,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
 
               <Col xs={24} md={8}>
                 <h4>Component and Page</h4>
-                <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 12, fontSize: 12 }}>
+                <Typography.Text type="secondary" className={styles.sectionHint}>
                   Select a circle below to choose your desired colour.
                 </Typography.Text>
                 <Space size={16} wrap>
@@ -179,29 +161,22 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
           </Card>
           {/* Preview Card */}
           <Card
-            title={(
-              <div>
-                <h4 style={{ marginBottom: 4 }}>Preview Card</h4>
-                <span style={{ color: '#999', fontSize: '12px' }}>
-                  Preview the default appearance for theme settings.
-                </span>
-              </div>
-            )}
+            title={<CardTitle title="Preview Card" description="Preview the default appearance for theme settings." />}
           >
             <Row gutter={24}>
               <Col xs={24} md={8}>
-                <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Alerts</Typography.Text>
+                <Typography.Text strong className={styles.sectionLabel}>Alerts</Typography.Text>
                 <AlertsExample />
               </Col>
 
               <Col xs={24} md={8}>
-                <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Forms</Typography.Text>
+                <Typography.Text strong className={styles.sectionLabel}>Forms</Typography.Text>
                 <InputStatesPreview />
               </Col>
 
               <Col xs={24} md={8}>
-                <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Buttons</Typography.Text>
-                <Space orientation="vertical" style={{ width: '100%' }} size="small">
+                <Typography.Text strong className={styles.sectionLabel}>Buttons</Typography.Text>
+                <Space orientation="vertical" className={styles.space} size="small">
                   <Button type="primary" block style={{ background: primaryColor, borderColor: primaryColor }}>Primary</Button>
                   <Button danger block>Error</Button>
                   <Button block style={{ color: successColor, borderColor: successColor }}>Secondary</Button>
@@ -221,85 +196,21 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
       )}
       {section === 'input' && (
         <>
-          {/* Form Span Settings: label layout/spacing only affects input (form-item) components */}
-          <div style={{ marginBottom: 24 }}>
-            <Space align="center" style={{ marginBottom: 4 }}>
-              <Typography.Title level={5} style={{ margin: 0 }}>Form Span Settings</Typography.Title>
-              <Tooltip title="The layout uses a 24-column grid system by default. Choose between vertical or horizontal layout. You can customize how much space each element takes by setting the label span and wrapper span.">
-                <QuestionCircleOutlined style={{ color: '#1890ff', cursor: 'help' }} />
-              </Tooltip>
-            </Space>
-            <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 16, fontSize: 12 }}>
-              Configure how form labels and controls are positioned using a 24-column grid system.
-            </Typography.Text>
-
-            <Radio.Group
-              value={layout}
-              onChange={(e) => changeThemeInternal({ ...theme, layout: e.target.value as FormItemLayout })}
-              disabled={readOnly}
-              optionType="button"
-              buttonStyle="solid"
-              style={{ marginBottom: 16 }}
-            >
-              <Radio.Button value="vertical">Vertical</Radio.Button>
-              <Radio.Button value="horizontal">Horizontal</Radio.Button>
-            </Radio.Group>
-
-            {layout === 'horizontal' && (
-              <div style={{ maxWidth: 300 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <Typography.Text>Label: {labelSpan}</Typography.Text>
-                  <Typography.Text>Component: {24 - labelSpan}</Typography.Text>
-                </div>
-                <Slider
-                  min={0}
-                  max={24}
-                  value={labelSpan}
-                  onChange={handleSpanChange}
-                  disabled={readOnly}
-                  tooltip={{ formatter: (v) => `Label: ${v}, Control: ${24 - (v ?? 0)}` }}
-                  className={styles.slider}
-                />
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <Typography.Text>Label Align</Typography.Text>
-                </div>
-                <Radio.Group
-                  value={theme.labelAlign}
-                  onChange={(e) => changeThemeInternal({ ...theme, labelAlign: e.target.value as FormLabelAlign })}
-                  disabled={readOnly}
-                  optionType="button"
-                  buttonStyle="solid"
-                  style={{ marginBottom: 16 }}
-                >
-                  <Radio.Button value="left">Left</Radio.Button>
-                  <Radio.Button value="right">Right</Radio.Button>
-                </Radio.Group>
-              </div>
-            )}
-
-            {/* Same value as Form Settings > Appearance > Colon; a form's own setting takes precedence. */}
-            <Space align="center" style={{ display: 'flex' }}>
-              <Switch
-                id="theme-colon"
-                size="small"
-                checked={theme.colon ?? true}
-                onChange={(checked) => changeThemeInternal({ ...theme, colon: checked })}
-                disabled={readOnly}
+          <Card
+            title={(
+              <CardTitle
+                title="Form Span settings"
+                description="The layout uses a 24-column grid system by default. Choose between vertical or horizontal layout. You can customize how much space each element takes by setting the label span and wrapper span."
               />
-              <label htmlFor="theme-colon">Colon</label>
-              <Tooltip title="Whether a colon is displayed after labels (only effective when layout is horizontal). Used by forms that don't set their own Colon in Form Settings.">
-                <QuestionCircleOutlined style={{ color: '#1890ff', cursor: 'help' }} />
-              </Tooltip>
-            </Space>
-          </div>
-
-          {/* Group Defaults: one shared appearance form for every input component */}
+            )}
+          >
+            <FormLayoutSettingsPanel value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
+          </Card>
           <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
         </>
       )}
       {(section === 'inline' || section === 'standard' || section === 'layout') && (
         <>
-          {/* Group Defaults: one shared appearance form for every component in this style group */}
           <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
         </>
       )}

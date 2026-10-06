@@ -50,9 +50,9 @@ export interface IConfigurableTheme {
   labelSpan?: number | undefined;
   componentSpan?: number | undefined;
 
-  labelAlign?: FormLabelAlign;
-  layout?: FormItemLayout;
-  colon?: boolean;
+  labelAlign?: FormLabelAlign | undefined;
+  layout?: FormItemLayout | undefined;
+  colon?: boolean | undefined;
   components?: { [key: string]: unknown };
   /**
    * Per-style-group appearance defaults (Input/Inline/Standard/Layout Components tabs). Every

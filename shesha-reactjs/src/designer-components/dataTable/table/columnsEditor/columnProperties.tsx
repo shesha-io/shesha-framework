@@ -87,6 +87,7 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
         linkToModelMetadata: linkToModelMetadata as FormAction,
       }}
       className={sheshaStyles.verticalSettingsClass}
+      isSettingsForm={true}
     />
   );
 };

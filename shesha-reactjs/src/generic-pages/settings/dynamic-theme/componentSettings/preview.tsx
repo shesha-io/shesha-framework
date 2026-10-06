@@ -8,6 +8,7 @@ import { IShaFormInstance } from "@/interfaces";
 import { getPreviewComponentModel, getPreviewValue, getPreviewVariants, IPreviewVariant } from "./previewModel";
 import { ComponentPreviewContext } from "@/providers/componentPreview";
 import { isDefined, isNotNullOrWhiteSpace } from "@/utils";
+import { CardTitle } from "../cardTitle";
 
 export interface IComponentDefaultsPreviewProps {
   componentDefinition: IToolboxComponent;
@@ -103,12 +104,10 @@ export const ComponentDefaultsPreview: FC<IComponentDefaultsPreviewProps> = ({ c
     <Card
       className={styles.previewSection}
       title={(
-        <div>
-          <h4 style={{ marginBottom: 4 }}>{isNotNullOrWhiteSpace(componentTitle) ? componentTitle : 'Component'} Preview</h4>
-          <span style={{ color: '#999', fontSize: '12px' }}>
-            Preview the default appearance for {isNotNullOrWhiteSpace(componentTitle) ? componentTitle : 'component'}
-          </span>
-        </div>
+        <CardTitle
+          title={`${isNotNullOrWhiteSpace(componentTitle) ? componentTitle : 'Component'} Preview`}
+          description={`Preview the default appearance for ${isNotNullOrWhiteSpace(componentTitle) ? componentTitle : 'component'}`}
+        />
       )}
     >
       <ComponentPreviewContext.Provider value={true}>

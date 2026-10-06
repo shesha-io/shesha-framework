@@ -204,7 +204,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
         {/* updateModelIfChanged keeps the instance's model in step with the stored theme entry —
             without it the provider never registers the theme values as the model, so every value
             reports as 'Inherited' and Reset to default/Override state never reflects reality. */}
-        <Space orientation="vertical" size={16} style={{ width: '100%', height: '100%', flexWrap: 'nowrap' }}>
+        <Space orientation="vertical" size={16} className={styles.fullWidth}>
           <DefaultModelProvider key={componentType ?? 'none'} name="Component Default Styles" model={initialModel} defaultModel={defaultStyles} updateModelIfChanged>
             <ComponentDefaultsSettings componentTitle={componentTitle} componentType={componentType} markup={appearanceMarkup} initialModel={initialModel} readonly={readonly ?? false} onChange={handleFormDataChange} />
           </DefaultModelProvider>

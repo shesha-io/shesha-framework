@@ -1,4 +1,4 @@
-import { Form } from 'antd';
+import { Card, Form } from 'antd';
 import { FC, useMemo } from 'react';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { DEFAULT_FORM_SETTINGS, FormMarkupWithSettings } from '@/providers/form/models';
@@ -6,7 +6,7 @@ import { IConfigurableTheme, ThemeComponentGroup } from '@/providers/theme/conte
 import { StandardAppearancePanelConfig } from '@/form-factory/interfaces';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
 import { useStyles } from './styles/styles';
-import { isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { CardTitle } from './cardTitle';
 
 /**
  * The standard appearance panels shared by every component in a theme tab. 'dimensions' (width/
@@ -18,13 +18,6 @@ const GROUP_APPEARANCE_PANELS: Record<ThemeComponentGroup, StandardAppearancePan
   inline: ['font', 'border', 'background', 'shadow'],
   layout: ['border', 'background', 'shadow', 'marginPadding'],
   standard: ['font', 'marginPadding'],
-};
-
-const GROUP_LABELS: Record<ThemeComponentGroup, string> = {
-  input: 'Input Components',
-  inline: 'Inline Components',
-  standard: 'Standard Components',
-  layout: 'Layout Components',
 };
 
 export interface IGroupSettingsPanelProps {
@@ -63,11 +56,17 @@ export const GroupSettingsPanel: FC<IGroupSettingsPanelProps> = ({ group, value:
     });
   };
 
+  const groupTitle = group.charAt(0).toUpperCase() + group.slice(1);
+
   return (
-    <>
-      <span style={{ color: '#999', fontSize: '12px' }}>
-        Shared default appearance for every {isNotNullOrWhiteSpace(GROUP_LABELS[group]) ? GROUP_LABELS[group].toLowerCase() : 'component'} component. Individual components below can still override it.
-      </span>
+    <Card
+      title={(
+        <CardTitle
+          title={`${groupTitle} Defaults`}
+          description={`Shared default appearance for every ${groupTitle} component. Individual components below can still override it.`}
+        />
+      )}
+    >
       <ConfigurableForm
         key={group}
         form={form}
@@ -80,8 +79,7 @@ export const GroupSettingsPanel: FC<IGroupSettingsPanelProps> = ({ group, value:
         isSettingsForm
         layout="vertical"
       />
-    </>
-
+    </Card>
   );
 };
 

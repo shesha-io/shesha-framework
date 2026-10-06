@@ -49,6 +49,7 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
           initialValues={item}
           onValuesChange={debouncedSave}
           className={sheshaStyles.verticalSettingsClass}
+          isSettingsForm={true}
         />
       </SourceFilesFolderProvider>
     );

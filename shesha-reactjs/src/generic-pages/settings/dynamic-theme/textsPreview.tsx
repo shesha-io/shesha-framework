@@ -1,11 +1,13 @@
 import { Space, Typography } from 'antd';
 import { FC } from 'react';
 import { useTheme } from '@/providers';
+import { useStyles } from './styles/styles';
 
 const TextsPreview: FC = () => {
   const { theme } = useTheme();
+  const { styles } = useStyles();
   return (
-    <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
+    <Space orientation="vertical" size="middle" className={styles.space}>
       <Typography.Text style={{ color: theme.text?.default }}>
         Default text
       </Typography.Text>
