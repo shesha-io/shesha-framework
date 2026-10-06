@@ -61,17 +61,29 @@ export const buildMenuItems = (data: unknown[], args: IBuildMenuItemsArgs): Butt
       return sortRows(rows).map(toButtonItem);
 
     const { propertyName, sorting: groupDirection } = groupLevels[levelIndex];
+    const groupValues = new Map<string, unknown>();
     const groups = new Map<string, MenuRow[]>();
     rows.forEach((p) => {
-      const groupLabel = String(p?.[propertyName] ?? '');
+      const groupValue = p?.[propertyName];
+      const groupLabel = String(groupValue ?? '');
+      groupValues.set(groupLabel, groupValue);
       const groupRows = groups.get(groupLabel);
       if (groupRows) groupRows.push(p);
       else groups.set(groupLabel, [p]);
     });
 
-    const groupEntries = Array.from(groups.entries()).sort(([a], [b]) => (
-      groupDirection === 'desc' ? b.localeCompare(a) : a.localeCompare(b)
-    ));
+    const groupEntries = Array.from(groups.entries()).sort(([labelA], [labelB]) => {
+      const valueA = groupValues.get(labelA);
+      const valueB = groupValues.get(labelB);
+      const result = valueA === undefined || valueA === null
+        ? (valueB === undefined || valueB === null ? 0 : -1)
+        : valueB === undefined || valueB === null
+          ? 1
+          : typeof valueA === 'number' && typeof valueB === 'number'
+            ? valueA - valueB
+            : labelA.localeCompare(labelB);
+      return groupDirection === 'desc' ? -result : result;
+    });
 
     return groupEntries.map(([groupLabel, groupRows], index) => {
       const groupKey = groupLabel === '' ? `_blank-${index}` : groupLabel;
