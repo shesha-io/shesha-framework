@@ -2,6 +2,83 @@ import { evaluateString, useDataContextManager, useFormData, useGlobalState } fr
 import { Key } from 'react';
 import { IDataSourceArguments } from './model';
 import { buildUrl } from '@/utils/url';
+import { ButtonGroupItemProps, IButtonItem } from '@/providers/buttonGroupConfigurator/models';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { ButtonType } from 'antd/lib/button';
+import { ISortingItem } from '@/providers/dataTable/interfaces';
+
+interface IBuildMenuItemsArgs extends Pick<IDataSourceArguments, 'labelProperty' | 'tooltipProperty' | 'buttonType' | 'grouping' | 'sorting'> {
+  actionConfiguration?: IConfigurableActionConfiguration;
+}
+
+const sortByItems = (items: ISortingItem[]) => (a: any, b: any) => {
+  for (const { propertyName, sorting } of items) {
+    if (!propertyName) continue;
+    const valueA = a?.[propertyName];
+    const valueB = b?.[propertyName];
+    if (valueA === valueB) continue;
+    const result = valueA === undefined || valueA === null
+      ? -1
+      : valueB === undefined || valueB === null
+        ? 1
+        : valueA < valueB ? -1 : 1;
+    return sorting === 'desc' ? -result : result;
+  }
+  return 0;
+};
+
+export const buildMenuItems = (data: any[], args: IBuildMenuItemsArgs): ButtonGroupItemProps[] => {
+  const { labelProperty, tooltipProperty, buttonType, actionConfiguration, grouping, sorting } = args ?? {};
+
+  const toButtonItem = (p: any): IButtonItem => ({
+    id: p.id,
+    name: p.name,
+    label: p[`${labelProperty}`] || 'Not Configured Properly',
+    tooltip: p[`${tooltipProperty}`],
+    itemType: 'item',
+    itemSubType: 'button',
+    sortOrder: 0,
+    dynamicItem: p,
+    buttonType: buttonType as ButtonType,
+    actionConfiguration: actionConfiguration,
+  });
+
+  const sortItems = sorting?.filter(({ propertyName }) => !!propertyName) ?? [];
+  const sortRows = (rows: any[]) => (sortItems.length ? [...rows].sort(sortByItems(sortItems)) : rows);
+
+  const groupLevels = grouping?.filter(({ propertyName }) => !!propertyName) ?? [];
+
+  const buildLevel = (rows: any[], levelIndex: number, parentPath: string): ButtonGroupItemProps[] => {
+    if (levelIndex >= groupLevels.length)
+      return sortRows(rows).map(toButtonItem);
+
+    const { propertyName } = groupLevels[levelIndex];
+    const groups = new Map<string, any[]>();
+    rows.forEach((p) => {
+      const groupLabel = String(p?.[propertyName] ?? '');
+      const groupRows = groups.get(groupLabel);
+      if (groupRows) groupRows.push(p);
+      else groups.set(groupLabel, [p]);
+    });
+
+    const groupEntries = Array.from(groups.entries()).sort(([a], [b]) => a.localeCompare(b));
+
+    return groupEntries.map(([groupLabel, groupRows], index) => {
+      const path = `${parentPath}/group-${levelIndex}-${groupLabel || index}`;
+      return {
+        id: path,
+        name: groupLabel || `Group ${index + 1}`,
+        label: groupLabel || '(Not specified)',
+        itemType: 'group',
+        sortOrder: 0,
+        hideWhenEmpty: true,
+        childItems: buildLevel(groupRows, levelIndex + 1, path),
+      };
+    });
+  };
+
+  return buildLevel(data, 0, '');
+};
 
 interface IQueryParams {
   [name: string]: Key;

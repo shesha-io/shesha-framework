@@ -71,6 +71,40 @@
       "settingsValidationErrors": []
     },
     {
+      "id": "-jiSdvyFfoSlyO6uwihRk",
+      "type": "dataSortingEditor",
+      "propertyName": "grouping",
+      "label": "Grouping",
+      "labelAlign": "right",
+      "parentId": "rqEyWa_qG99Qo53kIjCKb",
+      "hidden": {
+        "_code": "return !getSettingValue(data?.dataSourceUrl);",
+        "_mode": "code",
+        "_value": false
+      },
+      "description": "Properties to nest items by, in order (e.g. group by module, then by sub-type). Each level renders as a submenu grouping items by distinct value.",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "version": 0
+    },
+    {
+      "id": "H3QPnTrQxACct9KTbbPTq",
+      "type": "dataSortingEditor",
+      "propertyName": "sorting",
+      "label": "Sort By",
+      "labelAlign": "right",
+      "parentId": "rqEyWa_qG99Qo53kIjCKb",
+      "hidden": {
+        "_code": "return !getSettingValue(data?.dataSourceUrl);",
+        "_mode": "code",
+        "_value": false
+      },
+      "description": "Properties to sort items by, in order (applied within each group, when grouping is used).",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "version": 0
+    },
+    {
       "id": "Vl0_92oM-SeCukk5VlgXm",
       "type": "dropdown",
       "propertyName": "buttonType",
