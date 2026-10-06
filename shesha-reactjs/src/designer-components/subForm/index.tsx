@@ -114,7 +114,10 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
       onUpdated: migrateFormApi.withoutFormData(prev.onUpdated),
     }))
     .add<ISubFormComponentProps>(4, (prev) => ({ ...prev, hideLabel: true }))
-    .add<ISubFormComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
+    .add<ISubFormComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
+        .add<ISubFormComponentProps>(6, (prev) => prev.hideLabel === true && prev.labelCol === 0 && prev.wrapperCol === 24
+  ? { ...prev, labelCol: 8, wrapperCol: 16 }
+  : prev),
   settingsFormMarkup: getSettings,
   initModel: (model) => {
     const customProps: ISubFormComponentProps = {
