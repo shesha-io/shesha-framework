@@ -72,6 +72,7 @@ export const buildMenuItems = (data: any[], args: IBuildMenuItemsArgs): ButtonGr
         itemType: 'group',
         sortOrder: 0,
         hideWhenEmpty: true,
+        buttonType: buttonType as ButtonType,
         childItems: buildLevel(groupRows, levelIndex + 1, path),
       };
     });
