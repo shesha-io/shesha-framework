@@ -54,7 +54,6 @@ namespace Shesha.Configuration
             public string? Secondary { get; set; }
         }
 
-        [Obsolete("Never consumed by the frontend; kept only so existing code referencing it still compiles. Will be removed in a future release.")]
         public class MarginPaddingSettings
         {
             public string? FormFields { get; set; }
@@ -76,19 +75,10 @@ namespace Shesha.Configuration
         /// round-trip through the backend instead of being silently dropped.
         /// </summary>
         public ThemeSettings.MarginPaddingSettings? MarginPadding { get; set; }
-        /// <summary>Label alignment for input (form-item) components: "left" | "right".</summary>
         public string? LabelAlign { get; set; }
-        /// <summary>Form layout: "horizontal" | "vertical".</summary>
         public string? Layout { get; set; }
-        /// <summary>Whether input labels show a trailing colon.</summary>
         public bool? Colon { get; set; }
-        /// <summary>Per-component-type appearance overrides, keyed by toolbox component type.</summary>
         public JObject Components { get; set; }
-        /// <summary>
-        /// Per-style-group appearance defaults (Input/Inline/Standard/Layout Components tabs), keyed
-        /// by <c>ThemeComponentGroup</c> ("input" | "inline" | "standard" | "layout"). Every component
-        /// whose <c>styleGroup</c> maps to one of these tiers inherits from it.
-        /// </summary>
         public JObject ComponentGroups { get; set; }
     }
 }
