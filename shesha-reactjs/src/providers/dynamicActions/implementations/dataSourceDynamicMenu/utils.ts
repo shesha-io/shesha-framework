@@ -16,12 +16,12 @@ const sortByItems = (items: ISortingItem[]) => (a: any, b: any) => {
     if (!propertyName) continue;
     const valueA = a?.[propertyName];
     const valueB = b?.[propertyName];
-    if (valueA === valueB) continue;
     const result = valueA === undefined || valueA === null
-      ? -1
+      ? (valueB === undefined || valueB === null ? 0 : -1)
       : valueB === undefined || valueB === null
         ? 1
-        : valueA < valueB ? -1 : 1;
+        : valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+    if (result === 0) continue;
     return sorting === 'desc' ? -result : result;
   }
   return 0;
@@ -52,7 +52,7 @@ export const buildMenuItems = (data: any[], args: IBuildMenuItemsArgs): ButtonGr
     if (levelIndex >= groupLevels.length)
       return sortRows(rows).map(toButtonItem);
 
-    const { propertyName } = groupLevels[levelIndex];
+    const { propertyName, sorting: groupDirection } = groupLevels[levelIndex];
     const groups = new Map<string, any[]>();
     rows.forEach((p) => {
       const groupLabel = String(p?.[propertyName] ?? '');
@@ -61,10 +61,13 @@ export const buildMenuItems = (data: any[], args: IBuildMenuItemsArgs): ButtonGr
       else groups.set(groupLabel, [p]);
     });
 
-    const groupEntries = Array.from(groups.entries()).sort(([a], [b]) => a.localeCompare(b));
+    const groupEntries = Array.from(groups.entries()).sort(([a], [b]) => (
+      groupDirection === 'desc' ? b.localeCompare(a) : a.localeCompare(b)
+    ));
 
     return groupEntries.map(([groupLabel, groupRows], index) => {
-      const path = `${parentPath}/group-${levelIndex}-${groupLabel || index}`;
+      const groupKey = groupLabel === '' ? `_blank-${index}` : groupLabel;
+      const path = `${parentPath}/group-${levelIndex}-${groupKey}`;
       return {
         id: path,
         name: groupLabel || `Group ${index + 1}`,

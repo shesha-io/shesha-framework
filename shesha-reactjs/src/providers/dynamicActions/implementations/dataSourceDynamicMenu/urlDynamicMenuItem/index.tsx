@@ -32,7 +32,7 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
     return buildMenuItems(data, { labelProperty, tooltipProperty, buttonType, actionConfiguration, grouping, sorting });
-  }, [item, data, configurationItemMode]);
+  }, [item, data, configurationItemMode, settings]);
 
   return operations;
 };
