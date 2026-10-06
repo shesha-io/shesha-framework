@@ -75,10 +75,7 @@ namespace Shesha.Configuration
         /// Legacy margin/padding presets. No longer seeded or read; kept so existing stored values
         /// round-trip through the backend instead of being silently dropped.
         /// </summary>
-#pragma warning disable CS0618 // MarginPaddingSettings is obsolete
-        [Obsolete("Never consumed by the frontend; kept only so existing code referencing it still compiles. Will be removed in a future release.")]
         public ThemeSettings.MarginPaddingSettings? MarginPadding { get; set; }
-#pragma warning restore CS0618
         /// <summary>Label alignment for input (form-item) components: "left" | "right".</summary>
         public string? LabelAlign { get; set; }
         /// <summary>Form layout: "horizontal" | "vertical".</summary>
