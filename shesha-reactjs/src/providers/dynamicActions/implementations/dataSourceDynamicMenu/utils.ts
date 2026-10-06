@@ -6,16 +6,19 @@ import { ButtonGroupItemProps, IButtonItem } from '@/providers/buttonGroupConfig
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { ButtonType } from 'antd/lib/button';
 import { ISortingItem } from '@/providers/dataTable/interfaces';
+import { IFullAuditedEntity } from '@/publicJsApis/entities';
 
 interface IBuildMenuItemsArgs extends Pick<IDataSourceArguments, 'labelProperty' | 'tooltipProperty' | 'buttonType' | 'grouping' | 'sorting'> {
   actionConfiguration?: IConfigurableActionConfiguration;
 }
 
-const sortByItems = (items: ISortingItem[]) => (a: any, b: any) => {
+type MenuRow = Record<string, unknown>;
+
+const sortByItems = (items: ISortingItem[]) => (a: MenuRow, b: MenuRow) => {
   for (const { propertyName, sorting } of items) {
     if (!propertyName) continue;
-    const valueA = a?.[propertyName];
-    const valueB = b?.[propertyName];
+    const valueA = a?.[propertyName] as string | number | undefined | null;
+    const valueB = b?.[propertyName] as string | number | undefined | null;
     const result = valueA === undefined || valueA === null
       ? (valueB === undefined || valueB === null ? 0 : -1)
       : valueB === undefined || valueB === null
@@ -31,34 +34,34 @@ export const buildMenuItems = (data: unknown[], args: IBuildMenuItemsArgs): Butt
   const { labelProperty, tooltipProperty, buttonType, actionConfiguration, grouping, sorting } = args ?? {};
 
   const validRows = (data ?? []).filter(
-    (p): p is Record<string, unknown> =>
+    (p): p is MenuRow =>
       typeof p === 'object' && p !== null && !Array.isArray(p),
   );
 
-  const toButtonItem = (p: any): IButtonItem => ({
-    id: p.id,
-    name: p.name,
-    label: p[`${labelProperty}`] || 'Not Configured Properly',
-    tooltip: p[`${tooltipProperty}`],
+  const toButtonItem = (p: MenuRow): IButtonItem => ({
+    id: p.id as string,
+    name: p.name as string,
+    label: (p[`${labelProperty}`] as string) || 'Not Configured Properly',
+    tooltip: p[`${tooltipProperty}`] as string,
     itemType: 'item',
     itemSubType: 'button',
     sortOrder: 0,
-    dynamicItem: p,
+    dynamicItem: p as unknown as IFullAuditedEntity,
     buttonType: buttonType as ButtonType,
     actionConfiguration: actionConfiguration,
   });
 
   const sortItems = sorting?.filter(({ propertyName }) => !!propertyName) ?? [];
-  const sortRows = (rows: any[]) => (sortItems.length ? [...rows].sort(sortByItems(sortItems)) : rows);
+  const sortRows = (rows: MenuRow[]) => (sortItems.length ? [...rows].sort(sortByItems(sortItems)) : rows);
 
   const groupLevels = grouping?.filter(({ propertyName }) => !!propertyName) ?? [];
 
-  const buildLevel = (rows: any[], levelIndex: number, parentPath: string): ButtonGroupItemProps[] => {
+  const buildLevel = (rows: MenuRow[], levelIndex: number, parentPath: string): ButtonGroupItemProps[] => {
     if (levelIndex >= groupLevels.length)
       return sortRows(rows).map(toButtonItem);
 
     const { propertyName, sorting: groupDirection } = groupLevels[levelIndex];
-    const groups = new Map<string, any[]>();
+    const groups = new Map<string, MenuRow[]>();
     rows.forEach((p) => {
       const groupLabel = String(p?.[propertyName] ?? '');
       const groupRows = groups.get(groupLabel);
