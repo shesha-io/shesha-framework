@@ -30,7 +30,10 @@ const sortByItems = (items: ISortingItem[]) => (a: any, b: any) => {
 export const buildMenuItems = (data: unknown[], args: IBuildMenuItemsArgs): ButtonGroupItemProps[] => {
   const { labelProperty, tooltipProperty, buttonType, actionConfiguration, grouping, sorting } = args ?? {};
 
-  const validRows = (data ?? []).filter((p): p is Record<string, any> => p !== null && p !== undefined);
+  const validRows = (data ?? []).filter(
+    (p): p is Record<string, unknown> =>
+      typeof p === 'object' && p !== null && !Array.isArray(p),
+  );
 
   const toButtonItem = (p: any): IButtonItem => ({
     id: p.id,
