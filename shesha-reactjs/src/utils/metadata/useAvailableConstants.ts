@@ -133,6 +133,7 @@ const ALL_STANDARD_CONSTANTS = [
     SheshaConstants.globalState,
     SheshaConstants.setGlobalState,
     SheshaConstants.selectedRow,
+    SheshaConstants.dynamicItem,
     SheshaConstants.contexts,
     SheshaConstants.pageContext,
     SheshaConstants.http,
