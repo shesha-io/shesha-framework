@@ -63,7 +63,7 @@ export const GroupSettingsPanel: FC<IGroupSettingsPanelProps> = ({ group, value:
       title={(
         <CardTitle
           title={`${groupTitle} Defaults`}
-          description={`Shared default appearance for every ${groupTitle} component. Individual components below can still override it.`}
+          description={`Shared default appearance for every ${groupTitle.toLowerCase()} component. Individual components can still override it.`}
         />
       )}
     >
