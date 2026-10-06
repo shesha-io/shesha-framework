@@ -66,7 +66,7 @@ export const buildMenuItems = (data: unknown[], args: IBuildMenuItemsArgs): Butt
     rows.forEach((p) => {
       const groupValue = p?.[propertyName];
       const groupLabel = String(groupValue ?? '');
-      groupValues.set(groupLabel, groupValue);
+      if (!groupValues.has(groupLabel)) groupValues.set(groupLabel, groupValue);
       const groupRows = groups.get(groupLabel);
       if (groupRows) groupRows.push(p);
       else groups.set(groupLabel, [p]);
