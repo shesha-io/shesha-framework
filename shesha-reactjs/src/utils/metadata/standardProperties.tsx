@@ -115,7 +115,7 @@ export const registerSelectedRowAction: MetadataBuilderAction = (builder, name =
 export const registerDynamicItemAction: MetadataBuilderAction = (builder, name = "dynamicItem") => {
   builder.addCustom(name, "Entity of the dynamic menu item that triggered this action (undefined if not available)", () => {
     const definition: TypeDefinition = {
-      typeName: 'any',
+      typeName: 'unknown',
       files: [],
     };
     return Promise.resolve(definition);
