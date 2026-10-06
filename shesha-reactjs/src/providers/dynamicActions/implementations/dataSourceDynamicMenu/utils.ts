@@ -27,8 +27,10 @@ const sortByItems = (items: ISortingItem[]) => (a: any, b: any) => {
   return 0;
 };
 
-export const buildMenuItems = (data: any[], args: IBuildMenuItemsArgs): ButtonGroupItemProps[] => {
+export const buildMenuItems = (data: unknown[], args: IBuildMenuItemsArgs): ButtonGroupItemProps[] => {
   const { labelProperty, tooltipProperty, buttonType, actionConfiguration, grouping, sorting } = args ?? {};
+
+  const validRows = (data ?? []).filter((p): p is Record<string, any> => p !== null && p !== undefined);
 
   const toButtonItem = (p: any): IButtonItem => ({
     id: p.id,
@@ -81,7 +83,7 @@ export const buildMenuItems = (data: any[], args: IBuildMenuItemsArgs): ButtonGr
     });
   };
 
-  return buildLevel(data, 0, '');
+  return buildLevel(validRows, 0, '');
 };
 
 interface IQueryParams {
