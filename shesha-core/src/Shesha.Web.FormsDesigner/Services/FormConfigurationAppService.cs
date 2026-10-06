@@ -36,6 +36,7 @@ namespace Shesha.Web.FormsDesigner.Services
         private readonly IRepository<ConfigurationItemFolder, Guid> _folderRepository;
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly IRepository<FrontEndApp, Guid> _applicationRepository;
+        private readonly IRepository<FormConfigurationDependency, Guid> _dependencyRepository;
         private readonly IFormManager _formManager;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IVersionedFieldManager _versionedFieldManager;
@@ -45,6 +46,7 @@ namespace Shesha.Web.FormsDesigner.Services
             IRepository<FormConfiguration, Guid> repository,
             IRepository<Module, Guid> moduleRepository,
             IRepository<FrontEndApp, Guid> applicationRepository,
+            IRepository<FormConfigurationDependency, Guid> dependencyRepository,
             IRepository<ConfigurationItemFolder, Guid> folderRepository,
             IFormManager formManager,
             IPermissionedObjectManager permissionedObjectManager,
@@ -53,6 +55,7 @@ namespace Shesha.Web.FormsDesigner.Services
         {
             _moduleRepository = moduleRepository;
             _applicationRepository = applicationRepository;
+            _dependencyRepository = dependencyRepository;
             _folderRepository = folderRepository;
             _formManager = formManager;
             _permissionedObjectManager = permissionedObjectManager;
@@ -211,6 +214,48 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var issuesJson = JsonConvert.SerializeObject(input.Issues, Formatting.Indented);
             await _versionedFieldManager.SetVersionedFieldValueAsync<FormConfiguration, Guid>(form, "issues", issuesJson, false);
+
+            await Repository.UpdateAsync(form);
+        }
+
+        /// <summary>
+        /// Update form dependencies
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task UpdateDependenciesAsync(FormUpdateDependenciesInput input)
+        {
+            var form = await Repository.GetAsync(input.Id);
+            form.Module?.EnsureEditable();
+
+            var existingDependencies = await (await _dependencyRepository.GetAllAsync()).Where(e => e.Form == form).ToListAsync();
+            var toDelete = existingDependencies.Where(e => !input.Dependencies.Any(d => d.Type == e.Type && d.Module == e.Module && d.Name == e.Name)).ToList();
+            foreach (var toDeleteItem in toDelete)
+                await _dependencyRepository.DeleteAsync(toDeleteItem.Id);
+
+            foreach (var inputDep in input.Dependencies)
+            {
+                var dbDep = existingDependencies.FirstOrDefault(e => e.Type == inputDep.Type && e.Module == inputDep.Module && e.Name == inputDep.Name);
+                if (dbDep == null)
+                {
+                    dbDep = new FormConfigurationDependency
+                    {
+                        Form = form,
+                        Type = inputDep.Type,
+                        Module = inputDep.Module,
+                        Name = inputDep.Name,
+                        IsSatisfied = inputDep.IsSatisfied,
+                        HasIssues= inputDep.HasIssues,
+                    };
+                    await _dependencyRepository.InsertAsync(dbDep);
+                }
+                else { 
+                    dbDep.IsSatisfied = inputDep.IsSatisfied;
+                    dbDep.HasIssues = inputDep.HasIssues;
+                    await _dependencyRepository.UpdateAsync(dbDep);
+                }
+            }
 
             await Repository.UpdateAsync(form);
         }

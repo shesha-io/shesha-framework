@@ -1,8 +1,10 @@
 import { IFormAutocompleteSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import { FCUnwrapped } from '@/providers/form/models';
 import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
+import { ValidatableComponentUnwrapped } from './models';
+import { isDefined } from '@/utils';
+import { validateFormReference } from '@/designer-components/configurableItemAutocomplete/utils';
 
-export const FormAutocompleteWrapper: FCUnwrapped<IFormAutocompleteSettingsInputProps> = (props) => {
+export const FormAutocompleteWrapper: ValidatableComponentUnwrapped<IFormAutocompleteSettingsInputProps> = (props) => {
   const { value, onChange, readOnly = false, size } = props;
   return (
     <FormAutocomplete
@@ -13,4 +15,11 @@ export const FormAutocompleteWrapper: FCUnwrapped<IFormAutocompleteSettingsInput
       mode="single"
     />
   );
+};
+
+FormAutocompleteWrapper.validate = async (_model, value, context): Promise<Error[]> => {
+  const typedValue = value as IFormAutocompleteSettingsInputProps["value"];
+  return isDefined(typedValue)
+    ? await validateFormReference(typedValue, context)
+    : [];
 };

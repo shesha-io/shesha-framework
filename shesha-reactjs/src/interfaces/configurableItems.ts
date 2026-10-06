@@ -26,11 +26,12 @@ export const isValidConfigurableItemFullName = (id: ConfigurableItemIdentifier |
   return isConfigurableItemFullName(id) && !isNullOrWhiteSpace(id.module) && !isNullOrWhiteSpace(id.name);
 };
 
+
 export const isValidConfigurableItemIdentifier = (id: ConfigurableItemIdentifier | undefined): id is ConfigurableItemIdentifier => {
   return isValidConfigurableItemFullName(id) || isValidConfigurableItemRawId(id);
 };
 
-export const configurableItemIdentifierToString = (value: ConfigurableItemIdentifier): string => {
+export const configurableItemIdentifierToString = (value: ConfigurableItemIdentifier | string): string => {
   return isConfigurableItemFullName(value)
     ? (isNullOrWhiteSpace(value.module) ? value.name : `${value.module}:${value.name}`)
     : value;

@@ -7,12 +7,13 @@ import { ItemType } from 'antd/es/menu/interface';
 import { isDefined } from '@/utils';
 import { useDynamicModals, useHttpClient } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
+import { extractErrorMessage } from '@/utils/errors';
 
 export type ICustomActionsProps = Pick<ButtonProps, 'size'>;
 
 export const CustomActions: FC<ICustomActionsProps> = (props) => {
   const { formProps, loadForm } = useFormPersister();
-  const { validateFormAsync, getValidationResults } = useFormDesigner();
+  const { validateFormAndSaveResultsAsync, getValidationResults } = useFormDesigner();
   const formId = formProps?.id;
   const httpClient = useHttpClient();
   const { open: openModal } = useDynamicModals();
@@ -56,8 +57,13 @@ export const CustomActions: FC<ICustomActionsProps> = (props) => {
     {
       key: 'validateForm',
       label: 'Validate Form',
-      onClick: () => {
-        return validateFormAsync();
+      onClick: async () => {
+        try {
+          await validateFormAndSaveResultsAsync();
+          message.success('Form validated successfully');
+        } catch (e) {
+          message.error('Form validated failed. ' + extractErrorMessage(e));
+        }
       },
     },
     {

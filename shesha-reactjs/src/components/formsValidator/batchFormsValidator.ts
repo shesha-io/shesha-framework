@@ -1,4 +1,4 @@
-import { ActionParametersDictionary, FormMarkup, HttpClientApi, IConfigurableTheme } from "@/providers";
+import { ActionParametersDictionary, HttpClientApi, IConfigurableTheme } from "@/providers";
 import { FormItem, FormProcessingItem, ValidationResult } from "./models";
 import { JsonLogicTree } from "@react-awesome-query-builder/antd";
 import { extractAjaxResponse, GetAllResponse, IAjaxResponse, IGetAllEntitiesPayload, ISettingsComponent, IToolboxComponentGroup, IToolboxComponents } from "@/interfaces";
@@ -6,18 +6,16 @@ import { buildUrl, isDefined } from "@/utils";
 import { IFormManagerActionsContext } from "@/providers/formManager/contexts";
 import { combineExpressionsWithAnd } from "@/utils/jsonLogic";
 import { toolbarGroupsToComponents } from "@/providers/form/hooks";
-import { ComponentValidationContext, FormValidator } from "@/providers/formDesigner/formValidator";
+import { FormValidator } from "@/providers/formDesigner/formValidator";
 import { FormBuilderFactory } from "@/form-factory/interfaces";
 import { IConfigurableActionDescriptor } from "@/interfaces/configurableAction";
 import { IGetConfigurableActionPayload } from "@/providers/configurableActionsDispatcher/contexts";
-import { getFormSettingsFormMarkup } from "../formDesigner/formSettings";
-import { ConfigurationIssue } from "@/providers/formDesigner/models";
-import { extractErrorMessage } from "@/utils/errors";
 import { IApplicationContext } from "../..";
+import { IConfigurationLoader } from "@/providers/configurationItemsLoader/configurationLoader";
+import { isNullOrWhiteSpace } from "@/utils/nullables";
 
 const URLS = {
   GET_ENTITIES: "/api/services/app/Entities/GetAll",
-  UPDATE_FORM_VALIDATION_RESULTS: "/api/services/Shesha/FormConfiguration/UpdateValidationResults",
 };
 
 const staticFormsFilter = { and: [
@@ -53,6 +51,14 @@ const staticFormsFilter = { and: [
       false,
     ],
   },
+  {
+    "==": [
+      {
+        var: "isTemplate",
+      },
+      false,
+    ],
+  },
 ] };
 
 export type BatchFormsValidatorArgs = {
@@ -64,6 +70,7 @@ export type BatchFormsValidatorArgs = {
   formBuilderFactory: FormBuilderFactory;
   getConfigurableActionOrNull: <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IGetConfigurableActionPayload) => IConfigurableActionDescriptor<TArguments> | null;
   appContext: IApplicationContext;
+  configurationLoader: IConfigurationLoader;
 };
 
 type FormDto = {
@@ -85,24 +92,22 @@ export class BatchFormsValidator {
 
   #theme: IConfigurableTheme;
 
-  #formSettingsFormMarkup: FormMarkup;
-
   #appContext: IApplicationContext;
 
   constructor(args: BatchFormsValidatorArgs) {
     this.#httpClient = args.httpClient;
     this.#formManager = args.formManager;
-    this.#formSettingsFormMarkup = getFormSettingsFormMarkup({ fbf: args.formBuilderFactory });
-
     this.#toolboxComponents = toolbarGroupsToComponents(args.toolboxComponentGroups);
     this.#settingsComponents = args.settingsComponents;
 
     this.#formValidator = new FormValidator({
+      httpClient: args.httpClient,
       toolboxComponents: this.#toolboxComponents,
       settingsComponentGetter: this.getSettingsComponentOrUndefined,
       formBuilderFactory: args.formBuilderFactory,
       getConfigurableActionOrNull: args.getConfigurableActionOrNull,
       appContext: args.appContext,
+      configurationLoader: args.configurationLoader,
     });
     this.#theme = args.theme;
     this.#appContext = args.appContext;
@@ -147,59 +152,14 @@ export class BatchFormsValidator {
 
     // 2. validate markup and settings
     const { flatStructure, settings } = form;
+    if (isNullOrWhiteSpace(form.id))
+      throw new Error("Form id is not defined");
 
-    // 3. collect static (list of used components, etc.)
-    const issues: ConfigurationIssue[] = [];
-    const validationContext: ComponentValidationContext = {
-      path: [],
-      isSettingsForm: settings.isSettingsForm === true,
-      theme: this.#theme,
-      formFlatMarkup: flatStructure,
-      appContext: this.#appContext,
-    };
-    try {
-      await this.#formValidator.validateAllComponentsAsync(flatStructure,
-        validationContext,
-        (component, errors) => {
-          errors.forEach((e) => {
-            issues.push({
-              severity: "error",
-              location: component.id,
-              property: e.field,
-              message: e.message,
-            });
-          });
-        },
-      );
-    } catch (error) {
-      console.error(`Validation of form '${item.module}/${item.name}' failed, id: '${item.id}'`, error);
-      throw error;
-    }
-
-    const settingsErrors = await this.#formValidator.validateFormSettingsAsync(settings, this.#formSettingsFormMarkup);
-    settingsErrors.forEach((e) => {
-      issues.push({
-        severity: "error",
-        location: "settings",
-        property: e.field,
-        message: e.message,
-      });
-    });
-
-    // 4. save results on back-end
-    await this.saveValidationResultsAsync(item.id, issues);
-
-    // 5. return results
-    return { issues };
-  };
-
-  saveValidationResultsAsync = async (formId: string, issues: ConfigurationIssue[]): Promise<void> => {
-    try {
-      const response = await this.#httpClient.post<IAjaxResponse<void>>(URLS.UPDATE_FORM_VALIDATION_RESULTS, { id: formId, issues });
-      extractAjaxResponse(response.data);
-    } catch (error) {
-      console.error(extractErrorMessage(error));
-      throw error;
-    }
+    return await this.#formValidator.validateFormAsync(
+      form.id,
+      flatStructure,
+      settings,
+      { appContext: this.#appContext, theme: this.#theme },
+    );
   };
 }

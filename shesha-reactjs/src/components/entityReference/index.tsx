@@ -18,7 +18,6 @@ import { useAvailableConstantsData } from '@/providers/form/utils';
 import { App, Button, Spin } from 'antd';
 import { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from 'react';
 import * as React from 'react';
-import { ShaIconTypes } from '../iconPicker';
 import { addPx, capPercentageWidth } from '@/utils/style';
 import { useStyles } from './styles/styles';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
@@ -104,7 +103,7 @@ export interface IEntityReferenceProps {
   /** Emotion class for the Dialog modal, portalled to the body for the same reason. */
   modalClassName?: string | undefined;
   displayType?: 'textTitle' | 'icon' | 'displayProperty' | undefined;
-  iconName?: ShaIconTypes | undefined;
+  iconName?: string | undefined;
   textTitle?: string | undefined;
 }
 

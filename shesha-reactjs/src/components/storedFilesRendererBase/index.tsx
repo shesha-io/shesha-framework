@@ -137,7 +137,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   thumbnailStyleCss?: CSSProperties | undefined;
   downloadedFileStyles?: CSSProperties | undefined;
   styleDownloadedFiles?: boolean | undefined;
-  downloadedIcon?: IconType | undefined;
+  downloadedIcon?: IconType | string | undefined;
   gap?: string | number | SizeType | undefined;
   /** Class names for the parts styled by the owning component's Appearance tab. */
   classNames?: IStoredFilesClassNames | undefined;

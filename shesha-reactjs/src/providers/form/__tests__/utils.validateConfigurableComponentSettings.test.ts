@@ -10,7 +10,8 @@ import { ValidateError, Values } from '@rc-component/async-validator';
 import { toolbarComponentsMapToComponents } from '../hooks';
 import { IConfigurableActionDescriptor } from '@/interfaces/configurableAction';
 import { IGetConfigurableActionPayload } from '@/providers/configurableActionsDispatcher/contexts';
-import { FormValidator } from '@/providers/formDesigner/formValidator';
+import { FormValidator, NULL_DEPENDENCIES_CONTEXT } from '@/providers/formDesigner/formValidator';
+import { createConfigurationLoaderMock, createHttpClientMock } from './mocks';
 
 const getFakeActionDescriptor = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IGetConfigurableActionPayload): IConfigurableActionDescriptor<TArguments> => {
   return {
@@ -26,6 +27,7 @@ const isRequiredValidation = (error: ValidateError): boolean => {
   return !isNullOrWhiteSpace(error.message) && error.message.endsWith('is required');
 };
 
+
 describe('validateConfigurableComponentSettings()', () => {
   const componentDefinitions = getComponentDefinitions();
   const formSettingsMarkup = getFormSettingsFormMarkup({ fbf: makeFormBuliderFactory(componentDefinitions), removeStyleRouter: true });
@@ -39,6 +41,8 @@ describe('validateConfigurableComponentSettings()', () => {
     formBuilderFactory: makeFormBuliderFactory(componentDefinitions),
     getConfigurableActionOrNull: getFakeActionDescriptor,
     appContext: appContext,
+    httpClient: createHttpClientMock(),
+    configurationLoader: createConfigurationLoaderMock(),
   });
   const validationContext: IFormValidationRulesOptions<Values> = {
     validator: formValidator,
@@ -46,6 +50,7 @@ describe('validateConfigurableComponentSettings()', () => {
     componentId: '',
     contextConfigurableActionGetter: () => null,
     path: [],
+    dependencies: NULL_DEPENDENCIES_CONTEXT,
   };
 
   it('should validate default settings', () => {
