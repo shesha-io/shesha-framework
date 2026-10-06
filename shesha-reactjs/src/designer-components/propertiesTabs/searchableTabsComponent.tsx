@@ -4,7 +4,6 @@ import { Tabs, Input, Empty, InputRef } from 'antd';
 import ParentProvider from '@/providers/parentProvider';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { useStyles } from './style';
-import { CompactCollapsiblePanelContext } from '@/components/panel';
 import { SearchOutlined } from '@ant-design/icons';
 import { filterDynamicComponents } from './utils';
 import { ITabPaneProps, IPropertiesTabsComponentProps } from './models';
@@ -195,7 +194,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
       })}
       {newFilteredTabs.length === 0 && searchQuery
         ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
-        : <CompactCollapsiblePanelContext.Provider value={true}>{localTabs}</CompactCollapsiblePanelContext.Provider>}
+        : localTabs}
     </div>
   );
 };

@@ -57,6 +57,19 @@ import { IContainerCheckerComponentProps } from "@/designer-components/container
 import { resolveInputVisibility } from "./inputVisibility";
 
 /**
+ * Header of a collapsible panel in a settings form: a neutral underline (antd's border colour, so it
+ * follows light/dark mode) instead of the ghost panel's primary-colour accent, with no left inset so
+ * the title lines up with the settings below it.
+ */
+const SETTINGS_PANEL_HEADER_STYLES: ICollapsiblePanelComponentProps['headerStyles'] = {
+  border: {
+    borderType: 'custom',
+    border: { bottom: { width: 2, color: 'var(--ant-color-border)', style: 'solid' } },
+  },
+  stylingBoxJson: { _type: 'styleBox', paddingTop: 0, paddingRight: 16, paddingBottom: 0, paddingLeft: 0 },
+};
+
+/**
  * Returns `true` when `propertyName`'s trailing segment (the part after the last `.`) is listed in
  * `exclude`. Used by the standard appearance panels so callers can drop individual sub-inputs,
  * e.g. `exclude: ['align']` removes the input bound to `font.align`.
@@ -204,7 +217,9 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       header: props.header ?? { id: nanoid(), components: [] },
       content: props.content ?? { id: nanoid(), components: [] },
       desktop: { ...props.desktop, stylingBoxJson: { _type: 'styleBox', paddingBottom: 0, paddingLeft: 0, paddingRight: 0, paddingTop: 0, ...props.desktop?.stylingBoxJson } },
-      stylingBoxJson: { _type: 'styleBox', paddingBottom: 0, paddingLeft: 0, paddingRight: 0, paddingTop: 0, ...props.stylingBoxJson },
+      // Settings panels are compact: an 8px top/left inset for their content and a neutral header.
+      stylingBoxJson: { _type: 'styleBox', paddingBottom: 0, paddingLeft: 8, paddingRight: 0, paddingTop: 8, ...props.stylingBoxJson },
+      headerStyles: props.headerStyles ?? SETTINGS_PANEL_HEADER_STYLES,
     };
 
     // update header id and parentId for nested components
