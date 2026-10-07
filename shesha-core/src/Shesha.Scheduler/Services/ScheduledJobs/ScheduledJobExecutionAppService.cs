@@ -11,6 +11,7 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
+using Shesha.GraphQL.Mvc;
 using Shesha.Scheduler.Domain;
 using Shesha.Scheduler.SignalR;
 using Shesha.Services;
@@ -23,7 +24,7 @@ using System.Threading.Tasks;
 namespace Shesha.Scheduler.Services.ScheduledJobs
 {
     [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, ShaPermissionNames.Pages_Maintenance)]
-    public class ScheduledJobExecutionAppService : SheshaAppServiceBase, ITransientDependency
+    public class ScheduledJobExecutionAppService : DynamicCrudAppService<ScheduledJobExecution, DynamicDto<ScheduledJobExecution, Guid>, Guid>, ITransientDependency
     {
         private readonly IRepository<ScheduledJobExecution, Guid> _repository;
         private readonly IMimeMappingService _mimeMappingService;
@@ -32,48 +33,54 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
         public ScheduledJobExecutionAppService(
             IRepository<ScheduledJobExecution, Guid> repository,
             IMimeMappingService mimeMappingService,
-            IStoredFileService storedFileService)
+            IStoredFileService storedFileService) : base(repository)
         {
             _repository = repository;
             _mimeMappingService = mimeMappingService;
             _storedFileService = storedFileService;
         }
 
-        /// <summary>
-        /// Get list of scheduled job executions
-        /// </summary>
-        public async Task<PagedResultDto<DynamicDto<ScheduledJobExecution, Guid>>> GetAllAsync(FilteredPagedAndSortedResultRequestDto input)
+        /// keep the most recent executions first when no explicit sorting is requested
+        protected override IQueryable<ScheduledJobExecution> ApplySorting(IQueryable<ScheduledJobExecution> query, PropsFilteredPagedAndSortedResultRequestDto input)
         {
-            var query = _repository.GetAll()
-                .ApplyFilter<ScheduledJobExecution, Guid>(input.Filter);
-
-            var totalCount = await AsyncQueryableExecuter.CountAsync(query);
-
-            query = string.IsNullOrWhiteSpace(input.Sorting)
+            return string.IsNullOrWhiteSpace(input.Sorting)
                 ? query.OrderByDescending(e => e.StartedOn)
-                : query.OrderBy(input.Sorting);
-            query = query.PageBy(input);
-
-            var entities = await AsyncQueryableExecuter.ToListAsync(query);
-
-            var settings = new DynamicMappingSettings { UseDtoForEntityReferences = true };
-            var items = new List<DynamicDto<ScheduledJobExecution, Guid>>();
-            foreach (var entity in entities)
-            {
-                items.Add(await MapToDynamicDtoAsync<ScheduledJobExecution, Guid>(entity, settings));
-            }
-
-            return new PagedResultDto<DynamicDto<ScheduledJobExecution, Guid>>(totalCount, items);
+                : base.ApplySorting(query, input);
         }
 
-        /// <summary>
-        /// Get scheduled job execution by id
-        /// </summary>
-        public async Task<DynamicDto<ScheduledJobExecution, Guid>> GetAsync(EntityDto<Guid> input)
+        #region Execution records are written by the scheduler only - no write endpoints
+
+        [NonAction]
+        public override Task<DynamicDto<ScheduledJobExecution, Guid>> CreateAsync(DynamicDto<ScheduledJobExecution, Guid> input)
         {
-            var entity = await _repository.GetAsync(input.Id);
-            return await MapToDynamicDtoAsync<ScheduledJobExecution, Guid>(entity, new DynamicMappingSettings { UseDtoForEntityReferences = true });
+            return base.CreateAsync(input);
         }
+
+        [NonAction]
+        public override Task<GraphQLDataResult<ScheduledJobExecution>> CreateGqlAsync(string properties, DynamicDto<ScheduledJobExecution, Guid> input)
+        {
+            return base.CreateGqlAsync(properties, input);
+        }
+
+        [NonAction]
+        public override Task<DynamicDto<ScheduledJobExecution, Guid>> UpdateAsync(DynamicDto<ScheduledJobExecution, Guid> input)
+        {
+            return base.UpdateAsync(input);
+        }
+
+        [NonAction]
+        public override Task<GraphQLDataResult<ScheduledJobExecution>> UpdateGqlAsync(string properties, DynamicDto<ScheduledJobExecution, Guid> input)
+        {
+            return base.UpdateGqlAsync(properties, input);
+        }
+
+        [NonAction]
+        public override Task DeleteAsync(EntityDto<Guid> input)
+        {
+            return base.DeleteAsync(input);
+        }
+
+        #endregion
 
         /// <summary>
         /// Get event log items for the specified job execution
