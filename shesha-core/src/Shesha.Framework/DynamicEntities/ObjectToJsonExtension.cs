@@ -50,6 +50,9 @@ namespace Shesha.DynamicEntities
 
             foreach (var prop in props)
             {
+                // skip delegates
+                if (typeof(Delegate).IsAssignableFrom(prop.PropertyType))
+                    continue;
                 try
                 {
                     if (!jobj.ContainsKey(prop.Name.ToCamelCase()))

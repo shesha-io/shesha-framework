@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
+using Shesha.Authorization;
 using Shesha.Configuration.Runtime;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
@@ -19,6 +20,7 @@ using Shesha.GraphQL.Middleware;
 using Shesha.GraphQL.Mvc;
 using Shesha.GraphQL.Provider;
 using Shesha.Metadata;
+using Shesha.Permissions.Entity;
 using Shesha.QuickSearch;
 using Shesha.Reflection;
 using Shesha.Specifications;
@@ -135,7 +137,8 @@ namespace Shesha
         public override async Task<PagedResultDto<TEntityDto>> GetAllAsync(TGetAllInput input)
         {
             CheckGetAllPermission();
-
+            
+            var permissionedEntityProxyFactory = IocManager.Resolve<IPermissionedEntityProvider>();
             var query = CreateFilteredQuery(input);
 
             var totalCount = await AsyncQueryableExecuter.CountAsync(query);
@@ -143,7 +146,9 @@ namespace Shesha
             query = ApplySorting(query, input);
             query = ApplyPaging(query, input);
 
-            var entities = await AsyncQueryableExecuter.ToListAsync(query);
+            var entities = (await AsyncQueryableExecuter.ToListAsync(query))
+                .Select(x => permissionedEntityProxyFactory.GetNewProxiedPermissionedEntity(x))
+                .ToList();
 
             return new PagedResultDto<TEntityDto>(
                 totalCount,
@@ -206,6 +211,7 @@ namespace Shesha
                     s.UserContext = new GraphQLUserContext
                     {
                         User = httpContext.User,
+                        IsGranted = IsGranted,
                     };
                     s.CancellationToken = httpContext.RequestAborted;
                 }
@@ -275,6 +281,7 @@ namespace Shesha
                     s.UserContext = new GraphQLUserContext
                     {
                         User = httpContext.User,
+                        IsGranted = IsGranted,
                     };
                     s.CancellationToken = httpContext.RequestAborted;
                 }
@@ -286,7 +293,8 @@ namespace Shesha
                 throw new AbpValidationException(string.Join("\r\n", validationResults.Select(r => r.ErrorMessage)), validationResults);
             }
 
-            return new GraphQLDataResult<PagedResultDto<TEntity>>(result);
+            var res = new GraphQLDataResult<PagedResultDto<TEntity>>(result);
+            return res;
         }
 
         private List<string> ExtractPropertiesInDotNotation(string properties)
