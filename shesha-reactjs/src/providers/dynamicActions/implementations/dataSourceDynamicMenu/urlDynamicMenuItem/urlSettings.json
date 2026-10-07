@@ -156,6 +156,7 @@
       "propertyName": "actionConfiguration",
       "label": "Action configuration",
       "hidden": false,
+      "includeDynamicItem": true,
       "validate": {},
       "settingsValidationErrors": [],
       "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",

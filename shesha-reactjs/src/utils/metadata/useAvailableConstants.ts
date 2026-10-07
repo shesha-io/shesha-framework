@@ -133,7 +133,6 @@ const ALL_STANDARD_CONSTANTS = [
     SheshaConstants.globalState,
     SheshaConstants.setGlobalState,
     SheshaConstants.selectedRow,
-    SheshaConstants.dynamicItem,
     SheshaConstants.contexts,
     SheshaConstants.pageContext,
     SheshaConstants.http,
@@ -165,14 +164,19 @@ export const useAvailableConstantsMetadata = ({ addGlobalConstants, onBuild, sta
         }
 
         return meta;
-    }, [addGlobalConstants, globalProps]);
+    }, [addGlobalConstants, globalProps, standardConstants]);
 
     return response;
 };
 
-export const useAvailableStandardConstantsMetadata = (): IObjectMetadata => {
+const ALL_STANDARD_CONSTANTS_WITH_DYNAMIC_ITEM = [...ALL_STANDARD_CONSTANTS, SheshaConstants.dynamicItem];
+
+export const useAvailableStandardConstantsMetadata = (args?: { includeDynamicItem?: boolean }): IObjectMetadata => {
     const availableConstants = useAvailableConstantsMetadata({
         addGlobalConstants: true,
+        standardConstants: args?.includeDynamicItem
+            ? ALL_STANDARD_CONSTANTS_WITH_DYNAMIC_ITEM
+            : ALL_STANDARD_CONSTANTS,
     });
     return availableConstants;
 };
