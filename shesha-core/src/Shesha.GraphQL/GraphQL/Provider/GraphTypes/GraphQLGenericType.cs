@@ -5,12 +5,14 @@ using GraphQL.Types;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using Newtonsoft.Json;
+using Shesha.Authorization;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.Extensions;
+using Shesha.GraphQL.Middleware;
 using Shesha.Json;
 using Shesha.JsonEntities;
 using Shesha.Reflection;
@@ -145,6 +147,14 @@ namespace Shesha.GraphQL.Provider.GraphTypes
             return type.GetNamedType().Name;
         }
 
+        private void PermissionField(PropertyInfo propertyInfo, Type type, Func<IResolveFieldContext, object?>? resolveFunc = null)
+        {
+            if (resolveFunc == null)
+                Field(propertyInfo.Name, type).ApplyMiddleware<GraphQLPermissionEntityFieldMiddleware>();
+            else
+                Field(propertyInfo.Name, type).Resolve(resolveFunc).ApplyMiddleware<GraphQLPermissionEntityFieldMiddleware>();
+        }
+
         private void EmitField(PropertyInfo propertyInfo)
         {
             if (propertyInfo.Name.Contains("Revision")) 
@@ -156,8 +166,9 @@ namespace Shesha.GraphQL.Provider.GraphTypes
 
             if (propertyInfo.PropertyType.IsJsonEntityType())
             {
-                Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false))
-                    .Resolve(context => {
+                PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false),
+                    context =>
+                    {
                         var jsonEntity = propertyInfo.GetValue(context.Source) as IJsonEntity;
                         return jsonEntity != null
                             ? new RawJson(jsonEntity)
@@ -168,8 +179,9 @@ namespace Shesha.GraphQL.Provider.GraphTypes
 
             if (propertyInfo.GetCustomAttribute<SaveAsJsonAttribute>() != null)
             {
-                Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false))
-                    .Resolve(context => {
+                PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false),
+                    context =>
+                    {
                         var jsonValue = propertyInfo.GetValue(context.Source);
                         return jsonValue != null
                             ? new RawJson(jsonValue)
@@ -180,8 +192,9 @@ namespace Shesha.GraphQL.Provider.GraphTypes
 
             if (typeof(Geometry).IsAssignableFrom(propertyInfo.PropertyType))
             {
-                Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false))
-                    .Resolve(context => {
+                PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false),
+                    context =>
+                    {
                         var geometry = propertyInfo.GetValue(context.Source) as Geometry;
                         if (geometry == null)
                             return null;
@@ -206,8 +219,9 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                 var gqlListType = GraphTypeMapper.GetGraphType(gtn, isInput: false);
                 var listType = typeof(ListGraphType<>).MakeGenericType(gqlListType);
 
-                Field(propertyInfo.Name, listType)
-                    .Resolve(context => {
+                PermissionField(propertyInfo, listType,
+                    context =>
+                    {
                         var rawValue = propertyInfo.GetValue(context.Source);
                         var arrayValue = rawValue != null
                                     ? EntityExtensions.DecomposeIntoBitFlagComponents((Int64)System.Convert.ChangeType(rawValue, typeof(Int64)))
@@ -221,7 +235,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
             if (isDictionary || propertyInfo.PropertyType.Namespace != null && !propertyInfo.PropertyType.Namespace.StartsWith("System"))
             {
                 if (propertyInfo.PropertyType.IsEnum)
-                    Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false)).Resolve(context => Convert.ToInt32(propertyInfo.GetValue(context.Source)));
+                    PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), context => Convert.ToInt32(propertyInfo.GetValue(context.Source)));
                 else
                 {
                     var gqlType = Assembly.GetAssembly(typeof(ISchema))?.GetTypes().FirstOrDefault(t => t.Name == $"{typeName}Type" && t.IsAssignableTo(typeof(IGraphType)));
@@ -230,7 +244,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                         ? MakeDictionaryType(propertyInfo)
                         : typeof(GraphQLGenericType<>).MakeGenericType(propertyInfo.PropertyType);
 
-                    Field(propertyInfo.Name, gqlType);
+                    PermissionField(propertyInfo, gqlType);
                 }
             }
             else
@@ -245,18 +259,16 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                             var gtn = propertyInfo.PropertyType.GetGenericArguments().First();
                             var gqlListType = GraphTypeMapper.GetGraphType(gtn, isInput: false);
                             var listType = typeof(ListGraphType<>).MakeGenericType(gqlListType);
-                            Field(propertyInfo.Name, listType);
+                            PermissionField(propertyInfo, listType);
                             break;
                         }
-                    case nameof(Byte): Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false)).Resolve(context => Convert.ToInt32(propertyInfo.GetValue(context.Source))); break;
-
                     case "Nullable`1":
                         {
                             var underlyingType = Nullable.GetUnderlyingType(propertyInfo.PropertyType).NotNull($"Type {propertyInfo.PropertyType.Name} is not nullable");
                             if (underlyingType.IsEnum)
                             {
-                                Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
-                                    .Resolve(context =>
+                                PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(underlyingType, isInput: false),
+                                    context =>
                                     {
                                         var nullableEnum = propertyInfo.GetValue(context.Source);
 
@@ -273,8 +285,8 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                                 switch (underlyingType.Name)
                                 {
                                     case nameof(Guid):
-                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
-                                            .Resolve(context =>
+                                        PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(underlyingType, isInput: false),
+                                            context =>
                                             {
                                                 var nullableGuid = propertyInfo.GetValue(context.Source) as Guid?;
                                                 if (nullableGuid.HasValue) return nullableGuid.Value;
@@ -282,8 +294,8 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                                             });
                                         break;
                                     case nameof(Int32):
-                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
-                                            .Resolve(context =>
+                                        PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(underlyingType, isInput: false),
+                                            context =>
                                             {
                                                 var nullableGuid = propertyInfo.GetValue(context.Source) as int?;
                                                 if (nullableGuid.HasValue) return nullableGuid.Value;
@@ -291,8 +303,8 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                                             });
                                         break;
                                     case nameof(Byte):
-                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
-                                            .Resolve(context =>
+                                        PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(underlyingType, isInput: false),
+                                            context =>
                                             {
                                                 var nullableGuid = propertyInfo.GetValue(context.Source) as byte?;
                                                 if (nullableGuid.HasValue) return nullableGuid.Value;
@@ -300,8 +312,8 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                                             });
                                         break;
                                     case nameof(Int16):
-                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
-                                            .Resolve(context =>
+                                        PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(underlyingType, isInput: false),
+                                            context =>
                                             {
                                                 var nullableGuid = propertyInfo.GetValue(context.Source) as short?;
                                                 if (nullableGuid.HasValue) return nullableGuid.Value;
@@ -309,8 +321,8 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                                             });
                                         break;
                                     case nameof(Int64):
-                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
-                                            .Resolve(context =>
+                                        PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(underlyingType, isInput: false),
+                                            context =>
                                             {
                                                 var nullableGuid = propertyInfo.GetValue(context.Source) as long?;
                                                 if (nullableGuid.HasValue) return nullableGuid.Value;
@@ -318,8 +330,8 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                                             });
                                         break;
                                     case nameof(Double):
-                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
-                                            .Resolve(context =>
+                                        PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(underlyingType, isInput: false),
+                                            context =>
                                             {
                                                 var nullableGuid = propertyInfo.GetValue(context.Source) as double?;
                                                 if (nullableGuid.HasValue) return nullableGuid.Value;
@@ -327,8 +339,8 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                                             });
                                         break;
                                     case nameof(Single):
-                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
-                                            .Resolve(context =>
+                                        PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(underlyingType, isInput: false),
+                                            context =>
                                             {
                                                 var nullableGuid = propertyInfo.GetValue(context.Source) as float?;
                                                 if (nullableGuid.HasValue) return nullableGuid.Value;
@@ -336,8 +348,8 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                                             });
                                         break;
                                     case nameof(Boolean):
-                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
-                                            .Resolve(context =>
+                                        PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(underlyingType, isInput: false),
+                                            context =>
                                             {
                                                 var nullableGuid = propertyInfo.GetValue(context.Source) as bool?;
                                                 if (nullableGuid.HasValue) return nullableGuid.Value;
@@ -345,8 +357,8 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                                             });
                                         break;
                                     case nameof(Decimal):
-                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
-                                            .Resolve(context =>
+                                        PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(underlyingType, isInput: false),
+                                            context =>
                                             {
                                                 var nullableGuid = propertyInfo.GetValue(context.Source) as decimal?;
                                                 if (nullableGuid.HasValue) return nullableGuid.Value;
@@ -354,8 +366,8 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                                             });
                                         break;
                                     case nameof(DateTime):
-                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
-                                            .Resolve(context =>
+                                        PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(underlyingType, isInput: false),
+                                            context =>
                                             {
                                                 var nullableGuid = propertyInfo.GetValue(context.Source) as DateTime?;
                                                 if (nullableGuid.HasValue) return nullableGuid.Value;
@@ -363,8 +375,8 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                                             });
                                         break;
                                     case nameof(TimeSpan):
-                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
-                                            .Resolve(context =>
+                                        PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(underlyingType, isInput: false),
+                                            context =>
                                             {
                                                 var nullableGuid = propertyInfo.GetValue(context.Source) as TimeSpan?;
                                                 if (nullableGuid.HasValue) return nullableGuid.Value;
@@ -374,6 +386,10 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                                 }
                             }
                         }
+                        break;
+                    case nameof(Byte):
+                        PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false),
+                            context => Convert.ToInt32(propertyInfo.GetValue(context.Source)));
                         break;
                     case nameof(String):
                     case nameof(Guid):
@@ -387,7 +403,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                     case nameof(DateTime):
                     default: 
                         {
-                            Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false)); 
+                            PermissionField(propertyInfo, GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false));
                             break;
                         } 
                 }
