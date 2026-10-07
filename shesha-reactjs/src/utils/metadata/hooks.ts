@@ -37,7 +37,7 @@ export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
         builder.registerStandardProperty(SheshaConstants.globalState, registerGlobalStateAction);
         builder.registerStandardProperty(SheshaConstants.setGlobalState, registerSetGlobalStateAction);
         builder.registerStandardProperty(SheshaConstants.selectedRow, registerSelectedRowAction);
-        builder.registerStandardProperty(SheshaConstants.dynamicItem, registerDynamicItemAction);
+        builder.registerStandardProperty(SheshaConstants.dynamicItem, registerDynamicItemAction, false);
         builder.registerStandardProperty(SheshaConstants.contexts, registerContexts);
         builder.registerStandardProperty(SheshaConstants.pageContext, registerPageContextAction);
         builder.registerStandardProperty(SheshaConstants.form, registerFormAction);

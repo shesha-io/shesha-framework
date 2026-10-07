@@ -129,7 +129,7 @@ export const useAppContextRegistration = (): MetadataBuilderAction => {
     return action;
 };
 
-const ALL_STANDARD_CONSTANTS = [
+export const ALL_STANDARD_CONSTANTS = [
     SheshaConstants.globalState,
     SheshaConstants.setGlobalState,
     SheshaConstants.selectedRow,
@@ -169,14 +169,9 @@ export const useAvailableConstantsMetadata = ({ addGlobalConstants, onBuild, sta
     return response;
 };
 
-const ALL_STANDARD_CONSTANTS_WITH_DYNAMIC_ITEM = [...ALL_STANDARD_CONSTANTS, SheshaConstants.dynamicItem];
-
-export const useAvailableStandardConstantsMetadata = (args?: { includeDynamicItem?: boolean }): IObjectMetadata => {
+export const useAvailableStandardConstantsMetadata = (): IObjectMetadata => {
     const availableConstants = useAvailableConstantsMetadata({
         addGlobalConstants: true,
-        standardConstants: args?.includeDynamicItem
-            ? ALL_STANDARD_CONSTANTS_WITH_DYNAMIC_ITEM
-            : ALL_STANDARD_CONSTANTS,
     });
     return availableConstants;
 };
