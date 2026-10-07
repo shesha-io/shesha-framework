@@ -10,6 +10,7 @@ using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.Extensions;
+using Shesha.GraphQL.Middleware;
 using Shesha.Json;
 using Shesha.JsonEntities;
 using Shesha.Reflection;
@@ -222,7 +223,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                     gqlType ??= isDictionary
                         ? propertyInfo.PropertyType.IsAssignableTo(typeof(ExtraPropertyDictionary))
                             ? typeof(AbpExtraPropertyGraphType)
-                            : MakeDictionaryType(propertyInfo)
+                            : MakeDictionaryType(propertyInfo.Name)
                         : typeof(GraphQLGenericType<>).MakeGenericType(propertyInfo.PropertyType);
                     */
                     gqlType ??= isDictionary

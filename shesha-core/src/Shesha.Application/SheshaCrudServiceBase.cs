@@ -19,6 +19,7 @@ using Shesha.GraphQL.Middleware;
 using Shesha.GraphQL.Mvc;
 using Shesha.GraphQL.Provider;
 using Shesha.Metadata;
+using Shesha.Permissions.Entity;
 using Shesha.QuickSearch;
 using Shesha.Specifications;
 using Shesha.Utilities;
@@ -132,6 +133,7 @@ namespace Shesha
         {
             CheckGetAllPermission();
 
+            var permissionedEntityProxyFactory = IocManager.Resolve<IPermissionedEntityProvider>();
             var query = CreateFilteredQuery(input);
 
             var totalCount = await AsyncQueryableExecuter.CountAsync(query);
@@ -139,7 +141,9 @@ namespace Shesha
             query = ApplySorting(query, input);
             query = ApplyPaging(query, input);
 
-            var entities = await AsyncQueryableExecuter.ToListAsync(query);
+            var entities = (await AsyncQueryableExecuter.ToListAsync(query))
+                .Select(x => permissionedEntityProxyFactory.GetNewProxiedPermissionedEntity(x))
+                .ToList();
 
             return new PagedResultDto<TEntityDto>(
                 totalCount,
@@ -198,6 +202,7 @@ namespace Shesha
                     s.UserContext = new GraphQLUserContext
                     {
                         User = httpContext.User,
+                        IsGranted = IsGranted,
                     };
                     s.CancellationToken = httpContext.RequestAborted;
                 }
@@ -264,6 +269,7 @@ namespace Shesha
                     s.UserContext = new GraphQLUserContext
                     {
                         User = httpContext.User,
+                        IsGranted = IsGranted,
                     };
                     s.CancellationToken = httpContext.RequestAborted;
                 }
