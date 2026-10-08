@@ -32,5 +32,20 @@ namespace Shesha.Otp
         /// Email link sent to verify an email address during registration.
         /// </summary>
         public const string EmailRegistrationLink = "EmailRegistrationLink";
+
+        /// <summary>
+        /// Default for one-time pins sent by SMS when the caller doesn't specify an OTP configuration.
+        /// </summary>
+        public const string OtpSms = "OtpSms";
+
+        /// <summary>
+        /// Default for one-time pins sent by email when the caller doesn't specify an OTP configuration.
+        /// </summary>
+        public const string OtpEmail = "OtpEmail";
+
+        /// <summary>
+        /// Default for email links when the caller doesn't specify an OTP configuration.
+        /// </summary>
+        public const string OtpEmailLink = "OtpEmailLink";
     }
 }

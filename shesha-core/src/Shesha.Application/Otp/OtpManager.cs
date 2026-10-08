@@ -1,6 +1,5 @@
-﻿using Abp.Dependency;
+using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Net.Mail;
 using Abp.UI;
 using Castle.Core.Logging;
 using Shesha.Authorization.Users;
@@ -14,7 +13,6 @@ using Shesha.Notifications.MessageParticipants;
 using Shesha.Notifications.SMS;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
-using Shesha.Sms;
 using System;
 using System.Threading.Tasks;
 
@@ -27,8 +25,6 @@ namespace Shesha.Otp
         /// </summary>
         private const string EmailRegistrationActionType = "EmailRegistration";
 
-        private readonly ISmsGatewayFactory _smsGatewayFactory;
-        private readonly IEmailSender _emailSender;
         private readonly IOtpStorage _otpStorage;
         private readonly IOtpGenerator _otpGenerator;
         private readonly IOtpSettings _otpSettings;
@@ -40,8 +36,6 @@ namespace Shesha.Otp
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
         public OtpManager(
-            ISmsGatewayFactory smsGatewayFactory,
-            IEmailSender emailSender,
             IOtpStorage otpStorage,
             IOtpGenerator passwordGenerator,
             IOtpSettings otpSettings,
@@ -50,8 +44,6 @@ namespace Shesha.Otp
             INotificationSender notificationSender,
             INotificationManager notificationManager)
         {
-            _smsGatewayFactory = smsGatewayFactory;
-            _emailSender = emailSender;
             _otpStorage = otpStorage;
             _otpGenerator = passwordGenerator;
             _otpSettings = otpSettings;
@@ -79,9 +71,10 @@ namespace Shesha.Otp
 
             // note: we ignore _otpSettings.IgnoreOtpValidation here, the user pressed `resend` manually
 
-            var config = otp.OtpConfigId.HasValue
+            // OTPs requested before OTP configurations were introduced have no config - use the default one for their send type
+            var config = (otp.OtpConfigId.HasValue
                 ? await _otpConfigRepository.FirstOrDefaultAsync(otp.OtpConfigId.Value)
-                : null;
+                : null) ?? await GetDefaultOtpConfigAsync(otp.SendType, otp.ActionType);
 
             // send otp
             var sendTime = DateTime.Now;
@@ -102,7 +95,7 @@ namespace Shesha.Otp
             }
 
             // extend lifetime
-            var lifeTime = input.Lifetime ?? config?.Lifetime ?? settings.DefaultLifetime;
+            var lifeTime = input.Lifetime ?? config.Lifetime ?? settings.DefaultLifetime;
             var newExpiresOn = DateTime.Now.AddSeconds(lifeTime);
 
             await _otpStorage.UpdateAsync(input.OperationId, newOtp =>
@@ -130,9 +123,9 @@ namespace Shesha.Otp
             if (string.IsNullOrWhiteSpace(input.SendTo))
                 throw new Exception($"{input.SendTo} must be specified");
 
-            var config = await GetOtpConfigOrNullAsync(input);
+            var config = await GetOtpConfigAsync(input);
 
-            var pinCode = GeneratePin(input, config);
+            var pinCode = GeneratePin(config);
 
             // generate new pin and save
             var otp = new OtpDto()
@@ -145,7 +138,7 @@ namespace Shesha.Otp
                 RecipientId = input.RecipientId,
                 RecipientType = input.RecipientType,
                 ActionType = input.ActionType,
-                OtpConfigId = config?.Id,
+                OtpConfigId = config.Id,
                 Owner = input.Owner,
             };
 
@@ -174,7 +167,7 @@ namespace Shesha.Otp
             // set expiration and save
             var lifeTime = input.Lifetime.HasValue && input.Lifetime.Value != 0
                 ? input.Lifetime.Value
-                : config?.Lifetime is int configLifetime && configLifetime > 0
+                : config.Lifetime is int configLifetime && configLifetime > 0
                     ? configLifetime
                     : settings.DefaultLifetime;
 
@@ -216,29 +209,34 @@ namespace Shesha.Otp
         }
 
         /// <summary>
-        /// Get OTP configuration requested by the caller. Returns null when the legacy behaviour should be used
+        /// Get OTP configuration requested by the caller. Callers that don't specify a configuration get the default one for their send type
         /// </summary>
-        private async Task<OtpConfig?> GetOtpConfigOrNullAsync(SendPinInput input)
+        private async Task<OtpConfig> GetOtpConfigAsync(SendPinInput input)
         {
-            var identifier = input.OtpConfig;
+            if (input.OtpConfig == null)
+                return await GetDefaultOtpConfigAsync(input.SendType, input.ActionType);
 
-            // backward compatibility: callers of the registration email-link flow identify it by the action type only
-            if (identifier == null && input.ActionType == EmailRegistrationActionType)
+            return await FindOtpConfigAsync(input.OtpConfig.Module, input.OtpConfig.Name)
+                ?? throw new UserFriendlyException($"OTP configuration '{input.OtpConfig}' not found");
+        }
+
+        /// <summary>
+        /// Default OTP configuration for callers that don't specify one
+        /// </summary>
+        private async Task<OtpConfig> GetDefaultOtpConfigAsync(OtpSendType sendType, string? actionType)
+        {
+            var name = sendType switch
             {
-                var registrationConfig = await FindOtpConfigAsync(OtpConfigNames.Module, OtpConfigNames.EmailRegistrationLink);
-                return registrationConfig != null && !registrationConfig.Disable
-                    ? registrationConfig
-                    : null;
-            }
+                // backward compatibility: callers of the registration email-link flow identify it by the action type only
+                OtpSendType.EmailLink when actionType == EmailRegistrationActionType => OtpConfigNames.EmailRegistrationLink,
+                OtpSendType.EmailLink => OtpConfigNames.OtpEmailLink,
+                OtpSendType.Email => OtpConfigNames.OtpEmail,
+                OtpSendType.Sms => OtpConfigNames.OtpSms,
+                _ => throw new NotSupportedException($"unsupported {nameof(OtpSendType)}: {sendType}"),
+            };
 
-            if (identifier == null)
-                return null;
-
-            var config = await FindOtpConfigAsync(identifier.Module, identifier.Name);
-            if (config == null)
-                throw new UserFriendlyException($"OTP configuration '{identifier}' not found");
-
-            return config.Disable ? null : config;
+            return await FindOtpConfigAsync(OtpConfigNames.Module, name)
+                ?? throw new UserFriendlyException($"Default OTP configuration '{OtpConfigNames.Module}/{name}' not found");
         }
 
         private async Task<OtpConfig?> FindOtpConfigAsync(string? module, string name)
@@ -246,30 +244,18 @@ namespace Shesha.Otp
             return await _otpConfigRepository.FirstOrDefaultAsync(new ByNameAndModuleSpecification<OtpConfig>(name, module).ToExpression());
         }
 
-        private string GeneratePin(SendPinInput input, OtpConfig? config)
+        private string GeneratePin(OtpConfig config)
         {
-            var isToken = config != null
-                ? config.PinType == RefListOtpPinType.Token
-                : input.SendType == OtpSendType.EmailLink;
-
             // TODO: Generate password reset token
-            return isToken
+            return config.PinType == RefListOtpPinType.Token
                 ? Guid.NewGuid().ToString("N")
-                : _otpGenerator.GeneratePin(config?.PinLength, config?.Alphabet);
-        }
-
-        private async Task SendInternalAsync(OtpDto otp, OtpConfig? config)
-        {
-            if (config != null)
-                await SendViaNotificationAsync(otp, config);
-            else
-                await SendLegacyAsync(otp);
+                : _otpGenerator.GeneratePin(config.PinLength, config.Alphabet);
         }
 
         /// <summary>
         /// Send OTP using the notification type of the OTP configuration. Template and channels are defined by the notification type
         /// </summary>
-        private async Task SendViaNotificationAsync(OtpDto otp, OtpConfig config)
+        private async Task SendInternalAsync(IOtpDto otp, OtpConfig config)
         {
             var type = config.NotificationType;
             if (type == null)
@@ -341,53 +327,5 @@ namespace Shesha.Otp
 
             return null;
         }
-
-        /// <summary>
-        /// Send OTP using the templates of the OTP settings. Is used when the OTP configuration is not specified
-        /// </summary>
-        private async Task SendLegacyAsync(OtpDto otp)
-        {
-            var settings = await _otpSettings.OneTimePins.GetValueAsync();
-            switch (otp.SendType)
-            {
-                case OtpSendType.Sms:
-                    {
-                        var bodyTemplate = settings.DefaultBodyTemplate;
-                        if (string.IsNullOrWhiteSpace(bodyTemplate))
-                            bodyTemplate = OtpDefaults.DefaultBodyTemplate;
-
-                        var messageBody = bodyTemplate.Replace("{{password}}", otp.Pin);
-                        var smsGateway = await _smsGatewayFactory.GetSmsGatewayAsync();
-                        await smsGateway.SendSmsAsync(otp.SendTo, messageBody);
-                        break;
-                    }
-                case OtpSendType.Email:
-                    {
-                        var bodyTemplate = settings.DefaultBodyTemplate;
-                        var subjectTemplate = settings.DefaultSubjectTemplate;
-
-                        var body = bodyTemplate.Replace("{{password}}", otp.Pin);
-                        var subject = subjectTemplate.Replace("{{password}}", otp.Pin);
-
-                        await _emailSender.SendAsync(otp.SendTo, subject, body, false);
-                        break;
-                    }
-                case OtpSendType.EmailLink:
-                    {
-                        var subjectTemplate = settings.DefaultEmailSubjectTemplate;
-                        var bodyTemplate = settings.DefaultEmailBodyTemplate;
-
-                        var body = bodyTemplate.Replace("{{token}}", otp.Pin);
-                        body = body.Replace("{{userid}}", otp.RecipientId);
-                        body = body.Replace("{{operationId}}", otp.OperationId.ToString());
-                        body = body.Replace("{{isRegistration}}", otp.ActionType == EmailRegistrationActionType ? "true" : "false");
-                        await _emailSender.SendAsync(otp.SendTo, subjectTemplate, body, true);
-                        break;
-                    }
-                default:
-                    throw new NotSupportedException($"unsupported {nameof(otp.SendType)}: {otp.SendType}");
-            }
-        }
-
     }
 }

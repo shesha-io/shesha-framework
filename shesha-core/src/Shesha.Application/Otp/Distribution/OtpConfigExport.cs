@@ -21,7 +21,6 @@ namespace Shesha.Otp.Distribution
             result.PinType = item.PinType;
             result.PinLength = item.PinLength;
             result.Alphabet = item.Alphabet;
-            result.Disable = item.Disable;
 
             return Task.CompletedTask;
         }

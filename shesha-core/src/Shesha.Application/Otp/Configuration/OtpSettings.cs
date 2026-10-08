@@ -28,25 +28,25 @@ namespace Shesha.Otp.Configuration
         /// <summary>
         /// Subject template
         /// </summary>
-        [Obsolete("OTP messages are sent using the notification templates of the OTP configuration (OtpConfig). Is used only when the OTP configuration is not specified")]
+        [Obsolete("No longer used: OTP messages are sent using the notification templates of the OTP configuration (OtpConfig). Will be removed in the next major version")]
         public string DefaultSubjectTemplate { get; set; }
 
         /// <summary>
         /// Body template
         /// </summary>
-        [Obsolete("OTP messages are sent using the notification templates of the OTP configuration (OtpConfig). Is used only when the OTP configuration is not specified")]
+        [Obsolete("No longer used: OTP messages are sent using the notification templates of the OTP configuration (OtpConfig). Will be removed in the next major version")]
         public string DefaultBodyTemplate { get; set; }
 
         /// <summary>
         /// Email link subject template
         /// </summary>
-        [Obsolete("OTP messages are sent using the notification templates of the OTP configuration (OtpConfig). Is used only when the OTP configuration is not specified")]
+        [Obsolete("No longer used: OTP messages are sent using the notification templates of the OTP configuration (OtpConfig). Will be removed in the next major version")]
         public string DefaultEmailSubjectTemplate { get; set; }
 
         /// <summary>
         /// Email link body template
         /// </summary>
-        [Obsolete("OTP messages are sent using the notification templates of the OTP configuration (OtpConfig). Is used only when the OTP configuration is not specified")]
+        [Obsolete("No longer used: OTP messages are sent using the notification templates of the OTP configuration (OtpConfig). Will be removed in the next major version")]
         public string DefaultEmailBodyTemplate { get; set; }
     }
 }

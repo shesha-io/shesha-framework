@@ -14,8 +14,7 @@ namespace Shesha.Migrations
                 .WithColumn("lifetime").AsInt32().Nullable()
                 .WithColumn("pin_type_lkp").AsInt64().NotNullable().WithDefaultValue(1)
                 .WithColumn("pin_length").AsInt32().Nullable()
-                .WithColumn("alphabet").AsString(100).Nullable()
-                .WithColumn("disable").AsBoolean().NotNullable().WithDefaultValue(false);
+                .WithColumn("alphabet").AsString(100).Nullable();
 
             Create.ForeignKey("fk_otp_configs_ci_id")
                 .FromTable("otp_configs").InSchema("frwk")

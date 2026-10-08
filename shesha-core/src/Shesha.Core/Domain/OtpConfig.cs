@@ -58,10 +58,5 @@ namespace Shesha.Domain
         /// Characters used to generate the pin. Falls back to the OTP settings when empty. Applies to <see cref="RefListOtpPinType.Numeric"/> only
         /// </summary>
         public virtual string? Alphabet { get; set; }
-
-        /// <summary>
-        /// If true, the action falls back to the legacy OTP behaviour as if no configuration was specified
-        /// </summary>
-        public virtual bool Disable { get; set; }
     }
 }

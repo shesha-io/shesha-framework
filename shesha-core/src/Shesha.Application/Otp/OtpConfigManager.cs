@@ -17,7 +17,6 @@ namespace Shesha.Otp
             destination.PinType = source.PinType;
             destination.PinLength = source.PinLength;
             destination.Alphabet = source.Alphabet;
-            destination.Disable = source.Disable;
 
             return Task.CompletedTask;
         }

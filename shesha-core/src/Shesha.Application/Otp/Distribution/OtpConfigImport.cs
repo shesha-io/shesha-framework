@@ -34,8 +34,7 @@ namespace Shesha.Otp.Distribution
                 item.Lifetime == distributedItem.Lifetime &&
                 item.PinType == distributedItem.PinType &&
                 item.PinLength == distributedItem.PinLength &&
-                item.Alphabet == distributedItem.Alphabet &&
-                item.Disable == distributedItem.Disable;
+                item.Alphabet == distributedItem.Alphabet;
 
             return Task.FromResult(result);
         }
@@ -47,7 +46,6 @@ namespace Shesha.Otp.Distribution
             item.PinType = distributedItem.PinType;
             item.PinLength = distributedItem.PinLength;
             item.Alphabet = distributedItem.Alphabet;
-            item.Disable = distributedItem.Disable;
         }
 
         private async Task<NotificationTypeConfig?> GetNotificationTypeAsync(string? module, string? name)

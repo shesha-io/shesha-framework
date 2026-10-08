@@ -37,10 +37,5 @@ namespace Shesha.Otp.Distribution.Dto
         /// Characters used to generate the pin
         /// </summary>
         public string? Alphabet { get; set; }
-
-        /// <summary>
-        /// If true, the action falls back to the legacy OTP behaviour
-        /// </summary>
-        public bool Disable { get; set; }
     }
 }
