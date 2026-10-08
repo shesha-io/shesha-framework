@@ -133,6 +133,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                         opacity: 1;
                       }
 
+                      /* Drops highlight the whole target folder instead (configuration-tree), so hide
+                         antd's outline around the container row and its between-rows drop line. antd
+                         always renders its own line (it ignores a dropIndicatorRender prop), so CSS it is. */
+                      &.drop-container > [draggable] {
+                        box-shadow: none;
+                      }
+                      .${prefixCls}-tree-drop-indicator {
+                        display: none;
+                      }
+
                       /* Darker, more emphasised selection (issue #4783). */
                       .${prefixCls}-tree-node-content-wrapper.${prefixCls}-tree-node-selected {
                         background-color: ${token.colorPrimaryBg};

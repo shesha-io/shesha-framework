@@ -13,7 +13,6 @@ import { useStyles } from '../../styles';
 import { useFilteredTreeNodes } from './filter';
 import { DndPreview } from './dndPreview';
 import { TreeFilterButton } from '../tree-filter-button';
-import { DropPositions } from './models';
 import { isDefined } from '@/utils/nullables';
 import { useConfigurationStudioEnvironment } from '@/configuration-studio/cs-environment/contexts';
 
@@ -33,30 +32,6 @@ type OnExpand = Required<TreeProps<TreeNode>>['onExpand'];
 const isNodeDraggable: IsDraggable = (node): boolean => {
   // Also gates onDragEnter/onDragOver/onDrop, so the placeholder (filter.ts) must return true here to receive drops.
   return isConfigItemTreeNode(node) || isFolderTreeNode(node) || (isTreeNode(node) && node.nodeType === TreeNodeType.Placeholder);
-};
-
-const allowDropNode = (dragNode: TreeNode, dropNode: TreeNode, dropPosition: number): boolean => {
-  switch (dropPosition) {
-    case DropPositions.After:
-    case DropPositions.Before:
-    default: {
-      return dragNode.moduleId === dropNode.moduleId &&
-        dragNode.parentId !== dropNode.parentId;
-    }
-    case DropPositions.Inside: {
-      // The empty-container placeholder (see filter.ts) stands in for its real parent folder/module.
-      if (dropNode.nodeType === TreeNodeType.Placeholder)
-        return dragNode.moduleId === dropNode.moduleId && dragNode.parentId !== dropNode.parentId;
-
-      if (!isFolderTreeNode(dropNode) && !isModuleTreeNode(dropNode))
-        return false;
-      if (dragNode.moduleId !== dropNode.moduleId)
-        return false;
-
-      // allow to drop to another parent only
-      return dragNode.parentId !== dropNode.id;
-    }
-  }
 };
 
 /** Expand/collapse choices made while a type filter is active, plus the draft/pinned state last applied to them. */
@@ -86,7 +61,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   // End of the shift-selection range; also drives Tree's controlled `activeKey` (null = uncontrolled).
   const [shiftFocusKey, setShiftFocusKey] = useState<React.Key | null>(null);
   const [contextNode, setContextNode] = useState<TreeNode | null>(null);
-  const { styles, prefixCls } = useStyles();
+  const { styles, prefixCls, theme } = useStyles();
   const [dndState, setDndState] = useState<DndState>();
 
   const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch, itemTypeFilter, folderDraft, pinnedNodeIds);
@@ -266,57 +241,48 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
     }
   };
 
-  const getNewFolderId = (dropPosition: number, dropNode: TreeNode): string | undefined => {
-    switch (dropPosition) {
-      case DropPositions.After:
-      case DropPositions.Before: {
-        const dropNodeParent = isDefined(dropNode.parentId)
-          ? getTreeNodeById(dropNode.parentId)
-          : undefined;
+  // VS Code-style drop target: a folder/module is its own target; anything else (an item, the "Empty"
+  // placeholder) drops into the container holding it. Where on the row the cursor is doesn't matter.
+  const getDropContainer = (node: TreeNode): TreeNode | undefined =>
+    isFolderTreeNode(node) || isModuleTreeNode(node)
+      ? node
+      : isDefined(node.parentId) ? getTreeNodeById(node.parentId) : undefined;
 
-        return isFolderTreeNode(dropNodeParent) ? dropNodeParent.id : undefined;
-      }
-      default: {
-        // Placeholders exist under empty folders and modules - only resolve to an id if the parent is a folder.
-        if (dropNode.nodeType === TreeNodeType.Placeholder) {
-          const parentNode = isDefined(dropNode.parentId)
-            ? getTreeNodeById(dropNode.parentId)
-            : undefined;
-          return isFolderTreeNode(parentNode) ? parentNode.id : undefined;
-        }
-        return isFolderTreeNode(dropNode) ? dropNode.id : undefined;
-      }
+  const canDropInto = (dragNode: TreeNode, container: TreeNode | undefined): container is TreeNode => {
+    if (!isDefined(container) || dragNode.moduleId !== container.moduleId || dragNode.parentId === container.id)
+      return false;
+    // A folder can't be moved into itself or its own subtree.
+    const seen = new Set<string>();
+    for (let id: string | undefined = container.id; isDefined(id) && !seen.has(id); id = getTreeNodeById(id)?.parentId) {
+      if (id === dragNode.id)
+        return false;
+      seen.add(id);
     }
+    return true;
   };
 
+  // The container highlighted (with its visible contents) while dragging over it.
+  const [dropTargetId, setDropTargetId] = useState<string>();
+
   const handleNodeDrop: OnDrop = (info) => {
-    const dropNode = info.node;
+    setDropTargetId(undefined);
     const dragNode = info.dragNode;
-
-    const dropPos = info.node.pos.split("-");
-    // calculate the drop position relative to the drop node, inside 0, top -1, bottom 1
-    // note: it's not the same as info.dropPosition
-    const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-
-    if (!allowDropNode(dragNode, dropNode, dropPosition)) {
-      console.error('dragNode can`t be dropped into the dropNode', { dragNode, dropNode, dropPosition: info.dropPosition });
+    const container = getDropContainer(info.node);
+    if (!canDropInto(dragNode, container))
       return;
-    }
-
-    const newFolderId = getNewFolderId(dropPosition, dropNode);
 
     // When the dragged node is part of a multi-selection, move all selected nodes that are
     // valid for this drop target. Otherwise fall back to moving just the dragged node.
     const dragKeyStr = dragNode.key.toString();
     const isMultiDrag = (selectedKeys ?? []).includes(dragKeyStr) && selectedNodes.length > 1;
     const nodesToMove: TreeNode[] = isMultiDrag
-      ? selectedNodes.filter((n) => allowDropNode(n, dropNode, dropPosition))
+      ? selectedNodes.filter((n) => canDropInto(n, container))
       : [dragNode];
 
     const payloads: MoveNodePayload[] = nodesToMove.map((n) => ({
       nodeType: n.nodeType,
       nodeId: n.id,
-      folderId: newFolderId,
+      folderId: isFolderTreeNode(container) ? container.id : undefined,
     }));
 
     // Moves the nodes in the tree immediately, then syncs with the server (errors are reported there).
@@ -355,6 +321,13 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
 
   const handleDragEnd: OnDragEnd = () => {
     setIsDragging(false);
+    setDropTargetId(undefined);
+  };
+
+  // Leaving the tree altogether clears the highlight (moving between rows doesn't).
+  const handleTreeDragLeave: React.DragEventHandler<HTMLDivElement> = (event) => {
+    if (!(event.relatedTarget instanceof Node) || !event.currentTarget.contains(event.relatedTarget))
+      setDropTargetId(undefined);
   };
 
   // Intercepted in the capture phase so rc-tree's own arrow-key focus handling never runs for this event.
@@ -393,7 +366,9 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   };
 
   const allowNodeDropWrapper: AllowDrop = ({ dragNode, dropNode, dropPosition }) => {
-    const allowed = allowDropNode(dragNode, dropNode, dropPosition);
+    const container = getDropContainer(dropNode);
+    const allowed = canDropInto(dragNode, container);
+    setDropTargetId(allowed ? container.id : undefined);
     if (debugDnd) {
       setDndState({
         dragNode: dragNode,
@@ -404,6 +379,25 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
     }
     return allowed;
   };
+
+  // Rows to highlight while dragging: the target container and everything visible inside it. Matched by
+  // data-node-id, so only rows the virtual list has actually rendered are affected.
+  const dropHighlightCss = useMemo<string>(() => {
+    const target = isDefined(dropTargetId) ? getTreeNodeById(dropTargetId) : undefined;
+    if (!isDefined(target))
+      return '';
+    const ids: string[] = [];
+    const visit = (node: TreeNode): void => {
+      ids.push(node.id);
+      if (isNodeWithChildren(node) && effectiveExpandedKeySet.has(node.key)) {
+        ids.push(`${node.id}__empty-placeholder`);
+        node.children.forEach(visit);
+      }
+    };
+    visit(target);
+    const selectors = ids.map((id) => `.${styles.csNavPanelTree} [data-node-id="${id.replace(/["\\]/g, '\\$&')}"]`);
+    return `${selectors.join(',\n')} { background-color: ${theme.colorPrimaryBg}; }`;
+  }, [dropTargetId, getTreeNodeById, effectiveExpandedKeySet, styles.csNavPanelTree, theme.colorPrimaryBg]);
 
   // A reload after creating/moving/renaming keeps the current tree mounted under the spinner: unmounting
   // it while the request is in flight would remount it scrolled back to the top.
@@ -477,7 +471,8 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
             />
             <TreeFilterButton />
           </div>
-          <div ref={treeContainerRef} className={styles.csNavPanelTree} onKeyDownCapture={handleTreeKeyDownCapture}>
+          <div ref={treeContainerRef} className={styles.csNavPanelTree} onKeyDownCapture={handleTreeKeyDownCapture} onDragLeave={handleTreeDragLeave}>
+            {dropHighlightCss !== '' && <style>{dropHighlightCss}</style>}
             <Dropdown
               menu={{ items: nodeContextMenuItems }}
               trigger={["contextMenu"]}

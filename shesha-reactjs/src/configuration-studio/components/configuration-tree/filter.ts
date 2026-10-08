@@ -8,8 +8,14 @@ const emptyNodes: TreeNode[] = [];
 const emptyItemTypes: string[] = [];
 const emptyPinnedIds: ReadonlySet<string> = new Set<string>();
 
+// Lets the drag-and-drop highlight (configuration-tree) find the row, e.g. an empty target folder's "Empty" row.
+const withDataNodeId = (node: TreeNode): TreeNode => {
+  node['data-node-id'] = node.id;
+  return node;
+};
+
 // Keeps children.length > 0 so rc-tree treats an empty folder as a real drop target instead of a leaf.
-const createPlaceholderNode = (parent: TreeNode): TreeNode => ({
+const createPlaceholderNode = (parent: TreeNode): TreeNode => withDataNodeId({
   id: `${parent.id}__empty-placeholder`,
   key: `${parent.id}__empty-placeholder`,
   parentId: parent.id,
