@@ -18,7 +18,7 @@ import { migratePermissionsToVisiblePermissions } from '@/designer-components/_c
 const outsideContextValidationError = validationError('Quick Search');
 
 const QuickSearchComponent: QuickSearchComponentDefinition = {
-  styleGroup: 'common',
+  themeGroup: 'inline',
   allowInherit: true,
   type: 'datatable.quickSearch',
   isInput: false,

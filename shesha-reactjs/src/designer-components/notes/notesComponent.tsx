@@ -66,7 +66,7 @@ const NotesApiRegistrar: FC<{ model: INotesComponentProps; ownerId: string }> = 
 };
 
 const NotesComponent: NotesComponentDefinition = {
-  styleGroup: 'common-containers',
+  themeGroup: 'layout',
   allowInherit: true,
   type: 'notes',
   isInput: false,

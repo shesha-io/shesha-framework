@@ -50,7 +50,7 @@ interface IProfileDropdown extends IConfigurableFormComponent {
 }
 
 const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
-  styleGroup: 'common',
+  themeGroup: 'inline',
   type: 'profileDropdown',
   name: 'Profile Dropdown',
   isInput: false,

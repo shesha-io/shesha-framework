@@ -93,9 +93,8 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
             .${sheshaStyles.verticalSettingsClass} & {
                 right: 0;
                 left: auto;
-                top: -25px;
+                top: -22px;
             }
-        
     `);
 
   const valueHighlightSelectors = `

@@ -13,7 +13,7 @@ import { DEFAULT_DESIGNER_PADDING } from '@/components/formDesigner/utils/stylin
 import { migratePermissionsToVisiblePermissions } from '@/designer-components/_common-migrations/migratePermissionsToVisiblePermissions';
 
 const PagerComponent: PagerComponentDefinition = {
-  styleGroup: 'common',
+  themeGroup: 'inline',
   allowInherit: true,
   type: 'datatable.pager',
   isInput: false,

@@ -16,7 +16,7 @@ export type ISectionProps = IConfigurableFormComponent;
 const settingsForm = settingsFormJson as FormMarkup;
 
 const SectionComponent: IToolboxComponent<ISectionProps> = {
-  styleGroup: 'common-containers',
+  themeGroup: 'layout',
   type: 'section',
   isInput: false,
   name: 'Section',

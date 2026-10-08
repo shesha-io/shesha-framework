@@ -53,7 +53,7 @@ interface ICheckboxGroupCalculatedValues {
 }
 
 const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, ICheckboxGroupCalculatedValues> = {
-  styleGroup: 'inputs',
+  themeGroup: 'input',
   allowInherit: true,
   type: 'checkboxGroup',
   isInput: true,

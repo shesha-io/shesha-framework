@@ -49,7 +49,7 @@ const setElementStyle = <P extends PropsWithStyle>(
 };
 
 const AlertComponent: AlertComponentDefinition = {
-  styleGroup: 'common-containers',
+  themeGroup: 'layout',
   allowInherit: true,
   type: 'alert',
   isInput: false,

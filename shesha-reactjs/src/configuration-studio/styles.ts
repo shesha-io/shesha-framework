@@ -115,6 +115,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                       /* Cleaner drag handle: a subtle grip that only appears on hover (issue #4783). */
                       .${prefixCls}-tree-draggable-icon {
                         display: flex;
+                        /* The node row aligns its children to the top; stretching the handle to the row's
+                           height lets align-items centre the grip vertically. */
+                        align-self: stretch;
                         align-items: center;
                         justify-content: center;
                         width: 12px;

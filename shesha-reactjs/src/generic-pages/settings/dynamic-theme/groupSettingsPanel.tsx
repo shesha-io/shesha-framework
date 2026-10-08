@@ -30,7 +30,7 @@ export interface IGroupSettingsPanelProps {
 /**
  * One shared appearance form for every component in a style-group tab (Input/Inline/Standard/Layout
  * Components). Saved values live in `theme.componentGroups[group]` and are inherited by every
- * component whose `styleGroup` maps to that tab (see `getThemeGroupForComponent`), between the
+ * component whose theme group is that tab (see `getThemeGroupForComponent`), between the
  * component's hardcoded defaults and its own per-type override.
  */
 export const GroupSettingsPanel: FC<IGroupSettingsPanelProps> = ({ group, value: theme, onChange, readOnly }) => {

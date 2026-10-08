@@ -27,30 +27,17 @@ type SvgFactoryProps = {
 };
 
 /**
- * All icons share the same 20x20 Material Symbols grid, so the SVG wrapper is built once.
- * `fill` resolves to the icon's brand colour unless the caller overrides it.
+ * All icons share the same 20x20 Material Symbols grid. The paths are passed to antd's `Icon` as
+ * children, which renders them in its own `<svg fill="currentColor">`, so the colour is set via
+ * `style.color`. (A `component={() => ...}` render prop would be a new component type on every
+ * render and remount the SVG each time - costly in the tree, where every node has an icon.)
  */
 const makeCsIcon = ({ path, defaultColor }: SvgFactoryProps): React.FC<CustomIconProps> => {
-  // Built once per icon, outside render, so `Icon` always receives the same component identity.
-  const CsIconSvg: React.FC<{ color: string }> = ({ color }) => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="1em"
-      height="1em"
-      viewBox="0 0 20 20"
-      fill={color}
-      focusable="false"
-      aria-hidden="true"
-    >
+  const CsIcon: React.FC<CustomIconProps> = ({ fill, style, ...rest }) => (
+    <Icon viewBox="0 0 20 20" {...rest} style={{ ...style, color: fill ?? style?.color ?? defaultColor }}>
       {path}
-    </svg>
+    </Icon>
   );
-  CsIconSvg.displayName = 'CsIconSvg';
-
-  const CsIcon: React.FC<CustomIconProps> = ({ fill, style, ...rest }) => {
-    const color = fill ?? style?.color ?? defaultColor;
-    return <Icon component={() => <CsIconSvg color={color} />} style={style} {...rest} />;
-  };
   CsIcon.displayName = 'CsIcon';
   return CsIcon;
 };

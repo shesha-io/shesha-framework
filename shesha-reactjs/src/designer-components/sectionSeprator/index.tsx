@@ -16,7 +16,7 @@ import { getStyleBoxValue } from '../styleBox/utils';
 import { DEFAULT_DESIGNER_PADDING, getDesignerPadding } from '@/components/formDesigner/utils/stylingUtils';
 
 const SectionSeparatorComponent: SectionSeparatorComponentDefinition = {
-  styleGroup: 'common-containers',
+  themeGroup: 'layout',
   allowInherit: true,
   type: 'sectionSeparator',
   isInput: false,

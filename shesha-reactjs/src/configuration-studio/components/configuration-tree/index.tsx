@@ -4,7 +4,7 @@ import { FC, useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import * as React from 'react';
 import { MoveNodePayload } from '../../apis';
 import { FolderDraft, isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isNodeWithChildren, isTreeNode, TreeNode, TreeNodeType } from '../../models';
-import { CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons';
+import { CaretDownOutlined } from '@ant-design/icons';
 import { ValidationErrors } from '@/components/validationErrors';
 import { useCsTree, useCsTreeDnd } from '../../cs/hooks';
 import { useConfigurationStudio } from '../../cs/contexts';
@@ -414,7 +414,9 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
                 showIcon
                 multiple
                 virtual={false}
-                switcherIcon={(node) => node.expanded === true ? <CaretDownOutlined /> : <CaretRightOutlined />}
+                /* antd rotates the switcher icon -90deg on collapsed nodes (without showLine), so a single
+                   down caret reads as right when collapsed and down when expanded. */
+                switcherIcon={<CaretDownOutlined />}
 
                 treeData={filteredTreeNodes}
                 blockNode /* required for correct dragging*/

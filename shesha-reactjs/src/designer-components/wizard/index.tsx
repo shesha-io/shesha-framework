@@ -23,7 +23,7 @@ import { isNonEmptyArray } from '@/utils/array';
 import { Back, Cancel, Close, Done, Next, ResetSteps, Validate } from './configurableActions';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
-  styleGroup: 'common-containers',
+  themeGroup: 'layout',
   type: 'wizard',
   isInput: false,
   name: 'Wizard',

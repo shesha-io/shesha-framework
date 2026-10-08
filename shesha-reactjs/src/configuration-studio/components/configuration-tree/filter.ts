@@ -47,7 +47,7 @@ const createFolderDraftNode = (draft: FolderDraft): TreeNode => ({
 
 /**
  * Insert the draft row into its container. When renaming, the draft replaces the folder being
- * renamed; when creating, it is appended to the target container's children. The container is
+ * renamed; when creating, it goes first among the target container's children (as in VS Code). The container is
  * addressed by folder id, or by module id when creating at the module root.
  */
 const insertFolderDraft = (nodes: TreeNode[], draft: FolderDraft): TreeNode[] => {
@@ -65,7 +65,7 @@ const insertFolderDraft = (nodes: TreeNode[], draft: FolderDraft): TreeNode[] =>
     if (node.id === containerId && draft.kind === 'create') {
       // Drop the "Empty" placeholder - the draft row now occupies the folder.
       const realChildren = node.children.filter((c: TreeNode) => c.nodeType !== TreeNodeType.Placeholder);
-      return { ...node, children: [...loop(realChildren), draftNode] };
+      return { ...node, children: [draftNode, ...loop(realChildren)] };
     }
 
     return { ...node, children: loop(node.children) };

@@ -28,7 +28,7 @@ import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const IconPickerComponent: IconPickerComponentDefinition = {
-  styleGroup: 'common',
+  themeGroup: 'inline',
   allowInherit: true,
   type: 'iconPicker',
   name: 'Icon',

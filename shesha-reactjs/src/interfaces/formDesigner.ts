@@ -122,16 +122,15 @@ export type StyleGroups = 'common' | 'inputs' | 'common-containers' | 'buttons';
 
 /**
  * The four component-group theme tabs (Input/Inline/Standard/Layout Components) a component
- * belongs to for theming purposes, derived from its `styleGroup`. Components in the same tier
+ * belongs to for theming purposes, set with its `themeGroup`. Components in the same tier
  * inherit shared group-level appearance defaults (see `IConfigurableTheme.componentGroups`).
  */
 export type ThemeComponentGroup = 'input' | 'inline' | 'standard' | 'layout';
 
 /**
- * Maps each `ThemeComponentGroup` tab to the `styleGroup` value(s) it shows. 'standard' is the
- * catch-all for components not yet migrated to a `styleGroup` (most components) - it matches any
- * component whose `styleGroup` is unset, plus the reserved 'buttons' group once populated, since it
- * has no tab of its own yet.
+ * Fallback for components without a `themeGroup`: the theme tab implied by their existing `styleGroup`.
+ * `styleGroup` selects the script style API, so it is not set just for theming - use `themeGroup`.
+ * 'standard' is the catch-all for components with neither.
  */
 const THEME_GROUP_STYLE_GROUPS: Record<ThemeComponentGroup, ReadonlyArray<StyleGroups>> = {
   input: ['inputs'],
@@ -149,8 +148,8 @@ export const getThemeGroupForStyleGroup = (styleGroup: StyleGroups | undefined):
 };
 
 /**
- * The `ThemeComponentGroup` tab a component inherits its group-tier styles from: its explicit
- * `themeGroup` when set, otherwise the tab derived from its `styleGroup`.
+ * The `ThemeComponentGroup` tab a component inherits its group-tier styles from: its `themeGroup`
+ * when set, otherwise the tab implied by its `styleGroup` (see THEME_GROUP_STYLE_GROUPS).
  */
 export const getThemeGroupForComponent = (component: Pick<IToolboxComponentBase, 'styleGroup' | 'themeGroup'> | undefined): ThemeComponentGroup =>
   component?.themeGroup ?? getThemeGroupForStyleGroup(component?.styleGroup);
@@ -164,8 +163,8 @@ export type IToolboxComponentBase = {
 
   /**
    * Theme tab (Input/Inline/Standard/Layout Components) whose group styles this component inherits.
-   * Defaults to the tab derived from `styleGroup`; set it to regroup a component for theming without
-   * changing its script-facing style API.
+   * Use this - not `styleGroup`, which also selects the script style API - to place a component in a
+   * theme tab. Falls back to the tab implied by an existing `styleGroup`, else 'standard'.
    */
   themeGroup?: ThemeComponentGroup | undefined;
 

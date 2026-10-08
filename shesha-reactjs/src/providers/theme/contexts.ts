@@ -56,7 +56,7 @@ export interface IConfigurableTheme {
   components?: { [key: string]: unknown };
   /**
    * Per-style-group appearance defaults (Input/Inline/Standard/Layout Components tabs). Every
-   * component whose `styleGroup` maps to one of these tiers inherits from it, between the
+   * component whose theme group (`themeGroup`, see `getThemeGroupForComponent`) is one of these tiers inherits from it, between the
    * component's hardcoded defaults and its own per-type override in `components`.
    */
   componentGroups?: Partial<Record<ThemeComponentGroup, IStyleValue>>;
