@@ -47,7 +47,12 @@ namespace Shesha
     {
         public override async Task<bool> InitializeConfigurationAsync()
         {
-            return await ImportConfigurationAsync();
+            var imported = await ImportConfigurationAsync();
+
+            // after the seed packages so the OTP notification templates exist
+            await IocManager.Resolve<IOtpLegacyTemplatesMigrator>().MigrateAsync();
+
+            return imported;
         }
 
         public override void PreInitialize()
