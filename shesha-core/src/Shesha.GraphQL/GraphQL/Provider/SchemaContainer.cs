@@ -1,4 +1,5 @@
 ﻿using Abp.Dependency;
+using Microsoft.AspNetCore.Http;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.Extensions;
@@ -29,7 +30,8 @@ namespace Shesha.GraphQL.Provider
         protected Dictionary<string, ISchema> CustomSchemas { get; set; }
 
         public SchemaContainer(
-            IServiceProvider serviceProvider,
+            IHttpContextAccessor httpContextAccessor,
+            IIocResolver iocResolver,
             IEnumerable<ISchema> customSchemas,
             ITypeFinder typeFinder,
             AbpMemoryCacheManager cacheManager) : base($"{nameof(SchemaContainer)}Cache", cacheManager)
@@ -37,7 +39,13 @@ namespace Shesha.GraphQL.Provider
             _defaultSchema = new Schema();
             _defaultSchema.Query = new EmptyQuery();
             _typeFinder = typeFinder;
-            _serviceProvider = serviceProvider;
+
+            // This is a SINGLETON, and the schemas it caches hand their provider to EntityQuery's field
+            // resolvers. It must therefore never capture a request-scoped IServiceProvider, or that
+            // request's DI scope is pinned forever and every component resolved through it leaks.
+            // Deliberately takes NO IServiceProvider: resolutions go to the LIVE request scope, and
+            // fall back to the container (not a captured scope) when there is no HttpContext.
+            _serviceProvider = new AmbientRequestServiceProvider(httpContextAccessor, iocResolver);
 
             CustomSchemas = customSchemas.ToDictionary(
                 keySelector: schema => schema.GetType().Name.RemovePostFix("Schema"),
