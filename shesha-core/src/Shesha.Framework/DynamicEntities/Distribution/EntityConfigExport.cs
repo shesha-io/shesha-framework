@@ -93,8 +93,15 @@ namespace Shesha.DynamicEntities.Distribution
         private async Task<List<DistributedEntityConfigProperty>> MapPropertiesAsync(EntityConfig entityConfig)
         {
             var dbProperties = await _entityPropertyRepo.GetAll().Where(p => p.EntityConfig == entityConfig).ToListAsync();
+
+            // nested properties and array items types are rows of the same entity config, but they are
+            // exported inside their parent (Properties/ItemsType) - exporting them again at the top level
+            // makes the import overwrite the parent and duplicate the row
+            var itemsTypeIds = dbProperties.Where(p => p.ItemsType != null).Select(p => p.ItemsType.Id).ToHashSet();
+            var topLevelProperties = dbProperties.Where(p => p.ParentProperty == null && !itemsTypeIds.Contains(p.Id));
+
             var properties = new List<DistributedEntityConfigProperty>();
-            foreach (var dbProp in dbProperties)
+            foreach (var dbProp in topLevelProperties)
             {
                 properties.Add(await MapPropertyAsync(dbProp));
             }
