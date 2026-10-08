@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
+using Shesha.EntityReferences;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -49,5 +50,15 @@ namespace Shesha.Domain
         
         [MaxLength(int.MaxValue)]
         public virtual string? ErrorMessage { get; set; }
+
+        /// <summary>
+        /// OTP configuration (<c>OtpConfig</c>) used to generate and deliver the pin. Empty for the legacy flow
+        /// </summary>
+        public virtual ConfigurationItem? OtpConfig { get; set; }
+
+        /// <summary>
+        /// Entity that originated the OTP request
+        /// </summary>
+        public virtual GenericEntityReference? Owner { get; set; }
     }
 }
