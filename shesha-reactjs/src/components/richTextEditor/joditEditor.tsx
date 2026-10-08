@@ -1,7 +1,7 @@
 import { Suspense, FC, lazy, useCallback, useMemo } from 'react';
 import { Skeleton } from 'antd';
 import { JoditEditorProps } from "jodit-react";
-import DOMPurify, { UponSanitizeAttributeHookEvent } from 'dompurify';
+import DOMPurify, { UponSanitizeElementHookEvent } from 'dompurify';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export type JoditConfig = JoditEditorProps["config"];
@@ -24,17 +24,40 @@ export interface IJoditEditorProps {
   id?: string | undefined;
 }
 
-const stripBase64ImageSrc = (_node: Element, data: UponSanitizeAttributeHookEvent): void => {
-  if (data.attrName === 'src' && data.attrValue.trim().toLowerCase().startsWith('data:')) {
-    data.keepAttr = false;
-  }
+// Stripping just the src attribute leaves a src-less <img> that still reserves its (often huge) width/height,
+// rendering as an oversized broken-image placeholder; removing the whole element avoids that dead space.
+const removeDisallowedBase64Image = (node: Node, data: UponSanitizeElementHookEvent): void => {
+  if (data.tagName !== 'img' || !(node instanceof Element)) return;
+  const src = node.getAttribute('src');
+  if (src !== null && src.trim().toLowerCase().startsWith('data:')) node.remove();
+};
+
+// Matches the embed URLs Jodit's video plugin generates, so a pasted raw <iframe> is held to the same allow-list.
+const ALLOWED_IFRAME_SRC = /^https?:\/\/(www\.)?(youtube(-nocookie)?\.com\/embed\/|player\.vimeo\.com\/video\/)/i;
+
+// The 'html' profile strips <iframe>; ADD_TAGS below allows it back, this limits it to known video-embed hosts.
+const restrictIframeSrc = (node: Node, data: UponSanitizeElementHookEvent): void => {
+  if (data.tagName !== 'iframe' || !(node instanceof Element)) return;
+  const src = node.getAttribute('src');
+  if (src === null || !ALLOWED_IFRAME_SRC.test(src)) node.remove();
+};
+
+// Pasted links aren't editable-in-place, so force them to open in a new tab rather than navigate away from the form.
+const forceLinkTargetBlank = (node: Node): void => {
+  if (!(node instanceof Element) || node.tagName !== 'A' || !node.hasAttribute('href')) return;
+  node.setAttribute('target', '_blank');
+  node.setAttribute('rel', 'noopener noreferrer');
 };
 
 // DOMPurify hooks are global, so add/remove around each call to avoid leaking into other sanitize() calls in the app.
 const sanitizeContent = (value: string, allowBase64Images: boolean): string => {
-  if (!allowBase64Images) DOMPurify.addHook('uponSanitizeAttribute', stripBase64ImageSrc);
-  const result = DOMPurify.sanitize(value, { USE_PROFILES: { html: true } });
-  if (!allowBase64Images) DOMPurify.removeHook('uponSanitizeAttribute', stripBase64ImageSrc);
+  DOMPurify.addHook('uponSanitizeElement', restrictIframeSrc);
+  if (!allowBase64Images) DOMPurify.addHook('uponSanitizeElement', removeDisallowedBase64Image);
+  DOMPurify.addHook('afterSanitizeAttributes', forceLinkTargetBlank);
+  const result = DOMPurify.sanitize(value, { USE_PROFILES: { html: true }, ADD_TAGS: ['iframe'], ADD_ATTR: ['allowfullscreen', 'frameborder'] });
+  DOMPurify.removeHook('afterSanitizeAttributes', forceLinkTargetBlank);
+  if (!allowBase64Images) DOMPurify.removeHook('uponSanitizeElement', removeDisallowedBase64Image);
+  DOMPurify.removeHook('uponSanitizeElement', restrictIframeSrc);
   return result;
 };
 
@@ -45,6 +68,21 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
     [value, allowBase64Images],
   );
 
+  // Jodit's own sanitizer denies <iframe> and sandboxes survivors, breaking embeds; ALLOWED_IFRAME_SRC guards these.
+  // link.processVideoLink is disabled so a pasted YouTube/Vimeo URL becomes a plain clickable link, not an embed.
+  const mergedConfig = useMemo<NonNullable<JoditConfig>>(() => ({
+    ...config,
+    cleanHTML: {
+      ...config?.cleanHTML,
+      denyTags: 'script,object,embed',
+      sandboxIframesInContent: false,
+    },
+    link: {
+      ...config?.link,
+      processVideoLink: false,
+    },
+  }), [config]);
+
   const handleBlur = (newValue: string): void => {
     const cleanValue = typeof newValue === 'string'
       ? sanitizeContent(newValue, allowBase64Images)
@@ -52,11 +90,16 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
     onChange?.(cleanValue);
   };
 
-  // Catches content applied directly to the editor DOM (e.g. switching from Source/HTML mode back to WYSIWYG), which bypasses onBlur.
   const handleEditorRef = useCallback((editor: JoditInstance) => {
-    if (allowBase64Images) return;
-    editor.e.on('beforeSetValueToEditor', (rawValue: string) => sanitizeContent(rawValue, allowBase64Images));
-  }, [allowBase64Images]);
+    if (!allowBase64Images) {
+      // Jodit also fires this on every keystroke sync with no argument; returning a string there overwrites the typing.
+      editor.e.on('beforeSetValueToEditor', (rawValue: unknown) =>
+        typeof rawValue === 'string' ? sanitizeContent(rawValue, allowBase64Images) : undefined);
+    }
+
+    // The instance can be recreated before onBlur syncs out, losing content that only exists in the live DOM.
+    editor.hookStatus('beforeDestruct', () => onChange?.(sanitizeContent(editor.value, allowBase64Images)));
+  }, [allowBase64Images, onChange]);
 
   const isSSR = typeof window === 'undefined';
 
@@ -66,7 +109,7 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
     <Suspense fallback={<div>Loading editor...</div>}>
       <JoditEditor
         value={sanitizedValue}
-        {...(config ? { config } : {})}
+        config={mergedConfig}
         {...(id ? { id } : {})}
         editorRef={handleEditorRef}
         onBlur={handleBlur} // preferred to use only this option to update the content for performance reasons
