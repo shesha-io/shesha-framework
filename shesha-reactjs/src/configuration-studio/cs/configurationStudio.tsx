@@ -36,6 +36,7 @@ import {
   ForceRenderFunc, IDocumentInstance,
   isCIDocument,
   isConfigItemTreeNode,
+  isNodeWithChildren,
   isSpecialTreeNode, ItemTypeDefinition,
   SaveDocumentResponse,
   SpecialTreeNode,
@@ -375,10 +376,11 @@ export class ConfigurationStudio implements IConfigurationStudio {
     }
 
     // Another draft may have been started while the request was in flight - leave that one alone.
-    if (this._folderDraft === draft) {
+    // No notify here: loadTreeAsync notifies once the new tree is in, so the editor row and the saved
+    // folder swap in a single render. Rendering now would land mid-reload and remount the tree,
+    // losing the user's scroll position.
+    if (this._folderDraft === draft)
       this._folderDraft = undefined;
-      this.notifySubscribers(['tree']);
-    }
 
     await this.loadTreeAsync();
     const saved = isNullOrWhiteSpace(savedFolderId) ? undefined : this._treeNodesMap.get(savedFolderId);
@@ -919,8 +921,10 @@ export class ConfigurationStudio implements IConfigurationStudio {
     });
   };
 
-  loadTreeAsync = async (): Promise<void> => {
-    this.treeLoadingState = { status: 'loading', hint: 'Fetching data...', error: null };
+  /** @param showLoading false for a background resync: the tree keeps showing without the loading spinner. */
+  loadTreeAsync = async (showLoading: boolean = true): Promise<void> => {
+    if (showLoading)
+      this.treeLoadingState = { status: 'loading', hint: 'Fetching data...', error: null };
     try {
       this.log('LOG: loadTreeAsync');
       const flatTreeNodes = await fetchFlatTreeAsync(this.httpClient);
@@ -978,6 +982,65 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   moveTreeNodeAsync = async (payload: MoveNodePayload): Promise<void> => {
     await moveTreeNodeAsync(this.httpClient, payload);
+  };
+
+  /**
+   * Move nodes into a folder (or the module root when `folderId` is undefined). The tree is updated
+   * straight away and the server is called afterwards, so the move doesn't wait for two round trips
+   * (the move itself and the tree reload). On success the tree is quietly resynced with the server; on
+   * failure it is reloaded to undo the local move and the error is shown.
+   */
+  moveTreeNodesAsync = async (payloads: MoveNodePayload[]): Promise<void> => {
+    if (payloads.length === 0)
+      return;
+
+    this.moveTreeNodesLocally(payloads);
+    try {
+      await Promise.all(payloads.map((p) => moveTreeNodeAsync(this.httpClient, p)));
+    } catch (error) {
+      console.error('Failed to move nodes', error);
+      const errorInfo = extractErrorInfo(error);
+      this.notificationApi.error({
+        message: 'Failed to move',
+        description: errorInfo?.details ?? errorInfo?.message ?? undefined,
+      });
+      await this.loadTreeAsync();
+      return;
+    }
+    await this.loadTreeAsync(false);
+  };
+
+  /** Server order for siblings: folders before items, then by name. */
+  private compareSiblings = (a: TreeNode, b: TreeNode): number => {
+    const aIsItem = isConfigItemTreeNode(a) ? 1 : 0;
+    const bIsItem = isConfigItemTreeNode(b) ? 1 : 0;
+    return aIsItem !== bIsItem
+      ? aIsItem - bIsItem
+      : a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+  };
+
+  private moveTreeNodesLocally = (payloads: MoveNodePayload[]): void => {
+    let moved = false;
+    for (const { nodeId, folderId } of payloads) {
+      const node = this._treeNodesMap.get(nodeId);
+      if (!isDefined(node))
+        continue;
+      const target = this._treeNodesMap.get(folderId ?? node.moduleId);
+      const source = isDefined(node.parentId) ? this._treeNodesMap.get(node.parentId) : undefined;
+      if (!isDefined(target) || !isNodeWithChildren(target) || target === source)
+        continue;
+
+      if (isDefined(source) && isNodeWithChildren(source))
+        source.children = source.children.filter((child: TreeNode) => child.id !== nodeId);
+      node.parentId = target.id;
+      target.children = [...target.children, node].sort(this.compareSiblings);
+      moved = true;
+    }
+    if (!moved)
+      return;
+    // A new root array so the tree (memoised on it) re-filters with the moved nodes.
+    this._treeNodes = [...this._treeNodes];
+    this.notifySubscribers(['tree']);
   };
 
   //#region crud operations

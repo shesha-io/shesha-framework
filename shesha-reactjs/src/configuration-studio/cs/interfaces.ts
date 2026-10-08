@@ -92,7 +92,11 @@ export interface IConfigurationStudio {
   setItemTypeFilter: (value: string[]) => void;
 
   loadTreeAndDocsAsync: () => Promise<void>;
+  /** Reload only the tree data, keeping the in-memory expansion/search/filter state and tabs. */
+  loadTreeAsync: (showLoading?: boolean) => Promise<void>;
   moveTreeNodeAsync: (payload: MoveNodePayload) => Promise<void>;
+  /** Move nodes, updating the tree immediately and syncing with the server afterwards. */
+  moveTreeNodesAsync: (payloads: MoveNodePayload[]) => Promise<void>;
   getTreeNodeById: (itemId: string) => TreeNode | undefined;
   subscribe(type: CsSubscriptionType, callback: () => void): () => void;
 

@@ -103,7 +103,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                 }
                 .${csNavPanelTree}{
                     flex-grow: 1;
-                    overflow: auto;
+                    /* The tree is sized to this panel and scrolls itself (virtual list), so the panel must
+                       take its height from the layout, not from the tree's content. */
+                    min-height: 0;
+                    overflow: hidden;
                     ${sheshaStyles.thinScrollbars}
                     >.${prefixCls}-tree{
                         height:100%;
@@ -176,12 +179,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                          The content wrapper becomes a flex row so the type icon
                          stays inline and only the title truncates; min-width: 0
                          lets the title shrink below its content width so the
-                         ellipsis actually triggers. */
+                         ellipsis actually triggers. The wrapper itself must not clip
+                         (overflow stays visible): antd draws the drag-and-drop drop
+                         indicator inside it, just outside its edges. */
                       .${prefixCls}-tree-node-content-wrapper {
                         display: flex;
                         align-items: center;
                         min-width: 0;
-                        overflow: hidden;
                         .${prefixCls}-tree-iconEle {
                           flex: none;
                         }
