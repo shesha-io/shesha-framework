@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from 'react';
+import { FC, use } from 'react';
 import { FormIdentifier } from '@/interfaces';
 import { DynamicPage } from '@/generic-pages/dynamic';
 import { notFound } from 'next/navigation';
@@ -11,9 +11,9 @@ interface AsyncPageProps {
   searchParams: Promise<NodeJS.Dict<string | string[]>>;
 }
 
-const DynamicPageInternal = async (props: AsyncPageProps): Promise<ReactNode> => {
-  const params = await props.params;
-  const searchParams = await props.searchParams;
+const DynamicPageInternal: FC<AsyncPageProps> = (props) => {
+  const params = use(props.params);
+  const searchParams = use(props.searchParams);
 
   // possible values of path:
   // 1. array with one element: [formName]
