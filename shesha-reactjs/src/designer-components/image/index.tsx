@@ -39,6 +39,7 @@ type ImageComponentCalculatedModel = {
 };
 
 const ImageComponent: IToolboxComponent<IImageProps, ImageComponentCalculatedModel> = {
+  themeGroup: 'inline',
   type: 'image',
   name: 'Image',
   icon: <FileImageOutlined />,

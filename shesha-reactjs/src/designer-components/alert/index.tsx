@@ -49,6 +49,7 @@ const setElementStyle = <P extends PropsWithStyle>(
 };
 
 const AlertComponent: AlertComponentDefinition = {
+  themeGroup: 'layout',
   allowInherit: true,
   type: 'alert',
   isInput: false,

@@ -96,7 +96,7 @@ export const CanvasConfig: FC = () => {
     <div className={styles.shaDesignerCanvasConfig}>
       <Space orientation="horizontal" size={5} style={{ flexWrap: "nowrap" }}>
         <DeviceOptions />
-        <Space orientation="horizontal" size={2} style={{ flexWrap: "nowrap" }}>
+        <Space orientation="horizontal" size={5} style={{ flexWrap: "nowrap" }}>
           <Tooltip title={autoZoom ? "Auto" : "Manual"}>
             <Button
               size="small"
@@ -109,24 +109,27 @@ export const CanvasConfig: FC = () => {
               }}
             />
           </Tooltip>
-          <Tooltip title="Zoom out"><Button size="small" type="default" icon={<MinusOutlined />} title="Zoom out" onClick={handleZoomOut} /></Tooltip>
-          <Tooltip title="Zoom (%)">
-            <InputNumber
-              size="small"
-              min={DEFAULT_OPTIONS.minZoom}
-              max={DEFAULT_OPTIONS.maxZoom}
-              value={inputZoom}
-              controls={false}
-              style={{ width: 56 }}
-              formatter={(value) => `${value}%`}
-              parser={(value) => Number((value ?? '').replace('%', ''))}
-              onFocus={handleInputFocus}
-              onChange={handleInputZoomChange}
-              onBlur={commitInputZoom}
-              onPressEnter={commitInputZoom}
-            />
-          </Tooltip>
-          <Tooltip title="Zoom in"><Button size="small" type="default" icon={<PlusOutlined />} title="Zoom in" onClick={handleZoomIn} /></Tooltip>
+          {/* Zoom out / level / zoom in are related, so they read as one joined control (issue #4783). */}
+          <Space.Compact size="small">
+            <Tooltip title="Zoom out"><Button size="small" type="default" icon={<MinusOutlined />} title="Zoom out" onClick={handleZoomOut} /></Tooltip>
+            <Tooltip title="Zoom (%)">
+              <InputNumber
+                size="small"
+                min={DEFAULT_OPTIONS.minZoom}
+                max={DEFAULT_OPTIONS.maxZoom}
+                value={inputZoom}
+                controls={false}
+                style={{ width: 56 }}
+                formatter={(value) => `${value}%`}
+                parser={(value) => Number((value ?? '').replace('%', ''))}
+                onFocus={handleInputFocus}
+                onChange={handleInputZoomChange}
+                onBlur={commitInputZoom}
+                onPressEnter={commitInputZoom}
+              />
+            </Tooltip>
+            <Tooltip title="Zoom in"><Button size="small" type="default" icon={<PlusOutlined />} title="Zoom in" onClick={handleZoomIn} /></Tooltip>
+          </Space.Compact>
         </Space>
       </Space>
     </div>

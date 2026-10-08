@@ -30,6 +30,8 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const SwitchComponent: SwitchComponentDefinition = {
   styleGroup: 'common',
+  // Themed with the Input Components tab; styleGroup stays as-is because it also selects the script style API.
+  themeGroup: 'input',
   allowInherit: true,
   type: 'switch',
   isInput: true,

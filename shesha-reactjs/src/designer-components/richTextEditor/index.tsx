@@ -37,6 +37,7 @@ const readPersistedJoditMode = (editorId: string): number | undefined => {
 };
 
 const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
+  themeGroup: 'input',
   type: 'richTextEditor',
   name: 'Rich Text Editor',
   icon: <EditOutlined />,

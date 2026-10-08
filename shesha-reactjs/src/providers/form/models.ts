@@ -484,7 +484,8 @@ export const EMPTY_FLAT_COMPONENTS_STRUCTURE: IFlatComponentsStructure = Object.
 export interface IFormSettingsCommon {
   modelType?: IEntityTypeIdentifier | string | undefined;
   layout: FormLayout;
-  colon: boolean;
+  /** Label colon. Unset means the form follows the theme's Colon setting (see resolveFormColon). */
+  colon?: boolean | undefined;
   labelCol: ColProps;
   wrapperCol: ColProps;
   size?: SizeType | undefined;
@@ -662,11 +663,18 @@ export interface IFormValidationRulesOptions<TData = unknown> {
 /** Default form settings */
 export const DEFAULT_FORM_SETTINGS: IFormSettings = {
   layout: 'horizontal',
-  colon: true,
+  // No colon: a form that never set its own follows the theme's Colon setting.
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
   permissions: [],
 };
+
+/**
+ * Effective label colon for a form: the form's own Colon setting, falling back to the theme's Colon
+ * setting when the form has none. Settings forms are framework chrome, so they never use the theme's.
+ */
+export const resolveFormColon = (formColon: boolean | undefined, isSettingsForm: boolean, themeColon: boolean | undefined): boolean | undefined =>
+  formColon ?? (isSettingsForm ? undefined : themeColon);
 
 export type ActionParametersJs = string;
 export type ActionParametersDictionary = object;

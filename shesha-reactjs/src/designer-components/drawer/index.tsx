@@ -16,6 +16,7 @@ import { defaultStyles } from './utils';
 import { CloseDrawer, OpenDrawer } from './configurableActions';
 
 const DrawerComponent: IToolboxComponent<IDrawerProps> = {
+  themeGroup: 'layout',
   type: 'drawer',
   isInput: false,
   name: 'Drawer',

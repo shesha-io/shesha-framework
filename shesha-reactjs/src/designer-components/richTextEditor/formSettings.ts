@@ -1,8 +1,11 @@
 import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
+import { deviceDataPath } from '@/form-factory/implementation';
 
-export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
+  // Without the style router (theme settings) the Appearance values sit flat on `data`, not under a device.
+  const dataPath = deviceDataPath(removeStyleRouter !== true);
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -424,7 +427,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   labelAlign: 'right',
                   parentId: appearanceTabId,
                   hidden: false,
-                  propertyRouteName: {
+                  propertyRouteName: removeStyleRouter === true ? '' : {
                     _mode: 'code',
                     _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
@@ -481,7 +484,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 inline: true,
                                 hidden: {
                                   _code:
-                                    'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoWidth);',
+                                    `return getSettingValue(${dataPath}?.autoWidth);`,
                                   _mode: 'code',
                                   _value: false,
                                 },
@@ -505,7 +508,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     icon: 'minWidthIcon',
                                     hidden: {
                                       _code:
-                                        'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.allowResizeX);',
+                                        `return !getSettingValue(${dataPath}?.allowResizeX);`,
                                       _mode: 'code',
                                       _value: false,
                                     },
@@ -520,7 +523,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     icon: 'maxWidthIcon',
                                     hidden: {
                                       _code:
-                                        'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.allowResizeX);',
+                                        `return !getSettingValue(${dataPath}?.allowResizeX);`,
                                       _mode: 'code',
                                       _value: false,
                                     },
@@ -533,7 +536,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 inline: true,
                                 hidden: {
                                   _code:
-                                    'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoHeight);',
+                                    `return getSettingValue(${dataPath}?.autoHeight);`,
                                   _mode: 'code',
                                   _value: false,
                                 },
@@ -557,7 +560,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     icon: 'minHeightIcon',
                                     hidden: {
                                       _code:
-                                        'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.allowResizeY);',
+                                        `return !getSettingValue(${dataPath}?.allowResizeY);`,
                                       _mode: 'code',
                                       _value: false,
                                     },
@@ -572,7 +575,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     icon: 'maxHeightIcon',
                                     hidden: {
                                       _code:
-                                        'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.allowResizeY);',
+                                        `return !getSettingValue(${dataPath}?.allowResizeY);`,
                                       _mode: 'code',
                                       _value: false,
                                     },
@@ -591,7 +594,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     jsSetting: true,
                                     hidden: {
                                       _code:
-                                        'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoWidth);',
+                                        `return getSettingValue(${dataPath}?.autoWidth);`,
                                       _mode: 'code',
                                       _value: false,
                                     },
@@ -604,7 +607,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     jsSetting: true,
                                     hidden: {
                                       _code:
-                                        'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoHeight);',
+                                        `return getSettingValue(${dataPath}?.autoHeight);`,
                                       _mode: 'code',
                                       _value: false,
                                     },

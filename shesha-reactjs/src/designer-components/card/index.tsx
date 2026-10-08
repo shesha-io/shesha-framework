@@ -24,6 +24,7 @@ import { getComponentEvents } from '../_common/events';
 import { useMemo } from 'react';
 
 const CardComponent: IToolboxComponent<ICardComponentProps> = {
+  themeGroup: 'layout',
   allowInherit: true,
   type: 'card',
   isInput: false,

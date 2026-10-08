@@ -10,6 +10,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ColorValueType } from 'antd/es/color-picker/interface';
 
 const ColorPickerComponent: ColorPickerComponentDefinition = {
+  themeGroup: 'input',
   type: 'colorPicker',
   name: 'Color Picker',
   canBeJsSetting: true,

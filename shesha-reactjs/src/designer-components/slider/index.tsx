@@ -11,6 +11,7 @@ import { NumberFormats } from '@/interfaces/dataTypes';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const SliderComponent: SliderComponentDefinition = {
+  themeGroup: 'input',
   type: 'slider',
   name: 'Slider',
   icon: <SlidersFilled />,

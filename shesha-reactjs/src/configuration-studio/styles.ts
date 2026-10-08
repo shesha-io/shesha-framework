@@ -13,6 +13,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
   const csNavPanelContent = "sha-cs-nav-content";
   const csNavPanelHeader = 'sha-cs-nav-content-hd';
   const csNavPanelTree = 'sha-cs-nav-content-tree';
+  const csTreeFilterButton = 'sha-cs-tree-filter-btn';
   const csQuickInfoIcons = 'sha-cs-quick-info-icons';
   const csDocTabs = 'sha-cs-doc-tabs';
   const csDocEditor = 'sha-cs-doc-editor';
@@ -47,6 +48,21 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             }
             .${csHeaderRight}{
                 margin-right: 10px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+
+                /* Contextual grouping: Form/Canvas -> user actions -> avatar, split by separators (issue #4783). */
+                .${prefixCls}-divider {
+                    height: 24px;
+                    margin: 0 4px;
+                    border-inline-start-color: ${token.colorBorder};
+                }
+
+                /* Icons sit on the left of the label rather than centred with it. */
+                .${prefixCls}-btn > .${iconPrefixCls} + span {
+                    margin-inline-start: 6px;
+                }
             }            
         }
         .${csContent}{
@@ -57,7 +73,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             height: calc(100vh - ${headerHeight}px);
             overflow: hidden;
             background: ${token.colorBgContainer};
-            border-right: 1px solid ${token.colorBorderSecondary};
+            /* Darker divider so the panel reads as separate from the work area (issue #4783). */
+            border-right: 1px solid ${token.colorBorder};
             .${csNavPanelSpinner}{
                 height: 100%;
                 >.${prefixCls}-spin-container {
@@ -71,10 +88,25 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                 .${csNavPanelHeader}{
                     margin-bottom: 8px;
                     flex-grow: 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                    /* Let the search box take the slack so the filter button keeps its size. */
+                    >.${prefixCls}-input-group-wrapper,
+                    >.${prefixCls}-input-wrapper {
+                        flex: 1 1 auto;
+                        min-width: 0;
+                    }
+                    .${prefixCls}-badge {
+                        flex: 0 0 auto;
+                    }
                 }
                 .${csNavPanelTree}{
                     flex-grow: 1;
-                    overflow: auto;
+                    /* The tree is sized to this panel and scrolls itself (virtual list), so the panel must
+                       take its height from the layout, not from the tree's content. */
+                    min-height: 0;
+                    overflow: hidden;
                     ${sheshaStyles.thinScrollbars}
                     >.${prefixCls}-tree{
                         height:100%;
@@ -82,8 +114,59 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                     .${prefixCls}-tree-treenode {
                       width: 100%;
                       max-width: 100%;
+
+                      /* Cleaner drag handle: a subtle grip that only appears on hover (issue #4783). */
                       .${prefixCls}-tree-draggable-icon {
+                        display: flex;
+                        /* The node row aligns its children to the top; stretching the handle to the row's
+                           height lets align-items centre the grip vertically. */
+                        align-self: stretch;
+                        align-items: center;
+                        justify-content: center;
+                        width: 12px;
+                        opacity: 0;
+                        cursor: grab;
+                        color: ${token.colorTextQuaternary};
+                        transition: opacity 0.2s;
+                      }
+                      &:hover .${prefixCls}-tree-draggable-icon {
+                        opacity: 1;
+                      }
+
+                      /* Drops highlight the whole target folder instead (configuration-tree), so hide
+                         antd's outline around the container row and its between-rows drop line. antd
+                         always renders its own line (it ignores a dropIndicatorRender prop), so CSS it is. */
+                      &.drop-container > [draggable] {
+                        box-shadow: none;
+                      }
+                      .${prefixCls}-tree-drop-indicator {
                         display: none;
+                      }
+
+                      /* Darker, more emphasised selection (issue #4783). */
+                      .${prefixCls}-tree-node-content-wrapper.${prefixCls}-tree-node-selected {
+                        background-color: ${token.colorPrimaryBg};
+                        color: ${token.colorPrimaryText};
+                        font-weight: 500;
+                      }
+
+                      /* Inline folder-name editor row (issue #4783). */
+                      &.sha-cs-tree-folder-draft {
+                        .${prefixCls}-tree-node-content-wrapper {
+                          cursor: default;
+                          &:hover {
+                            background: transparent;
+                          }
+                        }
+                        .${prefixCls}-tree-title {
+                          display: block;
+                          width: 100%;
+                          /* The editor must keep its full width instead of being clipped like a label. */
+                          overflow: visible;
+                        }
+                        .${prefixCls}-tree-switcher {
+                          visibility: hidden;
+                        }
                       }
                       /* Empty-folder placeholder (filter.ts): shown as a muted hint, not hidden - display:none broke rc-virtual-list's scroll bookkeeping. */
                       &.sha-cs-tree-empty-placeholder {
@@ -106,12 +189,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                          The content wrapper becomes a flex row so the type icon
                          stays inline and only the title truncates; min-width: 0
                          lets the title shrink below its content width so the
-                         ellipsis actually triggers. */
+                         ellipsis actually triggers. The wrapper itself must not clip
+                         (overflow stays visible): antd draws the drag-and-drop drop
+                         indicator inside it, just outside its edges. */
                       .${prefixCls}-tree-node-content-wrapper {
                         display: flex;
                         align-items: center;
                         min-width: 0;
-                        overflow: hidden;
                         .${prefixCls}-tree-iconEle {
                           flex: none;
                         }
@@ -132,6 +216,17 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             flex-grow: 1 !important;
             .${csDocTabs}{
                 height: 100%;
+                /* Reduced tab height and a darker tab-bar rule (issue #4783). */
+                >.ant-tabs-nav {
+                    margin-bottom: 0;
+                    &::before {
+                        border-bottom-color: ${token.colorBorder};
+                    }
+                    .ant-tabs-tab {
+                        padding-top: 6px;
+                        padding-bottom: 6px;
+                    }
+                }
                 >.ant-tabs-body-holder {
                     height: 100%;
                     ${sheshaStyles.thinScrollbars}
@@ -177,6 +272,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
     csNavPanelContent,
     csNavPanelHeader,
     csNavPanelTree,
+    csTreeFilterButton,
     csQuickInfoIcons,
     csDocTabs,
     csDocEditor,

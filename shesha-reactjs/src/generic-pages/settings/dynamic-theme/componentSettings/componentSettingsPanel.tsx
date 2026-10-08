@@ -1,9 +1,10 @@
-import { Card, Col, Empty, Menu, Row } from 'antd';
+import { Card, Col, Empty, Menu, Row, Space } from 'antd';
 import { CSSProperties, FC, useCallback, useMemo, useState } from 'react';
 import * as React from 'react';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { useStyles } from '../styles/styles';
 import { findComponentNode, getMenuItems, IMenuItem } from '../toolboxComponents';
+import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from '@/utils/object';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
 import {
   DEFAULT_FORM_SETTINGS,
@@ -18,7 +19,7 @@ import { SearchBox } from '@/components/formDesigner/toolboxSearchBox';
 import { ComponentDefaultsPreview } from './preview';
 import { ComponentDefaultsSettings } from './settings';
 import DefaultModelProvider from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
-import { IToolboxComponent } from '../../../../interfaces/formDesigner';
+import { getThemeGroupForComponent, IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useFormBuilderFactory } from '../../../..';
 /** Markup node that wraps designer settings tabs (e.g. Appearance). */
@@ -47,7 +48,7 @@ export interface IComponentDefaultsPanelProps {
   readOnly?: boolean;
 }
 
-const componentMenuCardStyle = { height: '600px', overflowY: 'auto' } as CSSProperties;
+const componentMenuCardStyle = { height: '100%', overflowY: 'auto' } as CSSProperties;
 
 /** Filters the component tree by name, keeping groups that match or that contain a match. */
 export const filterMenuItems = (items: IMenuItem[], searchText: string): IMenuItem[] => {
@@ -110,8 +111,10 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
   }, [componentType]);
 
   const defaultStyles = useMemo(() => {
-    return typeof componentDef?.getDefaultStyles === 'function' ? componentDef.getDefaultStyles() : {};
-  }, [componentDef]);
+    const hardcodedDefaults = typeof componentDef?.getDefaultStyles === 'function' ? componentDef.getDefaultStyles() : {};
+    const groupStyle = theme?.componentGroups?.[getThemeGroupForComponent(componentDef)] ?? {};
+    return deepMergeValues(deepCopyViaJson(hardcodedDefaults) as object, groupStyle, deepMergeSkipUndefinedFunc);
+  }, [componentDef, theme?.componentGroups]);
 
   // Get the settings form markup (could be a function or object)
   const settingsFormMarkup = componentDef?.settingsFormMarkup;
@@ -122,7 +125,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
     // If it's a function (SettingsFormMarkupFactory), execute it to get the markup
     const markup = typeof settingsFormMarkup === 'function'
-      ? settingsFormMarkup({ fbf: fbf, removeStyleRouter: true })
+      ? settingsFormMarkup({ fbf: fbf, removeStyleRouter: true, forceVisible: true })
       : settingsFormMarkup;
 
     // Handle both FormRawMarkup (array) and FormMarkupWithSettings (object with components)
@@ -201,12 +204,13 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
         {/* updateModelIfChanged keeps the instance's model in step with the stored theme entry —
             without it the provider never registers the theme values as the model, so every value
             reports as 'Inherited' and Reset to default/Override state never reflects reality. */}
-        <DefaultModelProvider key={componentType ?? 'none'} name="Component Default Styles" model={initialModel} defaultModel={defaultStyles} updateModelIfChanged>
-
-          <ComponentDefaultsSettings componentTitle={componentTitle} componentType={componentType} markup={appearanceMarkup} initialModel={initialModel} readonly={readonly ?? false} onChange={handleFormDataChange} />
-        </DefaultModelProvider>
-        {/* Preview Card: renders the component with the current theme to show a live preview */}
-        {isDefined(componentDef) && isDefined(theme) && <ComponentDefaultsPreview componentDefinition={componentDef} theme={theme} />}
+        <Space orientation="vertical" size={16} className={styles.fullWidth}>
+          <DefaultModelProvider key={componentType ?? 'none'} name="Component Default Styles" model={initialModel} defaultModel={defaultStyles} updateModelIfChanged>
+            <ComponentDefaultsSettings componentTitle={componentTitle} componentType={componentType} markup={appearanceMarkup} initialModel={initialModel} readonly={readonly ?? false} onChange={handleFormDataChange} />
+          </DefaultModelProvider>
+          {/* Preview Card: renders the component with the current theme to show a live preview */}
+          {isDefined(componentDef) && isDefined(theme) && <ComponentDefaultsPreview componentDefinition={componentDef} theme={theme} />}
+        </Space>
       </Col>
     </Row>
   );

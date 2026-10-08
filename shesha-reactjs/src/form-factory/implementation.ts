@@ -57,6 +57,19 @@ import { IContainerCheckerComponentProps } from "@/designer-components/container
 import { resolveInputVisibility } from "./inputVisibility";
 
 /**
+ * Header of a collapsible panel in a settings form: a neutral underline (antd's border colour, so it
+ * follows light/dark mode) instead of the ghost panel's primary-colour accent, with no left inset so
+ * the title lines up with the settings below it.
+ */
+const SETTINGS_PANEL_HEADER_STYLES: ICollapsiblePanelComponentProps['headerStyles'] = {
+  border: {
+    borderType: 'custom',
+    border: { bottom: { width: 2, color: 'var(--ant-color-border)', style: 'solid' } },
+  },
+  stylingBoxJson: { _type: 'styleBox', paddingTop: 0, paddingRight: 16, paddingBottom: 0, paddingLeft: 0 },
+};
+
+/**
  * Returns `true` when `propertyName`'s trailing segment (the part after the last `.`) is listed in
  * `exclude`. Used by the standard appearance panels so callers can drop individual sub-inputs,
  * e.g. `exclude: ['align']` removes the input bound to `font.align`.
@@ -204,7 +217,9 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       header: props.header ?? { id: nanoid(), components: [] },
       content: props.content ?? { id: nanoid(), components: [] },
       desktop: { ...props.desktop, stylingBoxJson: { _type: 'styleBox', paddingBottom: 0, paddingLeft: 0, paddingRight: 0, paddingTop: 0, ...props.desktop?.stylingBoxJson } },
-      stylingBoxJson: { _type: 'styleBox', paddingBottom: 0, paddingLeft: 0, paddingRight: 0, paddingTop: 0, ...props.stylingBoxJson },
+      // Settings panels are compact: an 8px top/left inset for their content and a neutral header.
+      stylingBoxJson: { _type: 'styleBox', paddingBottom: 0, paddingLeft: 8, paddingRight: 0, paddingTop: 8, ...props.stylingBoxJson },
+      headerStyles: props.headerStyles ?? SETTINGS_PANEL_HEADER_STYLES,
     };
 
     // update header id and parentId for nested components
@@ -343,11 +358,11 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       inline: true,
       propertyName: propertyName,
       inputs: excludeInputs([
-        { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypes },
+        { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypes, width: 120 },
         { type: 'numberField', label: 'Size', propertyName: `${propertyName}.size`, hideLabel: true, width: 50 },
-        { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 48, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
+        { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 130, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
         { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
-        { type: 'dropdown', label: 'Align', propertyName: `${propertyName}.align`, hideLabel: true, width: 48, dropdownOptions: textAlignOptions },
+        { type: 'dropdown', label: 'Align', propertyName: `${propertyName}.align`, hideLabel: true, width: 50, dropdownOptions: textAlignOptions },
       ], exclude) });
     return this;
   };
@@ -462,19 +477,19 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'dimensionField', dimensionType: 'width', label: 'Width', width: 85, propertyName: `${propertyName}.width`, icon: 'widthIcon',
+          { type: 'dimensionField', dimensionType: 'width', label: 'Width', width: 120, propertyName: `${propertyName}.width`, icon: 'widthIcon',
             tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit. \nAlso you can use calc value, for example `calc(50% - 10px)` or `50% - 10px`' },
-          { type: 'dimensionField', dimensionType: 'minWidth', label: 'Min Width', width: 85, hideLabel: true, propertyName: `${propertyName}.minWidth`, icon: 'minWidthIcon' },
-          { type: 'dimensionField', dimensionType: 'maxWidth', label: 'Max Width', width: 85, hideLabel: true, propertyName: `${propertyName}.maxWidth`, icon: 'maxWidthIcon' },
+          { type: 'dimensionField', dimensionType: 'minWidth', label: 'Min Width', width: 120, hideLabel: true, propertyName: `${propertyName}.minWidth`, icon: 'minWidthIcon' },
+          { type: 'dimensionField', dimensionType: 'maxWidth', label: 'Max Width', width: 120, hideLabel: true, propertyName: `${propertyName}.maxWidth`, icon: 'maxWidthIcon' },
         ], exclude),
       })
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'dimensionField', dimensionType: 'height', label: 'Height', width: 85, propertyName: `${propertyName}.height`, icon: 'heightIcon',
+          { type: 'dimensionField', dimensionType: 'height', label: 'Height', width: 120, propertyName: `${propertyName}.height`, icon: 'heightIcon',
             tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit. \nAlso you can use calc value, for example `calc(50% - 10px)` or `50% - 10px`' },
-          { type: 'dimensionField', dimensionType: 'minHeight', label: 'Min Height', width: 85, hideLabel: true, propertyName: `${propertyName}.minHeight`, icon: 'minHeightIcon' },
-          { type: 'dimensionField', dimensionType: 'maxHeight', label: 'Max Height', width: 85, hideLabel: true, propertyName: `${propertyName}.maxHeight`, icon: 'maxHeightIcon' },
+          { type: 'dimensionField', dimensionType: 'minHeight', label: 'Min Height', width: 120, hideLabel: true, propertyName: `${propertyName}.minHeight`, icon: 'minHeightIcon' },
+          { type: 'dimensionField', dimensionType: 'maxHeight', label: 'Max Height', width: 120, hideLabel: true, propertyName: `${propertyName}.maxHeight`, icon: 'maxHeightIcon' },
         ], exclude),
       }));
     this.stdContainerChecker((f) => f
@@ -543,10 +558,10 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
         visibleJs: `return !["color", "gradient"].includes(getSettingValue(${dataPath}?.${propertyName}?.type));`,
         inputs: excludeInputs([
           { type: 'customDropdown', label: 'Size', hideLabel: true, propertyName: `${propertyName}.size`, dropdownOptions: sizeOptions,
-            customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
+            customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"', width: 150,
           },
           { type: 'customDropdown', label: 'Position', hideLabel: true, propertyName: `${propertyName}.position`, dropdownOptions: positionOptions,
-            customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
+            customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"', width: 150,
           },
           { type: 'radio', label: 'Repeat', hideLabel: true, propertyName: `${propertyName}.repeat`, buttonGroupOptions: repeatOptions },
         ], exclude),
@@ -561,10 +576,10 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'numberField', label: 'Offset X', hideLabel: true, tooltip: 'Offset X', width: 80, icon: 'offsetHorizontalIcon', propertyName: `${propertyName}.offsetX` },
-          { type: 'numberField', label: 'Offset Y', hideLabel: true, tooltip: 'Offset Y', width: 80, icon: 'offsetVerticalIcon', propertyName: `${propertyName}.offsetY` },
-          { type: 'numberField', label: 'Blur', hideLabel: true, tooltip: 'Blur Radius', width: 80, icon: 'blurIcon', propertyName: `${propertyName}.blurRadius` },
-          { type: 'numberField', label: 'Spread', hideLabel: true, tooltip: 'Spread Radius', width: 80, icon: 'spreadIcon', propertyName: `${propertyName}.spreadRadius` },
+          { type: 'numberField', label: 'Offset X', hideLabel: true, tooltip: 'Offset X', width: 100, icon: 'offsetHorizontalIcon', propertyName: `${propertyName}.offsetX` },
+          { type: 'numberField', label: 'Offset Y', hideLabel: true, tooltip: 'Offset Y', width: 100, icon: 'offsetVerticalIcon', propertyName: `${propertyName}.offsetY` },
+          { type: 'numberField', label: 'Blur', hideLabel: true, tooltip: 'Blur Radius', width: 100, icon: 'blurIcon', propertyName: `${propertyName}.blurRadius` },
+          { type: 'numberField', label: 'Spread', hideLabel: true, tooltip: 'Spread Radius', width: 100, icon: 'spreadIcon', propertyName: `${propertyName}.spreadRadius` },
           { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
         ], exclude),
       }));
@@ -572,7 +587,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
   };
 
   stdMarginPaddingPanel = (propertyName: string = 'stylingBoxJson', panelTitle: string = 'Margin & Padding'): FormBuilder => {
-    this.stdCollapsiblePanel(panelTitle, (f) => f.addStyleBox({ label: 'Margin Padding', hideLabel: true, propertyName: propertyName, format: 'json' }));
+    this.stdCollapsiblePanel(panelTitle, (f) => f.addStyleBox({ label: 'Margin Padding', hideLabel: true, propertyName: propertyName, format: 'json', jsSetting: false }));
     return this;
   };
 

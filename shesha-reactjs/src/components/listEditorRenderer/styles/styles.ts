@@ -1,7 +1,7 @@
 import { createStyles, sheshaStyles } from '@/styles';
 
 
-export const useStyles = createStyles(({ css, cx }) => {
+export const useStyles = createStyles(({ css, cx, token }) => {
   const prefix = "sha-le";
   const split = "split";
   const mainArea = `${prefix}-main`;
@@ -14,6 +14,12 @@ export const useStyles = createStyles(({ css, cx }) => {
 
   const propsPanelBody = `${prefix}-props-body`;
   const propsPanelBodyContent = `${prefix}-props-content`;
+
+  /* For a sidebar whose form isn't a settings form: those always render with antd's light
+     algorithm, so they need a light surface even when the app is in dark mode. */
+  const propsPanelLight = cx(`${prefix}-props-light`, css`
+      background: #ffffff;
+  `);
 
   const container = cx(prefix, css`
       width: 100%;
@@ -33,7 +39,7 @@ export const useStyles = createStyles(({ css, cx }) => {
 
       .${propsPanel} {
         overflow: hidden;
-        background: white;
+        background: ${token.colorBgContainer};
 
         .${propsPanelContent} {
           display: flex;
@@ -83,5 +89,6 @@ export const useStyles = createStyles(({ css, cx }) => {
     mainArea,
     propsPanel,
     propsPanelContent,
+    propsPanelLight,
   };
 });

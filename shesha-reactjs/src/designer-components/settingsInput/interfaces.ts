@@ -76,6 +76,12 @@ export interface ISettingsInputBase<TValue = unknown> extends IComponentLabelPro
 
   width?: string | number | undefined;
   inline?: boolean | undefined;
+  /**
+   * Set by `settingsInputRow` when the input declares a `width` of its own, as opposed to the
+   * per-type default `getWidth()` substitutes. Inputs with an explicit width are laid out at
+   * that width; the rest keep the shared flex basis. Not intended to be set in form markup.
+   */
+  hasExplicitWidth?: boolean | undefined;
 }
 
 export type DimensionTypes = 'width' | 'height' | 'minWidth' | 'minHeight' | 'maxWidth' | 'maxHeight' | 'gridRowHeight' | 'gridColumnWidth';

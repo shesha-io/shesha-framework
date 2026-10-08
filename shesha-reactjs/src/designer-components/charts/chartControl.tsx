@@ -17,6 +17,7 @@ import { useMetadataDispatcher } from '@/providers/metadataDispatcher/provider';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useForm } from '@/providers';
+import { useIsComponentPreview } from '@/providers/componentPreview';
 
 const DESIGNER_SAMPLE_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
 
@@ -65,7 +66,9 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
   } = useChartDataStateContext();
 
   const { formMode } = useForm();
-  const isDesignMode = formMode === 'designer';
+  // The theme preview shows the same sample chart as the designer.
+  const isComponentPreview = useIsComponentPreview();
+  const isDesignMode = formMode === 'designer' || isComponentPreview;
 
   const { refetch } = useGet<IAbpWrappedGetEntityListResponse>({ path: '', lazy: true });
   const { getMetadata } = useMetadataDispatcher();
@@ -466,7 +469,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     );
   }, [chartType, cx, styles.loadingContainer, styles.loadingText, setIsLoaded, setMetadataProcessed]);
 
-  // In designer mode render sample data immediately — no fetch, no loaders
+  // In designer mode (and the theme preview) render sample data immediately — no fetch, no loaders
   if (isDesignMode) {
     return (
       <div style={chartContainerStyle}>

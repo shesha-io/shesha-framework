@@ -8,30 +8,20 @@ const CANVAS_PREVIEW_BORDER = '#f0f0f0';
 const CANVAS_PREVIEW_TEXT = 'rgba(0, 0, 0, 0.88)';
 
 export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) => {
-  const slider = cx(
-    'slider',
-    css`
-      width: 100%;
-      .ant-slider-handle {
-        border-color: #d9d9d9;
-      }
-    `,
-  );
-
   const appearanceForm = cx(
     'sha-appearance-form',
     css`
-      [data-sha-c-type="propertyRouter"] {
-        > .sha-components-container-inner {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 16px;
-          padding: 16px 0;
-          align-items: start;
-        }
+      padding-top: 8px;
+
+      /* Spacing between the grouping panels (Border, Radius, Background, ...) comes from the
+         container gaps below, so drop antd's padding inside each one. The header and body are
+         siblings under the item, so the body is addressed via the panel, not the header. */
+      .ant-collapse-item > .ant-collapse-panel > .ant-collapse-body,
+      .ant-collapse-item > .ant-collapse-panel > .ant-collapse-header {
+        padding: 0px;
       }
 
-      /* Adjust form items within the grid panels */
+      /* Spacing between form items within the panels */
       .ant-collapse {
         .sha-components-container-inner {
           gap: 12px;
@@ -41,24 +31,6 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
         .sha-container-component {
           .sha-components-container-inner {
             gap: 8px;
-          }
-        }
-      }
-
-      /* Responsive grid - single column on smaller screens */
-      @media (max-width: 768px) {
-        > [data-sha-c-type="propertyRouter"] {
-          > .sha-components-container-inner {
-            grid-template-columns: 1fr;
-          }
-        }
-      }
-
-      /* Two columns on medium screens */
-      @media (min-width: 769px) and (max-width: 1200px) {
-        > [data-sha-c-type="propertyRouter"] {
-          > .sha-components-container-inner {
-            grid-template-columns: repeat(2, 1fr);
           }
         }
       }
@@ -85,19 +57,71 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
       gap: 8px;
     `,
   );
+
+  const colorCircleLabel = cx(
+    'color-circle-label',
+    css`
+      font-size: 12px;
+    `,
+  );
   const themeParameters = cx(
     'theme-parameters',
     css`
+      height: 100%;
 
       &::-webkit-scrollbar {
         display: none;
       }
 
+      /* Card and section titles across every tab; spacing comes from the layout, not the heading. */
+      h4 {
+        margin: 0;
+      }
+
+      /* Outer panel only - the content inside brings its own padding. Scoped with child
+         combinators so the nested appearance panels keep antd's default body padding.
+         (antd 6 renders item then panel then body; there is no -content element.) */
+      > .ant-collapse-item > .ant-collapse-panel > .ant-collapse-body {
+        padding: 8px;
+      }
+
+      .ant-tabs-body-holder {
+        padding: 8px;
+
+        /* Carry the height down to each tab's columns so the Components tab's menu card can fill it. */
+        > .ant-tabs-body {
+          height: 100%;
+
+          > .ant-tabs-content {
+            height: 100%;
+
+            > div {
+              height: 100%;
+              display: flex;
+              flex-direction: column;
+              gap: 16px;
+
+              > .ant-row {
+                height: 100%;
+
+                > .ant-col {
+                  height: 100%;
+                  overflow-y: auto;
+                  ${sheshaStyles.thinScrollbars}
+                }
+              }
+            }
+          }
+        }
+      }
+
       .ant-card {
+        padding: 8px;
+
         .ant-card-head {
           min-height: 40px;
-          padding: 0 16px;
-          
+          padding: 8px;
+
           .ant-card-head-title {
             font-size: 14px;
             font-weight: 600;
@@ -105,7 +129,7 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
         }
 
         .ant-card-body {
-          padding: 16px;
+          padding: 8px;
         }
       }
 
@@ -128,17 +152,62 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
     `,
   );
 
-  const themeHeader = cx(
-    'theme-header',
+  /** Heading + description shown as the title of every theme settings card (see CardTitle). */
+  const cardTitle = cx(
+    'theme-card-title',
     css`
-      font-size: 18px;
-      font-weight: 700;
+      /* Doubled to beat the panel-wide h4 { margin: 0 } reset in themeParameters. */
+      && > h4 {
+        margin-bottom: 4px;
+      }
     `,
   );
 
+  const description = cx(
+    'theme-parameters-description',
+    css`
+      font-size: 12px;
+      color: #999;
+    `,
+  );
+
+  /** Bold label above a block of preview content (Alerts, Forms, Buttons). */
+  const sectionLabel = cx(
+    'theme-section-label',
+    css`
+      display: block;
+      margin-bottom: 12px;
+    `,
+  );
+
+  /** Small hint under a section heading ("Select a circle below ..."). */
+  const sectionHint = cx(
+    'theme-section-hint',
+    css`
+      display: block;
+      margin-bottom: 12px;
+      font-size: 12px;
+    `,
+  );
+
+  const fullWidth = cx(
+    'theme-full-width',
+    css`
+      width: 100%;
+    `,
+  );
+
+  const emptyState = cx(
+    'theme-empty-state',
+    css`
+      padding: 16px;
+      text-align: center;
+      color: #999;
+    `,
+  );
   /* Represents the canvas, so it must stay light regardless of the app theme - the components
      inside are rendered the way an end user will see them (see ConfigurableFormRenderer). The
-     antd Card paints its own themed body background, so that is overridden too. */
+     antd Card paints its own themed head and body, so those are overridden too. */
   const previewSection = cx(
     'preview-section',
     css`
@@ -147,6 +216,11 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
       border-radius: 8px;
       border: 1px solid ${CANVAS_PREVIEW_BORDER};
       color: ${CANVAS_PREVIEW_TEXT};
+
+      .ant-card-head {
+        color: ${CANVAS_PREVIEW_TEXT};
+        border-bottom-color: ${CANVAS_PREVIEW_BORDER};
+      }
 
       .ant-card-body {
         background: transparent;
@@ -157,34 +231,18 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
   const themeCardSettings = cx(
     'theme-card',
     css`
-      margin-bottom: 16px;
-      height: 400px;
+      height: 450px;
+      overflow-y: auto;
     `,
   );
 
   const themeCardMenu = cx(
     'theme-card',
     css`
-      margin-bottom: 16px;
       height: 200px;
     `,
   );
 
-  const themeColorPicker = cx(
-    'theme-color-picker',
-    css`
-      > .ant-color-picker-color-block {
-       border-radius: 50%;
-      }
-    `,
-  );
-
-  const themeColorSpace = cx(
-    'theme-color-space',
-    css`
-     align-items: center;
-    `,
-  );
   const space = cx(
     'theme-space',
     css`
@@ -195,16 +253,10 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
     `,
   );
 
-  const contentContainer = cx(
-    'theme-content-container',
-    css`
-      height: calc(100vh - 205px);
-    `,
-  );
   const contentColumn = cx(
     'theme-content-container',
     css`
-      height: 100%;
+      height: calc(100vh - 160px);
       overflow-y: auto;  
       ${sheshaStyles.thinScrollbars}
     `,
@@ -212,18 +264,20 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
 
   return {
     themeParameters,
-    themeHeader,
     previewSection,
     themeCardMenu,
     themeCardSettings,
-    themeColorPicker,
-    themeColorSpace,
     space,
-    contentContainer,
     contentColumn,
     colorCircle,
     colorCircleContainer,
-    slider,
+    colorCircleLabel,
     appearanceForm,
+    cardTitle,
+    description,
+    sectionLabel,
+    sectionHint,
+    emptyState,
+    fullWidth,
   };
 });

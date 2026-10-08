@@ -38,7 +38,7 @@ export const useStyles = createStyles(({ css, cx }) => {
 
   const icon = cx("sha-input-component-icon", css`
         display: flex;
-        align-items: center;
+        align-items: center !important;
         color: inherit;
     `);
 

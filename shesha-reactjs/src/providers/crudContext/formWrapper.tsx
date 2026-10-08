@@ -1,7 +1,8 @@
 import { Form, FormInstance, FormProps } from 'antd';
 import { RefObject, PropsWithChildren, ComponentProps, ReactNode } from 'react';
 import { useForm } from '@/providers';
-import { IFormSettings } from '@/providers/form/models';
+import { IFormSettings, resolveFormColon } from '@/providers/form/models';
+import { useThemeState } from '@/providers/theme';
 import { useDelayedUpdateOrUndefined } from '../delayedUpdateProvider/index';
 import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 import { removeUndefinedProperties } from '@/utils/array';
@@ -14,10 +15,12 @@ interface FormWrapperProps<TData extends object = object> {
   delayedUpdate?: RefObject<IDelayedUpdateGroup[] | undefined> | undefined;
 }
 
-const extractantdFormPropertiesFromFormSettings = (formSettings: IFormSettings | undefined): Partial<Pick<ComponentProps<typeof Form>, 'layout' | 'colon' | 'labelCol' | 'wrapperCol' | 'size'>> => {
+const extractantdFormPropertiesFromFormSettings = (formSettings: IFormSettings | undefined, themeColon: boolean | undefined): Partial<Pick<ComponentProps<typeof Form>, 'layout' | 'colon' | 'labelCol' | 'wrapperCol' | 'size'>> => {
   if (!formSettings) return {};
-  const { layout, colon, labelCol, wrapperCol, size } = formSettings;
-  return removeUndefinedProperties({ layout, colon, labelCol, wrapperCol, size });
+  const { layout, labelCol, wrapperCol, size } = formSettings;
+  // The form's own Colon setting, falling back to the theme's.
+  const colon = resolveFormColon(formSettings.colon, formSettings.isSettingsForm === true, themeColon);
+  return { ...removeUndefinedProperties({ layout, labelCol, wrapperCol, size }), ...(colon !== undefined ? { colon } : {}) };
 };
 
 
@@ -35,7 +38,8 @@ export const FormWrapper = <TData extends object = object>({ initialValues, onVa
     if (onValuesChange) onValuesChange(changedValues, values);
   };
 
-  const formProps = extractantdFormPropertiesFromFormSettings(formSettings);
+  const { theme } = useThemeState();
+  const formProps = extractantdFormPropertiesFromFormSettings(formSettings, theme.colon);
   return (
     <Form<TData>
       component={false}
