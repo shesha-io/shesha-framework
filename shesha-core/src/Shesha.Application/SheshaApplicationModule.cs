@@ -24,7 +24,9 @@ using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Distribution.NotificationChannels;
 using Shesha.Notifications.Distribution.NotificationTypes;
 using Shesha.Notifications.SMS;
+using Shesha.Otp;
 using Shesha.Otp.Configuration;
+using Shesha.Otp.Distribution;
 using Shesha.Session;
 using Shesha.Settings.Ioc;
 using Shesha.Sms;
@@ -149,7 +151,11 @@ namespace Shesha
 
                 .RegisterConfigurableItemManager<NotificationChannelConfig, INotificationChannelManager, NotificationChannelManager>()
                 .RegisterConfigurableItemExport<NotificationChannelConfig, INotificationChannelExport, NotificationChannelExport>()
-                .RegisterConfigurableItemImport<NotificationChannelConfig, INotificationChannelImport, NotificationChannelImport>();
+                .RegisterConfigurableItemImport<NotificationChannelConfig, INotificationChannelImport, NotificationChannelImport>()
+
+                .RegisterConfigurableItemManager<OtpConfig, IOtpConfigManager, OtpConfigManager>()
+                .RegisterConfigurableItemExport<OtpConfig, IOtpConfigExport, OtpConfigExport>()
+                .RegisterConfigurableItemImport<OtpConfig, IOtpConfigImport, OtpConfigImport>();
 
 
             IocManager.RegisterIfNot<INotificationChannelSender, EmailChannelSender>(DependencyLifeStyle.Transient);
