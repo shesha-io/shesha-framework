@@ -1,4 +1,4 @@
-import { Suspense, FC, lazy, useCallback, useMemo } from 'react';
+import { Suspense, FC, lazy, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Skeleton } from 'antd';
 import { JoditEditorProps } from "jodit-react";
 import DOMPurify, { UponSanitizeElementHookEvent } from 'dompurify';
@@ -90,13 +90,23 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
     onChange?.(cleanValue);
   };
 
+  // What the parent last gave this editor - an external `.value=` set repeats it, a real edit produces something else.
+  const lastGivenValueRef = useRef(sanitizedValue);
+  useEffect(() => {
+    lastGivenValueRef.current = sanitizedValue;
+  }, [sanitizedValue]);
+
   const handleEditorRef = useCallback((editor: JoditInstance) => {
-    // rawValue is undefined for a genuine edit's internal resync, and a string only for an external `.value=` set.
+    // rawValue is undefined for a genuine edit's internal resync (typing, paste, toolbar commands, drag-drop).
     let hasUnsyncedEdit = false;
     editor.e.on('beforeSetValueToEditor', (rawValue: unknown) => {
       if (rawValue === undefined) {
         hasUnsyncedEdit = true;
         return undefined;
+      }
+      // A string here is otherwise ambiguous (source-mode edit vs. an external set) - so it's compared directly.
+      if (typeof rawValue === 'string' && rawValue !== lastGivenValueRef.current) {
+        hasUnsyncedEdit = true;
       }
       // Jodit also fires this on every keystroke sync with no argument; returning a string there overwrites the typing.
       return allowBase64Images || typeof rawValue !== 'string' ? undefined : sanitizeContent(rawValue, allowBase64Images);
