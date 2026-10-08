@@ -1,10 +1,15 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
-using Abp.Linq.Extensions;
 using Shesha.Application.Services.Dto;
+using Shesha.Authorization;
+using Shesha.Extensions;
+using Shesha.Permissions.Entity;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Shesha
@@ -109,14 +114,16 @@ namespace Shesha
         {
             CheckGetPermission();
 
+            var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var entity = await GetEntityByIdAsync(input.Id);
-            return MapToEntityDto(entity);
+            return MapToEntityDto(permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity));
         }
 
         public virtual async Task<PagedResultDto<TEntityDto>> GetAllAsync(TGetAllInput input)
         {
             CheckGetAllPermission();
 
+            var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var query = CreateFilteredQuery(input);
 
             var totalCount = await AsyncQueryableExecuter.CountAsync(query);
@@ -124,7 +131,9 @@ namespace Shesha
             query = ApplySorting(query, input);
             query = ApplyPaging(query, input);
 
-            var entities = await AsyncQueryableExecuter.ToListAsync(query);
+            var entities = (await AsyncQueryableExecuter.ToListAsync(query))
+                .Select(x => permissionedEntityProvider.GetNewProxiedPermissionedEntity(x))
+                .ToList();
 
             return new PagedResultDto<TEntityDto>(
                 totalCount,
@@ -132,28 +141,59 @@ namespace Shesha
             );
         }
 
+        private void CheckPropertiesPermissions(Dictionary<string, object> comparedValues, TEntity entity = null)
+        {
+            var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
+            var properties = typeof(TEntity).GetProperties();
+            foreach (var comparedValue in comparedValues)
+            {
+                var property = properties.FirstOrDefault(x => x.Name == comparedValue.Key);
+                if (property == null)
+                    throw new AbpAuthorizationException($"You don't have permission to change '{comparedValue.Key}' property");
+                var value = entity != null ? property.GetValue(entity) : property.PropertyType.GetTypeDefaultValue();
+                var newValue = comparedValue.Value;
+                if (value != newValue)
+                    throw new AbpAuthorizationException($"You don't have permission to change '{property.Name}' property");
+            }
+        }
+
+        private Dictionary<string, object> GetPermissionedPropertiesValues(TEntity entity)
+        {
+            var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
+            var properties = typeof(TEntity).GetProperties()
+                .Where(x => !permissionedEntityProvider.IsPropertyGranted(x)).ToList();
+            return properties.ToDictionary(x => x.Name, x => x.GetValue(entity));
+        }
+
         public virtual async Task<TEntityDto> CreateAsync(TCreateInput input)
         {
             CheckCreatePermission();
 
+            var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var entity = MapToEntity(input);
+
+            CheckPropertiesPermissions(GetPermissionedPropertiesValues(entity));
 
             await Repository.InsertAsync(entity);
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            return MapToEntityDto(entity);
+            return MapToEntityDto(permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity));
         }
 
         public virtual async Task<TEntityDto> UpdateAsync(TUpdateInput input)
         {
             CheckUpdatePermission();
 
+            var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var entity = await GetEntityByIdAsync(input.Id);
 
+            var premissionedValues = GetPermissionedPropertiesValues(entity);
             MapToEntity(input, entity);
+            CheckPropertiesPermissions(premissionedValues, entity);
+
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            return MapToEntityDto(entity);
+            return MapToEntityDto(permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity));
         }
 
         public virtual Task DeleteAsync(TDeleteInput input)

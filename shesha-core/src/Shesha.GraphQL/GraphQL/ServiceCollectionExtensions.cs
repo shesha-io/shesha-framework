@@ -43,6 +43,7 @@ namespace Shesha.GraphQL
                 })
                 // Add required services for GraphQL request/response de/serialization
                 .AddSystemTextJson() // For .NET Core 3+
+                .AddMiddleware<GraphQLPermissionEntityFieldMiddleware>()
             );
 
             services.AddSingleton<GraphQLMiddleware>();
