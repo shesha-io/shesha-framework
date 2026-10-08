@@ -37,6 +37,12 @@ export const useStyles = createStyles(({ css, cx, token }, model: IConfigurableF
                   height: ${isExactDimensionValue(height) ? height : 'stretch' /* ToDo: AS - review this */};
                   `
                   : ''};
+
+                /* antd fixes the label at the control height (32px). A long label that wraps
+                   spills out of that box and overlaps the next row, so let it grow. */
+                > label {
+                    height: auto;
+                }
             }
         }
 
