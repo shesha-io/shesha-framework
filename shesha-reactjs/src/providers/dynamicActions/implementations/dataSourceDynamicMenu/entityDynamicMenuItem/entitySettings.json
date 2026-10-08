@@ -90,6 +90,44 @@
             "version": 2
           },
           {
+            "id": "hpm6oN_aj-L_KaG5NLIZt",
+            "type": "dataSortingEditor",
+            "propertyName": "grouping",
+            "label": "Grouping",
+            "labelAlign": "right",
+            "parentId": "uEFBpy19tApJMiBuFyj9s",
+            "hidden": {
+              "_code": "return !getSettingValue(data?.entityTypeShortAlias);",
+              "_mode": "code",
+              "_value": false
+            },
+            "isDynamic": false,
+            "description": "Properties to nest items by, in order (e.g. group by module, then by sub-type). Each level renders as a submenu grouping items by distinct value.",
+            "validate": {},
+            "modelType": "{{data.entityTypeShortAlias}}",
+            "settingsValidationErrors": [],
+            "version": 0
+          },
+          {
+            "id": "TDZmRATqMpUM5MXaT-TrE",
+            "type": "dataSortingEditor",
+            "propertyName": "sorting",
+            "label": "Sort By",
+            "labelAlign": "right",
+            "parentId": "uEFBpy19tApJMiBuFyj9s",
+            "hidden": {
+              "_code": "return !getSettingValue(data?.entityTypeShortAlias);",
+              "_mode": "code",
+              "_value": false
+            },
+            "isDynamic": false,
+            "description": "Properties to sort items by, in order (applied within each group, when grouping is used).",
+            "validate": {},
+            "modelType": "{{data.entityTypeShortAlias}}",
+            "settingsValidationErrors": [],
+            "version": 0
+          },
+          {
             "id": "Vl0092ZM-SeCukk5VlgXm",
             "type": "dropdown",
             "propertyName": "buttonType",
@@ -141,6 +179,7 @@
             "propertyName": "actionConfiguration",
             "label": "Action configuration",
             "hidden": false,
+            "includeDynamicItem": true,
             "validate": {},
             "settingsValidationErrors": [],
             "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",

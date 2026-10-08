@@ -35,7 +35,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
   const { getActions, getConfigurableActionOrNull } = useConfigurableActionDispatcher();
   const actions = getActions();
 
-  const availableConstants = useAvailableStandardConstantsMetadata();
+  const availableConstants = useAvailableStandardConstantsMetadata({ includeDynamicItem: props.includeDynamicItem });
 
   const formValues = useMemo<IActionFormModel>(() => {
     if (!value)
@@ -164,6 +164,7 @@ interface IConfigurableActionConfiguratorProps {
   readOnly?: boolean;
   exposedVariables?: ICodeExposedVariable[];
   allowedActions?: string[];
+  includeDynamicItem?: boolean;
 }
 
 interface IActionFormModel extends Omit<IConfigurableActionConfiguration, 'actionOwner' | 'actionName'> {

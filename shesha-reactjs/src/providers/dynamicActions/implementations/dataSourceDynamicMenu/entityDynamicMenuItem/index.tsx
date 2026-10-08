@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { FC } from 'react';
-import { useTemplates } from '../utils';
+import { buildMenuItems, useTemplates } from '../utils';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
 import {
@@ -20,7 +20,7 @@ import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFi
 const settingsMarkup = settingsJson as FormMarkup;
 
 const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
-  const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter, buttonType } = settings ?? {};
+  const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter, buttonType, grouping, sorting } = settings ?? {};
   const { refetch } = useGet({ path: '', lazy: true });
   const { getTemplateState } = useTemplates(settings);
   const { data: FormData } = useFormData();
@@ -53,20 +53,7 @@ useEffect(() => {
 
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
-    const result = data?.map((p) => ({
-      id: p.id,
-      name: p.name,
-      label: p[`${labelProperty}`] || 'Not Configured Properly',
-      tooltip: p[`${tooltipProperty}`],
-      itemType: 'item',
-      itemSubType: 'button',
-      sortOrder: 0,
-      dynamicItem: p,
-      buttonType: buttonType,
-      actionConfiguration: actionConfiguration,
-    }));
-
-    return result;
+    return buildMenuItems(data, { labelProperty, tooltipProperty, buttonType, actionConfiguration, grouping, sorting });
   }, [settings, item, data, configurationItemMode]);
   return operations;
 };

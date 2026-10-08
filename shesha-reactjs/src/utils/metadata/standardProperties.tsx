@@ -16,6 +16,7 @@ export const SheshaConstants = {
   globalState: "shesha:globalState",
   setGlobalState: "shesha:setGlobalState",
   selectedRow: "shesha:selectedRow",
+  dynamicItem: "shesha:dynamicItem",
   contexts: "shesha:contexts",
   pageContext: "shesha:pageContext",
   form: "shesha:form",
@@ -105,6 +106,16 @@ export const registerSelectedRowAction: MetadataBuilderAction = (builder, name =
   builder.addCustom(name, "Selected row of nearest table (null if not available)", () => {
     const definition: TypeDefinition = {
       typeName: 'any',
+      files: [],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerDynamicItemAction: MetadataBuilderAction = (builder, name = "dynamicItem") => {
+  builder.addCustom(name, "Entity of the dynamic menu item that triggered this action (undefined if not available)", () => {
+    const definition: TypeDefinition = {
+      typeName: 'unknown',
       files: [],
     };
     return Promise.resolve(definition);

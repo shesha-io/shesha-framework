@@ -89,7 +89,7 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
         availableConstants,
       })
       : null;
-  }, [action]);
+  }, [action, availableConstants]);
 
   if (!argumentsEditor) return null;
 
