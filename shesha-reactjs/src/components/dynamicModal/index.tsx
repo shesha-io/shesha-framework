@@ -8,6 +8,10 @@ import { useMedia } from 'react-use';
 import { useStyles } from './styles';
 import DOMPurify from 'dompurify';
 import { isDefined } from '@/utils/nullables';
+import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
+import { useActualContextData } from '@/hooks/formComponentHooks';
+import { standardActualModelPropertyFilter } from '@/providers/form/utils';
+import { DynamicActionsEvaluator } from '@/providers/dynamicActions/evaluator';
 
 export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   isVisible: boolean;
@@ -58,6 +62,25 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
     >
       {renderContent(content)}
     </Modal>
+  );
+};
+
+/**
+ * Footer buttons of a dialog. The `buttons` argument of the Show Dialog action is not evaluated by the action,
+ * so the button settings (visibility, disabled state etc.) are evaluated here against the dialog form context
+ */
+const DialogFooterButtons: FC<{ items: ButtonGroupItemProps[] }> = ({ items }) => {
+  const actualItems = useActualContextData(
+    items.map((item) => ({ ...item, size: item.size ?? 'middle' })),
+    undefined,
+    undefined,
+    standardActualModelPropertyFilter,
+  );
+
+  return (
+    <DynamicActionsEvaluator items={actualItems}>
+      {(evaluatedItems) => <ButtonGroup items={evaluatedItems} id="" size="middle" buttonGroupStyle="horizontal" noStyles />}
+    </DynamicActionsEvaluator>
   );
 };
 
@@ -140,7 +163,7 @@ export const DynamicModalWithForm = <Values extends object = object>(props: IDyn
   const content = (
     <Show when={footerButtons === 'custom' && Boolean(buttons.length)}>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <ButtonGroup items={buttons} id="" size="middle" buttonGroupStyle="horizontal" noStyles />
+        <DialogFooterButtons items={buttons} />
       </div>
     </Show>
   );
