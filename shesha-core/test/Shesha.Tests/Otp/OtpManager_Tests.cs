@@ -1,6 +1,9 @@
-﻿using Abp.Net.Mail;
+﻿using Abp.Domain.Repositories;
+using Abp.Net.Mail;
 using Moq;
+using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.Notifications;
 using Shesha.Otp;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
@@ -76,13 +79,7 @@ namespace Shesha.Tests.Otp
                 ExpiresOn = DateTime.MaxValue
             }));
 
-            var otp = new OtpManager(
-                MockISmsGatewayFactory(),
-                LocalIocManager.Resolve<IEmailSender>(),
-                otpStorage.Object,
-                new OtpGenerator(settings),
-                settings
-            );
+            var otp = CreateOtpManager(otpStorage.Object, settings);
 
             var sendResponse = await otp.SendPinAsync(new SendPinInput()
             {
@@ -99,6 +96,21 @@ namespace Shesha.Tests.Otp
             transformAction?.Invoke(verificationInput);
 
             return await otp.VerifyPinAsync(verificationInput);
+        }
+
+        private OtpManager CreateOtpManager(IOtpStorage otpStorage, IOtpSettings settings)
+        {
+            return new OtpManager(
+                MockISmsGatewayFactory(),
+                LocalIocManager.Resolve<IEmailSender>(),
+                otpStorage,
+                new OtpGenerator(settings),
+                settings,
+                LocalIocManager.Resolve<IRepository<OtpConfig, Guid>>(),
+                LocalIocManager.Resolve<IRepository<Person, Guid>>(),
+                LocalIocManager.Resolve<INotificationSender>(),
+                LocalIocManager.Resolve<INotificationManager>()
+            );
         }
 
         private ISmsGatewayFactory MockISmsGatewayFactory() 
@@ -133,13 +145,7 @@ namespace Shesha.Tests.Otp
                 ExpiresOn = DateTime.MaxValue
             }));
 
-            var otp = new OtpManager(
-                MockISmsGatewayFactory(),
-                LocalIocManager.Resolve<IEmailSender>(),
-                otpStorage.Object,
-                new OtpGenerator(settings),
-                settings
-            );
+            var otp = CreateOtpManager(otpStorage.Object, settings);
 
             var sendResponse = await otp.SendPinAsync(new SendPinInput()
             {
