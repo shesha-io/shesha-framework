@@ -91,14 +91,23 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
   };
 
   const handleEditorRef = useCallback((editor: JoditInstance) => {
-    if (!allowBase64Images) {
+    // rawValue is undefined for a genuine edit's internal resync, and a string only for an external `.value=` set.
+    let hasUnsyncedEdit = false;
+    editor.e.on('beforeSetValueToEditor', (rawValue: unknown) => {
+      if (rawValue === undefined) {
+        hasUnsyncedEdit = true;
+        return undefined;
+      }
       // Jodit also fires this on every keystroke sync with no argument; returning a string there overwrites the typing.
-      editor.e.on('beforeSetValueToEditor', (rawValue: unknown) =>
-        typeof rawValue === 'string' ? sanitizeContent(rawValue, allowBase64Images) : undefined);
-    }
+      return allowBase64Images || typeof rawValue !== 'string' ? undefined : sanitizeContent(rawValue, allowBase64Images);
+    });
 
-    // The instance can be recreated before onBlur syncs out, losing content that only exists in the live DOM.
-    editor.hookStatus('beforeDestruct', () => onChange?.(sanitizeContent(editor.value, allowBase64Images)));
+    // Flushes DOM-only content before a destroy (e.g. a config identity change) would otherwise silently drop it.
+    editor.hookStatus('beforeDestruct', () => {
+      if (hasUnsyncedEdit) {
+        onChange?.(sanitizeContent(editor.value, allowBase64Images));
+      }
+    });
   }, [allowBase64Images, onChange]);
 
   const isSSR = typeof window === 'undefined';
