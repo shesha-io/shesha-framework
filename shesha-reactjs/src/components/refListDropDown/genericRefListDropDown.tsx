@@ -153,6 +153,8 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     allowClear,
     loading: refListLoading,
     disabled: disabled ?? false,
+    // search must match what the user sees; antd's default filters on the option value (#5593)
+    optionFilterProp: 'label',
     filterOption: filterOption,
     size: size,
     ...(variant ? { variant } : {}),
