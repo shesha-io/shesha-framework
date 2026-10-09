@@ -137,8 +137,10 @@ export const updateApi = (args: IUpdateApiArgs): void => {
       { name: 'interactionMode',
         getter: () => isDefined(apiModel.editMode) ? apiModel.editMode as EditMode : model.editMode as EditMode | undefined,
         setter: (value) => setApiModel((prev) => {
-          const editMode = typeof value === 'boolean' ? value ? 'editable' : 'readOnly' : value;
-          return { ...prev, editMode, readOnly: editMode === 'readOnly' ? true : editMode === 'inherited' ? prev.readOnly : false };
+          // keep boolean values as is so that false makes the component disabled, the same way as getDisabledAndReadOnly does
+          return isDefined(value) && value !== 'inherited'
+            ? { ...prev, editMode: value, ...getDisabledAndReadOnly(value) }
+            : { ...prev, editMode: value };
         }),
       } as ComponentApiProperty<BaseComponentApi>,
     ],
