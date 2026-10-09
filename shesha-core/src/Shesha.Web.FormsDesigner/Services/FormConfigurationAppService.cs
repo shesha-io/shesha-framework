@@ -6,7 +6,6 @@ using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
 using Shesha.Authorization;
@@ -365,7 +364,6 @@ namespace Shesha.Web.FormsDesigner.Services
             // todo: check rights
             var form = await Repository.GetAsync(input.Id);
             form.Markup = input.Markup;
-            SyncModelTypeWithMarkup(form);
             await Repository.UpdateAsync(form);
 
             if (input.Access > RefListPermissionedAccess.Inherited)
@@ -383,35 +381,6 @@ namespace Shesha.Web.FormsDesigner.Services
 
                 await _permissionedObjectManager.SetAsync(permisson);
             }
-        }
-
-        /// <summary>
-        /// Copy model type from the form settings of the markup to the form. Legacy markup (array of components), markup without form settings
-        /// or form settings without a string model type are ignored, so the existing model type of the form is preserved
-        /// </summary>
-        private static void SyncModelTypeWithMarkup(FormConfiguration form)
-        {
-            if (string.IsNullOrWhiteSpace(form.Markup))
-                return;
-
-            JToken markup;
-            try
-            {
-                markup = JToken.Parse(form.Markup);
-            }
-            catch (JsonReaderException)
-            {
-                return;
-            }
-
-            if (markup is not JObject markupObject || markupObject["formSettings"] is not JObject formSettings)
-                return;
-
-            if (formSettings["modelType"] is not JValue { Type: JTokenType.String } modelTypeToken)
-                return;
-
-            var modelType = modelTypeToken.Value<string>();
-            form.ModelType = string.IsNullOrWhiteSpace(modelType) ? null : modelType;
         }
 
         /// <summary>
@@ -574,7 +543,6 @@ namespace Shesha.Web.FormsDesigner.Services
                 using (var reader = new StreamReader(fileStream)) 
                 {
                     item.Markup = await reader.ReadToEndAsync();
-                    SyncModelTypeWithMarkup(item);
                     await Repository.UpdateAsync(item);
                 }
             }
