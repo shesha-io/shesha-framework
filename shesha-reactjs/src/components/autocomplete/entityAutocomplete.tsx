@@ -1,4 +1,4 @@
-import { ReactNode, useCallback } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import { IAutocompleteProps, ISelectOption } from './models';
 import { useNestedPropertyMetadatAccessor } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
@@ -12,6 +12,7 @@ import { unsafeGetValueByPropertyName } from '@/utils/object';
 import { isEqual, uniqWith } from 'lodash';
 import { Typography } from 'antd';
 import { PropertyRenderer } from '../propertyRenderer';
+import { getSortingOrDefault } from './utils';
 
 export type EntityAutocompleteProps<TValue = unknown> = Omit<IAutocompleteProps<TValue>, 'dataSourceType'>;
 
@@ -24,6 +25,9 @@ export const EntityAutocomplete = <TValue = unknown>(props: EntityAutocompletePr
   } = props;
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
   const permanentFilter = useFormEvaluatedFilter({ filter: props.filter, metadataAccessor: propertyMetadataAccessor });
+
+  const displayPropName = props.displayPropName ?? "_displayName";
+  const sorting = useMemo(() => getSortingOrDefault(props.sorting, displayPropName), [props.sorting, displayPropName]);
 
   // make repository
   const repository = useBackendRepository({ entityType, getListUrl: dataSourceUrl ?? "" });
@@ -64,7 +68,7 @@ export const EntityAutocomplete = <TValue = unknown>(props: EntityAutocompletePr
       dataSourceType="entitiesList"
       repository={repository}
       keyPropName={props.keyPropName ?? "id"}
-      displayPropName={props.displayPropName ?? "_displayName"}
+      displayPropName={displayPropName}
       fields={fields}
 
       value={props.value}
@@ -75,7 +79,7 @@ export const EntityAutocomplete = <TValue = unknown>(props: EntityAutocompletePr
 
       permanentFilter={permanentFilter}
       grouping={props.grouping}
-      sorting={props.sorting}
+      sorting={sorting}
       itemsToOptions={itemsToOptions}
       allowFreeText={props.allowFreeText}
       allowClear={props.allowClear}

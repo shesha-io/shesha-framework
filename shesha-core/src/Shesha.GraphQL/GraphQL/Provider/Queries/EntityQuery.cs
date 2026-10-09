@@ -336,11 +336,9 @@ from
 
                 if (column == EntityConstants.DisplayNameField)
                 {
+                    // fall back to Id when the entity has no display name property, so the order stays predictable
                     var entityConfig = _entityConfigStore.Get(typeof(TEntity));
-                    if (entityConfig.DisplayNamePropertyInfo == null)
-                        throw new EntityDisplayNameNotFoundException(typeof(TEntity));
-
-                    column = entityConfig.DisplayNamePropertyInfo.Name;
+                    column = entityConfig.DisplayNamePropertyInfo?.Name ?? nameof(IEntity<TId>.Id);
                 }
 
                 var direction = sortColumn.RightPart(' ', ProcessDirection.LeftToRight)?.Trim().Equals("desc", StringComparison.InvariantCultureIgnoreCase) == true

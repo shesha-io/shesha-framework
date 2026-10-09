@@ -2,6 +2,15 @@ import { getValueByPropertyName } from '@/utils/object';
 import { AutocompleteDataSourceType, OutcomeValueFunc } from './models';
 import { getClassNameOrUndefined, getIdOrUndefined } from '@/utils/entity';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
+import { ISortingItem } from '@/providers/dataTable/interfaces';
+
+/**
+ * Returns the stored sorting when there is one, otherwise sorts by the display property ascending
+ * so that options are not listed in database order.
+ */
+export const getSortingOrDefault = (sorting: ISortingItem[] | undefined, displayPropName: string): ISortingItem[] =>
+  isNonEmptyArray(sorting) ? sorting : [{ propertyName: displayPropName, sorting: 'asc' }];
 
 interface ICreateOutcomeValueFuncArgs {
   providedFunc?: OutcomeValueFunc | undefined;
