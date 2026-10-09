@@ -37,8 +37,9 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
   };
 
   const isDisabledBase = (item: ButtonGroupItemProps): boolean => {
-    const { editModePermissions, disabled } = item;
-    if (disabled === true)
+    const { editModePermissions, disabled, editMode } = item;
+    // a button can't be read only, so an explicit read only edit mode disables it
+    if (disabled === true || editMode === 'readOnly')
       return true;
 
     const granted = anyOfPermissionsGranted(editModePermissions || []);

@@ -15,16 +15,43 @@ export interface IDisabledAndReadOnly {
   readOnly: boolean | undefined;
 }
 
-export const getDisabledAndReadOnly = (mode: Exclude<EditMode, 'inherited'>): IDisabledAndReadOnly =>
-  mode === false
-    ? { disabled: true, readOnly: false }
-    : mode === true
-      ? { disabled: false, readOnly: false }
-      : mode === 'editable'
-        ? { disabled: false, readOnly: false }
-        : mode === 'readOnly'
-          ? { disabled: false, readOnly: true }
-          : { disabled: true, readOnly: false };
+/**
+ * Converts an edit mode value (e.g. returned by a JS setting) to one of the canonical edit modes.
+ * Booleans follow the component API: `true` is editable and `false` is read only.
+ * Strings are matched ignoring case, spaces, dashes and underscores, so 'edit', 'Editable', 'readonly' and 'read-only' are recognised.
+ * Returns undefined for unrecognised values, which are treated as inherited
+ */
+export const normalizeEditMode = (value: unknown): Exclude<EditMode, boolean> | undefined => {
+  if (typeof value === 'boolean')
+    return value ? 'editable' : 'readOnly';
+  if (typeof value !== 'string')
+    return undefined;
+
+  switch (value.toLowerCase().replace(/[\s_-]/g, '')) {
+    case 'true':
+    case 'edit':
+    case 'editable':
+    case 'enabled':
+      return 'editable';
+    case 'false':
+    case 'readonly':
+      return 'readOnly';
+    case 'disabled':
+      return 'disabled';
+    case 'inherit':
+    case 'inherited':
+      return 'inherited';
+    default:
+      return undefined;
+  }
+};
+
+export const getDisabledAndReadOnly = (mode: Exclude<EditMode, 'inherited' | boolean>): IDisabledAndReadOnly =>
+  mode === 'readOnly'
+    ? { disabled: false, readOnly: true }
+    : mode === 'disabled'
+      ? { disabled: true, readOnly: false }
+      : { disabled: false, readOnly: false };
 
 export const updateApiModel = <T extends object>(func: (f: (prev: T) => T) => void, value: Partial<T>): void => {
   func((prev) => removeUndefinedProps(deepMergeValues(prev, value)) as T);

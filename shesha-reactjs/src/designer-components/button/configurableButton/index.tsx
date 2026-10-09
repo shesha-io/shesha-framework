@@ -54,7 +54,8 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
 
   const { buttonLoading, buttonDisabled } = {
     buttonLoading: loading,
-    buttonDisabled: props.disabled === true || clickDisabled,
+    // a button can't be read only, so an explicit read only edit mode prevents clicking like disabled does
+    buttonDisabled: props.disabled === true || props.editMode === 'readOnly' || clickDisabled,
   };
 
 
