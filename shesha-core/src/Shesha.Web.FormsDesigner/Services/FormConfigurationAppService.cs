@@ -386,7 +386,8 @@ namespace Shesha.Web.FormsDesigner.Services
         }
 
         /// <summary>
-        /// Copy model type from the form settings of the markup to the form. Legacy markup (array of components) or markup without form settings is ignored
+        /// Copy model type from the form settings of the markup to the form. Legacy markup (array of components), markup without form settings
+        /// or form settings without a string model type are ignored, so the existing model type of the form is preserved
         /// </summary>
         private static void SyncModelTypeWithMarkup(FormConfiguration form)
         {
@@ -406,10 +407,10 @@ namespace Shesha.Web.FormsDesigner.Services
             if (markup is not JObject markupObject || markupObject["formSettings"] is not JObject formSettings)
                 return;
 
-            var modelType = formSettings["modelType"]?.Type == JTokenType.String
-                ? formSettings["modelType"].Value<string>()
-                : null;
+            if (formSettings["modelType"] is not JValue { Type: JTokenType.String } modelTypeToken)
+                return;
 
+            var modelType = modelTypeToken.Value<string>();
             form.ModelType = string.IsNullOrWhiteSpace(modelType) ? null : modelType;
         }
 

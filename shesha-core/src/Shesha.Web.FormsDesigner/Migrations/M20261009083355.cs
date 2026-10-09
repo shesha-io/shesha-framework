@@ -22,6 +22,9 @@ namespace Shesha.Web.FormsDesigner.Migrations
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         };
 
+        /// <summary>
+        /// Runs the migration on SQL Server or PostgreSQL
+        /// </summary>
         public override void Up()
         {
             IfDatabase("SqlServer").Execute.WithConnection((connection, transaction) =>
@@ -35,6 +38,9 @@ namespace Shesha.Web.FormsDesigner.Migrations
             });
         }
 
+        /// <summary>
+        /// Loads the affected forms, updates their markup in memory and saves the forms whose markup has changed
+        /// </summary>
         private static void ExecuteMigration(IDbConnection connection, IDbTransaction transaction, bool useSqlServerSyntax)
         {
             var selectSql = useSqlServerSyntax
