@@ -6,6 +6,7 @@ using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
 using Shesha.Authorization;
@@ -364,6 +365,7 @@ namespace Shesha.Web.FormsDesigner.Services
             // todo: check rights
             var form = await Repository.GetAsync(input.Id);
             form.Markup = input.Markup;
+            SyncModelTypeWithMarkup(form);
             await Repository.UpdateAsync(form);
 
             if (input.Access > RefListPermissionedAccess.Inherited)
@@ -381,6 +383,34 @@ namespace Shesha.Web.FormsDesigner.Services
 
                 await _permissionedObjectManager.SetAsync(permisson);
             }
+        }
+
+        /// <summary>
+        /// Copy model type from the form settings of the markup to the form. Legacy markup (array of components) or markup without form settings is ignored
+        /// </summary>
+        private static void SyncModelTypeWithMarkup(FormConfiguration form)
+        {
+            if (string.IsNullOrWhiteSpace(form.Markup))
+                return;
+
+            JToken markup;
+            try
+            {
+                markup = JToken.Parse(form.Markup);
+            }
+            catch (JsonReaderException)
+            {
+                return;
+            }
+
+            if (markup is not JObject markupObject || markupObject["formSettings"] is not JObject formSettings)
+                return;
+
+            var modelType = formSettings["modelType"]?.Type == JTokenType.String
+                ? formSettings["modelType"].Value<string>()
+                : null;
+
+            form.ModelType = string.IsNullOrWhiteSpace(modelType) ? null : modelType;
         }
 
         /// <summary>
@@ -543,6 +573,7 @@ namespace Shesha.Web.FormsDesigner.Services
                 using (var reader = new StreamReader(fileStream)) 
                 {
                     item.Markup = await reader.ReadToEndAsync();
+                    SyncModelTypeWithMarkup(item);
                     await Repository.UpdateAsync(item);
                 }
             }
