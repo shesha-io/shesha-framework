@@ -1,7 +1,7 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { FormOutlined } from '@ant-design/icons';
 import { isFormFullName, isFormRawId } from '@/providers/form/utils';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IStyleValue } from '@/providers/form/models';
 import { ISubFormProviderProps, SubFormApiMode } from '@/providers/subForm/interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
@@ -20,7 +20,13 @@ import { useMemo } from 'react';
 import { useStyles } from './styles';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 
-export interface ISubFormComponentProps extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol'>, IConfigurableFormComponent {
+/** The Appearance tab edits the cols per device, so the device slots carry them in addition to the style values */
+export interface ISubFormDeviceStyles extends IStyleValue {
+  labelCol?: number | undefined;
+  wrapperCol?: number | undefined;
+}
+
+export interface ISubFormComponentProps extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol'>, IConfigurableFormComponent<ISubFormDeviceStyles> {
   labelCol?: number;
   wrapperCol?: number;
   queryParams?: ISubFormProviderProps['queryParams'];
@@ -114,7 +120,16 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
       onUpdated: migrateFormApi.withoutFormData(prev.onUpdated),
     }))
     .add<ISubFormComponentProps>(4, (prev) => ({ ...prev, hideLabel: true }))
-    .add<ISubFormComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
+    .add<ISubFormComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
+    .add<ISubFormComponentProps>(6, (prev) => prev.hideLabel === true && prev.labelCol === 0 && prev.wrapperCol === 24
+      ? { ...prev, labelCol: 8, wrapperCol: 16 }
+      : prev)
+    .add<ISubFormComponentProps>(7, (prev) => ({
+      ...prev,
+      desktop: { labelCol: prev.labelCol, wrapperCol: prev.wrapperCol, ...prev.desktop },
+      tablet: { labelCol: prev.labelCol, wrapperCol: prev.wrapperCol, ...prev.tablet },
+      mobile: { labelCol: prev.labelCol, wrapperCol: prev.wrapperCol, ...prev.mobile },
+    })),
   settingsFormMarkup: getSettings,
   initModel: (model) => {
     const customProps: ISubFormComponentProps = {
