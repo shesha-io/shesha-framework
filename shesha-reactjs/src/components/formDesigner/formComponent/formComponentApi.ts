@@ -133,7 +133,7 @@ export const updateApi = (args: IUpdateApiArgs): void => {
           // keep boolean values as is so that false makes the component disabled, the same way as getDisabledAndReadOnly does
           return isDefined(value) && value !== 'inherited'
             ? { ...prev, editMode: value, ...getDisabledAndReadOnly(value) }
-            : { ...prev, editMode: value };
+            : { ...prev, editMode: value, readOnly: undefined, disabled: undefined };
         }),
       } as ComponentApiProperty<BaseComponentApi>,
     ],
