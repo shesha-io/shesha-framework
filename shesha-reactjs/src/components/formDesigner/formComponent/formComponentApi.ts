@@ -16,14 +16,13 @@ export interface IDisabledAndReadOnly {
 }
 
 /**
- * Calculates disabled and readOnly from an edit mode other than 'inherited'.
- * The edit mode may be returned by a JS setting, so it accepts any string and not only the EditMode values
+ * Calculates disabled and readOnly from an edit mode. The edit mode may be returned by a JS setting, so it isn't always one of the EditMode values
  * - `false` and 'disabled' make the component disabled
  * - `true` and strings starting with 'edit' (e.g. 'edit', 'editable', 'Editable') make the component editable
  * - 'readOnly' in any case (e.g. 'readonly') makes the component read only
  * - any other value makes the component disabled
  */
-export const getDisabledAndReadOnly = (mode: boolean | string): IDisabledAndReadOnly =>
+export const getDisabledAndReadOnly = (mode: Exclude<EditMode, 'inherited'>): IDisabledAndReadOnly =>
   mode === false
     ? { disabled: true, readOnly: false }
     : mode === true
@@ -40,7 +39,7 @@ export const getDisabledAndReadOnly = (mode: boolean | string): IDisabledAndRead
  * Returns true if the edit mode is explicitly set to read only.
  * Buttons can't be read only, so they use it to disable themselves. Inherited read only state is ignored to keep buttons working on read only forms
  */
-export const isReadOnlyEditMode = (mode: boolean | string | undefined): boolean =>
+export const isReadOnlyEditMode = (mode: EditMode | undefined): boolean =>
   isDefined(mode) && mode !== 'inherited' && getDisabledAndReadOnly(mode).readOnly === true;
 
 export const updateApiModel = <T extends object>(func: (f: (prev: T) => T) => void, value: Partial<T>): void => {
