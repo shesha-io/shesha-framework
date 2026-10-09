@@ -16,42 +16,32 @@ export interface IDisabledAndReadOnly {
 }
 
 /**
- * Converts an edit mode value (e.g. returned by a JS setting) to one of the canonical edit modes.
- * Booleans follow the component API: `true` is editable and `false` is read only.
- * Strings are matched ignoring case, spaces, dashes and underscores, so 'edit', 'Editable', 'readonly' and 'read-only' are recognised.
- * Returns undefined for unrecognised values, which are treated as inherited
+ * Calculates disabled and readOnly from an edit mode other than 'inherited'.
+ * The edit mode may be returned by a JS setting, so it accepts any string and not only the EditMode values
+ * - `false` and 'disabled' make the component disabled
+ * - `true` and strings starting with 'edit' (e.g. 'edit', 'editable', 'Editable') make the component editable
+ * - 'readOnly' in any case (e.g. 'readonly') makes the component read only
+ * - any other value makes the component disabled
  */
-export const normalizeEditMode = (value: unknown): Exclude<EditMode, boolean> | undefined => {
-  if (typeof value === 'boolean')
-    return value ? 'editable' : 'readOnly';
-  if (typeof value !== 'string')
-    return undefined;
+export const getDisabledAndReadOnly = (mode: boolean | string): IDisabledAndReadOnly =>
+  mode === false
+    ? { disabled: true, readOnly: false }
+    : mode === true
+      ? { disabled: false, readOnly: false }
+      // for backward compatibility
+      : String(mode).toLowerCase().indexOf('edit') === 0
+        ? { disabled: false, readOnly: false }
+        // for backward compatibility
+        : String(mode).toLowerCase() === 'readonly'
+          ? { disabled: false, readOnly: true }
+          : { disabled: true, readOnly: false };
 
-  switch (value.toLowerCase().replace(/[\s_-]/g, '')) {
-    case 'true':
-    case 'edit':
-    case 'editable':
-    case 'enabled':
-      return 'editable';
-    case 'false':
-    case 'readonly':
-      return 'readOnly';
-    case 'disabled':
-      return 'disabled';
-    case 'inherit':
-    case 'inherited':
-      return 'inherited';
-    default:
-      return undefined;
-  }
-};
-
-export const getDisabledAndReadOnly = (mode: Exclude<EditMode, 'inherited' | boolean>): IDisabledAndReadOnly =>
-  mode === 'readOnly'
-    ? { disabled: false, readOnly: true }
-    : mode === 'disabled'
-      ? { disabled: true, readOnly: false }
-      : { disabled: false, readOnly: false };
+/**
+ * Returns true if the edit mode is explicitly set to read only.
+ * Buttons can't be read only, so they use it to disable themselves. Inherited read only state is ignored to keep buttons working on read only forms
+ */
+export const isReadOnlyEditMode = (mode: boolean | string | undefined): boolean =>
+  isDefined(mode) && mode !== 'inherited' && getDisabledAndReadOnly(mode).readOnly === true;
 
 export const updateApiModel = <T extends object>(func: (f: (prev: T) => T) => void, value: Partial<T>): void => {
   func((prev) => removeUndefinedProps(deepMergeValues(prev, value)) as T);

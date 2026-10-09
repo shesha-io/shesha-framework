@@ -39,7 +39,7 @@ import { getOverflowStyle } from "@/designer-components/_settings/utils/overflow
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { useIsFirstRender } from "./useIsFirstRender";
 import { ISheshaApplicationInstance } from "@/providers/sheshaApplication/application";
-import { getDisabledAndReadOnly, IDisabledAndReadOnly, normalizeEditMode } from "@/components/formDesigner/formComponent/formComponentApi";
+import { getDisabledAndReadOnly, IDisabledAndReadOnly } from "@/components/formDesigner/formComponent/formComponentApi";
 import { isHasEditMode, UnwrapFunc } from "@/providers/form/utils/js-settings";
 
 type MayHaveEditMode<T> = T & {
@@ -90,14 +90,11 @@ export const unwrapModel = <T extends object = object>(
         const parentReadOnly = !isDefined(parentDisabledAndReadOnly?.readOnly)
           ? contextProxy.form?.formMode === 'readonly'
           : parentDisabledAndReadOnly.readOnly;
-        // editMode may be calculated by a JS setting, so convert it to a canonical value first
-        const editMode = normalizeEditMode(newModel.editMode);
         const disabledAndReadOnly =
-          // Calculate disabled and readOnly, use parent values if editMode is not set, unrecognised or Inherited
-          isDefined(editMode) && editMode !== 'inherited'
-            ? getDisabledAndReadOnly(editMode)
+          // Calculate disabled and readOnly, use parent values if editMode is not set or Inherited
+          isDefined(newModel.editMode) && newModel.editMode !== 'inherited' && newModel.editMode !== true
+            ? getDisabledAndReadOnly(newModel.editMode)
             : { disabled: parentDisabledAndReadOnly?.disabled ?? false, readOnly: parentReadOnly };
-        newModel.editMode = editMode;
         newModel.readOnly = disabledAndReadOnly.readOnly;
         newModel.disabled = disabledAndReadOnly.disabled;
       }

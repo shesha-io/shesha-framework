@@ -1,41 +1,40 @@
-import { getDisabledAndReadOnly, normalizeEditMode } from './formComponentApi';
+import { getDisabledAndReadOnly, isReadOnlyEditMode } from './formComponentApi';
 
-describe('normalizeEditMode', () => {
+const editable = { disabled: false, readOnly: false };
+const readOnly = { disabled: false, readOnly: true };
+const disabled = { disabled: true, readOnly: false };
+
+describe('getDisabledAndReadOnly', () => {
   it.each([
-    [true, 'editable'],
-    ['true', 'editable'],
-    ['edit', 'editable'],
-    ['Editable', 'editable'],
-    ['enabled', 'editable'],
-    [false, 'readOnly'],
-    ['false', 'readOnly'],
-    ['readonly', 'readOnly'],
-    ['readOnly', 'readOnly'],
-    ['Read-Only', 'readOnly'],
-    ['read only', 'readOnly'],
-    ['disabled', 'disabled'],
-    ['Disabled', 'disabled'],
-    ['inherited', 'inherited'],
-    ['inherit', 'inherited'],
-  ])('maps %j to %s', (value, expected) => {
-    expect(normalizeEditMode(value)).toBe(expected);
+    [true, editable],
+    ['editable', editable],
+    [false, disabled],
+    ['disabled', disabled],
+    ['readOnly', readOnly],
+  ])('maps %j', (mode, expected) => {
+    expect(getDisabledAndReadOnly(mode)).toEqual(expected);
   });
 
-  it.each([undefined, null, '', 'unknown', 1, {}])('returns undefined for unrecognised value %j', (value) => {
-    expect(normalizeEditMode(value)).toBeUndefined();
+  // values returned by JS settings may be any string
+  it.each([
+    ['edit', editable],
+    ['Editable', editable],
+    ['EDIT', editable],
+    ['readonly', readOnly],
+    ['READONLY', readOnly],
+    ['unknown', disabled],
+  ])('maps calculated value %j', (mode, expected) => {
+    expect(getDisabledAndReadOnly(mode)).toEqual(expected);
   });
 });
 
-describe('getDisabledAndReadOnly', () => {
-  it('keeps editable components enabled', () => {
-    expect(getDisabledAndReadOnly('editable')).toEqual({ disabled: false, readOnly: false });
+describe('isReadOnlyEditMode', () => {
+  it('is true for an explicit read only mode', () => {
+    expect(isReadOnlyEditMode('readOnly')).toBe(true);
+    expect(isReadOnlyEditMode('readonly')).toBe(true);
   });
 
-  it('makes read only components read only, not disabled', () => {
-    expect(getDisabledAndReadOnly('readOnly')).toEqual({ disabled: false, readOnly: true });
-  });
-
-  it('disables disabled components', () => {
-    expect(getDisabledAndReadOnly('disabled')).toEqual({ disabled: true, readOnly: false });
+  it.each([undefined, 'inherited', 'editable', 'disabled', true, false])('is false for %j', (mode) => {
+    expect(isReadOnlyEditMode(mode)).toBe(false);
   });
 });

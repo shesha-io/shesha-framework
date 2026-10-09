@@ -11,6 +11,7 @@ import { InlineItem } from './inlineItem';
 import { createMenuItem } from './utils';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { isDefined } from '@/utils';
+import { isReadOnlyEditMode } from '@/components/formDesigner/formComponent/formComponentApi';
 
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
@@ -39,7 +40,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
   const isDisabledBase = (item: ButtonGroupItemProps): boolean => {
     const { editModePermissions, disabled, editMode } = item;
     // a button can't be read only, so an explicit read only edit mode disables it
-    if (disabled === true || editMode === 'readOnly')
+    if (disabled === true || isReadOnlyEditMode(editMode))
       return true;
 
     const granted = anyOfPermissionsGranted(editModePermissions || []);

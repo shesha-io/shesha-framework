@@ -12,6 +12,7 @@ import { useStyles } from './style';
 import { DataContextTopLevels } from '@/providers/dataContextManager';
 import { isNavigationActionConfiguration, useShaRouting } from '@/providers/shaRouting';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isReadOnlyEditMode } from '@/components/formDesigner/formComponent/formComponentApi';
 import { useDebouncedCallback } from 'use-debounce';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'itemSubType'> {
@@ -55,7 +56,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
   const { buttonLoading, buttonDisabled } = {
     buttonLoading: loading,
     // a button can't be read only, so an explicit read only edit mode prevents clicking like disabled does
-    buttonDisabled: props.disabled === true || props.editMode === 'readOnly' || clickDisabled,
+    buttonDisabled: props.disabled === true || isReadOnlyEditMode(props.editMode) || clickDisabled,
   };
 
 
