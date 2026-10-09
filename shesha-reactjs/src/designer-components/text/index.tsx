@@ -25,6 +25,9 @@ const TextComponent: TextComponentDefinition = {
   getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
   Factory: ({ model }) => {
     const handleEvent = useEvents<void>(model.componentName);
+
+    if (model.hidden === true) return null;
+
     return (
       <GenericText
         {...model}
