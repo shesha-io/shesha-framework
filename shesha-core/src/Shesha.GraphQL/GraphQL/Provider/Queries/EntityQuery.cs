@@ -4,6 +4,7 @@ using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Linq;
+using Castle.Core.Logging;
 using GraphQL;
 using GraphQL.Types;
 using GraphQLParser.AST;
@@ -11,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using Shesha.Configuration.Runtime;
-using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.GraphQL.Dtos;
@@ -26,6 +26,7 @@ using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -40,6 +41,7 @@ namespace Shesha.GraphQL.Provider.Queries
         private readonly IJsonLogic2LinqConverter _jsonLogicConverter;
         private readonly IEntityTypeConfigurationStore _entityConfigStore;
         private readonly ISessionProvider _sessionProvider;
+        private readonly ILogger _logger;
 
         public EntityQuery(IServiceProvider serviceProvider)
         {
@@ -50,6 +52,7 @@ namespace Shesha.GraphQL.Provider.Queries
             _jsonLogicConverter = serviceProvider.GetRequiredService<IJsonLogic2LinqConverter>();
             _entityConfigStore = serviceProvider.GetRequiredService<IEntityTypeConfigurationStore>();
             _sessionProvider = serviceProvider.GetRequiredService<ISessionProvider>();
+            _logger = serviceProvider.GetService<ILoggerFactory>()?.Create(GetType()) ?? NullLogger.Instance;
 
             var repository = serviceProvider.GetRequiredService<IRepository<TEntity, TId>>();
             var asyncExecuter = serviceProvider.GetRequiredService<IAsyncQueryableExecuter>();
@@ -326,33 +329,27 @@ from
 
             SortingValidator.EnsureSortingAllowed(typeof(TEntity), sorting);
 
-            var sortColumns = sorting.Split(',').Select(c => c.Trim()).Where(c => !string.IsNullOrWhiteSpace(c)).ToList();
+            var entityConfig = _entityConfigStore.Get(typeof(TEntity));
+            var resolution = EntitySortingResolver.Resolve(
+                sorting,
+                entityConfig.DisplayNamePropertyInfo?.Name,
+                IsMappedSortColumn,
+                nameof(IEntity<TId>.Id));
+
+            if (resolution.SkippedColumns.Any())
+                _logger.Warn($"Sorting of '{typeof(TEntity).FullName}' by not mapped properties is skipped: {string.Join(", ", resolution.SkippedColumns)}");
+
             var sorted = false;
-            foreach (var sortColumn in sortColumns)
+            foreach (var (resolvedColumn, direction) in resolution.Columns)
             {
-                var column = sortColumn.LeftPart(' ', ProcessDirection.LeftToRight);
-                if (string.IsNullOrWhiteSpace(column))
-                    continue;
-
-                if (column == EntityConstants.DisplayNameField)
-                {
-                    var entityConfig = _entityConfigStore.Get(typeof(TEntity));
-                    if (entityConfig.DisplayNamePropertyInfo == null)
-                        throw new EntityDisplayNameNotFoundException(typeof(TEntity));
-
-                    column = entityConfig.DisplayNamePropertyInfo.Name;
-                }
-
-                var direction = sortColumn.RightPart(' ', ProcessDirection.LeftToRight)?.Trim().Equals("desc", StringComparison.InvariantCultureIgnoreCase) == true
-                    ? ListSortDirection.Descending
-                    : ListSortDirection.Ascending;
+                var column = resolvedColumn;
 
                 // special handling for entities - sort them by display name if available
                 var property = ReflectionHelper.GetProperty(typeof(TEntity), column, useCamelCase: true);
                 if (property != null && property.PropertyType.IsEntityType()) 
                 {
                     var displayNameProperty = property.PropertyType.GetEntityConfiguration()?.DisplayNamePropertyInfo;
-                    if (displayNameProperty != null) 
+                    if (displayNameProperty != null && IsMappedSortColumn($"{column}.{displayNameProperty.Name}"))
                     {
                         column = $"{column}.{displayNameProperty.Name}";
                     }
@@ -388,8 +385,49 @@ from
                 }
                 sorted = true;
             }
-            
+
             return query;
+        }
+
+        /// <summary>
+        /// Returns false when any part of <paramref name="column"/> (dot notation, e.g. User.Username) is a property that is not mapped to the database (e.g. a computed property).
+        /// Unknown properties are not treated as not mapped, so they are reported by the query as before
+        /// </summary>
+        private bool IsMappedSortColumn(string column)
+        {
+            var currentEntityConfig = _entityConfigStore.Get(typeof(TEntity));
+
+            var parts = column.Split('.');
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (!TryGetProperty(currentEntityConfig, parts[i], out var property))
+                    return true;
+
+                // identifier is not included into the mapped properties
+                if (!property.IsMapped && property.PropertyInfo.Name != nameof(IEntity<TId>.Id))
+                    return false;
+
+                // all parts except the latest - entity reference
+                if (i < parts.Length - 1)
+                {
+                    if (property.GeneralType != GeneralDataType.EntityReference)
+                        return true;
+
+                    currentEntityConfig = _entityConfigStore.Get(property.PropertyInfo.PropertyType);
+                }
+            }
+
+            return true;
+        }
+
+        private static bool TryGetProperty(EntityTypeConfiguration entityConfig, string name, [NotNullWhen(true)] out PropertyConfiguration? propConfig)
+        {
+            if (entityConfig.Properties.TryGetValue(name, out propConfig))
+                return true;
+
+            // try to search using camel case
+            var key = entityConfig.Properties.Keys.FirstOrDefault(k => StringHelper.ToCamelCase(k) == name);
+            return key != null && entityConfig.Properties.TryGetValue(key, out propConfig);
         }
         
         private static Type MakeGetInputType()
