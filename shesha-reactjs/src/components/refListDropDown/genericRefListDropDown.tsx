@@ -153,7 +153,6 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     allowClear,
     loading: refListLoading,
     disabled: disabled ?? false,
-    optionFilterProp: 'label',
     filterOption: filterOption,
     size: size,
     ...(variant ? { variant } : {}),
@@ -200,7 +199,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
       ref={selectRef}
       {...commonSelectProps}
       style={{ ...style }}
-      showSearch
+      showSearch={{ optionFilterProp: 'label' }}
       {...(mode ? { mode } : {})}
       placeholder={placeholder}
       {...(displayStyle === 'tags' ? {
