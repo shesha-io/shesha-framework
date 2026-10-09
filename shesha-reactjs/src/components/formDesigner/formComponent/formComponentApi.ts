@@ -15,16 +15,32 @@ export interface IDisabledAndReadOnly {
   readOnly: boolean | undefined;
 }
 
+/**
+ * Calculates disabled and readOnly from an edit mode. The edit mode may be returned by a JS setting, so it isn't always one of the EditMode values
+ * - `false` and 'disabled' make the component disabled
+ * - `true` and strings starting with 'edit' (e.g. 'edit', 'editable', 'Editable') make the component editable
+ * - 'readOnly' in any case (e.g. 'readonly') makes the component read only
+ * - any other value makes the component disabled
+ */
 export const getDisabledAndReadOnly = (mode: Exclude<EditMode, 'inherited'>): IDisabledAndReadOnly =>
   mode === false
     ? { disabled: true, readOnly: false }
     : mode === true
       ? { disabled: false, readOnly: false }
-      : mode === 'editable'
+      // for backward compatibility
+      : String(mode).toLowerCase().indexOf('edit') === 0
         ? { disabled: false, readOnly: false }
-        : mode === 'readOnly'
+        // for backward compatibility
+        : String(mode).toLowerCase() === 'readonly'
           ? { disabled: false, readOnly: true }
           : { disabled: true, readOnly: false };
+
+/**
+ * Returns true if the edit mode is explicitly set to read only.
+ * Buttons can't be read only, so they use it to disable themselves. Inherited read only state is ignored to keep buttons working on read only forms
+ */
+export const isReadOnlyEditMode = (mode: EditMode | undefined): boolean =>
+  isDefined(mode) && mode !== 'inherited' && getDisabledAndReadOnly(mode).readOnly === true;
 
 export const updateApiModel = <T extends object>(func: (f: (prev: T) => T) => void, value: Partial<T>): void => {
   func((prev) => removeUndefinedProps(deepMergeValues(prev, value)) as T);
@@ -121,8 +137,10 @@ export const updateApi = (args: IUpdateApiArgs): void => {
       { name: 'interactionMode',
         getter: () => isDefined(apiModel.editMode) ? apiModel.editMode as EditMode : model.editMode as EditMode | undefined,
         setter: (value) => setApiModel((prev) => {
-          const editMode = typeof value === 'boolean' ? value ? 'editable' : 'readOnly' : value;
-          return { ...prev, editMode, readOnly: editMode === 'readOnly' ? true : editMode === 'inherited' ? prev.readOnly : false };
+          // keep boolean values as is so that false makes the component disabled, the same way as getDisabledAndReadOnly does
+          return isDefined(value) && value !== 'inherited'
+            ? { ...prev, editMode: value, ...getDisabledAndReadOnly(value) }
+            : { ...prev, editMode: value };
         }),
       } as ComponentApiProperty<BaseComponentApi>,
     ],
