@@ -4,6 +4,7 @@ using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Linq;
+using Castle.Core.Logging;
 using GraphQL;
 using GraphQL.Types;
 using GraphQLParser.AST;
@@ -40,6 +41,7 @@ namespace Shesha.GraphQL.Provider.Queries
         private readonly IJsonLogic2LinqConverter _jsonLogicConverter;
         private readonly IEntityTypeConfigurationStore _entityConfigStore;
         private readonly ISessionProvider _sessionProvider;
+        private readonly ILogger _logger;
 
         public EntityQuery(IServiceProvider serviceProvider)
         {
@@ -50,6 +52,7 @@ namespace Shesha.GraphQL.Provider.Queries
             _jsonLogicConverter = serviceProvider.GetRequiredService<IJsonLogic2LinqConverter>();
             _entityConfigStore = serviceProvider.GetRequiredService<IEntityTypeConfigurationStore>();
             _sessionProvider = serviceProvider.GetRequiredService<ISessionProvider>();
+            _logger = serviceProvider.GetService<ILoggerFactory>()?.Create(GetType()) ?? NullLogger.Instance;
 
             var repository = serviceProvider.GetRequiredService<IRepository<TEntity, TId>>();
             var asyncExecuter = serviceProvider.GetRequiredService<IAsyncQueryableExecuter>();
@@ -326,24 +329,20 @@ from
 
             SortingValidator.EnsureSortingAllowed(typeof(TEntity), sorting);
 
-            var sortColumns = sorting.Split(',').Select(c => c.Trim()).Where(c => !string.IsNullOrWhiteSpace(c)).ToList();
+            var entityConfig = _entityConfigStore.Get(typeof(TEntity));
+            var resolution = EntitySortingResolver.Resolve(
+                sorting,
+                entityConfig.DisplayNamePropertyInfo?.Name,
+                IsMappedSortColumn,
+                nameof(IEntity<TId>.Id));
+
+            if (resolution.SkippedColumns.Any())
+                _logger.Warn($"Sorting of '{typeof(TEntity).FullName}' by not mapped properties is skipped: {string.Join(", ", resolution.SkippedColumns)}");
+
             var sorted = false;
-            foreach (var sortColumn in sortColumns)
+            foreach (var (resolvedColumn, direction) in resolution.Columns)
             {
-                var column = sortColumn.LeftPart(' ', ProcessDirection.LeftToRight);
-                if (string.IsNullOrWhiteSpace(column))
-                    continue;
-
-                if (column == EntityConstants.DisplayNameField)
-                {
-                    // fall back to Id when the entity has no display name property, so the order stays predictable
-                    var entityConfig = _entityConfigStore.Get(typeof(TEntity));
-                    column = entityConfig.DisplayNamePropertyInfo?.Name ?? nameof(IEntity<TId>.Id);
-                }
-
-                var direction = sortColumn.RightPart(' ', ProcessDirection.LeftToRight)?.Trim().Equals("desc", StringComparison.InvariantCultureIgnoreCase) == true
-                    ? ListSortDirection.Descending
-                    : ListSortDirection.Ascending;
+                var column = resolvedColumn;
 
                 // special handling for entities - sort them by display name if available
                 var property = ReflectionHelper.GetProperty(typeof(TEntity), column, useCamelCase: true);
@@ -386,8 +385,26 @@ from
                 }
                 sorted = true;
             }
-            
+
             return query;
+        }
+
+        /// <summary>
+        /// Returns false only when the first segment of <paramref name="column"/> is a property of the entity that is not mapped to the database (e.g. a computed property)
+        /// </summary>
+        private bool IsMappedSortColumn(string column)
+        {
+            var rootPropertyName = column.LeftPart('.', ProcessDirection.LeftToRight);
+            var property = ReflectionHelper.GetProperty(typeof(TEntity), rootPropertyName, useCamelCase: true);
+            if (property == null)
+                return true;
+
+            var metadata = _sessionProvider.Session.SessionFactory.GetClassMetadata(typeof(TEntity));
+            if (metadata == null)
+                return true;
+
+            return string.Equals(metadata.IdentifierPropertyName, property.Name, StringComparison.OrdinalIgnoreCase) ||
+                metadata.PropertyNames.Any(n => string.Equals(n, property.Name, StringComparison.OrdinalIgnoreCase));
         }
         
         private static Type MakeGetInputType()
