@@ -12,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using Shesha.Configuration.Runtime;
-using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.GraphQL.Dtos;
