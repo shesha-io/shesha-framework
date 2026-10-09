@@ -7,7 +7,7 @@ import React from 'react';
 import { useBackendRepository } from '@/providers/dataTable/repository/backendRepository';
 import { rowToOption } from './renderUtils';
 import { isNonEmptyArray } from '@/utils/array';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { unsafeGetValueByPropertyName } from '@/utils/object';
 import { isEqual, uniqWith } from 'lodash';
 import { Typography } from 'antd';
@@ -27,7 +27,10 @@ export const EntityAutocomplete = <TValue = unknown>(props: EntityAutocompletePr
   const permanentFilter = useFormEvaluatedFilter({ filter: props.filter, metadataAccessor: propertyMetadataAccessor });
 
   const displayPropName = props.displayPropName ?? "_displayName";
-  const sorting = useMemo(() => getSortingOrDefault(props.sorting, displayPropName), [props.sorting, displayPropName]);
+  // custom list url may not support sorting - keep the stored sorting only
+  const sorting = useMemo(() => isNullOrWhiteSpace(dataSourceUrl)
+    ? getSortingOrDefault(props.sorting, displayPropName)
+    : props.sorting, [dataSourceUrl, props.sorting, displayPropName]);
 
   // make repository
   const repository = useBackendRepository({ entityType, getListUrl: dataSourceUrl ?? "" });

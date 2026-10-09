@@ -26,6 +26,7 @@ using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -348,7 +349,7 @@ from
                 if (property != null && property.PropertyType.IsEntityType()) 
                 {
                     var displayNameProperty = property.PropertyType.GetEntityConfiguration()?.DisplayNamePropertyInfo;
-                    if (displayNameProperty != null) 
+                    if (displayNameProperty != null && IsMappedSortColumn($"{column}.{displayNameProperty.Name}"))
                     {
                         column = $"{column}.{displayNameProperty.Name}";
                     }
@@ -389,21 +390,44 @@ from
         }
 
         /// <summary>
-        /// Returns false only when the first segment of <paramref name="column"/> is a property of the entity that is not mapped to the database (e.g. a computed property)
+        /// Returns false when any part of <paramref name="column"/> (dot notation, e.g. User.Username) is a property that is not mapped to the database (e.g. a computed property).
+        /// Unknown properties are not treated as not mapped, so they are reported by the query as before
         /// </summary>
         private bool IsMappedSortColumn(string column)
         {
-            var rootPropertyName = column.LeftPart('.', ProcessDirection.LeftToRight);
-            var property = ReflectionHelper.GetProperty(typeof(TEntity), rootPropertyName, useCamelCase: true);
-            if (property == null)
+            var currentEntityConfig = _entityConfigStore.Get(typeof(TEntity));
+
+            var parts = column.Split('.');
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (!TryGetProperty(currentEntityConfig, parts[i], out var property))
+                    return true;
+
+                // identifier is not included into the mapped properties
+                if (!property.IsMapped && property.PropertyInfo.Name != nameof(IEntity<TId>.Id))
+                    return false;
+
+                // all parts except the latest - entity reference
+                if (i < parts.Length - 1)
+                {
+                    if (property.GeneralType != GeneralDataType.EntityReference)
+                        return true;
+
+                    currentEntityConfig = _entityConfigStore.Get(property.PropertyInfo.PropertyType);
+                }
+            }
+
+            return true;
+        }
+
+        private static bool TryGetProperty(EntityTypeConfiguration entityConfig, string name, [NotNullWhen(true)] out PropertyConfiguration? propConfig)
+        {
+            if (entityConfig.Properties.TryGetValue(name, out propConfig))
                 return true;
 
-            var metadata = _sessionProvider.Session.SessionFactory.GetClassMetadata(typeof(TEntity));
-            if (metadata == null)
-                return true;
-
-            return string.Equals(metadata.IdentifierPropertyName, property.Name, StringComparison.OrdinalIgnoreCase) ||
-                metadata.PropertyNames.Any(n => string.Equals(n, property.Name, StringComparison.OrdinalIgnoreCase));
+            // try to search using camel case
+            var key = entityConfig.Properties.Keys.FirstOrDefault(k => StringHelper.ToCamelCase(k) == name);
+            return key != null && entityConfig.Properties.TryGetValue(key, out propConfig);
         }
         
         private static Type MakeGetInputType()
