@@ -199,7 +199,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
       ref={selectRef}
       {...commonSelectProps}
       style={{ ...style }}
-      showSearch
+      showSearch={{ optionFilterProp: 'label' }}
       {...(mode ? { mode } : {})}
       placeholder={placeholder}
       {...(displayStyle === 'tags' ? {
