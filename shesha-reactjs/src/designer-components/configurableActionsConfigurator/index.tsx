@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ConfigurableActionConfigurator } from './configurator';
 import { configurableActionsConfiguratorSettingsForm } from './settings';
 import { Form } from 'antd';
@@ -7,13 +7,8 @@ import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { ThunderboltOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { SheshaConstants } from '@/utils/metadata/standardProperties';
+import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
-
-const addDynamicItemConstant = (metaBuilder: IObjectMetadataBuilder) => {
-  metaBuilder.addStandard(SheshaConstants.dynamicItem);
-};
 
 const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableActionConfiguratorComponentProps> = {
   type: 'configurableActionConfigurator',
@@ -22,14 +17,18 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
   isInput: true,
   isOutput: true,
   Factory: ({ model }) => {
+    const { onBuildExpression } = model ?? {};
+
+    const onBuild = useCallback((metadataBuilder: IObjectMetadataBuilder) => {
+      if (onBuildExpression)
+        executeScriptSync(onBuildExpression, { metadataBuilder });
+    }, [onBuildExpression]);
 
     if (model.hidden) return null;
 
-    const onBuild = model?.includeDynamicItem ? addDynamicItemConstant : undefined;
-
     return (
       <Form.Item name={model.propertyName} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
-        <ConfigurableActionConfigurator allowedActions={model?.allowedActions} onBuild={onBuild} editorConfig={model} level={1} readOnly={model.readOnly} label={model.label} description={model.description} />
+        <ConfigurableActionConfigurator allowedActions={model?.allowedActions} onBuild={onBuildExpression ? onBuild : undefined} editorConfig={model} level={1} readOnly={model.readOnly} label={model.label} description={model.description} />
       </Form.Item>
     );
   },
