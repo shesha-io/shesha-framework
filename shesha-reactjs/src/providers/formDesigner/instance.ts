@@ -31,15 +31,20 @@ import {
   IComponentAddPayload,
   IComponentDeletePayload,
   IComponentDuplicatePayload,
+  IComponentMovePayload,
   IComponentUpdatePayload,
   IValidationResultsPayload,
   IFormDesignerInstance,
   IUpdateChildComponentsPayload,
+  ChangeResult,
   VALIDATABLE_ITEM_TYPES,
 } from "./contexts";
 import { BaseHistoryItem, FormDesignerSubscription, FormDesignerSubscriptionType, IComponentSettingsEditorsCache } from "./models";
 import { IUndoRedoManager, UndoRedoManager } from "./undoRedoManager";
 import { haveRelationsChanged } from "./structure/relations";
+import { buildContainerOwnership, IContainerOwnership } from "./structure/containers";
+import { getComponentDisplayText } from "./structure/displayText";
+import { computeMove } from "./structure/moveComponent";
 import { IFormPersisterContext } from "../formPersisterProvider/contexts";
 import { ValidationCollector } from "../validator";
 import { IValidationCollector } from "../validator/interfaces";
@@ -798,6 +803,32 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         },
       };
     }, `Updated child components ${payload.containerId}`);
+  };
+
+  moveComponent = (payload: IComponentMovePayload): ChangeResult => {
+    const { formFlatMarkup } = this.state;
+    const computed = computeMove(formFlatMarkup, this.getContainerOwnership(), payload, this.getComponentDefinition);
+    if (!computed.ok)
+      return { ok: false, reason: computed.reason };
+    if (computed.markup === formFlatMarkup)
+      return { ok: true };
+
+    const component = formFlatMarkup.allComponents[payload.componentId];
+    const name = isConfigurableFormComponent(component) ? getComponentDisplayText(component) : payload.componentId;
+    this.updateState((state) => ({ ...state, formFlatMarkup: computed.markup }), `Moved ${name}`);
+    return { ok: true };
+  };
+
+  private ownershipCache: { structureVersion: number; ownership: IContainerOwnership } | undefined = undefined;
+
+  getContainerOwnership = (): IContainerOwnership => {
+    if (this.ownershipCache?.structureVersion !== this.structureVersion) {
+      this.ownershipCache = {
+        structureVersion: this.structureVersion,
+        ownership: buildContainerOwnership(this.state.formFlatMarkup, this.getComponentDefinition),
+      };
+    }
+    return this.ownershipCache.ownership;
   };
 
   startDraggingNewItem = (): void => {
