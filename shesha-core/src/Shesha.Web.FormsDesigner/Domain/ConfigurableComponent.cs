@@ -1,15 +1,14 @@
 ﻿using Shesha.Domain;
 using Shesha.Domain.Attributes;
-using System.Collections.Generic;
+using Shesha.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Domain
 {
     /// <summary>
     /// Generic configurable component. Is used mostly to store configuration of the independent front-end components (e.g. sidebar menu, theme)
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Framework.ConfigurableComponent")]
+    [Entity(TypeShortAlias = "Shesha.Framework.ConfigurableComponent", CrudActions = CrudActions.None, IsConfigurable = false)]
     [JoinedProperty("Frwk_ConfigurableComponents")]
     [DiscriminatorValue(ItemTypeName)]
     public class ConfigurableComponent : ConfigurationItemBase

@@ -4,14 +4,13 @@ using Shesha.DynamicEntities.Dtos;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
     /// <summary>
     /// Entity configuration
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Framework.EntityConfig", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Framework.EntityConfig", CrudActions = Enums.CrudActions.None, IsConfigurable = false)]
     [JoinedProperty("Frwk_EntityConfigs")]
     [DiscriminatorValue(ItemTypeName)]
     public class EntityConfig : ConfigurationItemBase
@@ -71,5 +70,10 @@ namespace Shesha.Domain
         /// </summary>
         [StringLength(200)]
         public virtual string Accessor { get; set; }
+
+        /// <summary>
+        /// Indicates that the entity is configurable
+        /// </summary>
+        public virtual bool IsConfigurable { get; set; }
     }
 }

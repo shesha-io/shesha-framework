@@ -184,7 +184,6 @@ export interface ModelConfigurationDto {
   id?: string | null;
   className?: string | null;
   namespace?: string | null;
-  generateAppService?: boolean;
   allowConfigureAppService?: boolean;
   properties?: ModelPropertyDto[] | null;
   moduleId?: string | null;

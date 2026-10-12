@@ -1,4 +1,5 @@
 ﻿using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
@@ -6,7 +7,7 @@ namespace Shesha.Domain
     /// <summary>
     /// Form configuration
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Core.FormConfiguration")]
+    [Entity(TypeShortAlias = "Shesha.Core.FormConfiguration", CrudActions = CrudActions.Read, IsConfigurable = false)]
     [JoinedProperty("Frwk_FormConfigurations")]
     [DiscriminatorValue(ItemTypeName)]
     public class FormConfiguration : ConfigurationItemBase

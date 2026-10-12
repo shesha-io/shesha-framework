@@ -85,7 +85,19 @@ namespace Shesha.DynamicEntities.Dtos
                 }
             }
             ViewConfigurations = list;
+        }
 
+        public bool AppServiceDisabled
+        {
+            get 
+            {
+                return !GenerateAppService ||
+                    Permission != null && Permission.Access == RefListPermissionedAccess.Disable ||
+                    (PermissionGet != null && PermissionGet.Access == RefListPermissionedAccess.Disable &&
+                    PermissionGet != null && PermissionCreate.Access == RefListPermissionedAccess.Disable &&
+                    PermissionGet != null && PermissionUpdate.Access == RefListPermissionedAccess.Disable &&
+                    PermissionGet != null && PermissionDelete.Access == RefListPermissionedAccess.Disable);
+            }
         }
     }
 }

@@ -6,7 +6,7 @@ using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
 {
-    [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
     public class OtpAuditItem: FullAuditedEntity<Guid>
     {
         /// <summary>

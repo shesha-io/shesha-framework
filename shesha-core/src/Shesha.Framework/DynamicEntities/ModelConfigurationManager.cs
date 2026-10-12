@@ -66,6 +66,7 @@ namespace Shesha.DynamicEntities
             // Copy main data
             destination.Label = source.Label;
             destination.GenerateAppService = source.GenerateAppService;
+            destination.IsConfigurable = source.IsConfigurable;
 
             // Copy View configs
             CopyViewConfigs(source, destination);
@@ -541,11 +542,18 @@ namespace Shesha.DynamicEntities
         {
             var cacheKey = $"{@namespace}|{name}";
             var result = await _modelConfigsCache.GetAsync(cacheKey, async () => {
-                var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.ClassName == name && m.Namespace == @namespace && !m.IsDeleted).FirstOrDefaultAsync();
-                if (modelConfig == null)
-                    return null;
+                using (var uow = UnitOfWorkManager.Current == null ? UnitOfWorkManager.Begin() : null)
+                {
+                    var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.ClassName == name && m.Namespace == @namespace && !m.IsDeleted).FirstOrDefaultAsync();
+                    var result = modelConfig != null
+                        ? await GetModelConfigurationAsync(modelConfig, hardCodedProps)
+                        : null;
 
-                return await GetModelConfigurationAsync(modelConfig, hardCodedProps);
+                    if (uow != null)
+                        await uow.CompleteAsync();
+
+                    return result;
+                }
             });
 
             return result;

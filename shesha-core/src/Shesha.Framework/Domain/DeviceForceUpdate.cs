@@ -1,14 +1,13 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
+using System;
 
 namespace Shesha.Domain
 {
     [Discriminator]
-    [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
     public class DeviceForceUpdate : FullAuditedEntity<Guid>
     {
         public virtual string Name { get; set; }

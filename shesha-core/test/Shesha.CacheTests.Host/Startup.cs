@@ -188,22 +188,10 @@ namespace Shesha.CacheTests.Host
             // CachingSwaggerProvider, which depends on Swashbuckle's ISchemaGenerator.
             services.AddSwaggerGen(options =>
             {
-                options.DescribeAllParametersInCamelCase();
-                options.IgnoreObsoleteActions();
-                options.AddXmlDocuments();
-
-                options.SchemaFilter<DynamicDtoSchemaFilter>();
-                options.OperationFilter<SwaggerOperationFilter>();
-                options.DocumentFilter<SwaggerDocumentFilter>();
-
-                options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
-                options.CustomOperationIds(desc => desc.ActionDescriptor is ControllerActionDescriptor d
-                    ? d.ControllerName.ToCamelCase() + d.ActionName.ToPascalCase()
-                    : null);
-
+                options.UseSheshaDefaults();
                 options.AddDocumentsPerService();
             });
-            services.Replace(ServiceDescriptor.Transient<ISwaggerProvider, CachingSwaggerProvider>());
+            services.Replace(ServiceDescriptor.Transient<IAsyncSwaggerProvider, CachingSwaggerProvider>());
 
             services.AddApiVersioning(options =>
             {

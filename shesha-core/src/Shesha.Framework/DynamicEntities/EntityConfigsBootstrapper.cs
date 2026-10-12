@@ -10,6 +10,7 @@ using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
+using Shesha.Domain.Interfaces;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
 using Shesha.Metadata;
@@ -39,6 +40,8 @@ namespace Shesha.DynamicEntities
         private readonly IApplicationStartupSession _startupSession;
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
+
+        public bool ProcessUnchanged { get; set; }
 
         public EntityConfigsBootstrapper(
             IRepository<EntityConfig, Guid> entityConfigRepository,
@@ -74,8 +77,11 @@ namespace Shesha.DynamicEntities
 
             var all = assemblies.Count();
             Logger.Warn($"Found {all} assemblies to bootstrap");
-            assemblies = assemblies.Where(x => !_startupSession.AssemblyStaysUnchanged(x)).ToList();
-            Logger.Warn($"{all - assemblies.Count()} assemblies skipped as unchanged");
+            if (!ProcessUnchanged) 
+            {
+                assemblies = assemblies.Where(x => !_startupSession.AssemblyStaysUnchanged(x)).ToList();
+                Logger.Warn($"{all - assemblies.Count()} assemblies skipped as unchanged");
+            }            
 
             foreach (var assembly in assemblies)
             {
@@ -92,34 +98,6 @@ namespace Shesha.DynamicEntities
                 Logger.Warn($"Bootstrap assembly {assembly.FullName} - finished");
             }
             Logger.Warn("Bootstrap entity configs finished successfully");
-            // update inheritance
-            /*foreach (var assembly in assemblies)
-            {
-                await ProcessInheritanceAsync(assembly);
-            }*/
-        }
-
-        private async Task ProcessInheritanceAsync(Assembly assembly)
-        {
-            var entityTypes = assembly.GetTypes().Where(t => MappingHelper.IsEntity(t)).ToList();
-
-            foreach (var entityType in entityTypes)
-            {
-                var name = entityType.Name;
-                var parent = entityType;
-                EntityConfig dbParent = null;
-                while (parent != typeof(object) && dbParent == null)
-                {
-                    parent = parent.BaseType;
-                    dbParent = await _entityConfigRepository.GetAll().Where(x => x.Namespace == parent.Namespace && x.ClassName == parent.Name).FirstOrDefaultAsync();
-                }
-                if (dbParent != null)
-                {
-                    var dbEntity = await _entityConfigRepository.GetAll().Where(x => x.Namespace == entityType.Namespace && x.ClassName == entityType.Name).FirstOrDefaultAsync();
-                    dbEntity.Parent = dbParent;
-                    await _entityConfigRepository.UpdateAsync(dbEntity);
-                }
-            }
         }
 
         private async Task ProcessAssemblyAsync(Assembly assembly)
@@ -134,7 +112,6 @@ namespace Shesha.DynamicEntities
             // todo: remove usage of IEntityConfigurationStore
             var entitiesConfigs = entityTypes.Select(t =>
             {
-
                 var config = _entityConfigurationStore.Get(t);
                 var codeProperties = _metadataProvider.GetProperties(t);
 
@@ -148,8 +125,6 @@ namespace Shesha.DynamicEntities
 
             var dbEntities = await _entityConfigRepository.GetAll().ToListAsync();
 
-            Logger.Info($"{assembly.FullName}: found {dbEntities.Count()} entity in the DB");
-
             var configEntities = dbEntities
                 .Select(
                     ec =>
@@ -160,31 +135,34 @@ namespace Shesha.DynamicEntities
                                     c.Config.EntityType.Namespace.Equals(ec.Namespace, StringComparison.InvariantCultureIgnoreCase)
                                 )
                         })
+                .Where(ec => ec.code != null)
                 .Select(
                     ec =>
                         new
                         {
                             db = ec.db,
                             code = ec.code,
-                            attr = ec.code?.Config.EntityType.GetAttribute<EntityAttribute>()
+                            crudConfig = EntityCrudHelper.GetHardcodedEntityCrudConfig(ec.code.Config.EntityType),
                         }
                 ).ToList();
+            Logger.Info($"{assembly.FullName}: found {configEntities.Count()} entity in the DB");
 
             // Update out-of-date configs
             var toUpdate = configEntities
                 .Where(
                     c =>
                         c.code != null &&
-                        (c.db.FriendlyName != c.code.Config.FriendlyName ||
+                        (c.db.IsDeleted ||
+                        c.db.FriendlyName != c.code.Config.FriendlyName ||
                         c.db.TableName != c.code.Config.TableName ||
                         c.db.Accessor != c.code.Config.Accessor ||
                         c.db.TypeShortAlias != c.code.Config.SafeTypeShortAlias ||
                         c.db.DiscriminatorValue != c.code.Config.DiscriminatorValue ||
                         c.db.HardcodedPropertiesMD5 != c.code.PropertiesMD5 ||
                         c.db.Module != module ||
-                        c.attr != null
-                            && c.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration
-                            && c.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService ^ c.db.GenerateAppService
+                        
+                        c.crudConfig.IsConfigurable != c.db.IsConfigurable ||
+                        !c.crudConfig.IsConfigurable && c.db.GenerateAppService != (c.crudConfig.CrudActions != CrudActions.None)
                         ))
                 .ToList();
 
@@ -192,8 +170,6 @@ namespace Shesha.DynamicEntities
                 ? $"{assembly.FullName}: found {toUpdate.Count()} entities to update"
                 : "{assembly.FullName}: existing entity configs are up to date");
 
-            var names = toUpdate.Select(x => x.db.Name).ToList();
-            
             foreach (var config in toUpdate)
             {
                 config.db.FriendlyName = config.code.Config.FriendlyName;
@@ -207,9 +183,9 @@ namespace Shesha.DynamicEntities
                 config.db.DeletionTime = null;
                 config.db.DeleterUserId = null;
 
-
-                if (config.attr != null && config.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration)
-                    config.db.GenerateAppService = config.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService;
+                config.db.IsConfigurable = config.crudConfig.IsConfigurable;
+                if (!config.crudConfig.IsConfigurable)
+                    config.db.GenerateAppService = config.crudConfig.CrudActions != CrudActions.None;
 
                 if (config.db.Module != module)
                     config.db.Module = module;
@@ -231,7 +207,7 @@ namespace Shesha.DynamicEntities
 
             foreach (var config in toAdd)
             {
-                var attr = config.Config.EntityType.GetAttribute<EntityAttribute>();
+                var crudConfig = EntityCrudHelper.GetHardcodedEntityCrudConfig(config.Config.EntityType);
                 var ec = new EntityConfig()
                 {
                     FriendlyName = config.Config.FriendlyName,
@@ -242,13 +218,14 @@ namespace Shesha.DynamicEntities
                     ClassName = config.Config.EntityType.Name,
                     Namespace = config.Config.EntityType.Namespace,
 
-                    GenerateAppService = attr == null || attr.GenerateApplicationService != GenerateApplicationServiceState.DisableGenerateApplicationService,
+                    GenerateAppService = crudConfig.CrudActions != CrudActions.None,
+                    IsConfigurable = crudConfig.IsConfigurable,
 
                     EntityConfigType = MappingHelper.IsJsonEntity(config.Config.EntityType)
                         ? EntityConfigTypes.Interface
                         : EntityConfigTypes.Class,
 
-                    Source = Domain.Enums.MetadataSourceType.ApplicationCode
+                    Source = MetadataSourceType.ApplicationCode
                 };
 
                 // ToDo: AS - Get Module, Description and Suppress
@@ -268,7 +245,25 @@ namespace Shesha.DynamicEntities
 
                 await UpdatePropertiesAsync(ec, config.Config.EntityType, config.Properties, config.PropertiesMD5);
             }
+
+            await _unitOfWorkManager.Current.SaveChangesAsync();
+
+            var toDelete = dbEntities.Where(ec => ec.Module == module &&
+                    ec.Source == MetadataSourceType.ApplicationCode &&
+                    !ec.IsDeleted &&
+                    _entityConfigurationStore.GetOrNull(ec.FullClassName) == null
+                ).ToList();
+            Logger.Info(toDelete.Any()
+                ? $"{assembly.FullName}: found {toDelete.Count()} entities to delete"
+                : "{assembly.FullName}: no entities to delete");
+
+            foreach (var ec in toDelete)
+            {
+                await _entityConfigRepository.DeleteAsync(ec.Id);
+            }
         }
+
+        private string FormatPermissionsList(IEnumerable<string> list) => string.Join(",", list ?? new List<string>());
 
         private async Task UpdatePropertiesAsync(
             EntityConfig entityConfig, List<PropertyMetadataDto> codeProperties, List<EntityProperty> dbProperties, EntityProperty parentProp = null)
@@ -328,7 +323,7 @@ namespace Shesha.DynamicEntities
                 // todo: inactivate missing properties
                 var deletedProperties = dbProperties
                     .Where(p =>
-                        p.Source == Domain.Enums.MetadataSourceType.ApplicationCode
+                        p.Source == MetadataSourceType.ApplicationCode
                         && !codeProperties.Any(cp => cp.Path.Equals(p.Name, StringComparison.InvariantCultureIgnoreCase))
                         && p.ParentProperty?.Id == parentProp?.Id
                         )

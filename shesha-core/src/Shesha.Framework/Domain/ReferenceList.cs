@@ -1,13 +1,12 @@
 ﻿using Abp.Domain.Entities;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Framework.ReferenceList", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Framework.ReferenceList", CrudActions = CrudActions.None, IsConfigurable = false)]
     [JoinedProperty("Frwk_ReferenceLists")]
     [DiscriminatorValue(ItemTypeName)]
     public class ReferenceList : ConfigurationItemBase

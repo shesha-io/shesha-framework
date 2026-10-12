@@ -2,11 +2,13 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Runtime.Caching;
+using Castle.Components.DictionaryAdapter.Xml;
 using Newtonsoft.Json;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Distribution.Dto;
 using Shesha.DynamicEntities.Dtos;
@@ -139,6 +141,8 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.Namespace = item.Namespace;
             dbItem.DiscriminatorValue = item.DiscriminatorValue;
             dbItem.GenerateAppService = item.GenerateAppService;
+            dbItem.IsConfigurable = item.IsConfigurable;
+
             dbItem.Source = item.Source;
             dbItem.EntityConfigType = item.EntityConfigType;
             dbItem.HardcodedPropertiesMD5 = item.PropertiesMD5;

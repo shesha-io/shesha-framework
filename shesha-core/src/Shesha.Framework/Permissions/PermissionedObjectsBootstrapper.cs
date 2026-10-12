@@ -9,7 +9,6 @@ using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Services.VersionedFields;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -81,17 +80,15 @@ namespace Shesha.Permission
                         dbItem.Module = await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == item.ModuleId);
                         dbItem.Parent = item.Parent;
                         dbItem.Name = item.Name;
+                        dbItem.Hardcoded = item.Hardcoded ?? false;
 
-                        // dbItem.Hardcoded == false means the row was explicitly configured (e.g. imported)
-                        // rather than left at its bootstrap/code-derived default -- imported configuration
-                        // outranks a code attribute, so skip the overwrite below even if the code still
-                        // says Hardcoded or the object's Md5 has drifted since the import.
-                        if (dbItem.Hardcoded != false && (item.Hardcoded == true || dbItem.Access == Domain.Enums.RefListPermissionedAccess.Inherited))
+                        // Update access and permissions only for hardcoded and inherited items
+                        if (item.Hardcoded == true || dbItem.Access == Domain.Enums.RefListPermissionedAccess.Inherited)
                         {
                             dbItem.Access = item.Access ?? Domain.Enums.RefListPermissionedAccess.Inherited;
                             dbItem.Permissions = string.Join(",", item.Permissions);
-                            dbItem.Hardcoded = item.Hardcoded ?? false;
                         }
+                        
                         dbItem.Md5 = item.Md5;
 
                         await _permissionedObjectRepository.UpdateAsync(dbItem);

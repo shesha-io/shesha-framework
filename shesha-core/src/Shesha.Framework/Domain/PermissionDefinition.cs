@@ -1,8 +1,9 @@
 ﻿using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Framework.PermissionDefinition", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Framework.PermissionDefinition", CrudActions = CrudActions.None, IsConfigurable = false)]
     [JoinedProperty("Frwk_PermissionDefinitions")]
     [DiscriminatorValue(ItemTypeName)]
     public class PermissionDefinition : ConfigurationItemBase

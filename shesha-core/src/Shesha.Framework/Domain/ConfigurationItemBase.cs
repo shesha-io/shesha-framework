@@ -1,13 +1,14 @@
 ﻿using Shesha.ConfigurationItems;
+using Shesha.Domain.Attributes;
 using Shesha.Domain.ConfigurationItems;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
 {
     /// <summary>
     /// Configuration item base
     /// </summary>
+    [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
     public class ConfigurationItemBase: ConfigurationItem, IConfigurationItem
     {
         public virtual void Normalize() 

@@ -8,6 +8,7 @@ namespace Shesha.Domain
 {
     [Table("vw_Core_AreasHierarchyItems")]
     [ImMutable]
+    [Obsolete]
     public class AreaHierarchyItem: Entity<string>
     {
         public virtual Area Area { get; set; }

@@ -1,10 +1,8 @@
 ﻿using Abp.Domain.Repositories;
-using Abp.Linq;
-using Abp.Runtime.Validation;
 using FluentValidation;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using Shesha.Extensions;
-using Shesha.Services;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -16,7 +14,7 @@ namespace Shesha.Domain.ConfigurationItems
     /// <summary>
     /// Module
     /// </summary>
-    [Entity(GenerateApplicationService = GenerateApplicationServiceState.AlwaysGenerateApplicationService)]
+    [Entity(CrudActions = CrudActions.Read, IsConfigurable = false)]
     public class Module: FullPowerEntity
     {
         /// <summary>

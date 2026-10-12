@@ -1,11 +1,12 @@
 ﻿using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
 {
     /// <summary>
     /// Versioned field definition
     /// </summary>
-    [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
     public class VersionedField : FullPowerChildEntity
     {
         /// <summary>

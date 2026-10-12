@@ -1,14 +1,11 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Framework.StoredFileVersionDownload")]
+    [Entity(TypeShortAlias = "Shesha.Framework.StoredFileVersionDownload", CrudActions = CrudActions.None, IsConfigurable = false)]    
     public class StoredFileVersionDownload : FullAuditedEntity<Guid>
     {
         public virtual StoredFileVersion FileVersion { get; set; }

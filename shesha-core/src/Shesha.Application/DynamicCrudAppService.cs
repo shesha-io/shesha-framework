@@ -3,14 +3,21 @@ using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
+using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
+using Shesha.Authorization;
+using Shesha.Configuration.Security;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.GraphQL.Mvc;
+using Shesha.Permissions;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Shesha
@@ -25,6 +32,8 @@ namespace Shesha
         where TCreateDynamicDto: class, TDynamicDto
         where TUpdateDynamicDto : class, TDynamicDto
     {
+        public IObjectPermissionChecker ObjectPermissionChecker { get; set; }
+        public ISecuritySettings SecuritySettings { get; set; }
 
         public DynamicCrudAppService(
             IRepository<TEntity, TPrimaryKey> repository
@@ -32,9 +41,37 @@ namespace Shesha
         {
         }
 
+        private void EnsureCrudActionEnabled(CrudAction crudAction)
+        {
+            var disabled = EntityCrudHelper.IsCrudActionDisabledByCode(typeof(TEntity), crudAction);
+            if (disabled)
+                throw new UserFriendlyException((int)HttpStatusCode.NotFound, "Action disabled");
+        }
+
+        private async Task CheckCrudActionPermissionsAsync(CrudAction crudAction)
+        {
+            var securitySettings = await SecuritySettings.SecuritySettings.GetValueAsync();
+            var defaultAccess = securitySettings?.DefaultEndpointAccess;
+
+            var method = PermissionedObjectManager.CrudAction2Method(crudAction);
+            await ObjectPermissionChecker.AuthorizeAsync(false, typeof(TEntity).FullName, method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId.HasValue, defaultAccess);
+        }
+
+        /// <summary>
+        /// Ensure that the CRUD action is available (enabled and user has access to it)
+        /// </summary>
+        /// <param name="crudAction"></param>
+        /// <returns></returns>
+        private async Task EnsureCrudActionAvailableAsync(CrudAction crudAction) 
+        {
+            EnsureCrudActionEnabled(crudAction);
+            await CheckCrudActionPermissionsAsync(crudAction);            
+        }
+
         [EntityAction(StandardEntityActions.Read)]
         public override async Task<TDynamicDto> GetAsync(GetDynamicEntityInput<TPrimaryKey> input)
         {
+            await EnsureCrudActionAvailableAsync(CrudAction.Read);
             CheckGetPermission();
 
             var entity = await Repository.GetAsync(input.Id);
@@ -48,6 +85,7 @@ namespace Shesha
         [EntityAction(StandardEntityActions.List)]
         public override async Task<PagedResultDto<TDynamicDto>> GetAllAsync(PropsFilteredPagedAndSortedResultRequestDto input)
         {
+            await EnsureCrudActionAvailableAsync(CrudAction.Read);
             CheckGetAllPermission();
 
             var query = CreateFilteredQuery(input);
@@ -77,6 +115,7 @@ namespace Shesha
         [EntityAction(StandardEntityActions.Create)]
         public override async Task<TDynamicDto> CreateAsync(TCreateDynamicDto input)
         {
+            await EnsureCrudActionAvailableAsync(CrudAction.Create);
             CheckCreatePermission();
             var entity = await InternalCreateAsync(input);
             return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
@@ -88,6 +127,7 @@ namespace Shesha
         [EntityAction(StandardEntityActions.Update)]
         public override async Task<TDynamicDto> UpdateAsync(TUpdateDynamicDto input)
         {
+            await EnsureCrudActionAvailableAsync(CrudAction.Update);
             CheckUpdatePermission();
             var entity = await InternalUpdateAsync(input);
             return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()

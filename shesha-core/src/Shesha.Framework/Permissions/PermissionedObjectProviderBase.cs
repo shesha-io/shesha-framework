@@ -1,21 +1,27 @@
-﻿using System;
-using System.ComponentModel;
-using System.Reflection;
-using System.Xml;
-using Abp.Dependency;
-using Abp.Reflection;
+﻿using Abp.Reflection;
+using Shesha.ConfigurationItems;
 using Shesha.Reflection;
 using Shesha.Utilities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Xml;
+using Module = Shesha.Domain.ConfigurationItems.Module;
 
 namespace Shesha.Permissions
 {
-    public class PermissionedObjectProviderBase : ITransientDependency
+    public class PermissionedObjectProviderBase
     {
         protected readonly IAssemblyFinder _assembleFinder;
+        protected readonly IModuleManager _moduleManager;
 
-        public PermissionedObjectProviderBase(IAssemblyFinder assembleFinder)
+        public PermissionedObjectProviderBase(IAssemblyFinder assembleFinder, IModuleManager moduleManager)
         {
             _assembleFinder = assembleFinder;
+            _moduleManager = moduleManager;
         }
 
         protected string GetName(Type service, string defaultName = null)
@@ -60,6 +66,26 @@ namespace Shesha.Permissions
             }
 
             return description;
+        }
+
+        private Dictionary<Assembly, Module> _modules = new Dictionary<Assembly, Module>();
+
+        protected async Task<Module> GetModuleOfAssemblyAsync(Assembly assembly)
+        {
+            Module module = null;
+            if (_modules.TryGetValue(assembly, out module))
+            {
+                return module;
+            }
+            module = await _moduleManager.GetOrCreateModuleAsync(assembly);
+            _modules.Add(assembly, module);
+            return module;
+        }
+
+        protected virtual string GetMd5(PermissionedObjectDto dto)
+        {
+            return $"{dto.Hardcoded}|{dto.Access?.ToString() ?? "null"}|{string.Join(',', dto.Permissions)}|{dto.ModuleId}|{dto.Parent}|{dto.Name}|{string.Join("|", dto.AdditionalParameters.Select(x => x.Key + "@" + x.Value))}"
+                .ToMd5Fingerprint();
         }
     }
 }

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Core.NotificationMessage")]
+    [Entity(TypeShortAlias = "Shesha.Core.NotificationMessage", CrudActions = CrudActions.Read, IsConfigurable = false)]
     public class NotificationMessage : FullAuditedEntityWithExternalSync<Guid>, IMayHaveTenant
     {
         /// <summary>

@@ -60,6 +60,7 @@ namespace Shesha.Configuration.Runtime
 
                     VersionStatus = x.VersionStatus,
                     GenerateAppService = x.GenerateAppService,
+                    IsConfigurable = x.IsConfigurable,
                 }).ToListAsync();
             return implemented ?? false
                 ? result.Where(x => !x.NotImplemented).ToList()
@@ -110,6 +111,7 @@ namespace Shesha.Configuration.Runtime
             dest.Namespace = src.Namespace;
             dest.DiscriminatorValue = src.DiscriminatorValue;
             dest.GenerateAppService = src.GenerateAppService;
+
             dest.Source = src.Source;
             dest.EntityConfigType = src.EntityConfigType;
             dest.HardcodedPropertiesMD5 = src.HardcodedPropertiesMD5;

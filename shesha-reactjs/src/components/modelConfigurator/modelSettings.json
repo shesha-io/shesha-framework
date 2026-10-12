@@ -7,14 +7,18 @@
       "label": "Alert1",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": {"_code": "return !getSettingValue(data?.notImplemented);", "_mode": "code", "_value": false},
-
+      "hidden": {
+        "_code": "return !getSettingValue(data?.notImplemented);",
+        "_mode": "code",
+        "_value": false
+      },
       "isDynamic": false,
       "alertType": "error",
       "text": "Entity configuration has 'Application Code' source type but is not implemented. Please note that you will not be able to use it.",
       "description": "",
       "showIcon": true,
-      "icon": "CloseCircleFilled"
+      "icon": "CloseCircleFilled",
+      "version": 2
     },
     {
       "id": "11GhkdPW0u1GUZOZs6MOG",
@@ -23,14 +27,18 @@
       "label": "Alert2",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": {"_code": "return  !getSettingValue(data?.suppress) !== 'url';", "_mode": "code", "_value": false},
-
+      "hidden": {
+        "_code": "return  !getSettingValue(data?.suppress) !== 'url';",
+        "_mode": "code",
+        "_value": false
+      },
       "isDynamic": false,
       "alertType": "warning",
       "text": "Entity configuration is suppressed and can not be used for other purposes.",
       "description": "",
       "showIcon": true,
-      "icon": "WarningFilled"
+      "icon": "WarningFilled",
+      "version": 2
     },
     {
       "id": "21GhkdPW0u1GUZOZs6MOG",
@@ -39,14 +47,18 @@
       "label": "Alert3",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": {"_code": "return  getSettingValue(data?.entityConfigType) !== 2;", "_mode": "code", "_value": false},
-
+      "hidden": {
+        "_code": "return  getSettingValue(data?.entityConfigType) !== 2;",
+        "_mode": "code",
+        "_value": false
+      },
       "isDynamic": false,
       "alertType": "warning",
       "text": "Entity configuration is a Json Entity and can be used only as a type of Json properties. Application services is not available for this entity type",
       "description": "",
       "showIcon": true,
-      "icon": "WarningFilled"
+      "icon": "WarningFilled",
+      "version": 2
     },
     {
       "id": "B33BFC-6613TjXmCG6jdG",
@@ -56,7 +68,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "tabs": [
         {
@@ -77,10 +88,10 @@
                 "_value": "Status Tag2"
               },
               "labelAlign": "right",
-              "parentId": "root",
+              "parentId": "X932kk2zE7XZCt3PB8aeq",
               "hidden": false,
               "isDynamic": false,
-              "version": 1,
+              "version": 2,
               "valueSource": "form",
               "value": "",
               "color": "",
@@ -113,7 +124,11 @@
                   "propertyName": "name"
                 }
               ],
-              "settingsValidationErrors": []
+              "settingsValidationErrors": [],
+              "version": 9,
+              "mode": "single",
+              "useRawValues": true,
+              "footerButtons": "none"
             },
             {
               "textType": "text",
@@ -127,7 +142,11 @@
               "description": null,
               "validate": {},
               "settingsValidationErrors": [],
-              "maxLength": null
+              "maxLength": null,
+              "version": 5,
+              "desktop": {},
+              "tablet": {},
+              "mobile": {}
             },
             {
               "textType": "text",
@@ -137,10 +156,13 @@
               "label": "Label",
               "labelAlign": "right",
               "hidden": false,
-
               "isDynamic": false,
               "maxLength": null,
-              "parentId": "X932kk2zE7XZCt3PB8aeq"
+              "parentId": "X932kk2zE7XZCt3PB8aeq",
+              "version": 5,
+              "desktop": {},
+              "tablet": {},
+              "mobile": {}
             },
             {
               "textType": "text",
@@ -150,10 +172,13 @@
               "label": "Description",
               "labelAlign": "right",
               "hidden": false,
-
               "isDynamic": false,
               "maxLength": null,
-              "parentId": "X932kk2zE7XZCt3PB8aeq"
+              "parentId": "X932kk2zE7XZCt3PB8aeq",
+              "version": 5,
+              "desktop": {},
+              "tablet": {},
+              "mobile": {}
             },
             {
               "textType": "text",
@@ -167,12 +192,17 @@
               "description": null,
               "validate": {},
               "settingsValidationErrors": [],
-              "maxLength": null
+              "maxLength": null,
+              "version": 4,
+              "desktop": {},
+              "tablet": {},
+              "mobile": {}
             }
           ],
           "itemType": "item",
           "chosen": false,
-          "selected": false
+          "selected": false,
+          "editMode": "inherited"
         },
         {
           "id": "1vUF3pPcFNkvvKn6q3O59",
@@ -190,11 +220,13 @@
               "labelAlign": "right",
               "parentId": "1vUF3pPcFNkvvKn6q3O59",
               "hidden": false,
-              "settingsValidationErrors": []
+              "settingsValidationErrors": [],
+              "version": 0
             }
           ],
           "chosen": false,
-          "label": "Properties"
+          "label": "Properties",
+          "editMode": "inherited"
         },
         {
           "id": "1p3PpY7RbUyx1NMV3e5PA",
@@ -202,268 +234,217 @@
           "sortOrder": 5,
           "propertyName": "",
           "key": "appService",
-          "hidden": {"_code": "return  getSettingValue(data?.entityConfigType) !== 1;", "_mode": "code", "_value": false},
+          "hidden": {
+            "_code": "return  getSettingValue(data?.entityConfigType) !== 1;",
+            "_mode": "code",
+            "_value": false
+          },
           "title": "CRUD APIs",
           "components": [
             {
-              "id": "dNzhkcchpcbIupEVK4vjq",
-              "type": "checkbox",
-              "propertyName": "generateAppService",
-              "label": "Generate CRUD APIs",
+              "alertType": "warning",
+              "id": "p0UewihQKgkzk_Fynmd-9v_qwd623u",
+              "type": "alert",
+              "propertyName": "alert4",
+              "componentName": "alert4",
+              "label": "Alert4",
               "labelAlign": "right",
               "parentId": "1p3PpY7RbUyx1NMV3e5PA",
-              "hidden": false,
-
+              "hidden": {
+                "_mode": "code",
+                "_code": "    return data.permission.hardcoded === false;",
+                "_value": false
+              },
               "isDynamic": false,
-              "description": "",
-              "validate": {},
-              "settingsValidationErrors": []
+              "version": 2,
+              "text": "Configuration of CRUD APIs are disabled in the code"
             },
             {
-              "id": "Ak0H5UUnfskW9Dtj7GKjM",
-              "type": "tabs",
-              "propertyName": "appService",
-              "label": "Tabs2",
+              "id": "ORPUlPWTjEVG_FmqFxfkst2PRVDfOv",
+              "type": "container",
+              "propertyName": "container1",
+              "componentName": "container1",
+              "label": "Container1",
               "labelAlign": "right",
               "parentId": "1p3PpY7RbUyx1NMV3e5PA",
-
+              "hidden": {
+                "_code": "return data.permission.hardcoded === true;",
+                "_mode": "code",
+                "_value": false
+              },
               "isDynamic": false,
-              "tabs": [
-                {
-                  "id": "hcBv9ySji5XEWPJNLjNOz",
-                  "itemType": "item",
-                  "sortOrder": 4,
-                  "propertyName": "",
-                  "key": "permission",
-                  "title": "Permission",
-                  "components": [
-                    {
-                      "id": "xqWeADxctxJJKvGQYeQd4",
-                      "type": "section",
-                      "propertyName": "permission",
-                      "label": "Section2",
-                      "labelAlign": "right",
-                      "parentId": "hcBv9ySji5XEWPJNLjNOz",
-                      "hidden": false,
-
-                      "isDynamic": false,
-                      "settingsValidationErrors": []
-                    }
-                  ],
-                  "label": "Permission"
-                },
-                {
-                  "id": "479TB2pkRysWCIxabiw-j",
-                  "itemType": "item",
-                  "sortOrder": 3,
-                  "propertyName": "",
-                  "key": "getPermission",
-                  "title": "Get",
-                  "components": [
-                    {
-                      "id": "yOEiaVpn3jN5W4DeOXs9r",
-                      "type": "section",
-                      "propertyName": "permissionGet",
-                      "label": "Section3",
-                      "labelAlign": "right",
-                      "parentId": "479TB2pkRysWCIxabiw-j",
-                      "hidden": false,
-
-                      "isDynamic": false,
-                      "settingsValidationErrors": []
-                    }
-                  ],
-                  "label": "Get",
-                  "chosen": false
-                },
-                {
-                  "id": "puDwy9ITCklFSVGyvrsEW",
-                  "itemType": "item",
-                  "sortOrder": 2,
-                  "propertyName": "",
-                  "key": "createPermission",
-                  "title": "Create",
-                  "components": [
-                    {
-                      "id": "Xz1oMGB2DniV2Q-_bBbEF",
-                      "type": "section",
-                      "propertyName": "permissionCreate",
-                      "label": "Section4",
-                      "labelAlign": "right",
-                      "parentId": "puDwy9ITCklFSVGyvrsEW",
-                      "hidden": false,
-
-                      "isDynamic": false,
-                      "settingsValidationErrors": []
-                    }
-                  ],
-                  "label": "Create",
-                  "chosen": false
-                },
-                {
-                  "id": "fjUPjNWgHmBwuFVaSMF6z",
-                  "itemType": "item",
-                  "sortOrder": 1,
-                  "propertyName": "",
-                  "key": "updatePermission",
-                  "title": "Update",
-                  "components": [
-                    {
-                      "id": "aKMfCJHhnTI9a06-IDyTN",
-                      "type": "section",
-                      "propertyName": "permissionUpdate",
-                      "label": "Section5",
-                      "labelAlign": "right",
-                      "parentId": "fjUPjNWgHmBwuFVaSMF6z",
-                      "hidden": false,
-
-                      "isDynamic": false,
-                      "settingsValidationErrors": []
-                    }
-                  ],
-                  "label": "Update",
-                  "chosen": false
-                },
-                {
-                  "id": "FrhlkvrUWn9FRyk6LQ-OH",
-                  "label": "Delete",
-                  "title": "Delete",
-                  "key": "deletePermission",
-                  "components": [
-                    {
-                      "id": "bhsj5d9zq8N4p6sglCvE1",
-                      "type": "section",
-                      "propertyName": "permissionDelete",
-                      "label": "Section6",
-                      "labelAlign": "right",
-                      "parentId": "FrhlkvrUWn9FRyk6LQ-OH",
-                      "hidden": false,
-
-                      "isDynamic": false,
-                      "settingsValidationErrors": []
-                    }
-                  ],
-                  "itemType": "item",
-                  "chosen": false,
-                  "selected": false
-                }
-              ],
-              "defaultActiveKey": "permission",
-              "tabType": "line",
-              "settingsValidationErrors": [],
+              "version": 6,
+              "direction": "vertical",
+              "justifyContent": "left",
+              "flexWrap": "wrap",
               "components": [
                 {
-                  "propertyName": "",
-                  "type": "",
+                  "id": "dNzhkcchpcbIupEVK4vjq",
+                  "type": "checkbox",
+                  "propertyName": "generateAppService",
+                  "label": "Generate CRUD APIs",
+                  "labelAlign": "right",
+                  "parentId": "ORPUlPWTjEVG_FmqFxfkst2PRVDfOv",
+                  "hidden": false,
                   "isDynamic": false,
-                  "id": "hcBv9ySji5XEWPJNLjNOz",
-                  "components": [
+                  "description": "",
+                  "validate": {},
+                  "settingsValidationErrors": []
+                },
+                {
+                  "id": "Ak0H5UUnfskW9Dtj7GKjM",
+                  "type": "tabs",
+                  "propertyName": "appService",
+                  "label": "Tabs2",
+                  "labelAlign": "right",
+                  "parentId": "ORPUlPWTjEVG_FmqFxfkst2PRVDfOv",
+                  "isDynamic": false,
+                  "tabs": [
                     {
-                      "id": "xqWeADxctxJJKvGQYeQd4",
-                      "type": "section",
-                      "propertyName": "permission",
-                      "label": "Section2",
-                      "labelAlign": "right",
-                      "parentId": "hcBv9ySji5XEWPJNLjNOz",
-                      "hidden": false,
-
-                      "isDynamic": false,
-                      "settingsValidationErrors": []
+                      "id": "hcBv9ySji5XEWPJNLjNOz",
+                      "itemType": "item",
+                      "sortOrder": 4,
+                      "propertyName": "",
+                      "key": "permission",
+                      "title": "Permission",
+                      "components": [
+                        {
+                          "id": "xqWeADxctxJJKvGQYeQd4",
+                          "type": "section",
+                          "propertyName": "permission",
+                          "label": "Section2",
+                          "labelAlign": "right",
+                          "parentId": "hcBv9ySji5XEWPJNLjNOz",
+                          "hidden": false,
+                          "isDynamic": false,
+                          "settingsValidationErrors": [],
+                          "version": 0
+                        }
+                      ],
+                      "label": "Permission",
+                      "editMode": "inherited"
+                    },
+                    {
+                      "id": "479TB2pkRysWCIxabiw-j",
+                      "itemType": "item",
+                      "sortOrder": 3,
+                      "propertyName": "",
+                      "key": "getPermission",
+                      "title": "Get",
+                      "components": [
+                        {
+                          "id": "yOEiaVpn3jN5W4DeOXs9r",
+                          "type": "section",
+                          "propertyName": "permissionGet",
+                          "label": "Section3",
+                          "labelAlign": "right",
+                          "parentId": "479TB2pkRysWCIxabiw-j",
+                          "hidden": false,
+                          "isDynamic": false,
+                          "settingsValidationErrors": [],
+                          "version": 0
+                        }
+                      ],
+                      "label": "Get",
+                      "chosen": false,
+                      "editMode": "inherited"
+                    },
+                    {
+                      "id": "puDwy9ITCklFSVGyvrsEW",
+                      "itemType": "item",
+                      "sortOrder": 2,
+                      "propertyName": "",
+                      "key": "createPermission",
+                      "title": "Create",
+                      "components": [
+                        {
+                          "id": "Xz1oMGB2DniV2Q-_bBbEF",
+                          "type": "section",
+                          "propertyName": "permissionCreate",
+                          "label": "Section4",
+                          "labelAlign": "right",
+                          "parentId": "puDwy9ITCklFSVGyvrsEW",
+                          "hidden": false,
+                          "isDynamic": false,
+                          "settingsValidationErrors": [],
+                          "version": 0
+                        }
+                      ],
+                      "label": "Create",
+                      "chosen": false,
+                      "editMode": "inherited"
+                    },
+                    {
+                      "id": "fjUPjNWgHmBwuFVaSMF6z",
+                      "itemType": "item",
+                      "sortOrder": 1,
+                      "propertyName": "",
+                      "key": "updatePermission",
+                      "title": "Update",
+                      "components": [
+                        {
+                          "id": "aKMfCJHhnTI9a06-IDyTN",
+                          "type": "section",
+                          "propertyName": "permissionUpdate",
+                          "label": "Section5",
+                          "labelAlign": "right",
+                          "parentId": "fjUPjNWgHmBwuFVaSMF6z",
+                          "hidden": false,
+                          "isDynamic": false,
+                          "settingsValidationErrors": [],
+                          "version": 0
+                        }
+                      ],
+                      "label": "Update",
+                      "chosen": false,
+                      "editMode": "inherited"
+                    },
+                    {
+                      "id": "FrhlkvrUWn9FRyk6LQ-OH",
+                      "label": "Delete",
+                      "title": "Delete",
+                      "key": "deletePermission",
+                      "components": [
+                        {
+                          "id": "bhsj5d9zq8N4p6sglCvE1",
+                          "type": "section",
+                          "propertyName": "permissionDelete",
+                          "label": "Section6",
+                          "labelAlign": "right",
+                          "parentId": "FrhlkvrUWn9FRyk6LQ-OH",
+                          "hidden": false,
+                          "isDynamic": false,
+                          "settingsValidationErrors": [],
+                          "version": 0
+                        }
+                      ],
+                      "itemType": "item",
+                      "chosen": false,
+                      "selected": false,
+                      "editMode": "inherited"
                     }
                   ],
-                  "parentId": "Ak0H5UUnfskW9Dtj7GKjM"
-                },
-                {
-                  "propertyName": "",
-                  "type": "",
-                  "isDynamic": false,
-                  "id": "479TB2pkRysWCIxabiw-j",
-                  "components": [
-                    {
-                      "id": "yOEiaVpn3jN5W4DeOXs9r",
-                      "type": "section",
-                      "propertyName": "permissionGet",
-                      "label": "Section3",
-                      "labelAlign": "right",
-                      "parentId": "479TB2pkRysWCIxabiw-j",
-                      "hidden": false,
-
-                      "isDynamic": false,
-                      "settingsValidationErrors": []
-                    }
-                  ],
-                  "parentId": "Ak0H5UUnfskW9Dtj7GKjM"
-                },
-                {
-                  "propertyName": "",
-                  "type": "",
-                  "isDynamic": false,
-                  "id": "puDwy9ITCklFSVGyvrsEW",
-                  "parentId": "Ak0H5UUnfskW9Dtj7GKjM",
-                  "components": [
-                    {
-                      "id": "Xz1oMGB2DniV2Q-_bBbEF",
-                      "type": "section",
-                      "propertyName": "permissionCreate",
-                      "label": "Section4",
-                      "labelAlign": "right",
-                      "parentId": "puDwy9ITCklFSVGyvrsEW",
-                      "hidden": false,
-
-                      "isDynamic": false,
-                      "settingsValidationErrors": []
-                    }
-                  ]
-                },
-                {
-                  "propertyName": "",
-                  "type": "",
-                  "isDynamic": false,
-                  "id": "fjUPjNWgHmBwuFVaSMF6z",
-                  "parentId": "Ak0H5UUnfskW9Dtj7GKjM",
-                  "components": [
-                    {
-                      "id": "aKMfCJHhnTI9a06-IDyTN",
-                      "type": "section",
-                      "propertyName": "permissionUpdate",
-                      "label": "Section5",
-                      "labelAlign": "right",
-                      "parentId": "fjUPjNWgHmBwuFVaSMF6z",
-                      "hidden": false,
-
-                      "isDynamic": false,
-                      "settingsValidationErrors": []
-                    }
-                  ]
-                },
-                {
-                  "id": "FrhlkvrUWn9FRyk6LQ-OH",
-                  "label": "Tab 1",
-                  "title": "Tab 1",
-                  "key": "tab1",
-                  "components": [
-                    {
-                      "id": "bhsj5d9zq8N4p6sglCvE1",
-                      "type": "section",
-                      "propertyName": "permissionDelete",
-                      "label": "Section6",
-                      "labelAlign": "right",
-                      "parentId": "FrhlkvrUWn9FRyk6LQ-OH",
-                      "hidden": false,
-
-                      "isDynamic": false,
-                      "settingsValidationErrors": []
-                    }
-                  ],
-                  "itemType": "item",
-                  "parentId": "Ak0H5UUnfskW9Dtj7GKjM"
+                  "defaultActiveKey": "permission",
+                  "tabType": "line",
+                  "settingsValidationErrors": [],
+                  "hidden": {
+                    "_code": "    return !data.generateAppService;",
+                    "_mode": "code",
+                    "_value": false
+                  },
+                  "version": 3,
+                  "components": []
                 }
               ],
-              "hidden": {"_code": "return  !getSettingValue(data.generateAppService);", "_mode": "code", "_value": false}
+              "desktop": {},
+              "tablet": {},
+              "mobile": {},
+              "shadowStyle": "none"
             }
           ],
           "label": "Application Service",
-          "chosen": false
+          "chosen": false,
+          "editMode": "inherited"
         },
         {
           "id": "1132kk2zE7XZCt3PB8ae1",
@@ -479,32 +460,76 @@
               "labelAlign": "right",
               "parentId": "1132kk2zE7XZCt3PB8ae1",
               "hidden": false,
-
               "isDynamic": false,
-              "settingsValidationErrors": []
+              "settingsValidationErrors": [],
+              "version": 0
             }
           ],
           "itemType": "item",
           "chosen": false,
-          "selected": false
-        }        
+          "selected": false,
+          "editMode": "inherited"
+        }
       ],
       "defaultActiveKey": "details",
       "tabType": "line",
-      "settingsValidationErrors": []
+      "settingsValidationErrors": [],
+      "version": 3
     }
   ],
   "formSettings": {
-    "_formFields": [ "modelType", "postUrl", "putUrl", "deleteUrl", "getUrl", "layout", "size", "colon", "labelCol.span", "wrapperCol.span", "excludeFormFieldsInPayload", "fieldsToFetch", "formKeysToPersist", "uniqueFormId", "preparedValues", "onDataLoaded", "onUpdate", "initialValues" ],
+    "_formFields": [
+      "modelType",
+      "postUrl",
+      "putUrl",
+      "deleteUrl",
+      "getUrl",
+      "layout",
+      "size",
+      "colon",
+      "labelCol.span",
+      "wrapperCol.span",
+      "excludeFormFieldsInPayload",
+      "fieldsToFetch",
+      "formKeysToPersist",
+      "uniqueFormId",
+      "preparedValues",
+      "onDataLoaded",
+      "onUpdate",
+      "initialValues"
+    ],
     "layout": "horizontal",
     "colon": true,
-    "labelCol": { "span": 8 },
-    "wrapperCol": { "span": 16 },
+    "labelCol": {
+      "span": 8
+    },
+    "wrapperCol": {
+      "span": 16
+    },
     "modelType": "Shesha.DynamicEntities.Dtos.ModelConfigurationDto",
-    "postUrl": "",
-    "putUrl": "",
-    "deleteUrl": "",
-    "getUrl": "",
-    "uniqueFormId": ""
+    "uniqueFormId": "",
+    "access": null,
+    "permissions": null,
+    "version": 7,
+    "dataLoaderType": "gql",
+    "dataSubmitterType": "gql",
+    "onBeforeDataLoad": "    form.setFieldsValue({...form.formArguments});",
+    "onAfterDataLoad": null,
+    "onPrepareSubmitData": null,
+    "onBeforeSubmit": null,
+    "onSubmitSuccess": null,
+    "onSubmitFailed": null,
+    "dataSubmittersSettings": {
+      "gql": {
+        "endpointType": "default",
+        "dynamicEndpoint": "    return data?.id ? form.defaultApiEndpoints.update : form.defaultApiEndpoints.create"
+      }
+    },
+    "dataLoadersSettings": {
+      "gql": {
+        "endpointType": "default"
+      },
+      "custom": {}
+    }
   }
 }

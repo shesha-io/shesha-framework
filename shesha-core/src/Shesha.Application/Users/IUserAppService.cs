@@ -1,6 +1,4 @@
 using Abp.Application.Services;
-using Abp.Application.Services.Dto;
-using Shesha.Roles.Dto;
 using Shesha.SecurityQuestions.Dto;
 using Shesha.Users.Dto;
 using System.Collections.Generic;
@@ -10,10 +8,6 @@ namespace Shesha.Users
 {
     public interface IUserAppService : IAsyncCrudAppService<UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>
     {
-        Task<ListResultDto<RoleDto>> GetRolesAsync();
-
-        Task ChangeLanguageAsync(ChangeUserLanguageDto input);
-
         Task<ResetPasswordSendOtpResponse> ResetPasswordSendOtpAsync(string mobileNo);
 
         Task<bool> SendSmsOtpAsync(string username);

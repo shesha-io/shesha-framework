@@ -1,4 +1,5 @@
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
 {
@@ -9,7 +10,7 @@ namespace Shesha.Domain
     /// <see cref="Shesha.Permissions.ShaPermissionedObjectsTypes.WebApiAction"/>, read live at export
     /// time and applied onto those rows at import time.
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Framework.ApiPermissionsManifest", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Framework.ApiPermissionsManifest", CrudActions = CrudActions.None, IsConfigurable = false)]
     [DiscriminatorValue(ItemTypeName)]
     public class ApiPermissionsManifest : ConfigurationItemBase
     {

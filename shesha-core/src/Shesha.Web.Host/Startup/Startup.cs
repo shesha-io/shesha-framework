@@ -232,19 +232,7 @@ namespace Shesha.Web.Host.Startup
             //Swagger - Enable this line and the related lines in Configure method to enable swagger UI
             services.AddSwaggerGen(options =>
             {
-                options.DescribeAllParametersInCamelCase();
-                options.IgnoreObsoleteActions();
-                options.AddXmlDocuments();
-
-                options.SchemaFilter<GraphQLSchemaFilter>();
-                options.SchemaFilter<DynamicDtoSchemaFilter>();
-                options.OperationFilter<SwaggerOperationFilter>();
-                options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
-
-                options.CustomOperationIds(desc => desc.ActionDescriptor is ControllerActionDescriptor d
-                    ? d.ControllerName.ToCamelCase() + d.ActionName.ToPascalCase()
-                    : null);
-
+                options.UseSheshaDefaults();
                 options.AddDocumentsPerService();
 
                 // Define the BearerAuth scheme that's in use
@@ -259,9 +247,8 @@ namespace Shesha.Web.Host.Startup
                 options.ResolveConflictingActions(apiDescriptions => 
                     apiDescriptions.FirstOrDefault()
                 );
-                //options.SchemaFilter<DynamicDtoSchemaFilter>();
             });
-            services.Replace(ServiceDescriptor.Transient<ISwaggerProvider, CachingSwaggerProvider>());
+            services.Replace(ServiceDescriptor.Transient<IAsyncSwaggerProvider, CachingSwaggerProvider>());
 
             services.AddApiVersioning(options =>
             {

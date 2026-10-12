@@ -1,5 +1,4 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Dependency;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
@@ -8,8 +7,6 @@ using Shesha.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace Shesha.DynamicEntities.Dtos
@@ -17,7 +14,7 @@ namespace Shesha.DynamicEntities.Dtos
     /// <summary>
     /// Entity config DTO
     /// </summary>
-    public class EntityConfigDto: EntityDto<Guid>, IConfigurationItemDto
+    public class EntityConfigDto : EntityDto<Guid>, IConfigurationItemDto
     {
         [StringLength(255)]
         public string FriendlyName { get; set; }
@@ -37,9 +34,14 @@ namespace Shesha.DynamicEntities.Dtos
         /// </summary>
         public MetadataSourceType? Source { get; set; }
 
-        public virtual EntityConfigTypes? EntityConfigType { get; set; }
+        public EntityConfigTypes? EntityConfigType { get; set; }
 
-        public virtual bool GenerateAppService { get; set; }
+        public bool GenerateAppService { get; set; }
+
+        public CrudActions CrudActions { get; set; }
+        public CrudActionsAccess CrudActionsAccess { get; set; }
+        public List<string> CrudActionsPermissions { get; set; }
+        public bool IsConfigurable { get; set; }
 
         // From ConfigurationItem
         public bool Suppress { get; set; }

@@ -13,6 +13,7 @@ namespace Shesha.Domain
     /// </summary>
     [SnakeCaseNaming]
     [Table("frwk_application_startups")]
+    [Entity(CrudActions = CrudActions.Read, IsConfigurable = false)]
     public class ApplicationStartup: Entity<Guid>
     {
         [StringLength(100)]

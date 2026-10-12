@@ -1,18 +1,19 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Abp.MultiTenancy;
 using Abp.Timing;
 using Shesha.Authorization;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
     [Table("Frwk_UserLoginAttempts")]
-    [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
     public class ShaUserLoginAttempt : Entity<Guid>, IHasCreationTime, IMayHaveTenant
     {
         /// <summary>

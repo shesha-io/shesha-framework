@@ -1,16 +1,13 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using Shesha.Authorization.Users;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Core.QuestionAssignment", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Core.QuestionAssignment", CrudActions = CrudActions.None, IsConfigurable = false)]
     public class QuestionAssignment: FullAuditedEntity<Guid>
     {
         /// <summary>

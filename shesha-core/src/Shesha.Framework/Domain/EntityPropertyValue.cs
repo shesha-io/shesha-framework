@@ -1,19 +1,12 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Shesha.Domain.Attributes;
+﻿using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
-using JetBrains.Annotations;
 
 namespace Shesha.Domain
 {
     /// <summary>
     /// Entity property value (initially for Dynamic properties)
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Framework.EntityPropertyValue", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Framework.EntityPropertyValue", CrudActions = CrudActions.None, IsConfigurable = false)]
     public class EntityPropertyValue : FullPowerChildEntity
     {
         /// <summary>

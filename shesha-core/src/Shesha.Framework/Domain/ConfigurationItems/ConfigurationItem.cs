@@ -2,6 +2,7 @@
 using Abp.Domain.Entities.Auditing;
 using Shesha.Authorization.Users;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,6 +12,7 @@ namespace Shesha.Domain.ConfigurationItems
     /// Configuration Item
     /// </summary>
     [Discriminator(DiscriminatorColumn = "ItemType")]
+    [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
     public class ConfigurationItem : FullAuditedEntity<Guid, User>, IMayHaveTenant, IMayHaveFrontEndApplication
     {
         [ReadonlyProperty]

@@ -20,9 +20,6 @@ namespace Shesha.Configuration.Runtime
     {
         private const int _typeShortAliasMaxLength = 100;
 
-        private static IDictionary<Type, EntityConfiguration> _entityConfigurations =
-            new Dictionary<Type, EntityConfiguration>();
-
         private string _typeShortAlias;
 
         #region Constructors and Initialisation

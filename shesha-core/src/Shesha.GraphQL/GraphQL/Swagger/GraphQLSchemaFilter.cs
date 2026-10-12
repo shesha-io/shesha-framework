@@ -26,6 +26,10 @@ namespace Shesha.GraphQL.Swagger
 
         public void Apply(OpenApiSchema schema, SchemaFilterContext context)
         {
+            // Type is already registered under some schema id
+            if (context.SchemaRepository.TryLookupByType(context.Type, out var existing))
+                return;
+
             if (!typeof(GraphQLDataResult).IsAssignableFrom(context.Type))
                 return;
 
