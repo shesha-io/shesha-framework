@@ -321,6 +321,8 @@ export const convertJsonLogicNode = async (
         }),
       );
       convertedArgs = convertedArgs.filter((a) => a !== undefined);
+      if (operatorName === 'and' || operatorName === 'or')
+        convertedArgs = convertedArgs.filter(isDefined);
     } else {
       // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
       if (typeof args === 'object' && isDefined(args)) {
@@ -401,6 +403,8 @@ export const convertJsonLogicNodeSync = (
         return evaluationResult.handled ? evaluationResult.value : arg;
       });
       convertedArgs = convertedArgs.filter((a) => a !== undefined);
+      if (operatorName === 'and' || operatorName === 'or')
+        convertedArgs = convertedArgs.filter(isDefined);
     } else {
       // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
       if (typeof args === 'object' && isDefined(args)) {
