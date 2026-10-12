@@ -36,11 +36,15 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
   const { getActions, getConfigurableActionOrNull } = useConfigurableActionDispatcher();
   const actions = getActions();
 
-  const availableConstants = useAvailableConstantsMetadata({
-    addGlobalConstants: true,
-    standardConstants: props.includeDynamicItem
+  const standardConstants = useMemo(
+    () => props.includeDynamicItem
       ? [...ALL_STANDARD_CONSTANTS, SheshaConstants.dynamicItem]
       : ALL_STANDARD_CONSTANTS,
+    [props.includeDynamicItem]
+  );
+  const availableConstants = useAvailableConstantsMetadata({
+    addGlobalConstants: true,
+    standardConstants,
   });
 
   const formValues = useMemo<IActionFormModel>(() => {
