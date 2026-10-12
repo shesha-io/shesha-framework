@@ -1,4 +1,4 @@
-﻿using Abp.Application.Services.Dto;
+using Abp.Application.Services.Dto;
 using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
@@ -39,9 +39,16 @@ namespace Shesha.GraphQL.Provider.Queries
     /// </summary>
     public class EntityQuery<TEntity, TId> : ObjectGraphType, ITransientDependency where TEntity : class, IEntity<TId>, new()
     {
-        private readonly IJsonLogic2LinqConverter _jsonLogicConverter;
+        // Only SINGLETON dependencies may be captured here. This graph type is held for the life of a
+        // cached EntitySchema, so capturing a transient would pin it (and the scope that resolved it)
+        // forever. See docs/incidents/2026-09-15-graphql-schema-scope-capture-leak.md.
         private readonly IEntityConfigurationStore _entityConfigStore;
-        private readonly ISessionProvider _sessionProvider;
+
+        /// <summary>
+        /// Used only when the execution has no RequestServices (background/job-initiated queries).
+        /// Both call sites set ExecutionOptions.RequestServices only when there is an HttpContext.
+        /// </summary>
+        private readonly IServiceProvider _fallbackServiceProvider;
 
         public EntityQuery(IServiceProvider serviceProvider)
         {
@@ -49,23 +56,19 @@ namespace Shesha.GraphQL.Provider.Queries
 
             Name = entityName + "Query";
 
-            _jsonLogicConverter = serviceProvider.GetRequiredService<IJsonLogic2LinqConverter>();
             _entityConfigStore = serviceProvider.GetRequiredService<IEntityConfigurationStore>();
-            _sessionProvider = serviceProvider.GetRequiredService<ISessionProvider>();
-
-            var repository = serviceProvider.GetRequiredService<IRepository<TEntity, TId>>();
-            var asyncExecuter = serviceProvider.GetRequiredService<IAsyncQueryableExecuter>();
-            var entityFetcher = serviceProvider.GetService<IEntityFetcher>();
-            var quickSearcher = serviceProvider.GetRequiredService<IQuickSearcher>();
-            var specificationManager = serviceProvider.GetRequiredService<ISpecificationManager>();
+            _fallbackServiceProvider = serviceProvider;
 
             FieldAsync<GraphQLGenericType<TEntity>>(entityName,
                 arguments: new QueryArguments(new QueryArgument(MakeGetInputType()) { Name = nameof(IEntity.Id) }),
                 resolve: async context => {
+                    var services = ResolveServices(context);
+                    var repository = services.GetRequiredService<IRepository<TEntity, TId>>();
+
                     var id = context.GetArgument<TId>(nameof(IEntity.Id));
 
                     return await repository.GetAsync(id);
-                }                    
+                }
             );
 
             FieldAsync<PagedResultDtoType<TEntity>>($"{entityName}List",
@@ -75,7 +78,15 @@ namespace Shesha.GraphQL.Provider.Queries
                 resolve: async context => {
                     var input = context.GetArgument<ListRequestDto>("input");
 
-                    var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
+                    var services = ResolveServices(context);
+                    var repository = services.GetRequiredService<IRepository<TEntity, TId>>();
+                    var asyncExecuter = services.GetRequiredService<IAsyncQueryableExecuter>();
+                    var entityFetcher = services.GetService<IEntityFetcher>();
+                    var quickSearcher = services.GetRequiredService<IQuickSearcher>();
+                    var specificationManager = services.GetRequiredService<ISpecificationManager>();
+                    var jsonLogicConverter = services.GetRequiredService<IJsonLogic2LinqConverter>();
+
+                    var unitOfWorkManager = services.GetRequiredService<IUnitOfWorkManager>();
                     var uow = unitOfWorkManager.Current;
 
                     var query = repository.GetAll();
@@ -85,7 +96,7 @@ namespace Shesha.GraphQL.Provider.Queries
                     query = specificationManager.ApplySpecifications(query, input.Specifications);
 
                     // filter entities
-                    query = AddFilter(query, input.Filter);
+                    query = AddFilter(jsonLogicConverter, query, input.Filter);
 
                     // add quick search
                     if (!string.IsNullOrWhiteSpace(input.QuickSearch))
@@ -122,7 +133,14 @@ namespace Shesha.GraphQL.Provider.Queries
                 resolve: async context => {
                     var input = context.GetArgument<TreeRequestDto>("input");
 
-                    var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
+                    var services = ResolveServices(context);
+                    var repository = services.GetRequiredService<IRepository<TEntity, TId>>();
+                    var asyncExecuter = services.GetRequiredService<IAsyncQueryableExecuter>();
+                    var entityFetcher = services.GetService<IEntityFetcher>();
+                    var jsonLogicConverter = services.GetRequiredService<IJsonLogic2LinqConverter>();
+                    var sessionProvider = services.GetRequiredService<ISessionProvider>();
+
+                    var unitOfWorkManager = services.GetRequiredService<IUnitOfWorkManager>();
                     var uow = unitOfWorkManager.Current;
 
                     if (input.ParentId.HasValue)
@@ -143,11 +161,11 @@ namespace Shesha.GraphQL.Provider.Queries
 
                         var parentPropertyColumnName = MappingHelper.GetForeignKeyColumn(parentProperty.PropertyInfo);
 
-                        var treeEntities = await GetTreeQueryAsync(entityConfig.TableName, parentPropertyColumnName, idColumnName, isDeletedColumnName, input.ParentId);
+                        var treeEntities = await GetTreeQueryAsync(sessionProvider, entityConfig.TableName, parentPropertyColumnName, idColumnName, isDeletedColumnName, input.ParentId);
 
                         // filter entities
                         var entities = !string.IsNullOrWhiteSpace(input.Filter)
-                            ? AddFilter(treeEntities.AsQueryable(), input.Filter).ToList()
+                            ? AddFilter(jsonLogicConverter, treeEntities.AsQueryable(), input.Filter).ToList()
                             : treeEntities.ToList();
 
                         var result = new PagedResultDto<TEntity>
@@ -163,7 +181,7 @@ namespace Shesha.GraphQL.Provider.Queries
                         query.SetReadOnly();
 
                         // filter entities
-                        query = AddFilter(query, input.Filter);
+                        query = AddFilter(jsonLogicConverter, query, input.Filter);
 
                         var entities = entityFetcher != null
                             ? await entityFetcher.ToListAsync(query, GetEntityPropertiesFromContext(context))
@@ -182,18 +200,28 @@ namespace Shesha.GraphQL.Provider.Queries
             );
         }
 
-        private DbmsType GetDbmsType()
+        /// <summary>
+        /// Services MUST be resolved per invocation from the execution's RequestServices so they are
+        /// tracked in the LIVE request scope and released at request end. Resolving them from a
+        /// provider captured at construction time pins them in a dead scope forever.
+        /// </summary>
+        private IServiceProvider ResolveServices(IResolveFieldContext context)
         {
-            return _sessionProvider.Session.Connection is NpgsqlConnection
+            return context.RequestServices ?? _fallbackServiceProvider;
+        }
+
+        private static DbmsType GetDbmsType(ISessionProvider sessionProvider)
+        {
+            return sessionProvider.Session.Connection is NpgsqlConnection
                 ? DbmsType.PostgreSQL
                 : DbmsType.SQLServer;
         }
 
-        private async Task<IList<TEntity>> GetTreeQueryAsync(string tableName, string parentIdColumnName, string idColumnName, string? isDeletedColumnName, Guid? parentId)
+        private async Task<IList<TEntity>> GetTreeQueryAsync(ISessionProvider sessionProvider, string tableName, string parentIdColumnName, string idColumnName, string? isDeletedColumnName, Guid? parentId)
         {
-            var sql = GenerateTreeSubnodesQuery(tableName, parentIdColumnName, idColumnName, isDeletedColumnName, GetDbmsType());
+            var sql = GenerateTreeSubnodesQuery(tableName, parentIdColumnName, idColumnName, isDeletedColumnName, GetDbmsType(sessionProvider));
 
-            var entities = await _sessionProvider.Session.CreateSQLQuery(sql)
+            var entities = await sessionProvider.Session.CreateSQLQuery(sql)
                      .AddEntity("ent", typeof(TEntity))
                      .SetParameter("id", parentId)
                      .SetReadOnly(true)
@@ -307,14 +335,14 @@ from
         /// <param name="query">Queryable to be filtered</param>
         /// <param name="filter">String representation of JsonLogic filter</param>
         /// <returns></returns>
-        private IQueryable<TEntity> AddFilter(IQueryable<TEntity> query, string filter) 
+        private IQueryable<TEntity> AddFilter(IJsonLogic2LinqConverter jsonLogicConverter, IQueryable<TEntity> query, string filter) 
         {
             if (string.IsNullOrWhiteSpace(filter))
                 return query;
 
             var jsonLogic = JObject.Parse(filter);
 
-            var expression = _jsonLogicConverter.ParseExpressionOf<TEntity>(jsonLogic);
+            var expression = jsonLogicConverter.ParseExpressionOf<TEntity>(jsonLogic);
 
             return expression != null
                 ? query.Where(expression)
