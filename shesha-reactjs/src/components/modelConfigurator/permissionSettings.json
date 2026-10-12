@@ -23,7 +23,7 @@
           "parentId": "XfBj2SDuEkTf-SbtWciWo",
           "hidden": {
             "_mode": "code",
-            "_code": "    return data.hardcoded !== true;",
+            "_code": "    return data?.hardcoded !== true;",
             "_value": false
           },
           "isDynamic": false,
