@@ -45,7 +45,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     &.is-selected {
       background: ${token.colorPrimaryBg};
     }
-    &.is-active {
+    .sha-layers-tree:focus-within &.is-active {
       box-shadow: inset 0 0 0 1px ${token.colorPrimaryBorder};
     }
     &.is-hidden .sha-layers-row-label {
@@ -60,7 +60,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     .sha-layers-row-menu {
       visibility: hidden;
     }
-    &:hover .sha-layers-row-menu, &.is-active .sha-layers-row-menu {
+    &:hover .sha-layers-row-menu, .sha-layers-tree:focus-within &.is-active .sha-layers-row-menu {
       visibility: visible;
     }
   `);

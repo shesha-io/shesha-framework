@@ -1,12 +1,17 @@
-import { CSSProperties, ReactElement, useMemo } from 'react';
-import { Tooltip } from 'antd';
-import { DownOutlined, EyeInvisibleOutlined, FunctionOutlined, LockOutlined, RightOutlined } from '@ant-design/icons';
+import { CSSProperties, ReactElement, useMemo, useRef } from 'react';
+import { Button, Dropdown, Tooltip } from 'antd';
+import type { MenuProps } from 'antd';
+import { DownOutlined, EllipsisOutlined, EyeInvisibleOutlined, FunctionOutlined, LockOutlined, RightOutlined } from '@ant-design/icons';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { isDefined } from '@/utils/nullables';
 import { highlightComponentOnCanvas } from './canvasBridge';
-import { highlightMatch } from './highlightMatch';
+import { ILayersDndContext } from './hooks/dndData';
 import { useIsSelected } from './hooks/useDesignerSelection';
+import { useLayerRowDnd } from './hooks/useLayerRowDnd';
 import { useRowComponent } from './hooks/useRowComponent';
+import { highlightMatch } from './highlightMatch';
+import { LayerDropIndicator } from './layerDropIndicator';
+import { isLayerMenuAction, LayerMenuAction } from './layerRowMenu';
 import { buildRowView } from './model/labels';
 import { ILayerRow, ILayersIndex } from './model/types';
 import { LAYER_INDENT, useStyles } from './styles/styles';
@@ -21,8 +26,13 @@ export interface ILayerRowSharedProps {
   activeId: string | undefined;
   hoverColor: string;
   highlightText: string;
+  menuOpenId: string | undefined;
+  dnd: ILayersDndContext;
   onRowClick: (rowId: string) => void;
   onToggle: (rowId: string, withSubtree: boolean) => void;
+  onMenuOpenChange: (rowId: string | undefined) => void;
+  onMenuAction: (rowId: string, action: LayerMenuAction) => void;
+  getMenuItems: (rowId: string) => NonNullable<MenuProps['items']>;
 }
 
 export type LayerRowProps = ILayerRowSharedProps & {
@@ -34,24 +44,33 @@ export type LayerRowProps = ILayerRowSharedProps & {
 /** DOM id of a row, for aria-activedescendant */
 export const getLayerRowDomId = (rowId: string): string => `layer-row-${rowId}`;
 
-export const LayerRow = ({ index, style, rows, layers, activeId, hoverColor, highlightText, onRowClick, onToggle }: LayerRowProps): ReactElement | null => {
+export const LayerRow = ({
+  index, style, rows, layers, activeId, hoverColor, highlightText, menuOpenId, dnd,
+  onRowClick, onToggle, onMenuOpenChange, onMenuAction, getMenuItems,
+}: LayerRowProps): ReactElement | null => {
   const designer = useFormDesigner();
   const { styles, cx } = useStyles();
+  const elementRef = useRef<HTMLDivElement>(null);
   const row = rows[index];
   const node = isDefined(row) ? layers.nodes.get(row.id) : undefined;
   const componentId = node?.kind === 'pane' ? node.ownerId ?? '' : node?.id ?? '';
   const component = useRowComponent(componentId);
   const isSelected = useIsSelected(node?.kind === 'component' ? node.id : '');
+  const dropState = useLayerRowDnd(elementRef, row?.id ?? '', dnd);
   const view = useMemo(
     () => (isDefined(node) && isDefined(component) ? buildRowView(node, component, designer.getComponentDefinition) : undefined),
     [node, component, designer],
   );
 
-  if (!isDefined(row) || !isDefined(view))
+  if (!isDefined(row) || !isDefined(node) || !isDefined(view))
     return null;
 
-  return (
+  const hasMenu = node.kind === 'component';
+  const isMenuOpen = hasMenu && menuOpenId === row.id;
+
+  const rowElement = (
     <div
+      ref={elementRef}
       id={getLayerRowDomId(row.id)}
       role="treeitem"
       aria-level={row.depth + 1}
@@ -93,6 +112,42 @@ export const LayerRow = ({ index, style, rows, layers, activeId, hoverColor, hig
           <Tooltip title={HIDDEN_TOOLTIP}><EyeInvisibleOutlined aria-label="Hidden" /></Tooltip>
         )}
       </span>
+      {hasMenu && (
+        <Button
+          type="text"
+          size="small"
+          className={styles.menuButton}
+          aria-label="Row actions"
+          icon={<EllipsisOutlined />}
+          onClick={(event) => {
+            event.stopPropagation();
+            onMenuOpenChange(row.id);
+          }}
+        />
+      )}
+      {dropState !== null && <LayerDropIndicator drop={dropState} depth={row.depth} />}
     </div>
+  );
+
+  if (!hasMenu)
+    return rowElement;
+
+  return (
+    <Dropdown
+      open={isMenuOpen}
+      autoFocus
+      trigger={['contextMenu']}
+      onOpenChange={(open) => onMenuOpenChange(open ? row.id : undefined)}
+      menu={{
+        items: isMenuOpen ? getMenuItems(row.id) : [],
+        onClick: ({ key, domEvent }) => {
+          domEvent.stopPropagation();
+          if (isLayerMenuAction(key))
+            onMenuAction(row.id, key);
+        },
+      }}
+    >
+      {rowElement}
+    </Dropdown>
   );
 };
