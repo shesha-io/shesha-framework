@@ -957,9 +957,9 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
         shaForm: instance,
         queryStringGetter: getQueryParams,
       });
-      const allConstants = makeObservableProxy<IApplicationContext<Values>>(accessors);
-
       const expressionExecuter: ExpressionExecuter = (expression, data) => {
+        // per-call proxy so call arguments (e.g. `data` snapshots) don't override accessors for later scripts
+        const allConstants = makeObservableProxy<IApplicationContext<Values>>(accessors);
         if (isDefined(data) && typeof (data) === 'object')
           allConstants.setAdditionalData(data);
 
