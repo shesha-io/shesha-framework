@@ -220,3 +220,130 @@ describe('LayersPanel: errors', () => {
     expect(screen.queryByRole('tree')).not.toBeInTheDocument();
   });
 });
+
+describe('LayersPanel: row menu and keyboard moves', () => {
+  it('moves a component down from the right-click menu and announces it', async () => {
+    const designer = createTestDesigner(sampleForm());
+    renderPanel(designer);
+    fireEvent.click(screen.getByLabelText('Expand all'));
+
+    fireEvent.contextMenu(screen.getByText('Email'));
+    fireEvent.click(await screen.findByText('Move Down'));
+
+    expect(designer.state.formFlatMarkup.componentRelations['pane-a']).toEqual(['phone', 'email']);
+    expect(designer.selectedComponentId).toBe('email');
+    await waitFor(() => expect(document.body).toHaveTextContent('Moved Email into Details, position 2 of 2.'));
+  });
+
+  it('disables Move up for the first child and says why', async () => {
+    renderPanel(createTestDesigner(sampleForm()));
+    fireEvent.click(screen.getByLabelText('Expand all'));
+
+    fireEvent.contextMenu(screen.getByText('Email'));
+
+    const moveUp = await screen.findByText('Move Up');
+    expect(moveUp.closest('[role="menuitem"]')).toHaveAttribute('aria-disabled', 'true');
+    expect(moveUp.closest('[title]')).toHaveAttribute('title', 'Already at the top');
+  });
+
+  it('opens the menu from the row button and duplicates', async () => {
+    const designer = createTestDesigner(sampleForm());
+    renderPanel(designer);
+
+    fireEvent.click(within(rowOf('Save')).getByLabelText('Row actions'));
+    fireEvent.click(await screen.findByText('Duplicate'));
+
+    expect(designer.state.formFlatMarkup.componentRelations['root']).toHaveLength(5);
+  });
+
+  it('moves the selected component with Alt+Arrow keys', () => {
+    const designer = createTestDesigner(sampleForm());
+    renderPanel(designer);
+    act(() => designer.setSelectedComponent('email'));
+    const tree = screen.getByRole('tree');
+
+    fireEvent.keyDown(tree, { key: 'ArrowDown', altKey: true });
+
+    expect(designer.state.formFlatMarkup.componentRelations['pane-a']).toEqual(['phone', 'email']);
+  });
+});
+
+describe('LayersPanel: keys inside a row', () => {
+  it('leaves keys pressed on the row button to the button', () => {
+    renderPanel(createTestDesigner(sampleForm()));
+    const tree = screen.getByRole('tree');
+    fireEvent.focus(tree);
+    const before = tree.getAttribute('aria-activedescendant');
+
+    fireEvent.keyDown(within(rowOf('Save')).getByLabelText('Row actions'), { key: 'ArrowDown' });
+
+    expect(tree.getAttribute('aria-activedescendant')).toBe(before);
+  });
+
+  it('moves focus into the row menu when it is opened from the keyboard', async () => {
+    const designer = createTestDesigner(sampleForm());
+    renderPanel(designer);
+    act(() => designer.setSelectedComponent('save'));
+    const tree = screen.getByRole('tree');
+    fireEvent.focus(tree);
+
+    fireEvent.keyDown(tree, { key: 'F10', shiftKey: true });
+
+    const menu = await screen.findByRole('menu');
+    await waitFor(() => expect(menu.contains(document.activeElement)).toBe(true));
+  });
+});
+
+describe('LayersPanel: pointer and keyboard cursor', () => {
+  it('puts the keyboard cursor on the row that was pressed', () => {
+    renderPanel(createTestDesigner(sampleForm()));
+    const tree = screen.getByRole('tree');
+
+    fireEvent.mouseDown(rowOf('Panel'));
+    fireEvent.focus(tree);
+
+    expect(tree).toHaveAttribute('aria-activedescendant', 'layer-row-panel');
+  });
+});
+
+describe('LayersPanel: following the selection', () => {
+  const scrollTo = vi.fn();
+  beforeEach(() => Object.defineProperty(HTMLElement.prototype, 'scrollTo', { configurable: true, value: scrollTo }));
+  afterEach(() => {
+    scrollTo.mockClear();
+    Reflect.deleteProperty(HTMLElement.prototype, 'scrollTo');
+  });
+
+  it('scrolls to a selected component again after it moves', () => {
+    const designer = createTestDesigner(sampleForm());
+    renderPanel(designer);
+    act(() => designer.setSelectedComponent('email'));
+    const scrollsBefore = scrollTo.mock.calls.length;
+
+    fireEvent.keyDown(screen.getByRole('tree'), { key: 'ArrowDown', altKey: true });
+
+    expect(scrollTo.mock.calls.length).toBeGreaterThan(scrollsBefore);
+  });
+
+  it('does not scroll when a row is clicked, even when that selects another row', () => {
+    renderPanel(createTestDesigner(sampleForm()));
+    scrollTo.mockClear();
+
+    fireEvent.click(screen.getByText('Details'));
+
+    expect(scrollTo).not.toHaveBeenCalled();
+  });
+
+  it('scrolls back to the selection when the search is cleared', async () => {
+    renderPanel(createTestDesigner(sampleForm()));
+    const search = screen.getByPlaceholderText('Search layers');
+    fireEvent.change(search, { target: { value: 'city' } });
+    await waitFor(() => expect(rowLabels()).toContain('City'));
+    fireEvent.click(screen.getByText('City'));
+    scrollTo.mockClear();
+
+    fireEvent.keyDown(search, { key: 'Escape' });
+
+    await waitFor(() => expect(scrollTo).toHaveBeenCalled());
+  });
+});

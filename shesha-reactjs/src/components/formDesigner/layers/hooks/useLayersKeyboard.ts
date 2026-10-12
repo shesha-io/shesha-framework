@@ -38,6 +38,9 @@ export const useLayersKeyboard = (args: ILayersKeyboardArgs): ((event: KeyboardE
   const typeAhead = useRef({ text: '', time: 0 });
 
   return useCallback((event: KeyboardEvent<HTMLElement>) => {
+    // keys pressed inside a row (its button, its menu) belong to that control
+    if (event.target !== event.currentTarget)
+      return;
     const { rows, activeId, setActiveId, getLabel, onSelect, setExpanded, scrollToRow, onOpenMenu, onMoveSelected } = latest.current;
     if (rows.length === 0)
       return;
@@ -45,6 +48,14 @@ export const useLayersKeyboard = (args: ILayersKeyboardArgs): ((event: KeyboardE
       event.preventDefault();
       event.stopPropagation();
     };
+    // moves the selected component, so it works wherever the cursor is
+    if (event.altKey && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
+      if (isDefined(onMoveSelected)) {
+        handled();
+        onMoveSelected(event.key === 'ArrowUp' ? 'up' : 'down');
+      }
+      return;
+    }
     const focusRow = (rowIndex: number): void => {
       const clamped = Math.min(Math.max(rowIndex, 0), rows.length - 1);
       const target = rows[clamped];
@@ -65,13 +76,6 @@ export const useLayersKeyboard = (args: ILayersKeyboardArgs): ((event: KeyboardE
     if (!isDefined(current))
       return;
 
-    if (event.altKey && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
-      if (isDefined(onMoveSelected)) {
-        handled();
-        onMoveSelected(event.key === 'ArrowUp' ? 'up' : 'down');
-      }
-      return;
-    }
     if ((event.shiftKey && event.key === 'F10') || event.key === 'ContextMenu') {
       if (isDefined(onOpenMenu)) {
         handled();
