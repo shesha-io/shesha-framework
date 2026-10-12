@@ -158,6 +158,14 @@ const useFormDesignerSettingsPanelElement = (): HTMLDivElement | null => {
   return useSyncExternalStore(subscribe, getSnapshot, getSettingsPanelServerSnapshot);
 };
 
+/** The designer's structure version. Re-renders only when a container's list of children changes */
+const useFormDesignerStructureVersion = (): number => {
+  const formDesigner = useFormDesigner();
+  const subscribe = useCallback((onStoreChange: () => void) => formDesigner.subscribe('structure', onStoreChange), [formDesigner]);
+  const getSnapshot = useCallback(() => formDesigner.structureVersion, [formDesigner]);
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+};
+
 const useFormDesignerMarkup = (): IFlatComponentsStructure => {
   useFormDesignerSubscription('markup');
   return useFormDesigner().state.formFlatMarkup;
@@ -229,6 +237,7 @@ export {
   useFormDesignerSelectedComponentId,
   useFormDesignerSettings,
   useFormDesignerSettingsPanelElement,
+  useFormDesignerStructureVersion,
   useFormDesignerUndoRedo,
   useFormDesignerSettingsEditorVisible,
 };

@@ -94,6 +94,9 @@ type FormDesignerState = {
   formSettingsFormMarkup: FormMarkup;
 
   isFormSettingsVisible: boolean;
+
+  /** Increases by one whenever any container's list of children changes (add, delete, move, undo...), but not on property edits */
+  structureVersion: number;
 };
 
 type FormDesignerActions = {
