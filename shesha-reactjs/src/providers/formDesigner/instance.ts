@@ -33,6 +33,7 @@ import {
   IComponentDuplicatePayload,
   IComponentMovePayload,
   IComponentUpdatePayload,
+  IRevealRequest,
   IValidationResultsPayload,
   IFormDesignerInstance,
   IUpdateChildComponentsPayload,
@@ -45,6 +46,7 @@ import { haveRelationsChanged } from "./structure/relations";
 import { buildContainerOwnership, IContainerOwnership } from "./structure/containers";
 import { getComponentDisplayText } from "./structure/displayText";
 import { computeMove } from "./structure/moveComponent";
+import { getRevealPath } from "./structure/revealPath";
 import { IFormPersisterContext } from "../formPersisterProvider/contexts";
 import { ValidationCollector } from "../validator";
 import { IValidationCollector } from "../validator/interfaces";
@@ -830,6 +832,36 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     }
     return this.ownershipCache.ownership;
   };
+
+  revealRequest: IRevealRequest = { containerIds: [], opened: new Set<string>() };
+
+  reveal = (id: string): void => {
+    const containerIds = getRevealPath(this.state.formFlatMarkup, this.getContainerOwnership(), id);
+    this.revealRequest = { containerIds, opened: new Set<string>() };
+    this.notifySubscribers(['reveal']);
+  };
+
+  private mountedComponents = new Map<string, number>();
+
+  registerMountedComponent = (id: string): (() => void) => {
+    const count = this.mountedComponents.get(id) ?? 0;
+    this.mountedComponents.set(id, count + 1);
+    if (count === 0 && id === this.selectedComponentId)
+      this.notifySubscribers(['mounted']);
+
+    return () => {
+      const current = this.mountedComponents.get(id) ?? 0;
+      if (current > 1) {
+        this.mountedComponents.set(id, current - 1);
+        return;
+      }
+      this.mountedComponents.delete(id);
+      if (id === this.selectedComponentId)
+        this.notifySubscribers(['mounted']);
+    };
+  };
+
+  isComponentMounted = (id: string): boolean => this.mountedComponents.has(id);
 
   startDraggingNewItem = (): void => {
     this.hasDragged = true;
