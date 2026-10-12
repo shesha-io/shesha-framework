@@ -58,6 +58,7 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
 
         placeholder={props.placeholder}
         size={props.size}
+        style={props.style}
         className={props.className}
         popupClassName={props.popupClassName}
         selectRef={props.selectRef}
