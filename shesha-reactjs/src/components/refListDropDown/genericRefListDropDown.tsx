@@ -102,6 +102,11 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     return disabledValues ? result.map(disableValue) : result;
   }, [refList?.items, filter, wrapValue, value, disabledValues, disableValue, getOptionFromFetchedItem]);
 
+  const selectOptions = useMemo(
+    () => options.map(({ value: localValue, label, data, disabled }, index) => ({ key: `${localValue}-${index}`, value: localValue, label, data, disabled: disabled ?? false })),
+    [options],
+  );
+
   const handleChange: SelectProps['onChange'] = (_, option): void => {
     if (!isDefined(onChange))
       return;
@@ -189,7 +194,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
             )
             : undefined;
         }}
-        options={options.map(({ value: localValue, label, data, disabled }) => ({ value: localValue, label, data, disabled: disabled ?? false }))}
+        options={selectOptions}
       />
     );
   }
@@ -244,7 +249,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
           );
         },
       } : {})}
-      options={options.map(({ value: localValue, label, data, disabled }) => ({ value: localValue, label, data, disabled: disabled ?? false }))}
+      options={selectOptions}
     />
   );
 };
