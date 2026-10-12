@@ -102,7 +102,7 @@ namespace Shesha.Permissions
 
         private async Task SetCacheAsync(PermissionedObjectDto dto, CacheItemWrapper<PermissionedObjectDto> item = null)
         {
-            var parentKey = GetCacheKey(dto.Parent, dto.Type);
+            var parentKey = dto.Parent ?? "";
             var childKey = GetCacheKey(dto.Object, dto.Type);
             await _permissionedObjectsCache.SetAsync(childKey, item ?? new CacheItemWrapper<PermissionedObjectDto>(dto, dto));
             var cache = await _relationsCache.TryGetValueAsync(parentKey);
@@ -271,7 +271,7 @@ namespace Shesha.Permissions
                     return null;
 
                 var parent = !string.IsNullOrEmpty(dtoObj.Parent)
-                    ? await GetOrDefaultAsync(dtoObj.Parent, "")
+                    ? await GetOrDefaultAsync(dtoObj.Parent, dtoObj.Type)
                     : null;
                 dtoObj.InheritedAccess = RefListPermissionedAccess.Inherited;
 

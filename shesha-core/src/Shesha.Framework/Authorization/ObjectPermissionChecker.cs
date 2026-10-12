@@ -21,21 +21,18 @@ namespace Shesha.Authorization
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IShaPermissionChecker _permissionChecker;
         private readonly ILocalizationManager _localizationManager;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
         public ObjectPermissionChecker(
             IAuthorizationConfiguration authConfiguration,
             IPermissionedObjectManager permissionedObjectManager,
             IShaPermissionChecker permissionChecker,
-            ILocalizationManager localizationManager,
-            IUnitOfWorkManager unitOfWorkManager
+            ILocalizationManager localizationManager
         )
         {
             _authConfiguration = authConfiguration;
             _permissionedObjectManager = permissionedObjectManager;
             _permissionChecker = permissionChecker;
             _localizationManager = localizationManager;
-            _unitOfWorkManager = unitOfWorkManager;
         }
 
         [UnitOfWork]

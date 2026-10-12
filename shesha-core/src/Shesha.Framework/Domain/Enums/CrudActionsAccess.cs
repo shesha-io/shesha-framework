@@ -1,17 +1,13 @@
-﻿using Shesha.Domain.Attributes;
-using System;
-
-namespace Shesha.Domain.Enums
+﻿namespace Shesha.Domain.Enums
 {
     /// <summary>
     /// CRUD actions access type
     /// </summary>
-    [ReferenceList("CrudActionsAccess")]
-    [Flags]
     public enum CrudActionsAccess
     {
-        AnyAuthenticated = 1,
-        RequiresPermissions = 2,
-        AllowAnonymous = 3
+        Inherited = 2,
+        AnyAuthenticated = 2,
+        RequiresPermissions = 4,
+        AllowAnonymous = 5
     }
 }

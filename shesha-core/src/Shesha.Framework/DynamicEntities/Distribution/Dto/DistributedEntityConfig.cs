@@ -2,7 +2,6 @@
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Permissions;
-using System;
 using System.Collections.Generic;
 
 namespace Shesha.DynamicEntities.Distribution.Dto
@@ -39,21 +38,6 @@ namespace Shesha.DynamicEntities.Distribution.Dto
         public PermissionedObjectDto PermissionCreate { get; set; }
         public PermissionedObjectDto PermissionUpdate { get; set; }
         public PermissionedObjectDto PermissionDelete { get; set; }
-
-        /// <summary>
-        /// List of CRUD actions exposed by default application service
-        /// </summary>
-        public Int64 CrudActions { get; set; }
-
-        /// <summary>
-        /// Default CRUD actions access 
-        /// </summary>
-        public CrudActionsAccess CrudActionsAccess { get; set; }
-
-        /// <summary>
-        /// Permissions required to access CRUD actions
-        /// </summary>
-        public List<string> CrudActionsPermissions { get; set; } = new();
 
         /// <summary>
         /// Indicates that the entity is configurable

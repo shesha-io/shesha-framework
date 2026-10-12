@@ -5,7 +5,6 @@ using Shesha.Domain.Enums;
 using Shesha.Dto.Interfaces;
 using Shesha.Services;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -38,9 +37,6 @@ namespace Shesha.DynamicEntities.Dtos
 
         public bool GenerateAppService { get; set; }
 
-        public CrudActions CrudActions { get; set; }
-        public CrudActionsAccess CrudActionsAccess { get; set; }
-        public List<string> CrudActionsPermissions { get; set; }
         public bool IsConfigurable { get; set; }
 
         // From ConfigurationItem

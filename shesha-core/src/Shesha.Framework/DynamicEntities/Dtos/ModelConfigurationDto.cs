@@ -94,9 +94,9 @@ namespace Shesha.DynamicEntities.Dtos
                 return !GenerateAppService ||
                     Permission != null && Permission.Access == RefListPermissionedAccess.Disable ||
                     (PermissionGet != null && PermissionGet.Access == RefListPermissionedAccess.Disable &&
-                    PermissionGet != null && PermissionCreate.Access == RefListPermissionedAccess.Disable &&
-                    PermissionGet != null && PermissionUpdate.Access == RefListPermissionedAccess.Disable &&
-                    PermissionGet != null && PermissionDelete.Access == RefListPermissionedAccess.Disable);
+                    PermissionCreate != null && PermissionCreate.Access == RefListPermissionedAccess.Disable &&
+                    PermissionUpdate != null && PermissionUpdate.Access == RefListPermissionedAccess.Disable &&
+                    PermissionDelete != null && PermissionDelete.Access == RefListPermissionedAccess.Disable);
             }
         }
     }

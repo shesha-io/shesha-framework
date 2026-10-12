@@ -21,7 +21,7 @@ namespace Shesha.Domain
         {
             IsConfigurable = true,
             CrudActions = CrudActions.All,
-            CrudActionsAccess = CrudActionsAccess.AnyAuthenticated,
+            CrudActionsAccess = CrudActionsAccess.Inherited,
             CrudActionsPermissions = new string[] { },
         };
 
@@ -34,10 +34,6 @@ namespace Shesha.Domain
         public EntityCrudConfig()
         {
             
-        }
-        public EntityCrudConfig(CrudActions CrudActions, CrudActionsAccess CrudActionsAccess, string[] CrudActionsPermissions, bool IsConfigurable)
-        {
-                     
         }
 
         public EntityCrudConfig(EntityAttribute source)

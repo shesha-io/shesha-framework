@@ -3,7 +3,6 @@ using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
-using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
@@ -17,7 +16,6 @@ using Shesha.Permissions;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Shesha
@@ -45,7 +43,7 @@ namespace Shesha
         {
             var disabled = EntityCrudHelper.IsCrudActionDisabledByCode(typeof(TEntity), crudAction);
             if (disabled)
-                throw new UserFriendlyException((int)HttpStatusCode.NotFound, "Action disabled");
+                throw new EntityNotFoundException(L("NotFound") ?? "Not found");
         }
 
         private async Task CheckCrudActionPermissionsAsync(CrudAction crudAction)
@@ -136,6 +134,14 @@ namespace Shesha
             });
         }
 
+        [EntityAction(StandardEntityActions.Delete)]
+        public override async Task DeleteAsync(EntityDto<TPrimaryKey> input)
+        {
+            await EnsureCrudActionAvailableAsync(CrudAction.Delete);
+            CheckDeletePermission();
+            await base.DeleteAsync(input);
+        }
+
         private async Task<TEntity> InternalUpdateAsync(TDynamicDto input)
         {
             var entity = await Repository.GetAsync(input.Id);
@@ -165,9 +171,10 @@ namespace Shesha
         [ApiExplorerSettings(IgnoreApi = true)]
         public virtual async Task<GraphQLDataResult<TEntity>> UpdateGqlAsync(string properties, TDynamicDto input)
         {
+            await EnsureCrudActionAvailableAsync(CrudAction.Update);
             CheckUpdatePermission();
             var entity = await InternalUpdateAsync(input);
-            return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = entity.Id, Properties = properties });
+            return await InternalQueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = entity.Id, Properties = properties });
         }
 
         private async Task<TEntity> InternalCreateAsync(TCreateDynamicDto input)
@@ -201,9 +208,22 @@ namespace Shesha
         [ApiExplorerSettings(IgnoreApi = true)]
         public virtual async Task<GraphQLDataResult<TEntity>> CreateGqlAsync(string properties, TCreateDynamicDto input)
         {
-            CheckUpdatePermission();
+            await EnsureCrudActionAvailableAsync(CrudAction.Create);
+            CheckCreatePermission();
             var entity = await InternalCreateAsync(input);
-            return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = entity.Id, Properties = properties });
+            return await InternalQueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = entity.Id, Properties = properties });
+        }
+
+        public override async Task<GraphQLDataResult<TEntity>> QueryAsync(GetDynamicEntityInput<TPrimaryKey> input) 
+        {
+            await EnsureCrudActionAvailableAsync(CrudAction.Read);
+            return await base.QueryAsync(input);
+        }
+
+        public override async Task<GraphQLDataResult<PagedResultDto<TEntity>>> QueryAllAsync(PropsFilteredPagedAndSortedResultRequestDto input) 
+        { 
+            await EnsureCrudActionAvailableAsync(CrudAction.Read);
+            return await base.QueryAllAsync(input);
         }
     }
 

@@ -111,6 +111,7 @@ namespace Shesha.Configuration.Runtime
             dest.Namespace = src.Namespace;
             dest.DiscriminatorValue = src.DiscriminatorValue;
             dest.GenerateAppService = src.GenerateAppService;
+            dest.IsConfigurable = src.IsConfigurable;
 
             dest.Source = src.Source;
             dest.EntityConfigType = src.EntityConfigType;

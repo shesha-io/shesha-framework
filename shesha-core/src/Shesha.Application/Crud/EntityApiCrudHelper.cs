@@ -70,7 +70,7 @@ namespace Shesha
             
             var entityConfigManager = StaticContext.IocManager.Resolve<IModelConfigurationManager>();
             var model = await entityConfigManager.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name);
-            return !model.GenerateAppService;
+            return model != null && !model.GenerateAppService;
         }
 
         private static CrudAction? GetCrudAction(MethodInfo methodInfo)
