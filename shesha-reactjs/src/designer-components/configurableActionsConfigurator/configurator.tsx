@@ -7,9 +7,9 @@ import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { ActionSelect } from './actionSelect';
-import { ALL_STANDARD_CONSTANTS, useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
-import { SheshaConstants } from '@/utils/metadata/standardProperties';
+import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
+import { IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 
 const getActionFullName = (actionOwner: string, actionName: string): string => {
   return actionName
@@ -36,16 +36,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
   const { getActions, getConfigurableActionOrNull } = useConfigurableActionDispatcher();
   const actions = getActions();
 
-  const standardConstants = useMemo(
-    () => props.includeDynamicItem
-      ? [...ALL_STANDARD_CONSTANTS, SheshaConstants.dynamicItem]
-      : ALL_STANDARD_CONSTANTS,
-    [props.includeDynamicItem]
-  );
-  const availableConstants = useAvailableConstantsMetadata({
-    addGlobalConstants: true,
-    standardConstants,
-  });
+  const availableConstants = useAvailableStandardConstantsMetadata({ onBuild: props.onBuild });
 
   const formValues = useMemo<IActionFormModel>(() => {
     if (!value)
@@ -174,7 +165,7 @@ interface IConfigurableActionConfiguratorProps {
   readOnly?: boolean;
   exposedVariables?: ICodeExposedVariable[];
   allowedActions?: string[];
-  includeDynamicItem?: boolean;
+  onBuild?: (metaBuilder: IObjectMetadataBuilder) => void;
 }
 
 interface IActionFormModel extends Omit<IConfigurableActionConfiguration, 'actionOwner' | 'actionName'> {

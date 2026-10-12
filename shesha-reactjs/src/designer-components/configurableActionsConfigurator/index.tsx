@@ -8,6 +8,12 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { SheshaConstants } from '@/utils/metadata/standardProperties';
+import { IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
+
+const addDynamicItemConstant = (metaBuilder: IObjectMetadataBuilder) => {
+  metaBuilder.addStandard(SheshaConstants.dynamicItem);
+};
 
 const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableActionConfiguratorComponentProps> = {
   type: 'configurableActionConfigurator',
@@ -19,9 +25,11 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
 
     if (model.hidden) return null;
 
+    const onBuild = model?.includeDynamicItem ? addDynamicItemConstant : undefined;
+
     return (
       <Form.Item name={model.propertyName} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
-        <ConfigurableActionConfigurator allowedActions={model?.allowedActions} includeDynamicItem={model?.includeDynamicItem} editorConfig={model} level={1} readOnly={model.readOnly} label={model.label} description={model.description} />
+        <ConfigurableActionConfigurator allowedActions={model?.allowedActions} onBuild={onBuild} editorConfig={model} level={1} readOnly={model.readOnly} label={model.label} description={model.description} />
       </Form.Item>
     );
   },

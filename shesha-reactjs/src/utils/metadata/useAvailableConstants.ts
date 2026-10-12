@@ -164,14 +164,15 @@ export const useAvailableConstantsMetadata = ({ addGlobalConstants, onBuild, sta
         }
 
         return meta;
-    }, [addGlobalConstants, globalProps, standardConstants]);
+    }, [addGlobalConstants, globalProps, standardConstants, onBuild]);
 
     return response;
 };
 
-export const useAvailableStandardConstantsMetadata = (): IObjectMetadata => {
+export const useAvailableStandardConstantsMetadata = (args?: { onBuild?: (metaBuilder: IObjectMetadataBuilder) => void }): IObjectMetadata => {
     const availableConstants = useAvailableConstantsMetadata({
         addGlobalConstants: true,
+        onBuild: args?.onBuild,
     });
     return availableConstants;
 };
