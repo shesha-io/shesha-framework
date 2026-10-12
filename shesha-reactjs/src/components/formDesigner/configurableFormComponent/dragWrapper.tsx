@@ -7,6 +7,7 @@ import { useFormDesigner, useFormDesignerSelectedComponentId, useFormDesignerIsD
 import { FunctionOutlined } from '@ant-design/icons';
 import { isDefined } from '@/utils';
 import { COMPONENT_TYPE_ATTR } from '../dragDrop/dragChip';
+import { clearRowFromCanvas, highlightRowFromCanvas } from '../layers/canvasBridge';
 
 interface IDragWrapperProps {
   componentId: string;
@@ -14,7 +15,10 @@ interface IDragWrapperProps {
   className?: string | undefined;
 }
 
-/** Marks the wrapper element so nested wrappers can work out which one of them is the innermost under the cursor. */
+/**
+ * Marks the wrapper element so nested wrappers can work out which one of them is the innermost under the cursor.
+ * Its value is the component id, which the Layers panel uses to find the component on the canvas.
+ */
 const DRAG_WRAPPER_MARKER = 'data-sha-drag-wrapper';
 /** Width of the anchor, which is what keeps the tooltip clear of the cursor it sits next to. */
 const CURSOR_GAP = 14;
@@ -72,6 +76,7 @@ const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => {
       setAnchor(null);
       return;
     }
+    highlightRowFromCanvas(props.componentId);
     const shaComponent = target.closest('.sha-component-drag-handle');
     if (!isDefined(shaComponent)) return;
     const rect = shaComponent.getBoundingClientRect();
@@ -87,12 +92,13 @@ const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => {
     const nextTarget = event.relatedTarget instanceof Node ? event.relatedTarget : null;
     if (nextTarget !== null && event.currentTarget.contains(nextTarget)) return;
 
+    clearRowFromCanvas(props.componentId);
     setAnchor(null);
   };
 
   return (
     <div
-      {...{ [DRAG_WRAPPER_MARKER]: true, [COMPONENT_TYPE_ATTR]: componentModel.type }}
+      {...{ [DRAG_WRAPPER_MARKER]: props.componentId, [COMPONENT_TYPE_ATTR]: componentModel.type }}
       className={props.className}
       onClick={onClick}
       onMouseOver={onMouseOver}
