@@ -129,7 +129,7 @@ export const useAppContextRegistration = (): MetadataBuilderAction => {
     return action;
 };
 
-export const ALL_STANDARD_CONSTANTS = [
+const ALL_STANDARD_CONSTANTS = [
     SheshaConstants.globalState,
     SheshaConstants.setGlobalState,
     SheshaConstants.selectedRow,
