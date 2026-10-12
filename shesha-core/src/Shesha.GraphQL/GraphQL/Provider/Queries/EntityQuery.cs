@@ -390,8 +390,8 @@ from
         }
 
         /// <summary>
-        /// Returns false when any part of <paramref name="column"/> (dot notation, e.g. User.Username) is a property that is not mapped to the database (e.g. a computed property).
-        /// Unknown properties are not treated as not mapped, so they are reported by the query as before
+        /// Returns false when any part of <paramref name="column"/> (dot notation, e.g. User.Username) can't be mapped to the database:
+        /// the property is missing in the class, is not mapped (e.g. a computed property), or is an intermediate part that is not an entity reference
         /// </summary>
         private bool IsMappedSortColumn(string column)
         {
@@ -399,9 +399,9 @@ from
 
             var parts = column.Split('.');
             for (int i = 0; i < parts.Length; i++)
-            {
+            { 
                 if (!TryGetProperty(currentEntityConfig, parts[i], out var property))
-                    return true;
+                    return false;
 
                 // identifier is not included into the mapped properties
                 if (!property.IsMapped && property.PropertyInfo.Name != nameof(IEntity<TId>.Id))
@@ -411,7 +411,7 @@ from
                 if (i < parts.Length - 1)
                 {
                     if (property.GeneralType != GeneralDataType.EntityReference)
-                        return true;
+                        return false;
 
                     currentEntityConfig = _entityConfigStore.Get(property.PropertyInfo.PropertyType);
                 }
