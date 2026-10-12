@@ -28,7 +28,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": {
-        "_code": "return  !getSettingValue(data?.suppress) !== 'url';",
+        "_code": "return  getSettingValue(data?.suppress) !== true;",
         "_mode": "code",
         "_value": false
       },
@@ -252,7 +252,7 @@
               "parentId": "1p3PpY7RbUyx1NMV3e5PA",
               "hidden": {
                 "_mode": "code",
-                "_code": "    return data.permission.hardcoded === false;",
+                "_code": "    return data?.permission?.hardcoded === false;",
                 "_value": false
               },
               "isDynamic": false,
@@ -268,7 +268,7 @@
               "labelAlign": "right",
               "parentId": "1p3PpY7RbUyx1NMV3e5PA",
               "hidden": {
-                "_code": "return data.permission.hardcoded === true;",
+                "_code": "return data?.permission?.hardcoded === true;",
                 "_mode": "code",
                 "_value": false
               },

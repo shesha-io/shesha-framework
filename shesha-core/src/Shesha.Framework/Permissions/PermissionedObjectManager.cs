@@ -270,9 +270,11 @@ namespace Shesha.Permissions
                 if (!useHidden && dtoObj.Hidden)
                     return null;
 
-                var parent = !string.IsNullOrEmpty(dtoObj.Parent)
-                    ? await GetOrDefaultAsync(dtoObj.Parent, dtoObj.Type)
+                var parentType = GetParentType(dtoObj.Type);
+                var parent = !string.IsNullOrEmpty(dtoObj.Parent) && !string.IsNullOrWhiteSpace(parentType)
+                    ? await GetOrDefaultAsync(dtoObj.Parent, parentType)
                     : null;
+
                 dtoObj.InheritedAccess = RefListPermissionedAccess.Inherited;
 
                 // check parent
@@ -571,6 +573,19 @@ namespace Shesha.Permissions
                 .Where(x => x.ActualAccess == access)
                 .ToList();
             return forms;
+        }
+
+        private string GetParentType(string objectType) 
+        {
+            switch (objectType)
+            {
+                case ShaPermissionedObjectsTypes.EntityAction:
+                    return ShaPermissionedObjectsTypes.Entity;
+                case ShaPermissionedObjectsTypes.WebApiAction:
+                    return ShaPermissionedObjectsTypes.WebApi;
+                default:
+                    return null;
+            }            
         }
     }
 }

@@ -6,7 +6,7 @@
     public enum CrudActionsAccess
     {
         Inherited = 2,
-        AnyAuthenticated = 2,
+        AnyAuthenticated = 3,
         RequiresPermissions = 4,
         AllowAnonymous = 5
     }

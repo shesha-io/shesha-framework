@@ -92,6 +92,9 @@ namespace Shesha.Permission
                             var actionConfig = EntityCrudHelper.GetCodebasedCrudActionConfig(entityType, crudAction);
                             switch (actionConfig.CrudActionsAccess)
                             {
+                                case CrudActionsAccess.Inherited:
+                                    child.Access = RefListPermissionedAccess.Inherited;
+                                    break;
                                 case CrudActionsAccess.AllowAnonymous:
                                     child.Access = RefListPermissionedAccess.AllowAnonymous;
                                     break;
