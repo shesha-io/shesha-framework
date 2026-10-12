@@ -26,6 +26,7 @@ import { IStyleValue } from '@/providers';
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
 import { EMPTY_STYLE } from '@/styles/variables';
 import { useComponentApi } from '@/providers/componentApi/hooks';
+import { useFormDesignerReveal } from '@/providers/formDesigner';
 
 const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   styleGroup: 'common-containers',
@@ -60,6 +61,9 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
     }, [sourceModel]);
 
     const collapsedRef = useRef<ICollapseRef>(undefined);
+    const paneIds = useMemo(() => [model.header?.id, model.content?.id].filter(isDefined), [model.header?.id, model.content?.id]);
+    const openPanel = useCallback(() => collapsedRef.current?.setCollapsed(false), []);
+    useFormDesignerReveal(paneIds, openPanel);
     useComponentApi<PanelApi>({ model, typeName: 'PanelApi',
       properties: [{ name: 'isExpanded', getter: () => collapsedRef.current?.collapsed !== true, setter: (value) => collapsedRef.current?.setCollapsed(!value) }],
       api: { expand: () => collapsedRef.current?.setCollapsed(false), collapse: () => collapsedRef.current?.setCollapsed(true) },

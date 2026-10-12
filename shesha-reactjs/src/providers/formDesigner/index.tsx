@@ -166,6 +166,61 @@ const useFormDesignerStructureVersion = (): number => {
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 };
 
+/**
+ * For components that show one pane at a time (Tabs, Wizard, Collapsible Panel): opens a pane when the designer
+ * asks for it to be revealed, e.g. after a component inside it was selected in the Layers panel.
+ * Pass a stable `open` (useCallback). Does nothing outside the form designer.
+ */
+const useFormDesignerReveal = (containerIds: readonly string[], open: (containerId: string) => void): void => {
+  const formDesigner = useFormDesignerOrUndefined();
+  const idsKey = containerIds.join('\n');
+
+  useEffect(() => {
+    if (!isDefined(formDesigner))
+      return undefined;
+    const ids = idsKey.split('\n');
+    let timer: number | undefined;
+    // On the next tick, so the component's own mount effects (Tabs selecting its default tab) can't undo it,
+    // and StrictMode's extra unmount cancels it instead of using up the request
+    const apply = (): void => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        const request = formDesigner.revealRequest;
+        request.containerIds
+          .filter((id) => ids.includes(id) && !request.opened.has(id))
+          .forEach((id) => {
+            request.opened.add(id);
+            open(id);
+          });
+      }, 0);
+    };
+    apply();
+    const unsubscribe = formDesigner.subscribe('reveal', apply);
+    return () => {
+      window.clearTimeout(timer);
+      unsubscribe();
+    };
+  }, [formDesigner, idsKey, open]);
+};
+
+/** False while the selected component isn't drawn on the canvas (e.g. it sits in a closed tab) */
+const useFormDesignerIsSelectedMounted = (): boolean => {
+  const formDesigner = useFormDesigner();
+  const subscribe = useCallback((onStoreChange: () => void) => {
+    const unsubscribeMounted = formDesigner.subscribe('mounted', onStoreChange);
+    const unsubscribeSelection = formDesigner.subscribe('selection', onStoreChange);
+    return () => {
+      unsubscribeMounted();
+      unsubscribeSelection();
+    };
+  }, [formDesigner]);
+  const getSnapshot = useCallback(() => {
+    const id = formDesigner.selectedComponentId;
+    return !isDefined(id) || formDesigner.isComponentMounted(id);
+  }, [formDesigner]);
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+};
+
 const useFormDesignerMarkup = (): IFlatComponentsStructure => {
   useFormDesignerSubscription('markup');
   return useFormDesigner().state.formFlatMarkup;
@@ -226,10 +281,12 @@ const useFormDesignerUndoRedo = (): IUndoable => {
 
 export {
   FormDesignerProvider,
+  useFormDesignerReveal,
   useFormDesigner,
   useFormDesignerFormMode,
   useFormDesignerIsDebug,
   useFormDesignerIsModified,
+  useFormDesignerIsSelectedMounted,
   useFormDesignerMarkup,
   useFormDesignerOrUndefined,
   useFormDesignerReadOnly,

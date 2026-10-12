@@ -18,7 +18,7 @@ export interface IDataSource {
 export type IComponentSettingsEditorsCache = Record<string, ISettingsFormFactory>;
 
 export type FormDesignerSubscription = (designer: IFormDesignerInstance) => void;
-export type FormDesignerSubscriptionType = 'markup' | 'selection' | 'readonly' | 'mode' | 'debug' | 'history' | 'data-modified' | 'settings-tab' | 'settings' | 'structure';
+export type FormDesignerSubscriptionType = 'markup' | 'selection' | 'readonly' | 'mode' | 'debug' | 'history' | 'data-modified' | 'settings-tab' | 'settings' | 'structure' | 'reveal' | 'mounted';
 
 interface AddComponentPayloadBase {
   index: number;

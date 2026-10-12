@@ -1,6 +1,6 @@
 import { IApiContext, IToolboxComponent } from "@/interfaces";
 import { IComponentModelProps, IConfigurableFormComponent, UnwrapCodeEvaluators } from "@/providers";
-import { memo, FC, useMemo } from "react";
+import { memo, FC, useEffect, useMemo } from "react";
 import { useStyles } from "../styles/styles";
 import { isDefined } from "@/utils/nullables";
 import { isPropertySettings } from "@/designer-components/_settings/utils/utils";
@@ -39,7 +39,8 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
 }) => {
   const { styles } = useStyles();
   const { styles: shaComponentStyles } = useShaComponentStyles({ componentModel, toolboxComponent, isDesigner: true });
-  const { readOnly } = useFormDesigner();
+  const { readOnly, registerMountedComponent } = useFormDesigner();
+  useEffect(() => registerMountedComponent(componentModel.id), [registerMountedComponent, componentModel.id]);
   const settingsPanelElement = useFormDesignerSettingsPanelElement();
   const getToolboxComponent = useFormDesignerComponentGetter();
   const validationResults = useComponentValidationResults(componentModel.id);
