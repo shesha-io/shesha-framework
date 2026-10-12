@@ -102,7 +102,6 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     return disabledValues ? result.map(disableValue) : result;
   }, [refList?.items, filter, wrapValue, value, disabledValues, disableValue, getOptionFromFetchedItem]);
 
-  // explicit key: duplicate itemValues ghost rows otherwise
   const selectOptions = useMemo(
     () => options.map(({ value: localValue, label, data, disabled }, index) => ({ key: `${localValue}-${index}`, value: localValue, label, data, disabled: disabled ?? false })),
     [options],
