@@ -35,13 +35,6 @@ export const getDisabledAndReadOnly = (mode: Exclude<EditMode, 'inherited'>): ID
           ? { disabled: false, readOnly: true }
           : { disabled: true, readOnly: false };
 
-/**
- * Returns true if the edit mode is explicitly set to read only.
- * Buttons can't be read only, so they use it to disable themselves. Inherited read only state is ignored to keep buttons working on read only forms
- */
-export const isReadOnlyEditMode = (mode: EditMode | undefined): boolean =>
-  isDefined(mode) && mode !== 'inherited' && getDisabledAndReadOnly(mode).readOnly === true;
-
 export const updateApiModel = <T extends object>(func: (f: (prev: T) => T) => void, value: Partial<T>): void => {
   func((prev) => removeUndefinedProps(deepMergeValues(prev, value)) as T);
 };
@@ -140,7 +133,7 @@ export const updateApi = (args: IUpdateApiArgs): void => {
           // keep boolean values as is so that false makes the component disabled, the same way as getDisabledAndReadOnly does
           return isDefined(value) && value !== 'inherited'
             ? { ...prev, editMode: value, ...getDisabledAndReadOnly(value) }
-            : { ...prev, editMode: value };
+            : { ...prev, editMode: value, readOnly: undefined, disabled: undefined };
         }),
       } as ComponentApiProperty<BaseComponentApi>,
     ],
