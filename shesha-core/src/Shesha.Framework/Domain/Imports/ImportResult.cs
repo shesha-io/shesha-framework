@@ -1,7 +1,4 @@
-﻿using Abp.Domain.Entities;
-using Abp.Domain.Entities.Auditing;
-using Shesha.Domain;
-using Shesha.Domain.Attributes;
+﻿using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -12,6 +9,7 @@ namespace Shesha.Domain
     /// Import session
     /// </summary>
     [Discriminator]
+    [Entity(CrudActions = CrudActions.Read, IsConfigurable = false)]
     public class ImportResult : FullPowerEntity
     {
         /// <summary>

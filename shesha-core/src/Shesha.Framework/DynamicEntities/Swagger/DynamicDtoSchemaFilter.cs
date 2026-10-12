@@ -29,6 +29,10 @@ namespace Shesha.DynamicEntities.Swagger
 
         public void Apply(OpenApiSchema schema, SchemaFilterContext context)
         {
+            // Type is already registered under some schema id
+            if (context.SchemaRepository.TryLookupByType(context.Type, out var existing))
+                return;
+
             var isProxy = typeof(IDynamicDtoProxy).IsAssignableFrom(context.Type);
             var isGeneric = context.Type.IsGenericType;
 

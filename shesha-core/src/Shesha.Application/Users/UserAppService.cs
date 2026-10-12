@@ -6,10 +6,8 @@ using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.IdentityFramework;
 using Abp.Linq.Extensions;
-using Abp.Localization;
 using Abp.Runtime.Session;
 using Abp.UI;
-using Abp.Web.Models.AbpUserConfiguration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
@@ -22,7 +20,6 @@ using Shesha.Extensions;
 using Shesha.NHibernate.EntityHistory;
 using Shesha.Otp;
 using Shesha.Otp.Dto;
-using Shesha.Roles.Dto;
 using Shesha.SecurityQuestions.Dto;
 using Shesha.Users.Dto;
 using Shesha.Utilities;
@@ -41,7 +38,6 @@ namespace Shesha.Users
     {
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
-        private readonly IRepository<Role> _roleRepository;
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IAbpSession _abpSession;
@@ -56,7 +52,6 @@ namespace Shesha.Users
             IRepository<User, long> repository,
             UserManager userManager,
             RoleManager roleManager,
-            IRepository<Role> roleRepository,
             IRepository<Person, Guid> personRepository,
             IPasswordHasher<User> passwordHasher,
             IAbpSession abpSession,
@@ -69,7 +64,6 @@ namespace Shesha.Users
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _roleRepository = roleRepository;
             _personRepository = personRepository;
             _passwordHasher = passwordHasher;
             _abpSession = abpSession;
@@ -160,21 +154,6 @@ namespace Shesha.Users
             CheckErrors(await _userManager.UpdateAsync(user));
 
             return true;
-        }
-
-        public async Task<ListResultDto<RoleDto>> GetRolesAsync()
-        {
-            var roles = await _roleRepository.GetAllListAsync();
-            return new ListResultDto<RoleDto>(ObjectMapper.Map<List<RoleDto>>(roles));
-        }
-
-        public async Task ChangeLanguageAsync(ChangeUserLanguageDto input)
-        {
-            await SettingManager.ChangeSettingForUserAsync(
-                AbpSession.ToUserIdentifier(),
-                LocalizationSettingNames.DefaultLanguage,
-                input.LanguageName
-            );
         }
 
         protected override User MapToEntity(CreateUserDto createInput)
@@ -700,30 +679,6 @@ namespace Shesha.Users
 
             return true;
         }
-
-        public virtual async Task<AbpUserAuthConfigDto> GetUserAuthConfigAsync()
-        {
-            var config = new AbpUserAuthConfigDto();
-
-            var allPermissionNames = PermissionManager.GetAllPermissions(false).Select(p => p.Name).ToList();
-            var grantedPermissionNames = new List<string>();
-
-            if (AbpSession.UserId.HasValue)
-            {
-                foreach (var permissionName in allPermissionNames)
-                {
-                    if (await PermissionChecker.IsGrantedAsync(permissionName))
-                    {
-                        grantedPermissionNames.Add(permissionName);
-                    }
-                }
-            }
-
-            config.AllPermissions = allPermissionNames.ToDictionary(permissionName => permissionName, permissionName => "true");
-            config.GrantedPermissions = grantedPermissionNames.ToDictionary(permissionName => permissionName, permissionName => "true");
-
-            return config;
-        } 
     }
 }
 

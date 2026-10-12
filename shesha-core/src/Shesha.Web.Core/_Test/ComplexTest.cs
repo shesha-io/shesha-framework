@@ -46,7 +46,7 @@ namespace Shesha.Test
     }
 
     [Table("Test_ComplexTest")]
-    [Entity(GenerateApplicationService = GenerateApplicationServiceState.AlwaysGenerateApplicationService)]
+    [Entity(CrudActions = CrudActions.All, IsConfigurable = false)]
     public class ComplexTest : Entity<Guid>// where T : JsonEntity
     {
         [Audited]

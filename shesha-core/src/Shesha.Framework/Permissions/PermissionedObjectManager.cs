@@ -12,16 +12,15 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Shesha.Application.Services;
 using Shesha.Cache;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.Permissions.Cache;
-using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Module = Shesha.Domain.ConfigurationItems.Module;
 
 namespace Shesha.Permissions
 {
@@ -42,6 +41,17 @@ namespace Shesha.Permissions
                 { "Delete", "Delete" },
             };
 
+        public static string CrudAction2Method(CrudAction action) 
+        { 
+            return action switch
+            {
+                CrudAction.Create => "Create",
+                CrudAction.Update => "Update",
+                CrudAction.Delete => "Delete",
+                CrudAction.Read => "Get",
+                _ => ""
+            };
+        }
 
         private readonly IRepository<PermissionedObject, Guid> _permissionedObjectRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
@@ -74,7 +84,7 @@ namespace Shesha.Permissions
 
         private string GetCacheKey(string objectName, string objectType)
         {
-            return $"{objectName}"; // TODO: AS review using Permissioned objects types _{objectType}";
+            return $"{objectName}_{objectType}";
         }
 
         public virtual string GetObjectType(Type type)
@@ -92,7 +102,7 @@ namespace Shesha.Permissions
 
         private async Task SetCacheAsync(PermissionedObjectDto dto, CacheItemWrapper<PermissionedObjectDto> item = null)
         {
-            var parentKey = GetCacheKey(dto.Parent, dto.Type);
+            var parentKey = dto.Parent ?? "";
             var childKey = GetCacheKey(dto.Object, dto.Type);
             await _permissionedObjectsCache.SetAsync(childKey, item ?? new CacheItemWrapper<PermissionedObjectDto>(dto, dto));
             var cache = await _relationsCache.TryGetValueAsync(parentKey);
@@ -236,14 +246,12 @@ namespace Shesha.Permissions
                     }
                 }
             }
-            var dtoObj = new PermissionedObjectDto()
+            var dtoObj = new PermissionedObjectDto(module)
             {
                 Object = objectName,
                 Name = objectName,
                 Parent = inh,
                 Access = RefListPermissionedAccess.Inherited,
-                Module = module?.Name,
-                ModuleId = module?.Id,
                 Type = objectType
             };
 
@@ -262,9 +270,11 @@ namespace Shesha.Permissions
                 if (!useHidden && dtoObj.Hidden)
                     return null;
 
-                var parent = !string.IsNullOrEmpty(dtoObj.Parent)
-                    ? await GetOrDefaultAsync(dtoObj.Parent, "")
+                var parentType = GetParentType(dtoObj.Type);
+                var parent = !string.IsNullOrEmpty(dtoObj.Parent) && !string.IsNullOrWhiteSpace(parentType)
+                    ? await GetOrDefaultAsync(dtoObj.Parent, parentType)
                     : null;
+
                 dtoObj.InheritedAccess = RefListPermissionedAccess.Inherited;
 
                 // check parent
@@ -472,30 +482,37 @@ namespace Shesha.Permissions
 
         public async Task<bool> IsActionDescriptorEnabledAsync(ActionDescriptor actionDescriptor)
         {
-            if (actionDescriptor is ControllerActionDescriptor descriptor)
+            var po = await GetPermissionedObjectAsync(actionDescriptor);
+            return po == null || po.ActualAccess != RefListPermissionedAccess.Disable;
+        }
+
+        private async Task<PermissionedObjectDto> GetPermissionedObjectAsync(ActionDescriptor actionDescriptor) 
+        {
+            if (actionDescriptor is not ControllerActionDescriptor descriptor)
+                return null;
+
+            var methodName = descriptor.MethodInfo.Name.RemovePostfix("Async");
+
+            if (AppServiceHelper.IsDynamicAppService(descriptor.ControllerTypeInfo))
             {
-                var methodName = descriptor.MethodInfo.Name.RemovePostfix("Async");
-                // remove disabled endpoints
-                var method = PermissionedObjectManager.CrudMethods.ContainsKey(methodName)
-                    ? PermissionedObjectManager.CrudMethods[methodName]
+                // Dynamic app service                
+                // convert to known method name
+                var method = CrudMethods.ContainsKey(methodName)
+                    ? CrudMethods[methodName]
                     : null;
+                if (string.IsNullOrWhiteSpace(method))
+                    return null;
 
-                var obj = "";
-                if (descriptor.ControllerTypeInfo.ImplementsGenericInterface(typeof(IEntityAppService<,>)) && !method.IsNullOrEmpty())
-                {
-                    // entity service
-                    var genericInterface = descriptor.ControllerTypeInfo.GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault();
-                    var entityType = genericInterface.GenericTypeArguments.FirstOrDefault();
-                    obj = $"{entityType.FullName}@{method}";
-                }
-                else
-                    // api service
-                    obj = $"{descriptor.ControllerTypeInfo.FullName}@{methodName}";
 
-                var permission = await GetOrDefaultAsync(obj, ShaPermissionedObjectsTypes.WebApiAction);
-                return permission == null || permission.ActualAccess != RefListPermissionedAccess.Disable;
+                var entityType = AppServiceHelper.GetEntityTypeFromDynamicAppService(descriptor.ControllerTypeInfo);
+                var obj = $"{entityType.FullName}@{method}";
+                return await GetOrDefaultAsync(obj, ShaPermissionedObjectsTypes.EntityAction);
+            } else 
+            {
+                // all other APIs
+                var obj = $"{descriptor.ControllerTypeInfo.FullName}@{methodName}";
+                return await GetOrDefaultAsync(obj, ShaPermissionedObjectsTypes.WebApiAction);
             }
-            return true;
         }
 
         private void RemoveCache(string key)
@@ -556,6 +573,19 @@ namespace Shesha.Permissions
                 .Where(x => x.ActualAccess == access)
                 .ToList();
             return forms;
+        }
+
+        private string GetParentType(string objectType) 
+        {
+            switch (objectType)
+            {
+                case ShaPermissionedObjectsTypes.EntityAction:
+                    return ShaPermissionedObjectsTypes.Entity;
+                case ShaPermissionedObjectsTypes.WebApiAction:
+                    return ShaPermissionedObjectsTypes.WebApi;
+                default:
+                    return null;
+            }            
         }
     }
 }

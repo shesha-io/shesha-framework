@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Shesha.Application.Services;
@@ -22,6 +23,7 @@ namespace Shesha.DynamicEntities
     public class DynamicEntityControllerFeatureProvider : IApplicationFeatureProvider<ControllerFeature>
     {
         private readonly IIocManager _iocManager;
+        public ILogger Logger { get; set; } = NullLogger.Instance;
 
         public DynamicEntityControllerFeatureProvider(IIocManager iocManager)
         {
@@ -57,7 +59,10 @@ namespace Shesha.DynamicEntities
                     try
                     {
                         var entityType = entityConfigurationStore.Get($"{entityConfig.FullClassName}")?.EntityType;
-                        if (entityType == null) 
+                        if (entityType == null)
+                            continue;
+
+                        if (EntityCrudHelper.IsApisTotallyDisabledInCode(entityType))
                             continue;
 
                         var appServiceType = DynamicAppServiceHelper.MakeApplicationServiceType(entityType);
@@ -77,7 +82,9 @@ namespace Shesha.DynamicEntities
                             existingControllerNames.Add(controllerName);
                         }
                     }
-                    catch { }
+                    catch(Exception e) {
+                        Logger.Error($"Failed to generate controller for entity {entityConfig.FullClassName}", e);
+                    }
                 }
                 uow.Complete();
             }

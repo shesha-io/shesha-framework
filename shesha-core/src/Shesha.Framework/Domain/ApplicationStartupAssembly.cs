@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,6 +13,7 @@ namespace Shesha.Domain
     /// </summary>
     [SnakeCaseNaming]
     [Table("frwk_application_startup_assemblies")]
+    [Entity(CrudActions = CrudActions.Read, IsConfigurable = false)]
     public class ApplicationStartupAssembly : Entity<Guid>
     {
         public virtual string FileName { get; set; }

@@ -6,6 +6,7 @@ using Shesha.Bootstrappers;
 using Shesha.Controllers.Dtos;
 using Shesha.DynamicEntities;
 using Shesha.Elmah;
+using Shesha.Permission;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Settings;
@@ -40,9 +41,18 @@ namespace Shesha.Maintenance
 
         [HttpPost]
         [DontWrapResult]
-        public async Task BootstrapEntityConfigsAsync()
+        public async Task BootstrapEntityConfigsAsync(bool processUnchanged = false)
         {
             var bootstrapper = IocManager.Resolve<EntityConfigsBootstrapper>();
+            bootstrapper.ProcessUnchanged = processUnchanged;
+            await bootstrapper.ProcessAsync();
+        }
+
+        [HttpPost]
+        [DontWrapResult]
+        public async Task BootstrapPermissionedObjectsAsync()
+        {
+            var bootstrapper = IocManager.Resolve<PermissionedObjectsBootstrapper>();
             await bootstrapper.ProcessAsync();
         }
 

@@ -18,6 +18,7 @@ using Shesha.Configuration;
 using Shesha.Configuration.Startup;
 using Shesha.Elmah;
 using Shesha.Languages;
+using Shesha.Modules;
 using Shesha.NHibernate;
 using Shesha.Scheduler;
 using System;
@@ -37,8 +38,15 @@ namespace Shesha
         typeof(SheshaApplicationModule),
         typeof(AbpFluentValidationModule)
      )]
-    public class SheshaWebCoreModule : AbpModule
+    public class SheshaWebCoreModule: SheshaModule
     {
+        public const string ModuleName = "Shesha.Web";
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
+        {
+            FriendlyName = "Shesha Web (empty test project)",
+            Publisher = "Boxfusion",
+        };
+
         private readonly IWebHostEnvironment _env;
         private readonly IConfigurationRoot _appConfiguration;
 

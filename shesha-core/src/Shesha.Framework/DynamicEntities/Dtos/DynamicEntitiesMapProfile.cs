@@ -63,15 +63,12 @@ namespace Shesha.DynamicEntities.Dtos
                 .ForMember(e => e.EntityType, c => c.MapFrom(e => e.EntityType))
                 .ForMember(e => e.EntityModule, c => c.MapFrom(e => e.EntityModule))
                 ;
-            
-            //CreateMap<PropertyMetadataDto, ModelPropertyDto>();            
         }
 
         private bool AllowConfigureAppService(EntityConfig entityConfig)
         {
-            var attr = StaticContext.IocManager.Resolve<EntityConfigurationStore>().GetOrNull(entityConfig.FullClassName)?
-                .EntityType?.GetAttribute<EntityAttribute>();
-            return attr == null || attr.GenerateApplicationService == GenerateApplicationServiceState.UseConfiguration;
+            var attr = StaticContext.IocManager.Resolve<EntityConfigurationStore>().GetOrNull(entityConfig.FullClassName)?.EntityType?.GetAttribute<EntityAttribute>();
+            return attr == null || attr.IsConfigurable;
         }
     }
 

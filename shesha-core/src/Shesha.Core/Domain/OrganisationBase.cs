@@ -1,18 +1,19 @@
-﻿using System;
+﻿using Abp.Auditing;
+using Abp.Domain.Entities;
+using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
+using Shesha.DynamicEntities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Auditing;
-using Abp.Domain.Entities;
-using Abp.Domain.Entities.Auditing;
-using Shesha.Domain.Attributes;
-using Shesha.DynamicEntities;
 
 namespace Shesha.Domain
 {
     [Table("Core_Organisations")]
     [Discriminator]
+    [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
     public class OrganisationBase : FullAuditedEntityWithExternalSync<Guid>, IMayHaveTenant
     {
         [EntityDisplayName]

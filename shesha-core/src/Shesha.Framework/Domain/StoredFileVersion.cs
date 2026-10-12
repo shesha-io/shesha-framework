@@ -1,15 +1,16 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
     /// <summary>
     /// Version of the <see cref="StoredFile"/>
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Framework.StoredFileVersion", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Framework.StoredFileVersion", CrudActions = CrudActions.None, IsConfigurable = false)]
     public class StoredFileVersion : FullAuditedEntity<Guid>, IMayHaveTenant
     {
         /// <summary>

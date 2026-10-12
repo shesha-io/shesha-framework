@@ -7,7 +7,7 @@ using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Framework.PermissionedObject", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Framework.PermissionedObject", CrudActions = CrudActions.None, IsConfigurable = false)]
     public class PermissionedObject : FullAuditedEntity<Guid>
     {
         /// <summary>

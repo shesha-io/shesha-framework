@@ -1,5 +1,4 @@
-﻿using Abp.Authorization;
-using Abp.Domain.Repositories;
+﻿using Abp.Domain.Repositories;
 using Shesha.Authorization;
 using Shesha.DeviceRegistrations.Dto;
 using Shesha.Domain;

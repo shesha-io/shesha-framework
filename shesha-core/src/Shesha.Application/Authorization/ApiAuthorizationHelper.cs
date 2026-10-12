@@ -6,9 +6,10 @@ using Abp.Dependency;
 using Abp.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Application.Services;
 using Shesha.Configuration.Security;
 using Shesha.Domain.Enums;
-using Shesha.Extensions;
+using Shesha.DynamicEntities;
 using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Utilities;
@@ -55,7 +56,7 @@ namespace Shesha.Authorization
             var typeName = type.FullName;
             var methodName = methodInfo.Name.RemovePostfix("Async");
 
-            var isCrud = type.IsSheshaDynamicCrudAppService();
+            var isCrud = AppServiceHelper.IsDynamicAppService(type);
             if (isCrud && PermissionedObjectManager.CrudMethods.ContainsKey(methodName))
                 return;
 

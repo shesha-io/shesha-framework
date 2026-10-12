@@ -73,6 +73,8 @@ namespace Shesha.DynamicEntities.Distribution
                 Namespace = entityConfig.Namespace,
                 DiscriminatorValue = entityConfig.DiscriminatorValue,
                 GenerateAppService = entityConfig.GenerateAppService,
+                IsConfigurable = entityConfig.IsConfigurable,
+
                 Source = entityConfig.Source,
                 EntityConfigType = entityConfig.EntityConfigType,
                 PropertiesMD5 = entityConfig.HardcodedPropertiesMD5,

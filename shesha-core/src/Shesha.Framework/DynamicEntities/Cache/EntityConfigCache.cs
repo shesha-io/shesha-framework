@@ -27,7 +27,7 @@ namespace Shesha.DynamicEntities.Cache
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IObjectMapper _mapper;
         private readonly ITypeFinder _typeFinder;
-        private readonly ITypedCache<string, EntityConfigCacheItem> _propertyCache;
+        private readonly ITypedCache<string, EntityConfigCacheItem> _configCache;
 
         public EntityConfigCache(
             IRepository<EntityProperty, Guid> propertyRepository,
@@ -43,10 +43,10 @@ namespace Shesha.DynamicEntities.Cache
             _unitOfWorkManager = unitOfWorkManager;
             _mapper = mapper;
             _typeFinder = typeFinder;
-            _propertyCache = entityConfigPropertyCacheHolder.Cache;
+            _configCache = entityConfigPropertyCacheHolder.Cache;
         }
 
-        private string GetPropertiesCacheKey(Type entityType)
+        private string GetConfigCacheKey(Type entityType)
         {
             return GetCacheKey(entityType.Namespace, entityType.Name);
         }
@@ -85,7 +85,7 @@ namespace Shesha.DynamicEntities.Cache
 
         public async Task<EntityConfigDto> GetEntityConfigAsync(string entityType, bool raiseException = false)
         {
-            var item = await _propertyCache.GetAsync(entityType, async (entityType) =>
+            var item = await _configCache.GetAsync(entityType, async (entityType) =>
             {
                 var eType = _typeFinder.Find(x => x.FullName == entityType).FirstOrDefault();
                 if (eType == null && raiseException)
@@ -98,8 +98,8 @@ namespace Shesha.DynamicEntities.Cache
 
         public async Task<EntityConfigDto> GetEntityConfigAsync(Type entityType)
         {
-            var key = GetPropertiesCacheKey(entityType);
-            var item = await _propertyCache.GetAsync(key, async (key) =>
+            var key = GetConfigCacheKey(entityType);
+            var item = await _configCache.GetAsync(key, async (key) =>
             {
                 var item = await FetchConfigAsync(entityType);
                 return item;
@@ -110,7 +110,7 @@ namespace Shesha.DynamicEntities.Cache
 
         public async Task<List<EntityPropertyDto>> GetEntityPropertiesAsync(string entityType, bool raiseException = false)
         {
-            var item = await _propertyCache.GetAsync(entityType, async (entityType) =>
+            var item = await _configCache.GetAsync(entityType, async (entityType) =>
             {
                 var eType = _typeFinder.Find(x => x.FullName == entityType).FirstOrDefault();
                 if (eType == null && raiseException)
@@ -122,8 +122,8 @@ namespace Shesha.DynamicEntities.Cache
 
         public async Task<List<EntityPropertyDto>> GetEntityPropertiesAsync(Type entityType)
         {
-            var key = GetPropertiesCacheKey(entityType);
-            var item = await _propertyCache.GetAsync(key, async (key) =>
+            var key = GetConfigCacheKey(entityType);
+            var item = await _configCache.GetAsync(key, async (key) =>
             {
                 var item = await FetchConfigAsync(entityType);
                 return item;
@@ -136,7 +136,7 @@ namespace Shesha.DynamicEntities.Cache
             if (eventData.Entity?.EntityConfig == null)
                 return;
 
-            _propertyCache.Remove(GetCacheKey(eventData.Entity.EntityConfig));
+            _configCache.Remove(GetCacheKey(eventData.Entity.EntityConfig));
         }
 
         public void HandleEvent(EntityChangingEventData<EntityConfig> eventData)
@@ -144,13 +144,13 @@ namespace Shesha.DynamicEntities.Cache
             var conf = _configReprository.GetAll().FirstOrDefault(x => x.Id == eventData.Entity.Id);
             if (conf != null)
             {
-                _propertyCache.Remove(GetCacheKey(conf));
+                _configCache.Remove(GetCacheKey(conf));
             };
         }
 
         public void HandleEvent(EntityChangedEventData<EntityConfig> eventData)
         {
-            _propertyCache.Remove(GetCacheKey(eventData.Entity));
+            _configCache.Remove(GetCacheKey(eventData.Entity));
         }
     }
 }

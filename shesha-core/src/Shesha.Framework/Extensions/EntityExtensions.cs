@@ -7,6 +7,7 @@ using FluentMigrator.Infrastructure.Extensions;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Interfaces;
 using Shesha.EntityHistory;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -589,7 +590,7 @@ namespace Shesha.Extensions
         {
             var provider = StaticContext.IocManager.Resolve<IEntityTypeProvider>();
             return provider.GetEntityType(entity);
-        }        
+        }
     }
 #nullable restore
 }

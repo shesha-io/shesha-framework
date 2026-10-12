@@ -1,9 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Abp.Domain.Entities.Auditing;
+using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
 {
+    [Entity(CrudActions = CrudActions.Read, IsConfigurable = false)]
     public class NotificationMessageAttachment : FullAuditedEntity<Guid>
     {
         /// <summary>
