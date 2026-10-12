@@ -252,7 +252,7 @@
               "parentId": "1p3PpY7RbUyx1NMV3e5PA",
               "hidden": {
                 "_mode": "code",
-                "_code": "    return data?.permission?.hardcoded === false;",
+                "_code": "    return data?.permission?.hardcoded !== true;",
                 "_value": false
               },
               "isDynamic": false,
@@ -428,7 +428,7 @@
                   "tabType": "line",
                   "settingsValidationErrors": [],
                   "hidden": {
-                    "_code": "    return !data.generateAppService;",
+                    "_code": "    return !data?.generateAppService;",
                     "_mode": "code",
                     "_value": false
                   },

@@ -35,9 +35,6 @@ namespace Shesha.Swagger
                     if (AppServiceHelper.IsDynamicAppService(service))
                     {
                         var entityType = AppServiceHelper.GetEntityTypeFromDynamicAppService(service);
-                        if (entityType.Name.Contains("ReferencedError")) 
-                        { 
-                        }
 
                         // If CRUD can't be enabled by configuration - skip DB read
                         if (EntityCrudHelper.IsApisTotallyDisabledInCode(entityType))
