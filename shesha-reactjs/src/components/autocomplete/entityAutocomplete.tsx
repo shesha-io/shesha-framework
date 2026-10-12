@@ -26,7 +26,7 @@ export const EntityAutocomplete = <TValue = unknown>(props: EntityAutocompletePr
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
   const permanentFilter = useFormEvaluatedFilter({ filter: props.filter, metadataAccessor: propertyMetadataAccessor });
 
-  const displayPropName = props.displayPropName ?? "_displayName";
+  const displayPropName = !isNullOrWhiteSpace(props.displayPropName) ? props.displayPropName : "_displayName";
   // custom list url may not support sorting - keep the stored sorting only
   const sorting = useMemo(() => isNullOrWhiteSpace(dataSourceUrl)
     ? getSortingOrDefault(props.sorting, displayPropName)

@@ -16,7 +16,7 @@ import { getIdOrUndefined } from "@/utils/entity";
 import { extractErrorInfo } from "@/utils/errors";
 import { callApiEndpoint } from "@/utils/fetchers";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
-import { camelcaseDotNotation, getNumberOrUndefined } from "@/utils/string";
+import { camelcaseDotNotationKeepUnderscores, getNumberOrUndefined } from "@/utils/string";
 import FileSaver from "file-saver";
 import { FC, PropsWithChildren, useMemo } from "react";
 import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetListDataPayload, isDataColumn, ITableDataFetchColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
@@ -106,7 +106,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
       sorting: isNonEmptyArray(payload.sorting)
         ? payload.sorting
           .filter((s) => Boolean(s.id))
-          .map((s) => camelcaseDotNotation(s.id) + ((s.desc ?? false) ? ' desc' : ''))
+          .map((s) => camelcaseDotNotationKeepUnderscores(s.id) + ((s.desc ?? false) ? ' desc' : ''))
           .join(',')
         : undefined,
       filter: payload.filter,
