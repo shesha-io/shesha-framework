@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Authorization
 {
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method | AttributeTargets.Class)]
     public class SheshaAuthorizeAttribute: Attribute
     {
 

@@ -13,6 +13,8 @@ using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.GraphQL.Mvc;
 using Shesha.Permissions;
+using Shesha.Permissions.Entity;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -72,9 +74,10 @@ namespace Shesha
             await EnsureCrudActionAvailableAsync(CrudAction.Read);
             CheckGetPermission();
 
+            var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>(); 
             var entity = await Repository.GetAsync(input.Id);
-
-            return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
+            var permissionedProxy = permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity);
+            return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(permissionedProxy.NotNull(), new DynamicMappingSettings()
             {
                 UseDtoForEntityReferences = true
             });
@@ -86,6 +89,7 @@ namespace Shesha
             await EnsureCrudActionAvailableAsync(CrudAction.Read);
             CheckGetAllPermission();
 
+            var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>(); 
             var query = CreateFilteredQuery(input);
 
             var totalCount = await AsyncQueryableExecuter.CountAsync(query);
@@ -98,7 +102,8 @@ namespace Shesha
             var list = new List<TDynamicDto>();
             foreach (var entity in entities)
             {
-                list.Add(await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
+                var permissionedProxy = permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity);
+                list.Add(await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(permissionedProxy, new DynamicMappingSettings()
                 {
                     UseDtoForEntityReferences = true
                 }));
@@ -115,8 +120,10 @@ namespace Shesha
         {
             await EnsureCrudActionAvailableAsync(CrudAction.Create);
             CheckCreatePermission();
+            var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var entity = await InternalCreateAsync(input);
-            return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
+            var permissionedProxy = permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity);
+            return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(permissionedProxy, new DynamicMappingSettings()
             {
                 UseDtoForEntityReferences = true
             });
@@ -127,8 +134,10 @@ namespace Shesha
         {
             await EnsureCrudActionAvailableAsync(CrudAction.Update);
             CheckUpdatePermission();
+            var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var entity = await InternalUpdateAsync(input);
-            return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
+            var permissionedProxy = permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity);
+            return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(permissionedProxy, new DynamicMappingSettings()
             {
                 UseDtoForEntityReferences = true
             });

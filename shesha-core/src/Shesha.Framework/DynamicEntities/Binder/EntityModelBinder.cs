@@ -4,6 +4,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Reflection;
+using Castle.MicroKernel.Registration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shesha.AutoMapper.Dto;
@@ -18,6 +19,7 @@ using Shesha.JsonEntities;
 using Shesha.JsonEntities.Proxy;
 using Shesha.JsonLogic;
 using Shesha.Metadata;
+using Shesha.Permissions.Entity;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
@@ -45,6 +47,7 @@ namespace Shesha.DynamicEntities.Binder
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IObjectValidatorManager _objectValidatorManager;
         private readonly IModelConfigurationManager _modelConfigurationManager;
+        private readonly IPermissionedEntityProvider _permissionedEntityProvider;
 
         public EntityModelBinder(
             IDynamicRepository dynamicRepository,
@@ -54,7 +57,8 @@ namespace Shesha.DynamicEntities.Binder
             ITypeFinder typeFinder,
             IEntityConfigurationStore entityConfigurationStore,
             IObjectValidatorManager propertyValidatorManager,
-            ModelConfigurationManager modelConfigurationManager
+            ModelConfigurationManager modelConfigurationManager,
+            IPermissionedEntityProvider permissionedEntityProvider
             )
         {
             _dynamicRepository = dynamicRepository;
@@ -65,6 +69,7 @@ namespace Shesha.DynamicEntities.Binder
             _entityConfigurationStore = entityConfigurationStore;
             _objectValidatorManager = propertyValidatorManager;
             _modelConfigurationManager = modelConfigurationManager;
+            _permissionedEntityProvider = permissionedEntityProvider;
         }
 
         private List<JProperty> ExcludeFrameworkFields(List<JProperty> query)
@@ -103,6 +108,7 @@ namespace Shesha.DynamicEntities.Binder
 
             var config = await _modelConfigurationManager.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name);
 
+            var prevLocalValidationResult = context.LocalValidationResult;
             context.LocalValidationResult = new List<ValidationResult>();
 
             var formFieldsInternal = formFields;
@@ -125,6 +131,12 @@ namespace Shesha.DynamicEntities.Binder
                 var property = properties.FirstOrDefault(x => !x.IsReadOnly() && x.Name.ToCamelCase() == mprop);
                 if (property != null)
                 {
+                    if (!_permissionedEntityProvider.IsPropertyGranted(property))
+                    {
+                        context.LocalValidationResult.Add(new ValidationResult(($"You don't have permission to change '{property.Name}' property.")));
+                        continue;
+                    }
+
                     if (property.PropertyType.IsEntity())
                     {
                         var cascadeAttr = property.GetCustomAttribute<CascadeUpdateRulesAttribute>()
@@ -178,6 +190,12 @@ namespace Shesha.DynamicEntities.Binder
 
                         if (jName != "id" && _metadataProvider.IsFrameworkRelatedProperty(property))
                             continue;
+
+                        if (!_permissionedEntityProvider.IsPropertyGranted(property))
+                        {
+                            context.LocalValidationResult.Add(new ValidationResult(($"You don't have permission to change '{property.Name}' property.")));
+                            continue;
+                        }
 
                         var propType = _metadataProvider.GetDataType(property);
 
@@ -427,7 +445,9 @@ namespace Shesha.DynamicEntities.Binder
 
             context.ValidationResult.AddRange(context.LocalValidationResult);
 
-            return !context.LocalValidationResult.Any();
+            var res = !context.LocalValidationResult.Any();
+            context.LocalValidationResult = prevLocalValidationResult;
+            return res;
         }
 
         private async Task PerformEntityReferenceAsync(

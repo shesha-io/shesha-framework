@@ -54,6 +54,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 Id = form.Id,
                 Name = form.Name,
                 ModuleName = form.Module?.Name,
+                FrontEndApplication = form.Application?.AppKey,
                 ItemType = form.ItemType,
 
                 Label = form.Label,

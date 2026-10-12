@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace Shesha.GraphQL.Middleware
@@ -12,5 +13,7 @@ namespace Shesha.GraphQL.Middleware
         /// Current user
         /// </summary>
         public ClaimsPrincipal User { get; set; }
+
+        public Func<string?, bool> IsGranted { get; set; } = (string? s) => true;
     }
 }
