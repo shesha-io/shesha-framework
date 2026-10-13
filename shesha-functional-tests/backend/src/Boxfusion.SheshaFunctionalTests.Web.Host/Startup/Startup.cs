@@ -258,7 +258,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				});
 				
 			});
-			services.Replace(ServiceDescriptor.Transient<ISwaggerProvider, CachingSwaggerProvider>());
+			services.Replace(ServiceDescriptor.Transient<IAsyncSwaggerProvider, CachingSwaggerProvider>());
 
 			services.AddApiVersioning(options =>
 			{
