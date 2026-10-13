@@ -227,7 +227,7 @@ const SubFormWithMetadataProvider: FC<PropsWithChildren<ISubForWithMetadataProvi
     formInstance: parentFormApi.formInstance,
     formMode: parentFormApi.mode,
     data: isDefined(parentFormApi.data) && !isNullOrWhiteSpace(props.propertyName)
-      ? (parentFormApi.data as Record<string, unknown>)[props.propertyName] as object
+      ? (parentFormApi.data as Record<string, unknown>)[props.propertyName.split('.').at(-1) ?? ""] as object
       : {},
     defaultApiEndpoints: parentFormApi.defaultApiEndpoints,
     context: {},
