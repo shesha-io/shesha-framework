@@ -1,4 +1,4 @@
-import { FC, FocusEvent, KeyboardEvent, MouseEvent, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { ClipboardEvent, FC, FocusEvent, KeyboardEvent, MouseEvent, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { App, Button, theme, Tooltip } from 'antd';
 import { MinusSquareOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import { announce, cleanup as cleanupAnnouncements } from '@atlaskit/pragmatic-drag-and-drop-live-region';
@@ -6,9 +6,11 @@ import { List, useListCallbackRef } from 'react-window';
 import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { useFormDesigner } from '@/providers/formDesigner';
 import type { IComponentMovePayload } from '@/providers/formDesigner/contexts';
+import type { IPasteSelection } from '@/providers/formDesigner/clipboard';
 import { useFormPersisterIfAvailable } from '@/providers/formPersisterProvider';
 import { isDefined } from '@/utils/nullables';
 import { SearchBox } from '../toolboxSearchBox';
+import { useComponentClipboard } from '../clipboard/useComponentClipboard';
 import { flashRow, LAYER_ROW_ID_ATTRIBUTE } from './canvasBridge';
 import { useAvailableHeight } from './hooks/useAvailableHeight';
 import { useCanvasScroll } from './hooks/useCanvasScroll';
@@ -19,7 +21,7 @@ import { useLayersData } from './hooks/useLayersData';
 import { useLayersDragAndDrop } from './hooks/useLayersDragAndDrop';
 import { useLayersKeyboard } from './hooks/useLayersKeyboard';
 import { getLayerRowDomId, ILayerRowSharedProps, LayerRow } from './layerRow';
-import { buildRowMenuItems, LayerMenuAction } from './layerRowMenu';
+import { buildRowMenuItems, hasRowMenu, LayerMenuAction } from './layerRowMenu';
 import { getExpandedStorageKey } from './model/expanded';
 import { getLayerLabel } from './model/labels';
 import { describeMove, getMoveDownAction, getMoveOutAction, getMoveUpAction } from './model/rowActions';
@@ -32,6 +34,7 @@ const LayersPanelContent: FC = () => {
   const { token } = theme.useToken();
   const { message } = App.useApp();
   const designer = useFormDesigner();
+  const clipboard = useComponentClipboard();
   const layers = useLayersData();
   const persister = useFormPersisterIfAvailable();
   const expandedState = useExpandedState(layers.index, getExpandedStorageKey(persister?.formId));
@@ -109,8 +112,28 @@ const LayersPanelContent: FC = () => {
     announce(description);
   }, [designer, follow, message, selectRow]);
 
+  /** A pane row pastes into that pane; a component row uses the component */
+  const pasteSelectionFor = useCallback((rowId: string): IPasteSelection =>
+    (layers.index.nodes.get(rowId)?.kind === 'pane' ? { containerId: rowId } : { componentId: rowId }), [layers.index]);
+
   const runMenuAction = useCallback((rowId: string, action: LayerMenuAction): void => {
     changeMenu(undefined);
+    if (action === 'copy' || action === 'cut') {
+      void clipboard.copyToClipboard(rowId, action === 'cut');
+      return;
+    }
+    if (action === 'paste-after' || action === 'paste-inside') {
+      void clipboard.pasteFromClipboard(pasteSelectionFor(rowId), action === 'paste-after' ? 'after' : 'inside');
+      return;
+    }
+    if (action === 'copy-settings') {
+      void clipboard.copySettings(rowId);
+      return;
+    }
+    if (action === 'paste-settings') {
+      void clipboard.pasteSettings(rowId);
+      return;
+    }
     if (action === 'duplicate') {
       designer.duplicateComponent({ componentId: rowId });
       return;
@@ -127,7 +150,7 @@ const LayersPanelContent: FC = () => {
         : getMoveOutAction(markup, designer.getContainerOwnership(), rowId);
     if (state.enabled)
       performMove(state.payload);
-  }, [changeMenu, designer, performMove]);
+  }, [changeMenu, clipboard, designer, pasteSelectionFor, performMove]);
 
   const moveSelected = useCallback((direction: 'up' | 'down'): void => {
     const componentId = designer.selectedComponentId;
@@ -139,15 +162,42 @@ const LayersPanelContent: FC = () => {
       performMove(state.payload);
   }, [designer, performMove]);
 
-  const getMenuItems = useCallback(
-    (rowId: string) => buildRowMenuItems(designer.state.formFlatMarkup, designer.getContainerOwnership(), rowId),
-    [designer],
-  );
+  const getMenuItems = useCallback((rowId: string) => {
+    const node = layers.index.nodes.get(rowId);
+    return isDefined(node) ? buildRowMenuItems(designer.state.formFlatMarkup, designer.getContainerOwnership(), node) : [];
+  }, [designer, layers.index]);
 
   const openMenu = useCallback((rowId: string): void => {
-    if (layers.index.nodes.get(rowId)?.kind === 'component')
+    const node = layers.index.nodes.get(rowId);
+    if (isDefined(node) && hasRowMenu(node))
       setMenuOpenId(rowId);
   }, [layers.index]);
+
+  // With the tree focused, Ctrl+C, X and V work on the row under the keyboard cursor, so a tab row can take a paste.
+  // Copying a tab, step or column row copies the component it belongs to
+  const onTreeCopy = useCallback((event: ClipboardEvent<HTMLElement>): void => {
+    const node = isDefined(activeId) ? layers.index.nodes.get(activeId) : undefined;
+    const componentId = node?.kind === 'pane' ? node.ownerId : node?.id;
+    const text = isDefined(componentId) ? clipboard.getCopyText(componentId) : undefined;
+    if (!isDefined(componentId) || !isDefined(text))
+      return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.clipboardData.setData('text/plain', text);
+    clipboard.finishCopy(componentId, event.type === 'cut');
+  }, [activeId, clipboard, layers.index]);
+
+  const pasteAfter = useRef(false);
+  const onTreePaste = useCallback((event: ClipboardEvent<HTMLElement>): void => {
+    const mode = pasteAfter.current ? 'after' : 'auto';
+    pasteAfter.current = false;
+    if (!isDefined(activeId))
+      return;
+    if (clipboard.paste(event.clipboardData.getData('text/plain'), pasteSelectionFor(activeId), mode)) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, [activeId, clipboard, pasteSelectionFor]);
 
   const dnd = useLayersDragAndDrop({ listElement: list?.element ?? null, layers, rows, expandedState, dragEnabled: !isDefined(search), performMove });
 
@@ -171,6 +221,13 @@ const LayersPanelContent: FC = () => {
     onOpenMenu: openMenu,
     onMoveSelected: moveSelected,
   });
+
+  const onTreeKeyDownWithPaste = useCallback((event: KeyboardEvent<HTMLElement>): void => {
+    // the paste event doesn't say whether Shift was held
+    if ((event.ctrlKey || event.metaKey) && event.code === 'KeyV')
+      pasteAfter.current = event.shiftKey;
+    onTreeKeyDown(event);
+  }, [onTreeKeyDown]);
 
   /**
    * Focus lands on the row the keyboard cursor was on, else the selected row, else the first row. Keyboard focus also
@@ -244,7 +301,10 @@ const LayersPanelContent: FC = () => {
         aria-label="Form layers"
         aria-activedescendant={isDefined(activeId) ? getLayerRowDomId(activeId) : undefined}
         tabIndex={0}
-        onKeyDown={onTreeKeyDown}
+        onKeyDown={onTreeKeyDownWithPaste}
+        onCopy={onTreeCopy}
+        onCut={onTreeCopy}
+        onPaste={onTreePaste}
         onFocus={onTreeFocus}
         onMouseDown={onTreeMouseDown}
         listRef={setList}

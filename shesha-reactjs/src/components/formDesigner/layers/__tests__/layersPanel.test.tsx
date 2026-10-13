@@ -8,7 +8,7 @@ vi.mock('@/providers/formDesigner/formValidator', async (importOriginal) => {
   return { ...actual, FormValidator: FormValidatorStub };
 });
 
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { App } from 'antd';
 import { designerWrapper } from '@/providers/formDesigner/__tests__/designerWrapper';
 import { createTestDesigner } from '@/providers/formDesigner/__tests__/testDesigner';
@@ -32,6 +32,7 @@ beforeAll(() => {
 });
 
 afterEach(() => {
+  cleanup(); // unmount before clearing the page, or portals (messages, menus) are already gone
   highlightRowFromCanvas(null);
   document.body.innerHTML = '';
   window.localStorage.clear();
@@ -406,5 +407,69 @@ describe('LayersPanel: following the selection', () => {
 
     expect(tree).toHaveAttribute('aria-activedescendant', 'layer-row-save');
     expect(scrollTo).not.toHaveBeenCalled();
+  });
+});
+
+describe('LayersPanel: copy and paste', () => {
+  let clipboardText = '';
+  beforeEach(() => {
+    clipboardText = '';
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: (value: string) => {
+          clipboardText = value;
+          return Promise.resolve();
+        },
+        readText: () => Promise.resolve(clipboardText),
+      },
+    });
+  });
+
+  it('copies a component from its row menu and pastes it into a tab from the tab row', async () => {
+    const designer = createTestDesigner(sampleForm());
+    renderPanel(designer);
+
+    fireEvent.contextMenu(screen.getByText('City'));
+    fireEvent.click(await screen.findByText('Copy'));
+    await waitFor(() => expect(clipboardText).toContain('"form-components"'));
+
+    fireEvent.contextMenu(screen.getByText('Address'));
+    fireEvent.click(await screen.findByText('Paste Inside'));
+
+    await waitFor(() => expect(designer.state.formFlatMarkup.componentRelations['pane-b']).toHaveLength(1));
+  });
+
+  it('pastes into the tab row under the keyboard cursor with Ctrl+V', () => {
+    const designer = createTestDesigner(sampleForm());
+    renderPanel(designer);
+    const tree = screen.getByRole('tree');
+    fireEvent.focus(tree);
+    fireEvent.keyDown(tree, { key: 'ArrowDown' });
+    fireEvent.keyDown(tree, { key: 'ArrowDown' });
+    expect(tree).toHaveAttribute('aria-activedescendant', 'layer-row-pane-b');
+    const text = JSON.stringify({ shesha: 'form-components', version: 1, kind: 'components', components: [{ id: 'n', type: 'textField', label: 'New' }] });
+
+    fireEvent.paste(tree, { clipboardData: { getData: () => text } });
+
+    expect(designer.state.formFlatMarkup.componentRelations['pane-b']).toHaveLength(1);
+  });
+
+  it('copies and cuts the row under the keyboard cursor, not the selected component', () => {
+    const designer = createTestDesigner(sampleForm());
+    renderPanel(designer);
+    act(() => designer.setSelectedComponent('save'));
+    const tree = screen.getByRole('tree');
+    fireEvent.focus(tree);
+    fireEvent.keyDown(tree, { key: 'Home' });
+    expect(tree).toHaveAttribute('aria-activedescendant', 'layer-row-tabs1');
+    let copied = '';
+    const clipboardData = { getData: () => copied, setData: (_type: string, value: string) => (copied = value) };
+
+    fireEvent.copy(tree, { clipboardData });
+    expect(copied).toContain('"mainTabs"');
+
+    fireEvent.cut(tree, { clipboardData });
+    expect(designer.state.formFlatMarkup.componentRelations['root']).toEqual(['panel', 'link1', 'save']);
   });
 });

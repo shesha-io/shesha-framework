@@ -11,7 +11,7 @@ import { useLayerRowDnd } from './hooks/useLayerRowDnd';
 import { useRowComponent } from './hooks/useRowComponent';
 import { highlightMatch } from './highlightMatch';
 import { LayerDropIndicator } from './layerDropIndicator';
-import { isLayerMenuAction, LayerMenuAction } from './layerRowMenu';
+import { hasRowMenu, isLayerMenuAction, LayerMenuAction } from './layerRowMenu';
 import { buildRowView } from './model/labels';
 import { ILayerRow, ILayersIndex } from './model/types';
 import { LAYER_INDENT, useStyles } from './styles/styles';
@@ -65,7 +65,7 @@ export const LayerRow = ({
   if (!isDefined(row) || !isDefined(node) || !isDefined(view))
     return null;
 
-  const hasMenu = node.kind === 'component';
+  const hasMenu = hasRowMenu(node);
   const isMenuOpen = hasMenu && menuOpenId === row.id;
 
   const rowElement = (
