@@ -199,6 +199,19 @@ export const camelcaseDotNotation = (str: string): string =>
     .map((s) => camelcase(s))
     .join('.');
 
+/**
+ * Convert string to camelCase keeping leading underscores of each part (e.g. `_displayName`),
+ * {@link camelcaseDotNotation} trims them
+ */
+export const camelcaseDotNotationKeepUnderscores = (str: string): string =>
+  str
+    .split('.')
+    .map((s) => {
+      const prefix = /^_*/.exec(s)?.[0] ?? '';
+      return prefix + camelcase(s.substring(prefix.length));
+    })
+    .join('.');
+
 export const capitalizeFirstLetter = (str: string): string => {
   if (isNullOrWhiteSpace(str))
     return str;
