@@ -6,6 +6,7 @@ import { Item } from '@/components/modelConfigurator/propertiesEditor/renderer-n
 import { ModelItemProperties } from '@/components/modelConfigurator/propertiesEditor/renderer-new/modelItemProperties';
 import { IMetadataEditorProps } from './interfaces';
 import { ListEditorRenderer } from '@/components/listEditorRenderer';
+import { useStyles } from '@/components/listEditorRenderer/styles/styles';
 
 type ItemType = IModelItem;
 
@@ -13,6 +14,7 @@ export type IMetadataEditorModalProps = IMetadataEditorProps;
 
 export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onChange, readOnly }) => {
   const [selectedItem, setSelectedItem] = useState<ItemType>();
+  const { styles } = useStyles();
 
   const onSelectionChange = (item: ItemType | undefined): void => {
     setSelectedItem(item);
@@ -39,6 +41,9 @@ export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onCh
       sidebarProps={{
         title: 'Properties',
         content: <ModelItemProperties item={selectedItem} onChange={onItemUpdate} />,
+        // ModelItemProperties' JSON markup isn't a settings form (the flag would add a JS toggle to every
+        // field), so it stays on antd's light algorithm and needs a light surface.
+        className: styles.propsPanelLight,
       }}
     >
       <ListEditor<ItemType>

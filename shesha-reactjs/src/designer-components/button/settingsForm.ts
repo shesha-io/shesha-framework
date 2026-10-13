@@ -54,7 +54,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
               .addPropertyRouter({ id: styleRouter3Id, componentName: 'propertyRouter3', label: 'Property router3', labelAlign: 'right',
                 propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
                 components: fbf(styleRouter3Id)
-                  .addSettingsInput({ propertyName: 'buttonType', label: 'Style', validate: { required: true }, inputType: 'dropdown', dropdownOptions: buttonTypes })
+                  .addSettingsInput({ propertyName: 'buttonType', label: 'Style', validate: { required: true }, inputType: 'dropdown', dropdownOptions: buttonTypes, width: 120 })
                   .stdFontPanel()
                   .stdDimensionsPanel()
                   .stdBorderPanel(removeStyleRouter !== true)

@@ -79,6 +79,13 @@ export type IComponentSettingsFormFactory<TModel extends IConfigurableFormCompon
 
 export type SettingsFormMarkupFactoryArgs = FormMarkupFactoryArgs & {
   removeStyleRouter?: boolean;
+  /**
+   * When true, style panels that are normally hidden/shown based on the component's own mode or
+   * type (e.g. a dropdown's Tag Style panel, only shown when Display Style is Tags) are always
+   * visible instead. Used by the theme editor's Component Defaults panel, where every style the
+   * component can expose should be editable regardless of which mode happens to be selected.
+   */
+  forceVisible?: boolean;
 };
 export type SettingsFormMarkupFactory = FormMarkupFactory<SettingsFormMarkupFactoryArgs>;
 
@@ -113,12 +120,53 @@ export type ToolboxComponentAsTemplate = {
 
 export type StyleGroups = 'common' | 'inputs' | 'common-containers' | 'buttons';
 
+/**
+ * The four component-group theme tabs (Input/Inline/Standard/Layout Components) a component
+ * belongs to for theming purposes, set with its `themeGroup`. Components in the same tier
+ * inherit shared group-level appearance defaults (see `IConfigurableTheme.componentGroups`).
+ */
+export type ThemeComponentGroup = 'input' | 'inline' | 'standard' | 'layout';
+
+/**
+ * Fallback for components without a `themeGroup`: the theme tab implied by their existing `styleGroup`.
+ * `styleGroup` selects the script style API, so it is not set just for theming - use `themeGroup`.
+ * 'standard' is the catch-all for components with neither.
+ */
+const THEME_GROUP_STYLE_GROUPS: Record<ThemeComponentGroup, ReadonlyArray<StyleGroups>> = {
+  input: ['inputs'],
+  inline: ['common'],
+  layout: ['common-containers'],
+  standard: ['buttons'],
+};
+
+/** The `ThemeComponentGroup` tab a component's `styleGroup` inherits its group-tier styles from. */
+export const getThemeGroupForStyleGroup = (styleGroup: StyleGroups | undefined): ThemeComponentGroup => {
+  if (styleGroup === undefined) return 'standard';
+  const match = (Object.keys(THEME_GROUP_STYLE_GROUPS) as ThemeComponentGroup[])
+    .find((group) => THEME_GROUP_STYLE_GROUPS[group].includes(styleGroup));
+  return match ?? 'standard';
+};
+
+/**
+ * The `ThemeComponentGroup` tab a component inherits its group-tier styles from: its `themeGroup`
+ * when set, otherwise the tab implied by its `styleGroup` (see THEME_GROUP_STYLE_GROUPS).
+ */
+export const getThemeGroupForComponent = (component: Pick<IToolboxComponentBase, 'styleGroup' | 'themeGroup'> | undefined): ThemeComponentGroup =>
+  component?.themeGroup ?? getThemeGroupForStyleGroup(component?.styleGroup);
+
 export type IToolboxComponentBase = {
   /** Show the component in the theme editor (true by default) */
   showInThemeEditor?: boolean | undefined;
 
-  /** Groupping components by style */
+  /** Groupping components by style. Also selects the style API exposed to scripts (see formComponentApi). */
   styleGroup?: StyleGroups | undefined;
+
+  /**
+   * Theme tab (Input/Inline/Standard/Layout Components) whose group styles this component inherits.
+   * Use this - not `styleGroup`, which also selects the script style API - to place a component in a
+   * theme tab. Falls back to the tab implied by an existing `styleGroup`, else 'standard'.
+   */
+  themeGroup?: ThemeComponentGroup | undefined;
 
   // ToDo: AS - remove after all components are migrated to inheritance
   /**

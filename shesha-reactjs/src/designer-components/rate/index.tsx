@@ -26,6 +26,7 @@ export interface IRateProps extends IConfigurableFormComponent {
 }
 
 const RateComponent: IToolboxComponent<IRateProps> = {
+  themeGroup: 'input',
   type: 'rate',
   name: 'Rate',
   icon: <LikeOutlined />,

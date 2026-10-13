@@ -43,6 +43,7 @@ export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, o
           initialValues={item}
           onValuesChange={debouncedSave}
           className={sheshaStyles.verticalSettingsClass}
+          isSettingsForm={true}
         />
       </SourceFilesFolderProvider>
     );

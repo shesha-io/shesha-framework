@@ -30,10 +30,15 @@ const EditorNotAvailable = (): ReactNode => {
 const EmptyComponent = (): ReactNode => null;
 
 
-export const getUnknownDocumentDefinition = (itemType: string): DocumentDefinition => {
+/**
+ * Fallback definition for an item type with no editor. `icon` is optional so a type that
+ * registers an icon but no edit form (e.g. Setting, Permission) still shows its own icon
+ * instead of the generic "unknown file" one.
+ */
+export const getUnknownDocumentDefinition = (itemType: string, icon?: ReactNode): DocumentDefinition => {
   const definition: DocumentDefinition = {
     documentType: itemType,
-    icon: <FileUnknownOutlined />,
+    icon: icon ?? <FileUnknownOutlined />,
     Provider: EmptyProvider,
     Editor: EditorNotAvailable,
     Toolbar: EmptyComponent,
@@ -46,8 +51,9 @@ export const getUnknownDocumentDefinition = (itemType: string): DocumentDefiniti
 
 export const getGenericDefinition = (itemType: string, editorProps?: DummyEditorProps): DocumentDefinition => {
   const formId = editorProps?.formId;
+  // No edit form: fall back to the read-only definition, but keep the caller's icon.
   if (!formId)
-    return getUnknownDocumentDefinition(itemType);
+    return getUnknownDocumentDefinition(itemType, editorProps?.icon);
 
   const definition: DocumentDefinition = {
     documentType: itemType,

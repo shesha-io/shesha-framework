@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 
 namespace Shesha.Configuration
 {
@@ -30,15 +31,11 @@ namespace Shesha.Configuration
                         SidebarBackground = "#4d192b",
                         LabelSpan = 6,
                         ComponentSpan = 18,
-                        MarginPadding = new MarginPaddingSettings()
-                        {
-                            FormFields = "",
-                            Layout = "",
-                            Grid = "",
-                            Standard = "",
-                            Inline = "",
-                        },
-                        Components = new JObject()
+                        LabelAlign = "right",
+                        Layout = "horizontal",
+                        Colon = true,
+                        Components = new JObject(),
+                        ComponentGroups = new JObject()
                     };
             }
         }
@@ -73,7 +70,15 @@ namespace Shesha.Configuration
         public string? SidebarBackground { get; set; }
         public int? LabelSpan { get; set; }
         public int? ComponentSpan { get; set; }
+        /// <summary>
+        /// Legacy margin/padding presets. No longer seeded or read; kept so existing stored values
+        /// round-trip through the backend instead of being silently dropped.
+        /// </summary>
         public ThemeSettings.MarginPaddingSettings? MarginPadding { get; set; }
+        public string? LabelAlign { get; set; }
+        public string? Layout { get; set; }
+        public bool? Colon { get; set; }
         public JObject Components { get; set; }
+        public JObject ComponentGroups { get; set; }
     }
 }

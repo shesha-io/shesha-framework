@@ -289,6 +289,8 @@ const CrudProvider = <TValue extends object = object>(props: PropsWithChildren<I
   };
 
   const parentMode = state.mode === "update" ? "editable" : "readOnly";
+  // An unset colon is left out rather than passed as undefined (exactOptionalPropertyTypes), so antd's default applies.
+  const { colon: formColon, ...antdFormSettings } = props.formSettings;
 
   return (
     <CrudContext.Provider value={contextValue}>
@@ -301,7 +303,8 @@ const CrudProvider = <TValue extends object = object>(props: PropsWithChildren<I
         component={false}
         {... (form ? { form } : {})}
         onValuesChange={onValuesChangeInternal}
-        {...props.formSettings}
+        {...antdFormSettings}
+        {...(formColon !== undefined ? { colon: formColon } : {})}
         labelWrap
         initialValues={state.initialValues ? state.initialValues as Record<string, unknown> : {}}
       >

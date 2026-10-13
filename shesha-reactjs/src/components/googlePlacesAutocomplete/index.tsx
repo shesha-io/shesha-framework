@@ -96,8 +96,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   const suggestionRef = useRef<ISuggestion[]>([]);
   const { notification } = App.useApp();
 
-  if (typeof window === 'undefined' || !(typeof window.google === 'object' && typeof window.google.maps === 'object'))
-    return null;
+  const isGoogleReady = typeof window !== 'undefined' && typeof window.google === 'object' && typeof window.google.maps === 'object';
 
   const handleChange = (localAddress: string): void => {
     try {
@@ -211,6 +210,51 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
 
   const onBlur = (): void => setShowSuggestionsDropdownContainer(false);
 
+  const renderInput = (
+    onInputChange: React.ChangeEventHandler<HTMLInputElement>,
+    onInputKeyDown: React.KeyboardEventHandler<HTMLInputElement>,
+  ): React.JSX.Element => (
+    <Input
+      {...extraInputProps}
+      ref={inputRef}
+      className={className}
+      value={displayValue}
+      onChange={onInputChange}
+      // Clearing is an edit, so the clear button is hidden in both non-editable states.
+      allowClear={disabled !== true && readOnly !== true}
+      placeholder={placeholder}
+      prefix={inputPrefix}
+      disabled={disabled ?? false}
+      readOnly={readOnly ?? false}
+      tabIndex={tabIndex}
+      onKeyDown={onInputKeyDown}
+      // Closing the suggestions dropdown is this component's own concern, so a
+      // caller-supplied onBlur is composed with it rather than replacing it.
+      onBlur={(e) => {
+        onBlur();
+        extraInputProps?.onBlur?.(e);
+      }}
+      // Composed rather than assigned, so a handler supplied through `inputProps`
+      // (the standard event set) is not silently dropped by the dedicated prop.
+      onFocus={(e) => {
+        onFocus?.(e);
+        extraInputProps?.onFocus?.(e);
+      }}
+      style={style}
+      size={size}
+    />
+  );
+
+  // Without the Google Maps script (no API key configured, or still loading) there are no
+  // suggestions to offer, but the field is still an address input: render the same input so it
+  // stays visible, editable and styled, rather than leaving only its label.
+  if (!isGoogleReady)
+    return (
+      <div className={styles.locationSearchInputWrapper}>
+        {renderInput((e) => handleChange(e.target.value), (e) => extraInputProps?.onKeyDown?.(e))}
+      </div>
+    );
+
   return (
     <PlacesAutocomplete
       value={(prefix ? `${prefix} ${displayValue}` : displayValue) ?? ''}
@@ -231,54 +275,27 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
               suggestionRef.current = suggestions.map(({ placeId, description }) => ({ placeId, description }));
             }
 
-            return (
-              <Input
-                {...extraInputProps}
-                ref={inputRef}
-                className={className}
-                value={displayValue}
-                onChange={(e) => {
-                  if (isDefined(inputProps.onChange)) {
-                    const {
-                      target: { value: realValue },
-                    } = e;
-                    handleChange(realValue);
-                    if (!disableGoogleEvent?.(value ?? "")) {
-                      inputProps.onChange(e);
-                    }
+            return renderInput(
+              (e) => {
+                if (isDefined(inputProps.onChange)) {
+                  const {
+                    target: { value: realValue },
+                  } = e;
+                  handleChange(realValue);
+                  if (!disableGoogleEvent?.(value ?? "")) {
+                    inputProps.onChange(e);
                   }
-                }}
-                // Clearing is an edit, so the clear button is hidden in both non-editable states.
-                allowClear={disabled !== true && readOnly !== true}
-                placeholder={placeholder}
-                prefix={inputPrefix}
-                disabled={disabled ?? false}
-                readOnly={readOnly ?? false}
-                tabIndex={tabIndex}
-                // Composed rather than assigned, so a handler supplied through `inputProps`
-                // (the standard event set) is not silently dropped by the dedicated prop.
-                // Arrow-key navigation of the suggestions is pointless when nothing can be
-                // selected, so the internal half is skipped while read-only — the caller's half
-                // still runs, since a read-only field can legitimately react to key presses.
-                onKeyDown={(e) => {
-                  if (readOnly !== true) onKeyDown(e);
-                  extraInputProps?.onKeyDown?.(e);
-                }}
-                // Closing the suggestions dropdown is this component's own concern, so a
-                // caller-supplied onBlur is composed with it rather than replacing it.
-                onBlur={(e) => {
-                  onBlur();
-                  extraInputProps?.onBlur?.(e);
-                }}
-                // Composed rather than assigned, so a handler supplied through `inputProps`
-                // (the standard event set) is not silently dropped by the dedicated prop.
-                onFocus={(e) => {
-                  onFocus?.(e);
-                  extraInputProps?.onFocus?.(e);
-                }}
-                style={style}
-                size={size}
-              />
+                }
+              },
+              // Composed rather than assigned, so a handler supplied through `inputProps`
+              // (the standard event set) is not silently dropped by the dedicated prop.
+              // Arrow-key navigation of the suggestions is pointless when nothing can be
+              // selected, so the internal half is skipped while read-only — the caller's half
+              // still runs, since a read-only field can legitimately react to key presses.
+              (e) => {
+                if (readOnly !== true) onKeyDown(e);
+                extraInputProps?.onKeyDown?.(e);
+              },
             );
           })()}
           {/* The dropdown stays hidden in both non-editable states — a suggestion list the user

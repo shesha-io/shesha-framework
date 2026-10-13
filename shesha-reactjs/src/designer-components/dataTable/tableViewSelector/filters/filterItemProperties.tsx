@@ -33,6 +33,7 @@ export const FilterItemProperties: FC<IFilterItemPropertiesProps> = ({ value, on
       markup={formMarkup}
       initialValues={value}
       onValuesChange={debouncedSave}
+      isSettingsForm={true}
     />
   );
 };

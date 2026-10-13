@@ -50,8 +50,8 @@ export const ConfigurationItemMenu: FC = () => {
       <Dropdown menu={{ items: menuItems }}>
         <Button title={`${activeDoc.moduleName}/${activeDoc.label}`} size="small">
           <Space>
-            {activeDoc.label}
             {icon}
+            {activeDoc.label}
             <DownOutlined />
           </Space>
         </Button>

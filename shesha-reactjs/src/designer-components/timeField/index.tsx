@@ -15,6 +15,7 @@ import { ITimePickerComponentProps, TimeFieldComponentDefinition, TimeFieldValue
 const DATE_TIME_FORMAT = 'HH:mm';
 
 export const TimeFieldComponent: TimeFieldComponentDefinition = {
+  themeGroup: 'input',
   type: 'timePicker',
   name: 'Time Picker',
   isInput: true,

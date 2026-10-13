@@ -7,11 +7,11 @@ import { Form, Space } from "antd";
 import ModelConfiguratorRenderer from "@/components/modelConfigurator/renderer";
 import { ModelConfiguratorProvider, useModelConfigurator } from "@/providers";
 import { useConfigurationStudio } from "@/configuration-studio/cs/contexts";
-import { TableOutlined } from "@ant-design/icons";
+import { CsEntityIcon } from "@/icons/configurationStudioIcons";
 
 export const EntityDocumentDefinition: DocumentDefinition = {
   documentType: ITEM_TYPES.ENTITY,
-  icon: <TableOutlined />,
+  icon: <CsEntityIcon />,
   Editor: ({ doc }: ItemEditorProps): ReactNode => {
     const cs = useConfigurationStudio();
     const { load, saveForm, isModified } = useModelConfigurator();

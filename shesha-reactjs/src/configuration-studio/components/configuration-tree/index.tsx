@@ -1,10 +1,10 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
-import { Dropdown, Input, MenuProps, Spin, Tree, TreeProps } from 'antd';
-import { FC, useMemo, useRef, useState, useEffect } from 'react';
+import { Dropdown, GetRef, Input, MenuProps, Spin, Tree, TreeProps } from 'antd';
+import { FC, useCallback, useMemo, useRef, useState, useEffect, useLayoutEffect } from 'react';
 import * as React from 'react';
 import { MoveNodePayload } from '../../apis';
-import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isNodeWithChildren, isTreeNode, TreeNode, TreeNodeType } from '../../models';
-import { CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons';
+import { FOLDER_DRAFT_NODE_KEY, FolderDraft, isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isNodeWithChildren, isTreeNode, TreeNode, TreeNodeType } from '../../models';
+import { CaretDownOutlined } from '@ant-design/icons';
 import { ValidationErrors } from '@/components/validationErrors';
 import { useCsTree, useCsTreeDnd } from '../../cs/hooks';
 import { useConfigurationStudio } from '../../cs/contexts';
@@ -12,7 +12,7 @@ import { buildNodeContextMenu } from '../../menu-utils';
 import { useStyles } from '../../styles';
 import { useFilteredTreeNodes } from './filter';
 import { DndPreview } from './dndPreview';
-import { DropPositions } from './models';
+import { TreeFilterButton } from '../tree-filter-button';
 import { isDefined } from '@/utils/nullables';
 import { useConfigurationStudioEnvironment } from '@/configuration-studio/cs-environment/contexts';
 
@@ -20,7 +20,6 @@ export interface IConfigurationTreeProps {
   debugDnd?: boolean;
 }
 type OnSelectHandler = TreeProps<TreeNode>['onSelect'];
-type OnClickHandler = TreeProps<TreeNode>['onClick'];
 type IsDraggable = TreeProps<TreeNode>['draggable'];
 type AllowDrop = TreeProps<TreeNode>['allowDrop'];
 type OnDrop = TreeProps<TreeNode>['onDrop'];
@@ -28,35 +27,22 @@ type OnRightClick = TreeProps<TreeNode>['onRightClick'];
 type MenuItems = Required<MenuProps>['items'];
 type OnDragStart = TreeProps<TreeNode>['onDragStart'];
 type OnDragEnd = TreeProps<TreeNode>['onDragEnd'];
+type OnExpand = Required<TreeProps<TreeNode>>['onExpand'];
 
 const isNodeDraggable: IsDraggable = (node): boolean => {
   // Also gates onDragEnter/onDragOver/onDrop, so the placeholder (filter.ts) must return true here to receive drops.
   return isConfigItemTreeNode(node) || isFolderTreeNode(node) || (isTreeNode(node) && node.nodeType === TreeNodeType.Placeholder);
 };
 
-const allowDropNode = (dragNode: TreeNode, dropNode: TreeNode, dropPosition: number): boolean => {
-  switch (dropPosition) {
-    case DropPositions.After:
-    case DropPositions.Before:
-    default: {
-      return dragNode.moduleId === dropNode.moduleId &&
-        dragNode.parentId !== dropNode.parentId;
-    }
-    case DropPositions.Inside: {
-      // The empty-container placeholder (see filter.ts) stands in for its real parent folder/module.
-      if (dropNode.nodeType === TreeNodeType.Placeholder)
-        return dragNode.moduleId === dropNode.moduleId && dragNode.parentId !== dropNode.parentId;
-
-      if (!isFolderTreeNode(dropNode) && !isModuleTreeNode(dropNode))
-        return false;
-      if (dragNode.moduleId !== dropNode.moduleId)
-        return false;
-
-      // allow to drop to another parent only
-      return dragNode.parentId !== dropNode.id;
-    }
-  }
+/** Expand/collapse choices made while a type filter is active, plus the draft/pinned state last applied to them. */
+type FilterExpansionState = {
+  /** The filter's contents, so re-reading the same saved filter (a new array) doesn't count as a change. */
+  itemTypeFilterKey: string | undefined;
+  folderDraft: FolderDraft | undefined;
+  pinnedNodeIds: ReadonlySet<string> | undefined;
+  overrides: ReadonlyMap<React.Key, boolean>;
 };
+const EMPTY_FILTER_EXPANSION: FilterExpansionState = { itemTypeFilterKey: undefined, folderDraft: undefined, pinnedNodeIds: undefined, overrides: new Map() };
 
 type DndState = {
   dragNode: TreeNode;
@@ -68,17 +54,91 @@ type DndState = {
 export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = false }) => {
   const cs = useConfigurationStudio();
   const { getDocumentDefinition } = useConfigurationStudioEnvironment();
-  const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, selectedNodes, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
+  const { treeNodes, treeLoadingState, expandedKeys, selectedKeys, selectedNodes, onNodeExpand, quickSearch, setQuickSearch, itemTypeFilter, getTreeNodeById, folderDraft, pinnedNodeIds } = useCsTree();
   const { isDragging, setIsDragging } = useCsTreeDnd();
   // Anchor for shift+click/shift+arrow range selection: the last node clicked without shift.
   const lastClickedKeyRef = useRef<React.Key | null>(null);
   // End of the shift-selection range; also drives Tree's controlled `activeKey` (null = uncontrolled).
   const [shiftFocusKey, setShiftFocusKey] = useState<React.Key | null>(null);
   const [contextNode, setContextNode] = useState<TreeNode | null>(null);
-  const { styles } = useStyles();
+  const { styles, prefixCls, theme } = useStyles();
   const [dndState, setDndState] = useState<DndState>();
 
-  const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch);
+  const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch, itemTypeFilter, folderDraft, pinnedNodeIds);
+
+  // While a type filter is active, matching items usually sit inside collapsed folders, so every
+  // surviving container is shown expanded. This is display-only: expanding/collapsing under the filter
+  // is tracked here rather than in the user's persisted expansion state, so clearing the filter
+  // restores exactly what they had open. Changing the filter starts afresh; starting a folder draft or
+  // revealing a new node only reopens the containers needed to show it, keeping the user's other choices.
+  const isTypeFiltered = itemTypeFilter.length > 0;
+  const [filterExpansionState, setFilterExpansionState] = useState<FilterExpansionState>(EMPTY_FILTER_EXPANSION);
+  const itemTypeFilterKey = itemTypeFilter.join('\n');
+  let currentFilterExpansion = filterExpansionState;
+  if (filterExpansionState.itemTypeFilterKey !== itemTypeFilterKey) {
+    currentFilterExpansion = { itemTypeFilterKey, folderDraft, pinnedNodeIds, overrides: EMPTY_FILTER_EXPANSION.overrides };
+  } else if (filterExpansionState.folderDraft !== folderDraft || filterExpansionState.pinnedNodeIds !== pinnedNodeIds) {
+    // Containers to reopen: the new draft's container, and the parents of newly pinned nodes.
+    const revealFrom: (string | undefined)[] = [];
+    if (isDefined(folderDraft) && folderDraft !== filterExpansionState.folderDraft)
+      revealFrom.push(folderDraft.parentFolderId ?? folderDraft.moduleId);
+    pinnedNodeIds.forEach((id) => {
+      if (filterExpansionState.pinnedNodeIds?.has(id) !== true)
+        revealFrom.push(getTreeNodeById(id)?.parentId);
+    });
+    const overrides = new Map(filterExpansionState.overrides);
+    for (const start of revealFrom) {
+      // Walk up to the module; the seen-set guards against a malformed parent chain.
+      const seen = new Set<string>();
+      for (let id = start; isDefined(id) && !seen.has(id); id = getTreeNodeById(id)?.parentId) {
+        seen.add(id);
+        overrides.delete(id);
+      }
+    }
+    currentFilterExpansion = { itemTypeFilterKey, folderDraft, pinnedNodeIds, overrides };
+  }
+  // Adjusting state while rendering (React's documented pattern for deriving state from props).
+  if (currentFilterExpansion !== filterExpansionState)
+    setFilterExpansionState(currentFilterExpansion);
+  const filterExpansion = currentFilterExpansion.overrides;
+
+  const effectiveExpandedKeys = useMemo<React.Key[]>(() => {
+    const userKeys = expandedKeys ?? [];
+    if (!isTypeFiltered)
+      return userKeys;
+
+    const keys: React.Key[] = [];
+    const walk = (nodes: TreeNode[]): void => {
+      for (const node of nodes) {
+        if (isNodeWithChildren(node)) {
+          if (filterExpansion.get(node.key) ?? true)
+            keys.push(node.key);
+          walk(node.children as TreeNode[]);
+        }
+      }
+    };
+    walk(filteredTreeNodes);
+    return keys;
+  }, [filteredTreeNodes, expandedKeys, isTypeFiltered, filterExpansion]);
+  const effectiveExpandedKeySet = useMemo(() => new Set<React.Key>(effectiveExpandedKeys), [effectiveExpandedKeys]);
+
+  const setNodeExpanded = useCallback((key: React.Key, expanded: boolean): void => {
+    if (isTypeFiltered) {
+      setFilterExpansionState({ itemTypeFilterKey, folderDraft, pinnedNodeIds, overrides: new Map(filterExpansion).set(key, expanded) });
+      return;
+    }
+    const userKeys = expandedKeys ?? [];
+    cs.onTreeNodeExpand(expanded ? [...userKeys, key] : userKeys.filter((k) => k !== key));
+  }, [isTypeFiltered, expandedKeys, cs, itemTypeFilterKey, folderDraft, pinnedNodeIds, filterExpansion]);
+
+  // antd hands back the whole displayed key set; under the filter that includes the forced keys, so
+  // apply only the node that was toggled.
+  const handleExpand: OnExpand = (keys, info) => {
+    if (isTypeFiltered)
+      setNodeExpanded(info.node.key, info.expanded);
+    else
+      onNodeExpand(keys, info);
+  };
 
   // Auto-expand a collapsed folder hovered during a drag, bypassing antd Tree's own gated drag events.
   useEffect(() => {
@@ -108,13 +168,13 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
         return;
 
       const node = getTreeNodeById(nodeId);
-      if (!isDefined(node) || !isNodeWithChildren(node) || (expandedKeys ?? []).includes(node.key))
+      if (!isDefined(node) || !isNodeWithChildren(node) || effectiveExpandedKeySet.has(node.key))
         return;
 
       hoveredNodeId = nodeId;
       expandTimeout = setTimeout(() => {
         expandTimeout = null;
-        cs.onTreeNodeExpand([...(expandedKeys ?? []), node.key]);
+        setNodeExpanded(node.key, true);
       }, 500);
     };
 
@@ -136,21 +196,21 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
       window.removeEventListener('blur', handleWindowBlur);
       clearPending();
     };
-  }, [isDragging, expandedKeys, getTreeNodeById, cs]);
+  }, [isDragging, effectiveExpandedKeySet, getTreeNodeById, setNodeExpanded]);
 
   const flatVisibleNodes = useMemo<TreeNode[]>(() => {
     const result: TreeNode[] = [];
     const walk = (nodes: TreeNode[]): void => {
       for (const node of nodes) {
-        if (node.nodeType !== TreeNodeType.Placeholder)
+        if (node.nodeType !== TreeNodeType.Placeholder && node.nodeType !== TreeNodeType.FolderDraft)
           result.push(node);
-        if (isNodeWithChildren(node) && isDefined(expandedKeys) && expandedKeys.includes(node.key))
+        if (isNodeWithChildren(node) && effectiveExpandedKeySet.has(node.key))
           walk(node.children as TreeNode[]);
       }
     };
     walk(filteredTreeNodes);
     return result;
-  }, [filteredTreeNodes, expandedKeys]);
+  }, [filteredTreeNodes, effectiveExpandedKeySet]);
 
   const handleSelect: OnSelectHandler = (keys, info) => {
     const isCtrl = info.nativeEvent.ctrlKey || info.nativeEvent.metaKey;
@@ -181,76 +241,57 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
     }
   };
 
-  const handleClick: OnClickHandler = (_, node) => {
-    if (node.nodeType === TreeNodeType.Placeholder)
-      return;
-    cs.clickTreeNode(node);
-  };
+  // VS Code-style drop target: a folder/module is its own target; anything else (an item, the "Empty"
+  // placeholder) drops into the container holding it. Where on the row the cursor is doesn't matter.
+  const getDropContainer = (node: TreeNode): TreeNode | undefined =>
+    isFolderTreeNode(node) || isModuleTreeNode(node)
+      ? node
+      : isDefined(node.parentId) ? getTreeNodeById(node.parentId) : undefined;
 
-  const getNewFolderId = (dropPosition: number, dropNode: TreeNode): string | undefined => {
-    switch (dropPosition) {
-      case DropPositions.After:
-      case DropPositions.Before: {
-        const dropNodeParent = isDefined(dropNode.parentId)
-          ? getTreeNodeById(dropNode.parentId)
-          : undefined;
-
-        return isFolderTreeNode(dropNodeParent) ? dropNodeParent.id : undefined;
-      }
-      default: {
-        // Placeholders exist under empty folders and modules - only resolve to an id if the parent is a folder.
-        if (dropNode.nodeType === TreeNodeType.Placeholder) {
-          const parentNode = isDefined(dropNode.parentId)
-            ? getTreeNodeById(dropNode.parentId)
-            : undefined;
-          return isFolderTreeNode(parentNode) ? parentNode.id : undefined;
-        }
-        return isFolderTreeNode(dropNode) ? dropNode.id : undefined;
-      }
+  const canDropInto = (dragNode: TreeNode, container: TreeNode | undefined): container is TreeNode => {
+    if (!isDefined(container) || dragNode.moduleId !== container.moduleId || dragNode.parentId === container.id)
+      return false;
+    // A folder can't be moved into itself or its own subtree.
+    const seen = new Set<string>();
+    for (let id: string | undefined = container.id; isDefined(id) && !seen.has(id); id = getTreeNodeById(id)?.parentId) {
+      if (id === dragNode.id)
+        return false;
+      seen.add(id);
     }
+    return true;
   };
+
+  // The container highlighted (with its visible contents) while dragging over it.
+  const [dropTargetId, setDropTargetId] = useState<string>();
 
   const handleNodeDrop: OnDrop = (info) => {
-    const dropNode = info.node;
+    setDropTargetId(undefined);
     const dragNode = info.dragNode;
-
-    const dropPos = info.node.pos.split("-");
-    // calculate the drop position relative to the drop node, inside 0, top -1, bottom 1
-    // note: it's not the same as info.dropPosition
-    const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-
-    if (!allowDropNode(dragNode, dropNode, dropPosition)) {
-      console.error('dragNode can`t be dropped into the dropNode', { dragNode, dropNode, dropPosition: info.dropPosition });
+    const container = getDropContainer(info.node);
+    if (!canDropInto(dragNode, container))
       return;
-    }
-
-    const newFolderId = getNewFolderId(dropPosition, dropNode);
 
     // When the dragged node is part of a multi-selection, move all selected nodes that are
     // valid for this drop target. Otherwise fall back to moving just the dragged node.
     const dragKeyStr = dragNode.key.toString();
     const isMultiDrag = (selectedKeys ?? []).includes(dragKeyStr) && selectedNodes.length > 1;
     const nodesToMove: TreeNode[] = isMultiDrag
-      ? selectedNodes.filter((n) => allowDropNode(n, dropNode, dropPosition))
+      ? selectedNodes.filter((n) => canDropInto(n, container))
       : [dragNode];
 
     const payloads: MoveNodePayload[] = nodesToMove.map((n) => ({
       nodeType: n.nodeType,
       nodeId: n.id,
-      folderId: newFolderId,
+      folderId: isFolderTreeNode(container) ? container.id : undefined,
     }));
 
-    Promise.all(payloads.map((p) => cs.moveTreeNodeAsync(p))).then(() => {
-      void loadTreeAsync();
-    }).catch((error) => {
-      console.error('Failed to move nodes', error);
-      throw error;
-    });
+    // Moves the nodes in the tree immediately, then syncs with the server (errors are reported there).
+    void cs.moveTreeNodesAsync(payloads);
   };
 
   const handleNodeRightClick: OnRightClick = ({ event, node }) => {
     event.preventDefault();
-    if (node.nodeType === TreeNodeType.Placeholder) {
+    if (node.nodeType === TreeNodeType.Placeholder || node.nodeType === TreeNodeType.FolderDraft) {
       // preventDefault() alone doesn't stop this from bubbling to the wrapping Dropdown.
       event.stopPropagation();
       return;
@@ -280,6 +321,13 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
 
   const handleDragEnd: OnDragEnd = () => {
     setIsDragging(false);
+    setDropTargetId(undefined);
+  };
+
+  // Leaving the tree altogether clears the highlight (moving between rows doesn't).
+  const handleTreeDragLeave: React.DragEventHandler<HTMLDivElement> = (event) => {
+    if (!(event.relatedTarget instanceof Node) || !event.currentTarget.contains(event.relatedTarget))
+      setDropTargetId(undefined);
   };
 
   // Intercepted in the capture phase so rc-tree's own arrow-key focus handling never runs for this event.
@@ -318,7 +366,9 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   };
 
   const allowNodeDropWrapper: AllowDrop = ({ dragNode, dropNode, dropPosition }) => {
-    const allowed = allowDropNode(dragNode, dropNode, dropPosition);
+    const container = getDropContainer(dropNode);
+    const allowed = canDropInto(dragNode, container);
+    setDropTargetId(allowed ? container.id : undefined);
     if (debugDnd) {
       setDndState({
         dragNode: dragNode,
@@ -330,12 +380,86 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
     return allowed;
   };
 
+  // Rows to highlight while dragging: the target container and everything visible inside it. Matched by
+  // data-node-id, so only rows the virtual list has actually rendered are affected.
+  const dropHighlightCss = useMemo<string>(() => {
+    const target = isDefined(dropTargetId) ? getTreeNodeById(dropTargetId) : undefined;
+    if (!isDefined(target))
+      return '';
+    const ids: string[] = [];
+    const visit = (node: TreeNode): void => {
+      ids.push(node.id);
+      if (isNodeWithChildren(node) && effectiveExpandedKeySet.has(node.key)) {
+        ids.push(`${node.id}__empty-placeholder`);
+        node.children.forEach(visit);
+      }
+    };
+    visit(target);
+    const selectors = ids.map((id) => `.${styles.csNavPanelTree} [data-node-id="${id.replace(/["\\]/g, '\\$&')}"]`);
+    return `${selectors.join(',\n')} { background-color: ${theme.colorPrimaryBg}; }`;
+  }, [dropTargetId, getTreeNodeById, effectiveExpandedKeySet, styles.csNavPanelTree, theme.colorPrimaryBg]);
+
+  // A reload after creating/moving/renaming keeps the current tree mounted under the spinner: unmounting
+  // it while the request is in flight would remount it scrolled back to the top.
+  const showTree = isDefined(treeNodes) && (
+    treeLoadingState.status === 'ready' || (treeLoadingState.status === 'loading' && treeNodes.length > 0)
+  );
+
+  // antd's Tree only virtualizes when given a pixel height. Without it every visible node re-renders
+  // on each expand/collapse, which gets slow once a few folders are open - so size the tree to its panel.
+  const treeRef = useRef<GetRef<typeof Tree>>(null);
+  const treeContainerRef = useRef<HTMLDivElement>(null);
+  const [treeHeight, setTreeHeight] = useState(0);
+  useLayoutEffect(() => {
+    const container = treeContainerRef.current;
+    if (!showTree || !container)
+      return undefined;
+    const updateHeight = (): void => setTreeHeight(Math.floor(container.clientHeight));
+    updateHeight();
+    if (typeof ResizeObserver === 'undefined')
+      return undefined;
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [showTree]);
+
+  // The virtual list draws its own scrollbar (overflow hidden), so the browser no longer auto-scrolls
+  // while dragging near an edge - scroll it ourselves so items can be dragged to off-screen folders.
+  useEffect(() => {
+    if (!isDragging)
+      return undefined;
+    const EDGE_SIZE = 32;
+    const SCROLL_STEP = 16;
+    const handleDragOver = (event: DragEvent): void => {
+      const container = treeContainerRef.current;
+      const holder = container?.querySelector<HTMLElement>(`.${prefixCls}-tree-list-holder`);
+      if (!container || !holder)
+        return;
+      const rect = container.getBoundingClientRect();
+      if (event.clientX < rect.left || event.clientX > rect.right)
+        return;
+      const delta = event.clientY < rect.top + EDGE_SIZE
+        ? -SCROLL_STEP
+        : event.clientY > rect.bottom - EDGE_SIZE ? SCROLL_STEP : 0;
+      if (delta !== 0)
+        treeRef.current?.scrollTo({ top: holder.scrollTop + delta });
+    };
+    document.addEventListener('dragover', handleDragOver, true);
+    return () => document.removeEventListener('dragover', handleDragOver, true);
+  }, [isDragging, prefixCls]);
+
+  // Bring the inline folder editor into view; focusing it can't scroll a virtual list.
+  useEffect(() => {
+    if (isDefined(folderDraft))
+      treeRef.current?.scrollTo({ key: FOLDER_DRAFT_NODE_KEY, align: 'auto' });
+  }, [folderDraft]);
+
   return (
     <Spin
       spinning={treeLoadingState.status === 'loading'}
       classNames={{ root: styles.csNavPanelSpinner }}
     >
-      {treeLoadingState.status === 'ready' && isDefined(treeNodes) && (
+      {showTree && (
         <div className={styles.csNavPanelContent}>
           <div className={styles.csNavPanelHeader}>
             <Input.Search
@@ -343,20 +467,26 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
               value={quickSearch}
               onChange={onSearchChange}
               allowClear
+              size="small"
             />
+            <TreeFilterButton />
           </div>
-          <div className={styles.csNavPanelTree} onKeyDownCapture={handleTreeKeyDownCapture}>
+          <div ref={treeContainerRef} className={styles.csNavPanelTree} onKeyDownCapture={handleTreeKeyDownCapture} onDragLeave={handleTreeDragLeave}>
+            {dropHighlightCss !== '' && <style>{dropHighlightCss}</style>}
             <Dropdown
               menu={{ items: nodeContextMenuItems }}
               trigger={["contextMenu"]}
               getPopupContainer={() => document.body}
             >
               <Tree<TreeNode>
-                showLine
+                /* Connector lines removed - the filter button supersedes them (issue #4783). */
                 showIcon
                 multiple
-                virtual={false}
-                switcherIcon={(node) => node.expanded === true ? <CaretDownOutlined /> : <CaretRightOutlined />}
+                ref={treeRef}
+                {...(treeHeight > 0 ? { height: treeHeight } : {})}
+                /* antd rotates the switcher icon -90deg on collapsed nodes (without showLine), so a single
+                   down caret reads as right when collapsed and down when expanded. */
+                switcherIcon={<CaretDownOutlined />}
 
                 treeData={filteredTreeNodes}
                 blockNode /* required for correct dragging*/
@@ -367,12 +497,11 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 onRightClick={handleNodeRightClick}
-                expandedKeys={expandedKeys ?? []}
+                expandedKeys={effectiveExpandedKeys}
 
                 onSelect={handleSelect}
-                onClick={handleClick}
                 selectedKeys={selectedKeys ?? []}
-                onExpand={onNodeExpand}
+                onExpand={handleExpand}
                 {...(shiftFocusKey !== null ? { activeKey: shiftFocusKey } : {})}
                 tabIndex={0}
               />

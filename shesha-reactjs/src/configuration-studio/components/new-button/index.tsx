@@ -1,5 +1,5 @@
-import { DownOutlined } from '@ant-design/icons';
-import { Button, Dropdown, Empty, Space, theme } from 'antd';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Empty, theme } from 'antd';
 import { FC, useMemo } from 'react';
 import * as React from 'react';
 import { buildCreateNewMenu, MenuItemType } from '@/configuration-studio/menu-utils';
@@ -38,11 +38,10 @@ export const NewButton: FC = () => {
           )
       )}
     >
-      <Button size="small">
-        <Space>
-          New
-          <DownOutlined />
-        </Space>
+      {/* Icon is left-aligned against the label rather than centred with it (issue #4783). */}
+      <Button size="small" icon={<PlusOutlined />} iconPlacement="start">
+        Create New
+        <DownOutlined style={{ marginInlineStart: 6, fontSize: 10 }} />
       </Button>
     </Dropdown>
   );

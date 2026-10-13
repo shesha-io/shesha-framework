@@ -98,12 +98,13 @@ export const SEEDED_TAG_FONT_COLOUR = '#000';
  */
 export const defaultTagStyles = (): IStyleValue => {
   return {
-    background: BACKGROUND_DEFAULTS(''),
+    background: BACKGROUND_DEFAULTS('#f5f5f5'),
     font: {
       weight: '400',
       size: 14,
       type: 'Segoe UI',
       align: 'center',
+      color: '#000',
     },
     border: {
       radius: { all: 4 },
@@ -121,7 +122,7 @@ export const defaultTagStyles = (): IStyleValue => {
     shadow: SHADOW_DEFAULTS(),
     // Only the left margin differs from the shared defaults: it separates a tag from the one
     // before it. Spreading keeps the two in step as default slots are added.
-    stylingBoxJson: { ...STYLING_BOX_DEFAULTS(), marginLeft: "8" },
+    stylingBoxJson: { ...STYLING_BOX_DEFAULTS(), marginLeft: "8", paddingLeft: "8", paddingRight: "8" },
   };
 };
 

@@ -26,6 +26,7 @@ export const SearchBox: FC<ISearchBoxProps> = (props) => {
 
   return (
     <Input
+      size="small"
       className={styles.shaSettingSearch}
       placeholder={props.placeholder}
       allowClear={true}

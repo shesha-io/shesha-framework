@@ -18,6 +18,7 @@ export const CS_URLS = {
   GET_FLAT_TREE: '/api/services/app/ConfigurationStudio/GetFlatTree',
   FOLDER_CREATE: '/api/services/app/ConfigurationStudio/CreateFolder',
   FOLDER_DELETE: '/api/services/app/ConfigurationStudio/DeleteFolder',
+  FOLDER_RENAME: '/api/services/app/ConfigurationStudio/RenameFolder',
   MOVE_NODE_TO_FOLDER: '/api/services/app/ConfigurationStudio/MoveNodeToFolder',
   GET_ITEM_TYPES: '/api/services/app/ConfigurationStudio/GetAvailableItemTypes',
   ITEM_DELETE: '/api/services/app/ConfigurationStudio/DeleteItem',
@@ -38,6 +39,34 @@ export type MoveNodeResponse = void;
 
 export const moveTreeNodeAsync = (httpClient: HttpClientApi, payload: MoveNodePayload): Promise<IAbpWrappedResponse<MoveNodeResponse>> => {
   return httpClient.post<IAbpWrappedResponse<MoveNodeResponse>, MoveNodePayload>(CS_URLS.MOVE_NODE_TO_FOLDER, payload).then((response) => response.data);
+};
+//#endregion
+
+//#region Create Folder
+export type CreateFolderPayload = {
+  moduleId: string;
+  folderId?: string | undefined;
+  name: string;
+};
+export type CreateFolderResponse = {
+  id: string;
+  name: string;
+};
+
+export const createFolderAsync = (httpClient: HttpClientApi, payload: CreateFolderPayload): Promise<IAbpWrappedResponse<CreateFolderResponse>> => {
+  return httpClient.post<IAbpWrappedResponse<CreateFolderResponse>, CreateFolderPayload>(CS_URLS.FOLDER_CREATE, payload).then((response) => response.data);
+};
+//#endregion
+
+//#region Rename Folder
+export type RenameFolderPayload = {
+  folderId: string;
+  name: string;
+};
+export type RenameFolderResponse = void;
+
+export const renameFolderAsync = (httpClient: HttpClientApi, payload: RenameFolderPayload): Promise<IAbpWrappedResponse<RenameFolderResponse>> => {
+  return httpClient.put<IAbpWrappedResponse<RenameFolderResponse>, RenameFolderPayload>(CS_URLS.FOLDER_RENAME, payload).then((response) => response.data);
 };
 //#endregion
 

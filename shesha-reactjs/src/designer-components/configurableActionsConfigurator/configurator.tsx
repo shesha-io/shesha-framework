@@ -137,7 +137,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
       <Form<IActionFormModel>
         component={false}
         form={form}
-        {...(formSettings ? { layout: formSettings.layout, colon: formSettings.colon } : {})}
+        {...(formSettings ? { layout: formSettings.layout, ...(formSettings.colon !== undefined ? { colon: formSettings.colon } : {}) } : {})}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
         onValuesChange={onValuesChange}

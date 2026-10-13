@@ -7,6 +7,7 @@ import { useDefaultModelActionsOrUndefined } from "@/designer-components/_settin
 import { ISetFormDataPayload } from "@/providers/form/contexts";
 import { deepMergeValues } from "@/utils/object";
 import { isNotNullOrWhiteSpace } from "@/utils/nullables";
+import { CardTitle } from "../cardTitle";
 
 export interface IComponentDefaultsSettingsProps {
   componentType: string | undefined;
@@ -33,15 +34,12 @@ export const ComponentDefaultsSettings: FC<IComponentDefaultsSettingsProps> = ({
   return (
     <Card
       title={(
-        <div>
-          <h4 style={{ marginBottom: 4 }}>{isNotNullOrWhiteSpace(componentTitle) ? componentTitle : 'Select a Component'}</h4>
-          <span style={{ color: '#999', fontSize: '12px' }}>
-            Configure default appearance for {isNotNullOrWhiteSpace(componentTitle) ? componentTitle : 'component'}
-          </span>
-        </div>
+        <CardTitle
+          title={isNotNullOrWhiteSpace(componentTitle) ? componentTitle : 'Select a Component'}
+          description={`Configure default appearance for ${isNotNullOrWhiteSpace(componentTitle) ? componentTitle : 'component'}`}
+        />
       )}
       size="small"
-      style={{ height: '450px', overflowY: 'auto' }}
       className={styles.themeCardSettings}
     >
       {markup && Boolean(componentType) ? (
@@ -58,7 +56,7 @@ export const ComponentDefaultsSettings: FC<IComponentDefaultsSettingsProps> = ({
           dataSource={{ dataGetter: defaultModel?.getMergedModel, dataSetter: defaultModel?.setModel, getMergedOrValue }}
         />
       ) : (
-        <div style={{ padding: 16, textAlign: 'center', color: '#999' }}>
+        <div className={styles.emptyState}>
           {Boolean(componentType)
             ? 'This component does not have appearance settings or they cannot be loaded'
             : 'Select a component from the tree to configure its default appearance'}

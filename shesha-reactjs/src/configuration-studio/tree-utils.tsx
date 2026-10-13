@@ -1,12 +1,14 @@
 import { ReactNode } from "react";
 import { ConfigItemTreeNode, CustomDocument, FlatTreeNode, FolderTreeNode, FrontEndAppDto, isConfigItemTreeNode, isTreeNode, ModuleTreeNode, SpecialTreeNode, TREE_NODE_TYPES, TreeNode, TreeNodeType } from "./models";
-import { FileUnknownOutlined, FolderOpenOutlined, FolderOutlined, HomeOutlined, ProductOutlined, SettingOutlined } from "@ant-design/icons";
+import { FileUnknownOutlined } from "@ant-design/icons";
+import { CsFolderIcon, CsFolderOpenIcon, CsHomeIcon, CsModuleIcon, CsSettingsIcon } from "@/icons/configurationStudioIcons";
 
 import { TreeNodeProps } from "antd";
 import { CsTreeNode } from "./components/tree-node";
 import { isDefined } from "@/utils/nullables";
 import { IConfigurationStudioEnvironment } from "./cs-environment/interfaces";
 import { CustomErrorBoundary } from "../components";
+import { FolderNameEditor } from "./components/folder-name-editor";
 
 export const getIcon = (csEnvironment: IConfigurationStudioEnvironment, nodeType: TreeNodeType, itemType?: string, expanded?: boolean): ReactNode => {
   switch (nodeType) {
@@ -15,17 +17,17 @@ export const getIcon = (csEnvironment: IConfigurationStudioEnvironment, nodeType
       return definition ? definition.icon : <FileUnknownOutlined />;
     }
     case TreeNodeType.Folder:
-      return expanded === true ? <FolderOpenOutlined /> : <FolderOutlined />;
+      return expanded === true ? <CsFolderOpenIcon /> : <CsFolderIcon />;
     case TreeNodeType.Module:
-      return <ProductOutlined />;
+      return <CsModuleIcon />;
     default: return undefined;
   }
 };
 export const getCustomIcon = (doc: CustomDocument): ReactNode => {
   // TODO: move to document definition
   switch (doc.itemId) {
-    case 'home': return <HomeOutlined />;
-    case 'settings': return <SettingOutlined />;
+    case 'home': return <CsHomeIcon />;
+    case 'settings': return <CsSettingsIcon />;
     default: return undefined;
   }
 };
@@ -39,6 +41,14 @@ const applyIcon = (csEnvironment: IConfigurationStudioEnvironment, node: TreeNod
       props.expanded,
     );
   };
+};
+
+/** Folder icon shown beside the inline name editor, so the draft row reads as a folder. */
+export const renderFolderDraftIcon = (): ReactNode => <CsFolderIcon />;
+
+/** Renders the inline folder-name editor used while creating/renaming a folder (issue #4783). */
+export const renderFolderDraftNode = (initialName: string): ReactNode => {
+  return <CustomErrorBoundary><FolderNameEditor initialName={initialName} /></CustomErrorBoundary>;
 };
 
 export const renderCsTreeNode = (node: TreeNode, displayText?: ReactNode): ReactNode => {

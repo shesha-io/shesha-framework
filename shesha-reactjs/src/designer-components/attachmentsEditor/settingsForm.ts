@@ -55,7 +55,7 @@ const fileActionHandler = (propertyName: string, label: string, when: string): I
   availableConstantsExpression: 'return metadataBuilder.object("constants").addAllStandard().addArray("value", "Files in the list after the action").addObject("file", "The file the action happened to", undefined).build();',
 });
 
-export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter, forceVisible }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
@@ -240,17 +240,17 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                           { type: 'numberField', propertyName: 'gap', label: 'Gap', jsSetting: true },
                         ],
                       }),
-                    false, isThumbnailListJs,
+                    false, forceVisible === true ? undefined : isThumbnailListJs,
                     )
                     .stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter)
                     .stdCollapsiblePanel('Thumbnail Style', (f) => f
-                      .stdContainer((fb) => fb.stdDimensionsPanel('thumbnailStyle.dimensions'), isCustomThumbnailJs)
+                      .stdContainer((fb) => fb.stdDimensionsPanel('thumbnailStyle.dimensions'), forceVisible === true ? undefined : isCustomThumbnailJs)
                       .stdBorderPanel(removeStyleRouter !== true, 'thumbnailStyle.border')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'thumbnailStyle.background')
                       .stdShadowPanel('thumbnailStyle.shadow')
                       .stdMarginPaddingPanel('thumbnailStyle.stylingBoxJson')
                       .stdCustomStylePanel(undefined, 'thumbnailStyle.style'),
-                    true, isThumbnailListJs,
+                    true, forceVisible === true ? undefined : isThumbnailListJs,
                     )
                     .addSettingsInputRow({
                       inputs: [
@@ -260,17 +260,18 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     /* The panel's own gate is enough for everything inside it, so the Font and Custom
                        Style panels carry no condition of their own — they are only reachable when it
                        is open. Both still take the device flag, since their property names resolve
-                       through the same router. */
+                       through the same router. forceVisible (theme editor) always opens it, so the
+                       Downloaded Files styles stay editable regardless of the toggle. */
                     .stdCollapsiblePanel('Downloaded Files', (f) => f
                       .addSettingsInputRow({
-                        visibleJs: styleDownloadedFilesJs(removeStyleRouter),
+                        visibleJs: forceVisible === true ? undefined : styleDownloadedFilesJs(removeStyleRouter),
                         inputs: [
                           { type: 'iconPicker', propertyName: 'downloadedIcon', label: 'Downloaded Icon', jsSetting: true },
                         ],
                       })
                       .stdFontPanel(removeStyleRouter !== true, 'downloadedFileStyles.font')
                       .stdCustomStylePanel(removeStyleRouter !== true, 'downloadedFileStyles.style'),
-                    false, styleDownloadedFilesJs(removeStyleRouter))
+                    false, forceVisible === true ? undefined : styleDownloadedFilesJs(removeStyleRouter))
                     .toJson(),
                 ],
               })

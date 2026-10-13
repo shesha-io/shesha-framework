@@ -1,7 +1,7 @@
 import { createStyles, sheshaStyles } from '@/styles';
 import { ICollapsiblePanelProps } from '..';
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
-import { backgroundStyles, borderLinesStyles, borderRadiusStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, paddingValue, shadowStyles } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles, borderCss, borderLinesStyles, borderRadiusStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, paddingValue, shadowStyles } from '@/designer-components/_common/styles/utils';
 import { StyleBoxValue } from '@/providers';
 import { getFullSizeComponentDimensions } from '@/components/formDesigner/utils/stylingUtils';
 
@@ -10,8 +10,6 @@ const isG0 = (value: string | number | undefined): boolean => isDefined(value) &
 
 const defaultHeaderPadding: StyleBoxValue = { _type: 'styleBox', paddingBottom: 8, paddingTop: 8, paddingLeft: 16, paddingRight: 16 };
 const defaultPadding: StyleBoxValue = { _type: 'styleBox', paddingBottom: 16, paddingTop: 16, paddingLeft: 16, paddingRight: 16 };
-const compactPadding: StyleBoxValue = { _type: 'styleBox', paddingTop: 8, paddingLeft: 8, paddingRight: 0, paddingBottom: 0 };
-const compactBorderedPadding: StyleBoxValue = { _type: 'styleBox', paddingTop: 8, paddingLeft: 8, paddingRight: 8, paddingBottom: 8 };
 const defaultMargin: StyleBoxValue = { _type: 'styleBox', marginBottom: 5 };
 
 export const shaHeaderComponentsContainer = "sha-header-components-container";
@@ -20,22 +18,21 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
 
-  // Compact ghost panels have no frame, so they get a top/left inset only; compact bordered panels
-  // keep an even 8px inset on all sides so content doesn't touch the border.
-  const isCompact = model.compact === true && model.ghost === true;
-  const isCompactBordered = model.compact === true && model.ghost !== true;
-
   const borderValue = model.border?.border;
   const hasBorder = (model.border?.borderType === 'all' && isG0(borderValue?.all?.width)) ||
     (model.border?.borderType === 'custom' && (isG0(borderValue?.top?.width) || isG0(borderValue?.right?.width) || isG0(borderValue?.bottom?.width) || isG0(borderValue?.left?.width)));
 
   const dimensions = dimensionsStyles(getFullSizeComponentDimensions(model.dimensions));
-  const padding = paddingStyles(isCompact ? compactPadding : isCompactBordered ? compactBorderedPadding : (model.stylingBoxJson ?? defaultPadding));
+  const padding = paddingStyles(model.stylingBoxJson ?? defaultPadding);
 
   const headerDimensions = dimensionsStyles({ ...model.headerStyles?.dimensions, width: undefined, minWidth: undefined, maxWidth: undefined });
-  const headerPadding = paddingStyles(isCompactBordered
-    ? compactBorderedPadding
-    : { ...(model.headerStyles?.stylingBoxJson ?? defaultHeaderPadding), ...(isCompact ? { paddingLeft: 0, paddingBottom: 8 } : {}) });
+  const headerPadding = paddingStyles(model.headerStyles?.stylingBoxJson ?? defaultHeaderPadding);
+
+  // A ghost panel draws no frame: its header shows only a bottom line - the configured bottom border, or
+  // the primary-colour accent when none is configured. Every other configured border line is ignored.
+  const headerBorder = model.headerStyles?.border;
+  const headerBottomBorder = headerBorder?.borderType !== 'all' ? headerBorder?.border?.bottom : undefined;
+  const ghostHeaderBottomBorder = isDefined(headerBottomBorder) ? borderCss(headerBottomBorder) : `2px solid ${token.colorPrimary}`;
 
   // Only override antd's corner radii when a radius is configured; otherwise the undefined corners
   // are emitted as 0 !important and square off antd's rounded bottom corners.
@@ -107,7 +104,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
       ${backgroundStyles(model.headerStyles?.background ?? { type: 'color', color: 'transparent' })}
       ${headerDimensions}
       ${headerPadding}
-      ${borderLinesStyles(model.headerStyles?.border)}
+      ${model.ghost === true ? '' : borderLinesStyles(model.headerStyles?.border)}
       ${model.accentStyle === true ? 'border-top: 3px solid var(--primary-color);' : ''}
       align-items: center !important;
       ${collapsedBorderRadius} 
@@ -152,7 +149,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
           --ant-collapse-header-padding: 5px 0px !important;
           border-radius: 0 !important;
           border: none;
-          border-bottom: 2px solid ${token.colorPrimary};
+          border-bottom: ${ghostHeaderBottomBorder};
           ${model.accentStyle === true ? 'border-top: 3px solid var(--primary-color);' : ''}
           font-weight: ${isDefined(model.headerStyles?.font?.weight) ? model.headerStyles.font.weight : '500'};
         }
@@ -163,7 +160,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
           /* A ghost panel draws no frame of its own, so the default 16px content inset only indents its
              settings relative to the ones outside it - the reason properties under Format / Validations
              sat further in than the rest of the panel. Only apply an inset the configurer asked for. */
-          ${isDefined(model.stylingBoxJson) || isCompact ? '' : 'padding-inline: 0;'}
+          ${isDefined(model.stylingBoxJson) ? '' : 'padding-inline: 0;'}
 
         }
       }

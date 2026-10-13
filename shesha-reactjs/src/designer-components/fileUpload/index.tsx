@@ -35,6 +35,7 @@ import { FILE_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/event
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const FileUploadComponent: FileUploadComponentDefinition = {
+  themeGroup: 'input',
   allowInherit: true,
   type: 'fileUpload',
   name: 'File',
@@ -175,6 +176,20 @@ const FileUploadComponent: FileUploadComponentDefinition = {
     displayStyle: 'text',
   }),
   getDefaultStyles: () => defaultStyles(),
+  // Without this, the component defaults preview builds a generic model with allowUpload/allowReplace/
+  // allowDelete all unset, so the Upload button never renders and the preview shows only its label -
+  // the same thing a real instance would show before initModel/the migrator ever ran.
+  previewConfiguration: {
+    type: 'fileUpload',
+    id: 'fileUpload',
+    propertyName: 'fileUploadAppearance',
+    label: 'File Label',
+    version: 'latest',
+    allowUpload: true,
+    allowReplace: true,
+    allowDelete: true,
+    displayStyle: 'text',
+  },
   migrator: (m) =>
     m
       .add<IFileUploadProps>(0, (prev) => {
