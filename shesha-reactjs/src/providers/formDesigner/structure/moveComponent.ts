@@ -1,3 +1,4 @@
+import type { IToolboxComponent } from '@/interfaces';
 import type { FormDesignerComponentGetter } from '@/providers/form/hooks';
 import { IFlatComponentsStructure, isConfigurableFormComponent, ROOT_COMPONENT_KEY } from '@/providers/form/models';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
@@ -10,6 +11,15 @@ export const MISSING_COMPONENT_REASON = 'This component no longer exists.';
 export const MISSING_CONTAINER_REASON = 'That container no longer exists.';
 
 export type MoveComputation = { ok: true; markup: IFlatComponentsStructure } | { ok: false; reason: string };
+
+/** Why a container can't take `adding` more components, or undefined when it can */
+export const getItemsLimitReason = (definition: IToolboxComponent | undefined, currentCount: number, adding: number): string | undefined => {
+  const limit = definition?.itemsLimit;
+  if (!isDefined(definition) || !isDefined(limit) || currentCount + adding <= limit)
+    return undefined;
+  const name = capitalizeFirstLetter(definition.name);
+  return limit === 1 ? `${name} can only hold one component.` : `${name} can only hold ${limit} components.`;
+};
 
 /** Why the move isn't allowed, or undefined when it is */
 export const getMoveBlockReason = (
@@ -34,12 +44,9 @@ export const getMoveBlockReason = (
   if (containerId === ownerId) {
     const owner = markup.allComponents[ownerId];
     const definition = isConfigurableFormComponent(owner) ? getDefinition(owner.type) : undefined;
-    const limit = definition?.itemsLimit;
     const isAlreadyThere = (getParentContainerId(markup, componentId) ?? ROOT_COMPONENT_KEY) === containerId;
-    if (isDefined(definition) && isDefined(limit) && !isAlreadyThere && (markup.componentRelations[containerId] ?? []).length >= limit) {
-      const name = capitalizeFirstLetter(definition.name);
-      return limit === 1 ? `${name} can only hold one component.` : `${name} can only hold ${limit} components.`;
-    }
+    if (!isAlreadyThere)
+      return getItemsLimitReason(definition, (markup.componentRelations[containerId] ?? []).length, 1);
   }
   return undefined;
 };
