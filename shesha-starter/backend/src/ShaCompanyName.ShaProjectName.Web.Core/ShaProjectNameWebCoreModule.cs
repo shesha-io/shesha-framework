@@ -1,15 +1,12 @@
 ﻿using Abp.Modules;
 using Abp.Reflection.Extensions;
-using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ShaCompanyName.ShaProjectName.Application;
-using ShaCompanyName.ShaProjectName.Common.Authorization;
 using ShaCompanyName.ShaProjectName.Domain;
 using Shesha;
 using Shesha.Authentication.JwtBearer;
-using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.Configuration.Startup;
 using Shesha.Import;
@@ -79,9 +76,6 @@ namespace ShaCompanyName.ShaProjectName
         public override void Initialize()
         {
             IocManager.RegisterAssemblyByConvention(typeof(ShaProjectNameWebCoreModule).GetAssembly());
-
-            IocManager.IocContainer.Register(
-            Component.For<ICustomPermissionChecker>().Forward<IShaProjectNamePermissionChecker>().Forward<ShaProjectNamePermissionChecker>().ImplementedBy<ShaProjectNamePermissionChecker>().LifestyleTransient()                );
         }
     }
 }

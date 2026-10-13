@@ -6,13 +6,10 @@ using Abp.FluentValidation;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Zero.Configuration;
-using Boxfusion.Authorization;
-using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Shesha.Authentication.JwtBearer;
-using Shesha.Authorization;
 using Shesha.Bootstrappers;
 using Shesha.Configuration;
 using Shesha.Configuration.Startup;
@@ -47,12 +44,10 @@ namespace Shesha
             Publisher = "Boxfusion",
         };
 
-        private readonly IWebHostEnvironment _env;
         private readonly IConfigurationRoot _appConfiguration;
 
         public SheshaWebCoreModule(IWebHostEnvironment env)
         {
-            _env = env;
             _appConfiguration = env.GetAppConfiguration();
         }
 
@@ -92,9 +87,6 @@ namespace Shesha
         public override void Initialize()
         {
             IocManager.RegisterAssemblyByConvention(typeof(SheshaWebCoreModule).GetAssembly());
-            IocManager.IocContainer.Register(
-              Component.For<ICustomPermissionChecker>().Forward<ISheshaWebCorePermissionChecker>().Forward<SheshaWebCorePermissionChecker>().ImplementedBy<SheshaWebCorePermissionChecker>().LifestyleTransient()
-            );
             IocManager.Register<IBootstrapper, SouthAfricaLanguagesCreator>();
         }
     }
