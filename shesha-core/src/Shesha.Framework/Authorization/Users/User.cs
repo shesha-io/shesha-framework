@@ -152,8 +152,6 @@ namespace Shesha.Authorization.Users
         }
 
         public new const string AdminUserName = "admin";
-        public const string DevUserName = "dev";
-        public const string ConfigUserName = "config";
 
         public static User CreateTenantAdminUser(int tenantId, string emailAddress)
         {
