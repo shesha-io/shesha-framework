@@ -9,7 +9,7 @@ import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
 import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { DEFAULT_FORM_SETTINGS, FormItemProvider, IConfigurableFormComponent, useForm } from '@/providers';
-import { upgradeComponent } from '@/providers/form/utils';
+import { getFieldNameFromExpression, upgradeComponent } from '@/providers/form/utils';
 import { IColumnEditorProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
 import { IComponentWrapperProps, IConfigurableCellProps, IDataCellProps } from './interfaces';
 import { ITableDataColumn } from '@/providers/dataTable/interfaces';
@@ -30,9 +30,14 @@ import { IPropertyMetadata, IToolboxComponent } from '@/interfaces';
 export const DefaultDataDisplayCell = <D extends object = object, V = unknown>(props: IDataCellProps<D, V>): ReactNode => {
   const { columnConfig } = props;
   const { form } = useForm();
-  const value = !isNullOrWhiteSpace(columnConfig.propertyName) && isDefined(form)
-    ? form.getFieldValue(columnConfig.propertyName.split('.')) as unknown
+  // use the same NamePath conversion the form registers fields with, so the lookup can't miss on casing
+  const fieldName = getFieldNameFromExpression(columnConfig.propertyName);
+  const formValue = isDefined(fieldName) && isDefined(form)
+    ? form.getFieldValue(Array.isArray(fieldName) ? fieldName : [fieldName]) as unknown
     : undefined;
+
+  // the table has already resolved the cell value; the form wins while inline editing
+  const value = isDefined(formValue) ? formValue : props.value;
 
   switch (columnConfig.dataType) {
     case 'number':

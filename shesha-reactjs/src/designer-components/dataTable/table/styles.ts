@@ -74,7 +74,7 @@ export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx, to
         /* Ensure selected row styling always takes priority over striped rows */
         .sha-react-table .sha-table .tr.tr-body.tr-odd.sha-tr-selected {
           background-color: ${token.colorPrimary} !important;
-          color: white !important;
+          color: ${token.colorTextLightSolid} !important;
         }
       `}
 
