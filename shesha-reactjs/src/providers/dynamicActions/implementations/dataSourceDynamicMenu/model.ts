@@ -1,4 +1,5 @@
 import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
+import { GroupingItem, ISortingItem } from "@/providers/dataTable/interfaces";
 
 export interface IWorkflowInstanceStartActionsProps { }
 
@@ -12,4 +13,6 @@ export interface IDataSourceArguments {
     tooltipProperty?: string;
     maxResultCount?: number;
     buttonType?: string;
+    grouping?: GroupingItem[];
+    sorting?: ISortingItem[];
 }
