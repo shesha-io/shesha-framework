@@ -16,10 +16,18 @@ namespace Shesha.Otp
 
         public string GeneratePin()
         {
+            return GeneratePin(null, null);
+        }
+
+        public string GeneratePin(int? length, string? alphabet)
+        {
             var password = string.Empty;
 
-            var alphabet = _settings.OneTimePins.GetValue().Alphabet;
-            var passwordLength = _settings.OneTimePins.GetValue().PasswordLength;
+            if (string.IsNullOrEmpty(alphabet))
+                alphabet = _settings.OneTimePins.GetValue().Alphabet;
+            var passwordLength = length.HasValue && length.Value > 0
+                ? length.Value
+                : _settings.OneTimePins.GetValue().PasswordLength;
 
             for (int i = 0; i < passwordLength; i++)
             {

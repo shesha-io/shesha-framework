@@ -1,5 +1,6 @@
 ﻿using System;
 using Shesha.Domain.Enums;
+using Shesha.EntityReferences;
 
 namespace Shesha.Otp.Dto
 {
@@ -32,5 +33,15 @@ namespace Shesha.Otp.Dto
         public OtpSendStatus SendStatus { get; set; }
 
         public string? ErrorMessage { get; set; }
+
+        /// <summary>
+        /// Id of the OTP configuration (<c>OtpConfig</c>) used to generate and deliver the pin. Empty for the legacy flow
+        /// </summary>
+        public Guid? OtpConfigId { get; set; }
+
+        /// <summary>
+        /// Entity that originated the OTP request
+        /// </summary>
+        public GenericEntityReference? Owner { get; set; }
     }
 }

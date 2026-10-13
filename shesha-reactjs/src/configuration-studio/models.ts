@@ -126,6 +126,7 @@ export const ITEM_TYPES = {
   SETTING: 'setting-configuration',
   NOTIFICATION: 'notification-type',
   NOTIFICATION_CHANNEL: 'notification-channel',
+  OTP_CONFIG: 'otp-config',
 };
 
 export type ItemTypeBackendDefinition = {

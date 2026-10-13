@@ -21,6 +21,7 @@ const ITEM_TYPE_FRIENDLY_NAMES: Record<string, string> = {
   [ITEM_TYPES.SETTING]: 'Setting',
   [ITEM_TYPES.NOTIFICATION]: 'Notification',
   [ITEM_TYPES.NOTIFICATION_CHANNEL]: 'Notification channel',
+  [ITEM_TYPES.OTP_CONFIG]: 'OTP configuration',
 };
 
 const getItemTypeFriendlyName = (itemType: string): string =>
