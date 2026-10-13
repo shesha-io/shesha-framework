@@ -156,7 +156,7 @@
       "propertyName": "actionConfiguration",
       "label": "Action configuration",
       "hidden": false,
-      "onBuildExpression": "metadataBuilder.addStandard('shesha:dynamicItem');",
+      "onBuildExpression": "metadataBuilder.addCustom('dynamicItem', 'Entity of the dynamic menu item that triggered this action (undefined if not available)', () => Promise.resolve({ typeName: 'unknown', files: [] }));",
       "validate": {},
       "settingsValidationErrors": [],
       "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",

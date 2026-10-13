@@ -9,6 +9,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableActionConfiguratorComponentProps> = {
   type: 'configurableActionConfigurator',
@@ -18,17 +19,18 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
   isOutput: true,
   Factory: ({ model }) => {
     const { onBuildExpression } = model ?? {};
+    const hasOnBuildExpression = isNotNullOrWhiteSpace(onBuildExpression);
 
     const onBuild = useCallback((metadataBuilder: IObjectMetadataBuilder) => {
-      if (onBuildExpression)
+      if (hasOnBuildExpression)
         executeScriptSync(onBuildExpression, { metadataBuilder });
-    }, [onBuildExpression]);
+    }, [hasOnBuildExpression, onBuildExpression]);
 
     if (model.hidden) return null;
 
     return (
       <Form.Item name={model.propertyName} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
-        <ConfigurableActionConfigurator allowedActions={model?.allowedActions} onBuild={onBuildExpression ? onBuild : undefined} editorConfig={model} level={1} readOnly={model.readOnly} label={model.label} description={model.description} />
+        <ConfigurableActionConfigurator allowedActions={model?.allowedActions} onBuild={hasOnBuildExpression ? onBuild : undefined} editorConfig={model} level={1} readOnly={model.readOnly} label={model.label} description={model.description} />
       </Form.Item>
     );
   },
