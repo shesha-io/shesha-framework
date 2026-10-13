@@ -21,14 +21,16 @@ import {
   ValidationNodeRef,
 } from "@/interfaces";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
-import { camelcaseDotNotation } from '@/utils/string';
+import { camelcaseDotNotation, capitalizeFirstLetter } from '@/utils/string';
 import { nanoid } from "@/utils/uuid";
 import { FormDesignerComponentGetter, toolbarGroupsToComponents } from "../form/hooks";
 import { componentsFlatStructureToTree, componentsTreeToFlatStructure, createComponentModelForDataProperty, getComponentContainers, IApplicationContext, processRecursive, upgradeComponent, upgradeComponentsTree } from "../form/utils";
+import { getEmptyFlatMarkup } from "../form/models";
 import {
   FormDesignerFormState,
   IAddDataPropertyPayload,
   IComponentAddPayload,
+  IComponentSettingsPastePayload,
   IComponentsPastePayload,
   IComponentDeletePayload,
   IComponentDuplicatePayload,
@@ -48,7 +50,7 @@ import { havePanesChanged, haveRelationsChanged } from "./structure/relations";
 import { buildContainerOwnership, IContainerOwnership } from "./structure/containers";
 import { getComponentDisplayText } from "./structure/displayText";
 import { computeMove } from "./structure/moveComponent";
-import { getPasteProblem, getPasteTarget, renewIds, resolveNameClashes } from "./clipboard";
+import { getCopiedSettings, getPasteProblem, getPasteTarget, mergeSettings, renewIds, resolveNameClashes } from "./clipboard";
 import { getRevealPath } from "./structure/revealPath";
 import { IFormPersisterContext } from "../formPersisterProvider/contexts";
 import { ValidationCollector } from "../validator";
@@ -821,6 +823,26 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     const component = formFlatMarkup.allComponents[payload.componentId];
     const name = isConfigurableFormComponent(component) ? getComponentDisplayText(component) : payload.componentId;
     this.updateState((state) => ({ ...state, formFlatMarkup: computed.markup }), `Moved ${name}`);
+    return { ok: true };
+  };
+
+  pasteSettings = (payload: IComponentSettingsPastePayload): ChangeResult => {
+    const target = this.state.formFlatMarkup.allComponents[payload.componentId];
+    if (!isConfigurableFormComponent(target))
+      return { ok: false, reason: 'This component no longer exists.' };
+    const definition = this.getToolboxComponentOrUndefined(target.type);
+    if (target.type !== payload.componentType || !isDefined(definition)) {
+      const copiedName = this.getToolboxComponentOrUndefined(payload.componentType)?.name ?? payload.componentType;
+      return { ok: false, reason: `Settings can only be pasted onto another ${capitalizeFirstLetter(copiedName)}.` };
+    }
+
+    // older copies are brought up to date first; the throwaway structure keeps migrations away from the form
+    const upgraded = upgradeComponent(mergeSettings(target, payload.settings, definition), definition, this.state.formSettings, getEmptyFlatMarkup());
+    const result = mergeSettings(target, getCopiedSettings(upgraded, definition), definition);
+    this.updateState((state): FormDesignerFormState => ({
+      ...state,
+      formFlatMarkup: { ...state.formFlatMarkup, allComponents: { ...state.formFlatMarkup.allComponents, [target.id]: result } },
+    }), `Pasted settings onto ${getComponentDisplayText(target)}`);
     return { ok: true };
   };
 

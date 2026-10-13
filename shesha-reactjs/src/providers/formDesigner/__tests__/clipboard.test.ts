@@ -1,5 +1,5 @@
 import { IConfigurableFormComponent, ROOT_COMPONENT_KEY } from '@/providers/form/models';
-import { getPasteProblem, getPasteTarget, IPasteSelection, parseClipboardText, PasteMode, PasteTarget, renewIds, resolveNameClashes, toClipboardText } from '../clipboard';
+import { getCopiedSettings, getPasteProblem, getPasteTarget, IPasteSelection, mergeSettings, parseClipboardText, PasteMode, PasteTarget, renewIds, resolveNameClashes, toClipboardText } from '../clipboard';
 import { buildContainerOwnership } from '../structure/containers';
 import { buildTestMarkup, getTestDefinition, sampleForm, testComponent, TestComponent } from './testMarkup';
 
@@ -155,5 +155,29 @@ describe('getPasteTarget()', () => {
 
   it('respects item limits', () => {
     expect(target({ componentId: 'link1' })).toEqual({ reason: 'Link can only hold one component.' });
+  });
+});
+
+describe('settings', () => {
+  it('copies everything except identity, binding and contents', () => {
+    const panel = testComponent({ id: 'p', type: 'container', componentName: 'box', propertyName: 'box', parentId: 'root', label: 'Panel', components: [], hidden: true });
+    expect(getCopiedSettings(panel, getTestDefinition('container'))).toEqual({ label: 'Panel', hidden: true });
+  });
+
+  it('keeps the target identity, binding and contents, and drops settings the copy does not have', () => {
+    const target = testComponent({ id: 't', type: 'textField', componentName: 'txtCity', propertyName: 'city', label: 'City', hidden: true, parentId: 'root' });
+    expect(mergeSettings(target, { label: 'Email', placeholder: 'you@example.com' }, getTestDefinition('textField')))
+      .toEqual({ id: 't', type: 'textField', componentName: 'txtCity', propertyName: 'city', parentId: 'root', label: 'Email', placeholder: 'you@example.com' });
+  });
+
+  it('keeps the target\'s default tab or step, which names one of its own panes', () => {
+    const source = testComponent({ id: 's', type: 'tabs', defaultActiveKey: 'source-tab', tabPosition: 'left', tabs: [] });
+    const target = testComponent({ id: 't', type: 'tabs', defaultActiveKey: 'target-tab', tabs: [] });
+    const settings = getCopiedSettings(source, getTestDefinition('tabs'));
+    expect(settings).toEqual({ tabPosition: 'left' });
+    expect(mergeSettings(target, settings, getTestDefinition('tabs'))).toMatchObject({ defaultActiveKey: 'target-tab', tabPosition: 'left' });
+
+    const wizard = testComponent({ id: 'w', type: 'wizard', defaultActiveStep: 'step-2', steps: [] });
+    expect(getCopiedSettings(wizard, getTestDefinition('wizard'))).toEqual({});
   });
 });

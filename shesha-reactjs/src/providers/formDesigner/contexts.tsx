@@ -59,6 +59,13 @@ export interface IComponentsPastePayload {
 
 export type PasteResult = { ok: true; componentIds: string[]; renamed: INameChange[] } | { ok: false; reason: string };
 
+export interface IComponentSettingsPastePayload {
+  componentId: string;
+  /** Type of the component the settings were copied from */
+  componentType: string;
+  settings: Record<string, unknown>;
+}
+
 export interface IRevealRequest {
   /** Panes to open, outermost first */
   containerIds: readonly string[];
@@ -146,6 +153,8 @@ type FormDesignerActions = {
   getComponentTree: (componentId: string) => IConfigurableFormComponent | undefined;
   /** Pastes components with new ids where `selection` and `mode` say, as one undo step */
   pasteComponents: (payload: IComponentsPastePayload) => PasteResult;
+  /** Applies copied settings to a component of the same type, keeping its identity, binding and contents. One undo step */
+  pasteSettings: (payload: IComponentSettingsPastePayload) => ChangeResult;
   getComponentDefinition: FormDesignerComponentGetter;
   /** Which component owns each container, rebuilt only when the structure changes */
   getContainerOwnership: () => IContainerOwnership;

@@ -52,8 +52,22 @@ export const useDesignerClipboardEvents = (): ClipboardHandlers => {
           event.preventDefault();
       },
       onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
+        if (!(event.ctrlKey || event.metaKey) || isFromOutside(event))
+          return;
+        const componentId = designer.selectedComponentId;
+        // Ctrl+Alt+C / V copy and paste settings; event.code, because Option changes the key on macOS
+        if (event.altKey && isDefined(componentId) && !isTypingTarget(event.target)) {
+          if (event.code === 'KeyC') {
+            event.preventDefault();
+            void clipboard.copySettings(componentId);
+          } else if (event.code === 'KeyV' && !designer.readOnly) {
+            event.preventDefault();
+            void clipboard.pasteSettings(componentId);
+          }
+          return;
+        }
         // the paste event doesn't say whether Shift was held
-        if ((event.ctrlKey || event.metaKey) && event.code === 'KeyV')
+        if (event.code === 'KeyV')
           pasteAfter.current = event.shiftKey;
       },
     };

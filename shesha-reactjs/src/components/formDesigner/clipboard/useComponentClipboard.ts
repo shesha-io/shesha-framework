@@ -3,7 +3,7 @@ import { App } from 'antd';
 import { announce } from '@atlaskit/pragmatic-drag-and-drop-live-region';
 import { isConfigurableFormComponent } from '@/providers/form/models';
 import { useFormDesigner } from '@/providers/formDesigner';
-import { IPasteSelection, parseClipboardText, PasteMode, toClipboardText } from '@/providers/formDesigner/clipboard';
+import { getCopiedSettings, IPasteSelection, parseClipboardText, PasteMode, toClipboardText } from '@/providers/formDesigner/clipboard';
 import { getComponentDisplayText } from '@/providers/formDesigner/structure/displayText';
 import { isDefined } from '@/utils/nullables';
 import { flashRow } from '../layers/canvasBridge';
@@ -18,6 +18,8 @@ export interface IComponentClipboard {
   /** For menus and buttons, which can't use the browser's copy and paste events */
   copyToClipboard: (componentId: string, cut: boolean) => Promise<void>;
   pasteFromClipboard: (selection: IPasteSelection, mode: PasteMode) => Promise<void>;
+  copySettings: (componentId: string) => Promise<void>;
+  pasteSettings: (componentId: string) => Promise<void>;
 }
 
 /** Copy, cut and paste of components through the clipboard, with the messages that go with them */
@@ -79,20 +81,53 @@ export const useComponentClipboard = (): IComponentClipboard => {
     finishCopy(componentId, cut);
   }, [getCopyText, message, finishCopy]);
 
-  const pasteFromClipboard = useCallback(async (selection: IPasteSelection, mode: PasteMode): Promise<void> => {
-    let text: string;
+  const readClipboard = useCallback(async (refusedMessage: string): Promise<string | undefined> => {
     try {
-      text = await navigator.clipboard.readText();
+      return await navigator.clipboard.readText();
     } catch {
-      void message.warning("The browser didn't allow access to the clipboard. Use the keyboard instead.");
+      void message.warning(refusedMessage);
+      return undefined;
+    }
+  }, [message]);
+
+  const pasteFromClipboard = useCallback(async (selection: IPasteSelection, mode: PasteMode): Promise<void> => {
+    const text = await readClipboard("The browser didn't allow access to the clipboard. Use the keyboard instead.");
+    if (isDefined(text) && !paste(text, selection, mode))
+      void message.info('Nothing to paste. Copy a component first.');
+  }, [message, paste, readClipboard]);
+
+  const copySettings = useCallback(async (componentId: string): Promise<void> => {
+    const component = designer.state.formFlatMarkup.allComponents[componentId];
+    if (!isConfigurableFormComponent(component))
+      return;
+    const settings = getCopiedSettings(component, designer.getComponentDefinition(component.type));
+    try {
+      await navigator.clipboard.writeText(toClipboardText({ kind: 'settings', componentType: component.type, settings }));
+    } catch {
+      void message.warning("The browser didn't allow access to the clipboard.");
       return;
     }
-    if (!paste(text, selection, mode))
-      void message.info('Nothing to paste. Copy a component first.');
-  }, [message, paste]);
+    void message.success(`Copied the settings of ${labelOf(componentId)}`);
+  }, [designer, labelOf, message]);
+
+  const pasteSettings = useCallback(async (componentId: string): Promise<void> => {
+    const text = await readClipboard("The browser didn't allow access to the clipboard.");
+    if (!isDefined(text))
+      return;
+    const content = parseClipboardText(text);
+    if (content?.kind !== 'settings') {
+      void message.info("Nothing to paste. Copy a component's settings first.");
+      return;
+    }
+    const result = designer.pasteSettings({ componentId, componentType: content.componentType, settings: content.settings });
+    if (result.ok)
+      void message.success(`Pasted settings onto ${labelOf(componentId)}`);
+    else
+      void message.warning(result.reason);
+  }, [designer, labelOf, message, readClipboard]);
 
   return useMemo(
-    () => ({ getCopyText, finishCopy, paste, copyToClipboard, pasteFromClipboard }),
-    [getCopyText, finishCopy, paste, copyToClipboard, pasteFromClipboard],
+    () => ({ getCopyText, finishCopy, paste, copyToClipboard, pasteFromClipboard, copySettings, pasteSettings }),
+    [getCopyText, finishCopy, paste, copyToClipboard, pasteFromClipboard, copySettings, pasteSettings],
   );
 };

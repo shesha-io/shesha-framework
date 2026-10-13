@@ -96,4 +96,28 @@ describe('FormDesignerInstance: copy and paste', () => {
       .toEqual({ ok: false, reason: 'Link can only hold one component.' });
     expect(designer.state.formFlatMarkup).toBe(before);
   });
+
+  it('pastes settings onto a component of the same type, as one undo step', () => {
+    const designer = createTestDesigner(sampleForm());
+
+    expect(designer.pasteSettings({ componentId: 'phone', componentType: 'textField', settings: { label: 'Mobile' } })).toEqual({ ok: true });
+    expect(designer.state.formFlatMarkup.allComponents['phone']).toMatchObject({ id: 'phone', label: 'Mobile', propertyName: 'phone' });
+
+    designer.undo();
+    expect(designer.state.formFlatMarkup.allComponents['phone']).toMatchObject({ label: 'Phone' });
+  });
+
+  it('refuses settings copied from a different type', () => {
+    const designer = createTestDesigner(sampleForm());
+    expect(designer.pasteSettings({ componentId: 'save', componentType: 'textField', settings: { label: 'x' } }))
+      .toEqual({ ok: false, reason: 'Settings can only be pasted onto another Text field.' });
+  });
+
+  it("keeps a wizard's own steps when another wizard's settings are pasted onto it", () => {
+    const designer = createTestDesigner([{ id: 'w1', type: 'wizard', steps: [{ id: 's1', title: 'One', components: [{ id: 'f', type: 'textField' }] }] }]);
+
+    designer.pasteSettings({ componentId: 'w1', componentType: 'wizard', settings: { label: 'Signup' } });
+
+    expect(designer.getComponentTree('w1')).toMatchObject({ label: 'Signup', steps: [{ id: 's1', components: [{ id: 'f' }] }] });
+  });
 });

@@ -1,3 +1,4 @@
+import type { IToolboxComponent } from '@/interfaces';
 import type { FormDesignerComponentGetter } from '@/providers/form/hooks';
 import { IConfigurableFormComponent, IFlatComponentsStructure, isConfigurableFormComponent, ROOT_COMPONENT_KEY } from '@/providers/form/models';
 import { getComponentContainers } from '@/providers/form/utils';
@@ -129,6 +130,30 @@ export const resolveNameClashes = (components: readonly IConfigurableFormCompone
   };
   components.forEach(visit);
   return changes;
+};
+
+// a default tab or step names one of the component's own panes, so it stays with them
+const structureKeys = (definition: IToolboxComponent | undefined): string[] =>
+  ['id', 'type', 'componentName', 'propertyName', 'parentId', 'defaultActiveKey', 'defaultActiveStep', ...(definition?.customContainerNames ?? ['components'])];
+
+/** A component's settings without its identity, binding or contents */
+export const getCopiedSettings = (component: IConfigurableFormComponent, definition: IToolboxComponent | undefined): Record<string, unknown> => {
+  const settings: Record<string, unknown> = { ...component };
+  structureKeys(definition).forEach((key) => delete settings[key]);
+  return settings;
+};
+
+/** Copied settings applied to a component of the same type, keeping its identity, binding and contents */
+export const mergeSettings = (target: IConfigurableFormComponent, settings: Record<string, unknown>, definition: IToolboxComponent | undefined): IConfigurableFormComponent => {
+  const result: Record<string, unknown> = { ...settings };
+  structureKeys(definition).forEach((key) => {
+    const value: unknown = Reflect.get(target, key);
+    if (value === undefined)
+      delete result[key];
+    else
+      result[key] = value;
+  });
+  return isConfigurableFormComponent(result) ? result : target;
 };
 
 export type PasteMode = 'auto' | 'after' | 'inside';

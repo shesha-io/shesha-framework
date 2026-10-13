@@ -8,7 +8,7 @@ vi.mock('@/providers/formDesigner/formValidator', async (importOriginal) => {
   return { ...actual, FormValidator: FormValidatorStub };
 });
 
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { App } from 'antd';
 import { FC } from 'react';
 import { createPortal } from 'react-dom';
@@ -136,5 +136,46 @@ describe('designer clipboard events', () => {
 
     expect(designer.state.formFlatMarkup.componentRelations['panel']).toEqual(['city']);
     expect(designer.state.formFlatMarkup.componentRelations['root']).toHaveLength(5);
+  });
+});
+
+describe('settings keys', () => {
+  let text = '';
+  beforeEach(() => {
+    text = '';
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: (value: string) => {
+          text = value;
+          return Promise.resolve();
+        },
+        readText: () => Promise.resolve(text),
+      },
+    });
+  });
+
+  it('leaves the settings keys alone in dialogs shown over the designer', () => {
+    const designer = createTestDesigner(sampleForm());
+    renderRoot(designer);
+    act(() => designer.setSelectedComponent('phone'));
+
+    fireEvent.keyDown(screen.getByText('In a dialog'), { key: 'c', code: 'KeyC', ctrlKey: true, altKey: true });
+
+    expect(text).toBe('');
+  });
+
+  it('copies one component\'s settings with Ctrl+Alt+C and pastes them onto another with Ctrl+Alt+V', async () => {
+    const designer = createTestDesigner(sampleForm());
+    renderRoot(designer);
+    act(() => designer.setSelectedComponent('phone'));
+
+    fireEvent.keyDown(screen.getByTestId('root'), { key: 'c', code: 'KeyC', ctrlKey: true, altKey: true });
+    await waitFor(() => expect(text).toContain('"settings"'));
+
+    act(() => designer.setSelectedComponent('email'));
+    fireEvent.keyDown(screen.getByTestId('root'), { key: 'v', code: 'KeyV', ctrlKey: true, altKey: true });
+
+    await waitFor(() => expect(designer.state.formFlatMarkup.allComponents['email']).toMatchObject({ id: 'email', label: 'Phone', propertyName: 'email' }));
   });
 });
