@@ -158,6 +158,8 @@ namespace Shesha.Configuration.Runtime
 
         #endregion
 
+        public bool HasPermissionedProperties { get; set; }
+
         /// <summary>
         /// Type of the default application service
         /// </summary>

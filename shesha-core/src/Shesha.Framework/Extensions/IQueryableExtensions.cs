@@ -74,8 +74,9 @@ namespace Shesha.Extensions
         /// </summary>
         /// <param name="query">Queryable to be filtered</param>
         /// <param name="filter">String representation of JsonLogic filter</param>
+        /// <param name="checkPropertiesPermissions">Check permissions for filtered properties</param>
         /// <returns></returns>
-        public static IQueryable<TEntity> ApplyFilter<TEntity, TId>(this IQueryable<TEntity> query, string filter) where TEntity : class, IEntity<TId>
+        public static IQueryable<TEntity> ApplyFilter<TEntity, TId>(this IQueryable<TEntity> query, string filter, bool checkPropertiesPermissions = false) where TEntity : class, IEntity<TId>
         {
             if (string.IsNullOrWhiteSpace(filter))
                 return query;
@@ -83,6 +84,7 @@ namespace Shesha.Extensions
             var jsonLogic = JObject.Parse(filter);
 
             var jsonLogicConverter = StaticContext.IocManager.Resolve<IJsonLogic2LinqConverter>();
+            jsonLogicConverter.CheckPropertiesPermissions = checkPropertiesPermissions;
             var expression = jsonLogicConverter.ParseExpressionOf<TEntity>(jsonLogic);
 
             return query.Where(expression);

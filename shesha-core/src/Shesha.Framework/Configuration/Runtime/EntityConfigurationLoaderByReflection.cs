@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using Shesha.Authorization;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.EntityReferences;
@@ -27,6 +28,8 @@ namespace Shesha.Configuration.Runtime
             // Loading property configuration.
             var ownProps = config.EntityType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.Instance).ToList();
             var props = config.EntityType.GetProperties().ToList();
+
+            config.HasPermissionedProperties = props.Any(x => x.HasAttribute<SheshaAuthorizeAttribute>());
 
             var propsWithoutDuplicates = props.GroupBy(p => p.Name, (name, duplicates) =>
                 duplicates

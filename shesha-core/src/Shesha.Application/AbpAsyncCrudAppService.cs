@@ -116,7 +116,7 @@ namespace Shesha
 
             var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var entity = await GetEntityByIdAsync(input.Id);
-            return MapToEntityDto(permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity));
+            return MapToEntityDto(permissionedEntityProvider.GetPermissionedEntityOrEntity(entity));
         }
 
         public virtual async Task<PagedResultDto<TEntityDto>> GetAllAsync(TGetAllInput input)
@@ -132,7 +132,7 @@ namespace Shesha
             query = ApplyPaging(query, input);
 
             var entities = (await AsyncQueryableExecuter.ToListAsync(query))
-                .Select(x => permissionedEntityProvider.GetNewProxiedPermissionedEntity(x))
+                .Select(x => permissionedEntityProvider.GetPermissionedEntityOrEntity(x))
                 .ToList();
 
             return new PagedResultDto<TEntityDto>(
@@ -177,7 +177,7 @@ namespace Shesha
             await Repository.InsertAsync(entity);
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            return MapToEntityDto(permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity));
+            return MapToEntityDto(permissionedEntityProvider.GetPermissionedEntityOrEntity(entity));
         }
 
         public virtual async Task<TEntityDto> UpdateAsync(TUpdateInput input)
@@ -193,7 +193,7 @@ namespace Shesha
 
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            return MapToEntityDto(permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity));
+            return MapToEntityDto(permissionedEntityProvider.GetPermissionedEntityOrEntity(entity));
         }
 
         public virtual Task DeleteAsync(TDeleteInput input)

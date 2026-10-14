@@ -85,6 +85,7 @@ namespace Shesha.GraphQL.Provider.Queries
                     var quickSearcher = services.GetRequiredService<IQuickSearcher>();
                     var specificationManager = services.GetRequiredService<ISpecificationManager>();
                     var jsonLogicConverter = services.GetRequiredService<IJsonLogic2LinqConverter>();
+                    jsonLogicConverter.CheckPropertiesPermissions = true;
 
                     var unitOfWorkManager = services.GetRequiredService<IUnitOfWorkManager>();
                     var uow = unitOfWorkManager.Current;

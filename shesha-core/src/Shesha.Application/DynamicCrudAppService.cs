@@ -76,7 +76,7 @@ namespace Shesha
 
             var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>(); 
             var entity = await Repository.GetAsync(input.Id);
-            var permissionedProxy = permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity);
+            var permissionedProxy = permissionedEntityProvider.GetPermissionedEntityOrEntity(entity);
             return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(permissionedProxy.NotNull(), new DynamicMappingSettings()
             {
                 UseDtoForEntityReferences = true
@@ -102,7 +102,7 @@ namespace Shesha
             var list = new List<TDynamicDto>();
             foreach (var entity in entities)
             {
-                var permissionedProxy = permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity);
+                var permissionedProxy = permissionedEntityProvider.GetPermissionedEntityOrEntity(entity);
                 list.Add(await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(permissionedProxy, new DynamicMappingSettings()
                 {
                     UseDtoForEntityReferences = true
@@ -122,7 +122,7 @@ namespace Shesha
             CheckCreatePermission();
             var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var entity = await InternalCreateAsync(input);
-            var permissionedProxy = permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity);
+            var permissionedProxy = permissionedEntityProvider.GetPermissionedEntityOrEntity(entity);
             return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(permissionedProxy, new DynamicMappingSettings()
             {
                 UseDtoForEntityReferences = true
@@ -136,7 +136,7 @@ namespace Shesha
             CheckUpdatePermission();
             var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var entity = await InternalUpdateAsync(input);
-            var permissionedProxy = permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity);
+            var permissionedProxy = permissionedEntityProvider.GetPermissionedEntityOrEntity(entity);
             return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(permissionedProxy, new DynamicMappingSettings()
             {
                 UseDtoForEntityReferences = true

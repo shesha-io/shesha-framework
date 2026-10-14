@@ -15,11 +15,11 @@ namespace Shesha.GraphQL.Middleware
             if (context.Source.IsEntity() && !(context.Source is IPermissionedEntityProxy))
             {
                 var permissionedEntityProvider = context.RequestServices?.GetService<IPermissionedEntityProvider>();
-                if (permissionedEntityProvider != null)
+                if (permissionedEntityProvider != null && permissionedEntityProvider.IsEntityTypePermissioned(context.Source))
                 {
                     var newContext = new ResolveFieldContext(context)
                     {
-                        Source = permissionedEntityProvider.GetNewProxiedPermissionedEntity(context.Source)
+                        Source = permissionedEntityProvider.GetPermissionedEntity(context.Source)
                     };
                     return await next(newContext);
                 }
