@@ -1,23 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Abp.Runtime.Security;
+using Shesha.Authentication.JwtBearer;
+using Shesha.Services;
+using System;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Shesha.Web.Host.Startup
+namespace Shesha.Authentication
 {
     public static class AuthConfigurer
     {
-        private static IConfiguration _configuration;
-
         public static void Configure(IServiceCollection services, IConfiguration configuration)
         {
-            _configuration = configuration;
-
             if (bool.Parse(configuration["Authentication:JwtBearer:IsEnabled"]))
             {
                 services.AddAuthentication(options => {
@@ -50,34 +46,21 @@ namespace Shesha.Web.Host.Startup
 
                     options.Events = new JwtBearerEvents
                     {
-                        OnMessageReceived = QueryStringTokenResolver
+                        OnMessageReceived = OnMessageReceivedAsync,
+                        OnTokenValidated = context => context.EnsureTokenIsNotBlacklistedAsync(),
                     };
                 });
             }
         }
 
-        /* This method is needed to authorize SignalR javascript client.
-         * SignalR can not send authorization header. So, we are getting it from query string as an encrypted text. */
-        private static Task QueryStringTokenResolver(MessageReceivedContext context)
+        /* This method is needed to authorize custom clients like SignalR */
+        private static async Task OnMessageReceivedAsync(MessageReceivedContext context)
         {
-            if (!context.HttpContext.Request.Path.HasValue ||
-                !context.HttpContext.Request.Path.Value.StartsWith("/signalr"))
+            var handlers = StaticContext.IocManager.ResolveAll<IJwtBearerOnMessageReceivedHandler>();
+            foreach (var handler in handlers)
             {
-                // We are just looking for signalr clients
-                return Task.CompletedTask;
+                await handler.OnMessageReceivedAsync(context);
             }
-
-            var qsAuthToken = context.HttpContext.Request.Query["enc_auth_token"].FirstOrDefault();
-            if (qsAuthToken == null)
-            {
-                // Cookie value does not matches to querystring value
-                return Task.CompletedTask;
-            }
-
-            // Set auth token from cookie
-            var encryptionPassPhrase = _configuration?["Authentication:EncryptionPassPhrase"] ?? AppConsts.DefaultPassPhrase;
-            context.Token = SimpleStringCipher.Instance.Decrypt(qsAuthToken, encryptionPassPhrase);
-            return Task.CompletedTask;
         }
     }
 }

@@ -2,7 +2,6 @@ using Abp.AspNetCore;
 using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
 using Abp.PlugIns;
-using Boxfusion.SheshaFunctionalTests.Hangfire;
 using Castle.Facilities.Logging;
 using GraphQL;
 using Hangfire;
@@ -16,9 +15,11 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Shesha;
+using Shesha.Authentication;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
@@ -29,9 +30,11 @@ using Shesha.Extensions;
 using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
 using Shesha.Identity;
-using Shesha.Notifications.SMS;
 using Shesha.Notifications;
+using Shesha.Notifications.SMS;
 using Shesha.Scheduler.Extensions;
+using Shesha.Scheduler.Hangfire;
+using Shesha.Specifications;
 using Shesha.Swagger;
 using Shesha.Web;
 using Swashbuckle.AspNetCore.Swagger;
@@ -40,8 +43,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Extensions.Hosting;
-using Shesha.Specifications;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {
@@ -174,10 +175,10 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				.AllowCredentials());
 			
 			app.UseStaticFiles();
-			app.UseAuthentication();
 			app.UseAbpRequestLocalization();
 			app.UseRouting();
-			app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>
 			{
@@ -210,11 +211,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 					.GetManifestResourceStream("Boxfusion.SheshaFunctionalTests.Web.Host.wwwroot.swagger.ui.index.html");
 			}); // URL: /swagger​
 			
-            app.UseHangfireDashboard("/hangfire",
-				new DashboardOptions
-				{
-					Authorization = new[] { new HangfireAuthorizationFilter() }
-				});
+            app.UseSheshaHangfireDashboard();
 			app.UseMiddleware<GraphQLMiddleware>();
 			if (!_hostEnvironment.IsProduction())
 			{

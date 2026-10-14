@@ -100,10 +100,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Aspose.Words.lic" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="App_Data\ElmahLogs\" />
     <Folder Include="Plugins\" />
   </ItemGroup>

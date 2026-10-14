@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 namespace Shesha.Swagger
 {
     public class CachingSwaggerProvider:
+        ISwaggerProvider,
         IAsyncSwaggerProvider,
         IAsyncEventHandler<EntityChangedEventData<EntityProperty>>,
         IAsyncEventHandler<EntityChangedEventData<EntityConfig>>,
@@ -34,6 +35,10 @@ namespace Shesha.Swagger
             _cacheHolder = cacheHolder;
         }
 
+        public OpenApiDocument GetSwagger(string documentName, string host = null, string basePath = null)
+        {
+            return _cacheHolder.Cache.Get(documentName, (_) => _swaggerGenerator.GetSwagger(documentName, host, basePath));
+        }
         public Task<OpenApiDocument> GetSwaggerAsync(string documentName, string host = null, string basePath = null)
         {
             return _cacheHolder.Cache.GetAsync(documentName, (_) => _swaggerGenerator.GetSwaggerAsync(documentName, host, basePath));

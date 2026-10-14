@@ -5,7 +5,6 @@ using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Proxy;
 using Shesha.NHibernate.Interceptors;
-using Shesha.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;

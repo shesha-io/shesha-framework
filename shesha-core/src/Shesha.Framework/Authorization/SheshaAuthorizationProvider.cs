@@ -1,6 +1,5 @@
 ﻿using Abp.Authorization;
 using Abp.Localization;
-using Abp.MultiTenancy;
 
 namespace Shesha.Authorization
 {
@@ -10,17 +9,13 @@ namespace Shesha.Authorization
         {
             context.CreatePermission(PermissionNames.Pages_Users, L("Users"));
             context.CreatePermission(PermissionNames.Pages_Roles, L("Roles"));
-            context.CreatePermission(PermissionNames.Pages_Tenants, L("Tenants"), multiTenancySides: MultiTenancySides.Host);
             context.CreatePermission(PermissionNames.Pages_Hangfire, L("Hangfire"));
+            context.CreatePermission(PermissionNames.Application_Configurator, L("ApplicationConfigurator"));
+            context.CreatePermission(PermissionNames.Pages_Maintenance, L("Maintenance"));
+            context.CreatePermission(PermissionNames.Users_ResetPassword, L("Users_ResetPassword"));
+            context.CreatePermission(PermissionNames.Pages_ApplicationSettings, L("ApplicationSettings"));
 
-            // Shesha part
-            context.CreatePermission(ShaPermissionNames.Application_Configurator, L("ApplicationConfigurator"));
-            context.CreatePermission(ShaPermissionNames.Pages_Persons, L("Persons"));
-            context.CreatePermission(ShaPermissionNames.Pages_ShaRoles, L("ShaRoles"));
-            context.CreatePermission(ShaPermissionNames.Pages_ApplicationSettings, L("ApplicationSettings"));
-            context.CreatePermission(ShaPermissionNames.Pages_Maintenance, L("Maintenance"));
-            context.CreatePermission(ShaPermissionNames.Users_ResetPassword, L("Users_ResetPassword"));
-            
+            //context.CreatePermission(PermissionNames.Pages_ShaRoles, L("ShaRoles"));
         }
 
         private static ILocalizableString L(string name)

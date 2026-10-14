@@ -1,7 +1,6 @@
 using Abp.AspNetCore;
 using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
-using Abp.Extensions;
 using Castle.Facilities.Logging;
 using ElmahCore.Mvc;
 using GraphQL;
@@ -13,29 +12,26 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Shesha.Authentication;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
-using Shesha.DynamicEntities.Swagger;
 using Shesha.Elmah;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
-using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
-using Shesha.Notifications.SMS;
 using Shesha.Notifications;
+using Shesha.Notifications.SMS;
 using Shesha.Scheduler.Extensions;
-using Shesha.Scheduler.Hangfire;
 using Shesha.Specifications;
 using Shesha.Swagger;
 using Swashbuckle.AspNetCore.Swagger;
@@ -176,9 +172,9 @@ namespace Shesha.Web.Host.Startup
                 .WithOrigins(corsOrigins)
                 .AllowCredentials());
             app.UseStaticFiles();
-            app.UseAuthentication();
             app.UseAbpRequestLocalization();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -210,10 +206,7 @@ namespace Shesha.Web.Host.Startup
                     .GetManifestResourceStream("Shesha.Web.Host.wwwroot.swagger.ui.index.html");
             }); // URL: /swagger
 
-            app.UseHangfireDashboard("/hangfire", new DashboardOptions
-            {
-                Authorization = new [] {new HangfireAuthorizationFilter() }
-            });
+            app.UseSheshaHangfireDashboard();
 
             app.UseMiddleware<GraphQLMiddleware>();
             if (!_hostEnvironment.IsProduction())
