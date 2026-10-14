@@ -7,6 +7,7 @@ using NUglify;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonLogic.Exceptions;
+using Shesha.Permissions.Entity;
 using Shesha.Reflection;
 using Shesha.Specifications;
 using Shesha.Utilities;
@@ -29,11 +30,13 @@ namespace Shesha.JsonLogic
     {
         private readonly ISpecificationsFinder _specificationsFinder;
         private readonly ISpecificationManager _specificationsManager;
+        private readonly IPermissionedEntityProvider _permissionedEntityProvider;
 
-        public JsonLogic2LinqConverter(ISpecificationsFinder specificationsFinder, ISpecificationManager specificationsManager)
+        public JsonLogic2LinqConverter(ISpecificationsFinder specificationsFinder, ISpecificationManager specificationsManager, IPermissionedEntityProvider permissionedEntityProvider)
         {
             _specificationsFinder = specificationsFinder;
             _specificationsManager = specificationsManager;
+            _permissionedEntityProvider = permissionedEntityProvider;
         }
 
         private const string StringStr = "string";
@@ -438,7 +441,7 @@ namespace Shesha.JsonLogic
 
                             var name = GetStringValue(@operator.Arguments.First());
 
-                            return ExpressionExtensions.GetMemberExpression(param, name);
+                            return ExpressionExtensions.GetMemberExpression(param, name, CheckPropertiesPermissions ? _permissionedEntityProvider : null);
                         }
 
                     case JsOperators.In:
@@ -1030,6 +1033,8 @@ namespace Shesha.JsonLogic
 
             throw new NotSupportedException("Not supported value type");
         }
+
+        public bool CheckPropertiesPermissions { get; set; }
 
         /// <summary>
         /// Get operation props

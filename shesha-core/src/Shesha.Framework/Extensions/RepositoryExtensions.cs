@@ -16,10 +16,11 @@ namespace Shesha.Extensions
         /// <typeparam name="TPrimaryKey"></typeparam>
         /// <param name="repository">Repository</param>
         /// <param name="filter">Filter in JsonLogic format</param>
+        /// <param name="checkPropertiesPermissions">Check permissions for filtered properties</param>
         /// <returns></returns>
-        public static IQueryable<TEntity> GetAllFiltered<TEntity, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository, string filter) where TEntity : class, IEntity<TPrimaryKey>
+        public static IQueryable<TEntity> GetAllFiltered<TEntity, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository, string filter, bool checkPropertiesPermissions = false) where TEntity : class, IEntity<TPrimaryKey>
         {
-            return repository.GetAll().ApplyFilter<TEntity, TPrimaryKey>(filter);
+            return repository.GetAll().ApplyFilter<TEntity, TPrimaryKey>(filter, checkPropertiesPermissions);
         }
     }
 }

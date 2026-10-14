@@ -133,7 +133,7 @@ namespace Shesha.DynamicEntities.Binder
                 {
                     if (!_permissionedEntityProvider.IsPropertyGranted(property))
                     {
-                        context.LocalValidationResult.Add(new ValidationResult(($"You don't have permission to change '{property.Name}' property.")));
+                        context.LocalValidationResult.Add(new ValidationResult($"You don't have permission to change '{property.Name}' property."));
                         continue;
                     }
 
@@ -193,7 +193,7 @@ namespace Shesha.DynamicEntities.Binder
 
                         if (!_permissionedEntityProvider.IsPropertyGranted(property))
                         {
-                            context.LocalValidationResult.Add(new ValidationResult(($"You don't have permission to change '{property.Name}' property.")));
+                            context.LocalValidationResult.Add(new ValidationResult($"You don't have permission to change '{property.Name}' property."));
                             continue;
                         }
 

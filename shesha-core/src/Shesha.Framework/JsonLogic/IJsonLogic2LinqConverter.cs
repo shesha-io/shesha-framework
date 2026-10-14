@@ -11,6 +11,11 @@ namespace Shesha.JsonLogic
     public interface IJsonLogic2LinqConverter
     {
         /// <summary>
+        /// If true - will check permissions for the requested properties. Raise NotAuthorized ex
+        /// </summary>
+        bool CheckPropertiesPermissions { get; set; }
+
+        /// <summary>
         /// Parse JsonLogic expression
         /// </summary>
         /// <typeparam name="T"></typeparam>

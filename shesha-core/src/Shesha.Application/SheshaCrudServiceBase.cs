@@ -119,7 +119,7 @@ namespace Shesha
             // apply specifications
             query = SpecificationManager.ApplySpecifications(query, input.Specifications);
 
-            query = query.ApplyFilter<TEntity, TPrimaryKey>(input.Filter);
+            query = query.ApplyFilter<TEntity, TPrimaryKey>(input.Filter, true);
 
             if (this.QuickSearcher != null && !string.IsNullOrWhiteSpace(input.QuickSearch))
                 query = this.QuickSearcher.ApplyQuickSearch(query, input.QuickSearch);
@@ -133,7 +133,7 @@ namespace Shesha
         {
             CheckGetAllPermission();
 
-            var permissionedEntityProxyFactory = IocManager.Resolve<IPermissionedEntityProvider>();
+            var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var query = CreateFilteredQuery(input);
 
             var totalCount = await AsyncQueryableExecuter.CountAsync(query);
@@ -142,7 +142,7 @@ namespace Shesha
             query = ApplyPaging(query, input);
 
             var entities = (await AsyncQueryableExecuter.ToListAsync(query))
-                .Select(x => permissionedEntityProxyFactory.GetNewProxiedPermissionedEntity(x))
+                .Select(x => permissionedEntityProvider.GetPermissionedEntityOrEntity(x))
                 .ToList();
 
             return new PagedResultDto<TEntityDto>(
@@ -206,7 +206,6 @@ namespace Shesha
                     s.UserContext = new GraphQLUserContext
                     {
                         User = httpContext.User,
-                        IsGranted = IsGranted,
                     };
                     s.CancellationToken = httpContext.RequestAborted;
                 }
@@ -273,7 +272,6 @@ namespace Shesha
                     s.UserContext = new GraphQLUserContext
                     {
                         User = httpContext.User,
-                        IsGranted = IsGranted,
                     };
                     s.CancellationToken = httpContext.RequestAborted;
                 }
@@ -455,7 +453,7 @@ namespace Shesha
         /// <returns></returns>
         protected async Task<List<TEntity>> GetAllFilteredAsync(string filter)
         {
-            return await AsyncQueryableExecuter.ToListAsync(Repository.GetAllFiltered(filter));
+            return await AsyncQueryableExecuter.ToListAsync(Repository.GetAllFiltered(filter, true));
         }
     }
 }
