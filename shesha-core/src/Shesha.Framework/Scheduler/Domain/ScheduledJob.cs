@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Scheduler.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Scheduler.ScheduledJob", CrudActions = CrudActions.Read | CrudActions.Delete, CrudActionsPermissions = [ShaPermissionNames.Application_Configurator], IsConfigurable = false)]
+    [Entity(TypeShortAlias = "Shesha.Scheduler.ScheduledJob", CrudActions = CrudActions.Read | CrudActions.Delete, CrudActionsPermissions = [PermissionNames.Application_Configurator], IsConfigurable = false)]
     [Table("Core_ScheduledJobs")]
     public class ScheduledJob: FullAuditedEntity<Guid>
     {

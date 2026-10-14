@@ -649,7 +649,7 @@ namespace Shesha.Users
                 return false;
             }
             
-            if (!await PermissionChecker.IsGrantedAsync(ShaPermissionNames.Users_ResetPassword))
+            if (!await PermissionChecker.IsGrantedAsync(PermissionNames.Users_ResetPassword))
             {
                 throw new UserFriendlyException("You are not authorized to reset passwords.");
             }

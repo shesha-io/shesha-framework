@@ -4,11 +4,6 @@
         <name>Boxfusion.SheshaFunctionalTests.Web.Core</name>
     </assembly>
     <members>
-        <member name="T:Boxfusion.SheshaFunctionalTests.Hangfire.HangfireAuthorizationFilter">
-            <summary>
-            Hangfire authorization filter
-            </summary>
-        </member>
         <member name="T:Boxfusion.SheshaFunctionalTests.SheshaFunctionalTestsWebCoreModule">
             <summary>
             ReSharper disable once InconsistentNaming
