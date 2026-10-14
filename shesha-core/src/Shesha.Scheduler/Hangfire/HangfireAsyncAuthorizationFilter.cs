@@ -1,4 +1,5 @@
 ﻿using Abp.Authorization;
+using Abp.Runtime.Security;
 using Abp.Runtime.Session;
 using Hangfire.Annotations;
 using Hangfire.Dashboard;
@@ -6,6 +7,8 @@ using Microsoft.AspNetCore.Authentication;
 using Shesha.Authorization;
 using Shesha.Authorization.Users;
 using Shesha.Services;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Scheduler.Hangfire
@@ -22,12 +25,15 @@ namespace Shesha.Scheduler.Hangfire
             var principal = result.Principal;
             if (principal == null)
                 return false;
-            var username = principal.Identity?.Name;
+
+            var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == AbpClaimTypes.UserId);
+            if (userIdClaim == null || !Int64.TryParse(userIdClaim.Value, out var userId))
+                return false;
 
             AuthenticationProperties props = result.Properties;
 
             var userManager = StaticContext.IocManager.Resolve<UserManager>();
-            var user = await userManager.FindByNameOrEmailAsync(username);
+            var user = await userManager.GetUserByIdAsync(userId);
 
             if (user == null)
                 return false;

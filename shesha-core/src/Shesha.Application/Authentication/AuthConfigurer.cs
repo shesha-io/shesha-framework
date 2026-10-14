@@ -56,11 +56,19 @@ namespace Shesha.Authentication
         /* This method is needed to authorize custom clients like SignalR */
         private static async Task OnMessageReceivedAsync(MessageReceivedContext context)
         {
-            var handlers = StaticContext.IocManager.ResolveAll<IJwtBearerOnMessageReceivedHandler>();
-            foreach (var handler in handlers)
-            {
-                await handler.OnMessageReceivedAsync(context);
+            var iocManager = StaticContext.IocManager;
+            var handlers = iocManager.ResolveAll<IJwtBearerOnMessageReceivedHandler>();
+            try {
+                foreach (var handler in handlers)
+                {
+                    await handler.OnMessageReceivedAsync(context);
+                }
             }
+            finally
+            {
+                foreach (var handler in handlers)
+                    iocManager.Release(handler);
+            }            
         }
     }
 }

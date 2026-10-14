@@ -11,7 +11,7 @@ namespace Shesha.Scheduler.Hangfire
         public Task OnMessageReceivedAsync(MessageReceivedContext context)
         {
             var isHangfire = !string.IsNullOrWhiteSpace(HangfireDashboardInfo.Path) &&
-                context.HttpContext.Request.Path.HasValue && context.HttpContext.Request.Path.Value.StartsWith(HangfireDashboardInfo.Path);
+                context.HttpContext.Request.Path.StartsWithSegments(HangfireDashboardInfo.Path, System.StringComparison.OrdinalIgnoreCase);
             if (isHangfire)
             {
                 var cookie = JwtExtensions.GetAuthTokenCookie(context.HttpContext);

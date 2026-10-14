@@ -95,6 +95,8 @@ namespace Shesha.Web.Host.Startup
 
             services.AddCors();
 
+            services.Replace(ServiceDescriptor.Transient<IAsyncSwaggerProvider, CachingSwaggerProvider>());
+
             AddApiVersioning(services);
 
             services.AddHttpContextAccessor();
