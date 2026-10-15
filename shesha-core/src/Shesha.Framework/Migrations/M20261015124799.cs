@@ -31,7 +31,7 @@ namespace Shesha.Migrations
             Execute.Sql($@"update 
 	""Frwk_PermissionedObjects"" 
 set 
-	Permissions = replace(""Permissions"", '{oldName}', '{newName}') 
+	""Permissions"" = replace(""Permissions"", '{oldName}', '{newName}') 
 where 
 	""Permissions"" is not null 
 	and ""Permissions"" like '%{oldName}%'");
