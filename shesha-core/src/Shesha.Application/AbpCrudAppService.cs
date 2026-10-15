@@ -72,11 +72,11 @@ namespace Shesha
                         if (sorted)
                         {
                             var orderedQuery = (IOrderedQueryable<TEntity>)query;
-                            query = descending ? orderedQuery.ThenByDescending(column) : orderedQuery.ThenBy(column);
+                            query = descending ? orderedQuery.ThenByDescending(column, true) : orderedQuery.ThenBy(column, true);
                         }
                         else
                         {
-                            query = descending ? query.OrderByDescending(column) : query.OrderBy(column);
+                            query = descending ? query.OrderByDescending(column, true) : query.OrderBy(column, true);
                             sorted = true;
                         }
                     }

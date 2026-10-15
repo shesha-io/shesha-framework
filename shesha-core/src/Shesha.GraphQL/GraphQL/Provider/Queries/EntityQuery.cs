@@ -404,10 +404,10 @@ from
                     switch (direction)
                     {
                         case ListSortDirection.Ascending:
-                            query = orderedQuery.ThenBy(column);
+                            query = orderedQuery.ThenBy(column, true);
                             break;
                         case ListSortDirection.Descending:
-                            query = orderedQuery.ThenByDescending(column);
+                            query = orderedQuery.ThenByDescending(column, true);
                             break;
                     }
                 }
@@ -416,10 +416,10 @@ from
                     switch (direction)
                     {
                         case ListSortDirection.Ascending:
-                            query = query.OrderBy(column);
+                            query = query.OrderBy(column, true);
                             break;
                         case ListSortDirection.Descending:
-                            query = query.OrderByDescending(column);
+                            query = query.OrderByDescending(column, true);
                             break;
                     }
                 }
