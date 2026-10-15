@@ -34,6 +34,7 @@ namespace Shesha
     {
         public IObjectPermissionChecker ObjectPermissionChecker { get; set; }
         public ISecuritySettings SecuritySettings { get; set; }
+        public bool SkipEnabledCheck { get; set; }
 
         public DynamicCrudAppService(
             IRepository<TEntity, TPrimaryKey> repository
@@ -43,6 +44,8 @@ namespace Shesha
 
         private void EnsureCrudActionEnabled(CrudAction crudAction)
         {
+            if (SkipEnabledCheck)
+                return;
             var disabled = EntityCrudHelper.IsCrudActionDisabledByCode(typeof(TEntity), crudAction);
             if (disabled)
                 throw new EntityNotFoundException(L("NotFound") ?? "Not found");

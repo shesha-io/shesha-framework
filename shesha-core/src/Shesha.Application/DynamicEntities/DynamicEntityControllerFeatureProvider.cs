@@ -62,6 +62,8 @@ namespace Shesha.DynamicEntities
                         if (entityType == null)
                             continue;
 
+                        // Skip APIs which are disabled in code explicitly (IsConfigurable = false and CrudActions = CrudActions.None)
+                        // Non-configurable actions with CrudActions != CrudActions.None will be processed by permissions on later stage
                         if (EntityCrudHelper.IsApisTotallyDisabledInCode(entityType))
                             continue;
 

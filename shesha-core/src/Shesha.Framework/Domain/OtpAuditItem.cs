@@ -1,12 +1,13 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities.Auditing;
+using Shesha.Authorization;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
-    [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
+    [Entity(CrudActions = CrudActions.Read, IsConfigurable = false, CrudActionsAccess = CrudActionsAccess.RequiresPermissions, CrudActionsPermissions = [PermissionNames.Application_Administer])]
     public class OtpAuditItem: FullAuditedEntity<Guid>
     {
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using Shesha.Domain.Attributes;
+﻿using Shesha.Authorization;
+using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
@@ -7,7 +8,12 @@ namespace Shesha.Domain
     /// <summary>
     /// Form configuration
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Core.FormConfiguration", CrudActions = CrudActions.Read, IsConfigurable = false)]
+    [Entity(TypeShortAlias = "Shesha.Core.FormConfiguration", 
+        CrudActions = CrudActions.Read, 
+        IsConfigurable = false, 
+        CrudActionsAccess = CrudActionsAccess.RequiresPermissions, 
+        CrudActionsPermissions = [PermissionNames.Application_Configure]
+    )]
     [JoinedProperty("Frwk_FormConfigurations")]
     [DiscriminatorValue(ItemTypeName)]
     public class FormConfiguration : ConfigurationItemBase

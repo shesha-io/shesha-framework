@@ -1,12 +1,18 @@
 ﻿using Abp.Auditing;
+using Shesha.Authorization;
 using Shesha.Domain.Attributes;
-using System.Collections.Generic;
+using Shesha.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
+    [Entity(
+        CrudActions = CrudActions.Read,
+        IsConfigurable = false,
+        CrudActionsAccess = CrudActionsAccess.RequiresPermissions,
+        CrudActionsPermissions = [PermissionNames.Application_Configure]
+    )]
     [JoinedProperty("Frwk_SettingConfigurations")]
     [DiscriminatorValue(ItemTypeName)]
     public class SettingConfiguration: ConfigurationItemBase

@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities;
+using Shesha.Authorization;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System;
@@ -6,7 +7,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Framework.ReferenceList", CrudActions = CrudActions.None, IsConfigurable = false)]
+    [Entity(TypeShortAlias = "Shesha.Framework.ReferenceList",
+        CrudActions = CrudActions.All,
+        IsConfigurable = false,
+        CrudActionsAccess = CrudActionsAccess.AllowAnonymous
+    )]
+    [EntityAuthorize(CrudAction.Create, [PermissionNames.Application_Configure, PermissionNames.Application_Administer])]
+    [EntityAuthorize(CrudAction.Update, [PermissionNames.Application_Configure, PermissionNames.Application_Administer])]
+    [EntityAuthorize(CrudAction.Delete, [PermissionNames.Application_Configure, PermissionNames.Application_Administer])]
     [JoinedProperty("Frwk_ReferenceLists")]
     [DiscriminatorValue(ItemTypeName)]
     public class ReferenceList : ConfigurationItemBase
