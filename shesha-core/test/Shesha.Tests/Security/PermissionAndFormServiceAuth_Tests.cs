@@ -38,7 +38,7 @@ namespace Shesha.Tests.Security
             var attr = method.GetCustomAttribute<SheshaAuthorizeAttribute>();
             attr.Should().NotBeNull($"{methodName} should have [SheshaAuthorize]");
             attr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
-            attr.Permissions.Should().Contain("app:Configurator");
+            attr.Permissions.Should().Contain("Application-Configure");
         }
 
         [Theory]
@@ -71,7 +71,7 @@ namespace Shesha.Tests.Security
             var attr = typeof(FormConfigurationAppService).GetCustomAttribute<SheshaAuthorizeAttribute>();
             attr.Should().NotBeNull("FormConfigurationAppService should have class-level [SheshaAuthorize]");
             attr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
-            attr.Permissions.Should().Contain("app:Configurator");
+            attr.Permissions.Should().Contain("Application-Configure");
         }
 
         [Theory]
@@ -97,7 +97,7 @@ namespace Shesha.Tests.Security
             method.Should().NotBeNull($"{methodName} should exist");
 
             var attr = method.GetCustomAttribute<AllowAnonymousAttribute>();
-            attr.Should().BeNull($"{methodName} should inherit class-level auth (app:Configurator)");
+            attr.Should().BeNull($"{methodName} should inherit class-level auth (Application-Configure)");
         }
 
         #endregion

@@ -5,6 +5,7 @@ using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
+using Shesha.Authorization;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.ConfigurationItems.Distribution.Models;
@@ -27,7 +28,7 @@ using PackageImportResult = Shesha.ConfigurationItems.Dtos.PackageImportResult;
 namespace Shesha.ConfigurationItems
 {
     /// inheritedDoc
-    [Authorization.SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
+    [Authorization.SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure)]
     public class ConfigurationItemAppService: SheshaCrudServiceBase<ConfigurationItem, EntityDto<Guid>, Guid, FilteredPagedAndSortedResultRequestDto, EntityDto<Guid>, EntityDto<Guid>>, IConfigurationItemAppService, ITransientDependency
         
     {

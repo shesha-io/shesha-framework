@@ -18,7 +18,7 @@ namespace Shesha.Api
     /// <summary>
     /// API application service
     /// </summary>
-    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure)]
     public class ApiAppService: SheshaAppServiceBase//, IApiAppService
     {
         private readonly IApiDescriptionGroupCollectionProvider _apiDescriptionsProvider;

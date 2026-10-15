@@ -46,7 +46,7 @@ namespace Shesha.Scheduler.Hangfire
                 if (permissionChecker == null)
                     return false;
 
-                isGranted = await permissionChecker.IsGrantedAsync(PermissionNames.Pages_Hangfire);
+                isGranted = await permissionChecker.IsGrantedAsync(PermissionNames.Hangfire_Dashboard);
             }
 
             return isGranted;

@@ -27,7 +27,7 @@ namespace Shesha.ShaRoles
             _shaPermissionChecker = shaPermissionChecker;
             _roleAppointmentRepository = roleAppointmentRepository;
 
-            GetPermissionName = GetAllPermissionName = CreatePermissionName = UpdatePermissionName = DeletePermissionName = PermissionNames.Pages_Roles;
+            GetPermissionName = GetAllPermissionName = CreatePermissionName = UpdatePermissionName = DeletePermissionName = PermissionNames.Role_Manage;
         }
 
         public override async Task<ShaRoleDto> CreateAsync(CreateShaRoleDto input)

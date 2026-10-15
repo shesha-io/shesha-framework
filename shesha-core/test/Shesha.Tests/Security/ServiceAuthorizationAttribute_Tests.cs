@@ -35,11 +35,11 @@ namespace Shesha.Tests.Security
         }
 
         [Theory]
-        [InlineData(typeof(NHibernateAppService), "app:Configurator")]
-        [InlineData(typeof(ApiAppService), "app:Configurator")]
-        [InlineData(typeof(AuthorizationSettingsAppService), "app:Configurator")]
-        [InlineData(typeof(ConfigurationItemAppService), "app:Configurator")]
-        [InlineData(typeof(ModelConfigurationsAppService), "app:Configurator")]
+        [InlineData(typeof(NHibernateAppService), "Application-Configure")]
+        [InlineData(typeof(ApiAppService), "Application-Configure")]
+        [InlineData(typeof(AuthorizationSettingsAppService), "Application-Configure")]
+        [InlineData(typeof(ConfigurationItemAppService), "Application-Configure")]
+        [InlineData(typeof(ModelConfigurationsAppService), "Application-Configure")]
         public void Configurator_services_should_require_app_Configurator(Type serviceType, string expectedPermission)
         {
             var attr = GetClassSheshaAuthorize(serviceType);
@@ -50,9 +50,9 @@ namespace Shesha.Tests.Security
         }
 
         [Theory]
-        [InlineData(typeof(ScheduledJobAppService), "pages:maintenance")]
-        [InlineData(typeof(EmailSenderAppService), "pages:maintenance")]
-        [InlineData(typeof(OtpAppService), "pages:maintenance")]
+        [InlineData(typeof(ScheduledJobAppService), "Application-Maintenance")]
+        [InlineData(typeof(EmailSenderAppService), "Application-Maintenance")]
+        [InlineData(typeof(OtpAppService), "Application-Maintenance")]
         public void Maintenance_services_should_require_pages_maintenance(Type serviceType, string expectedPermission)
         {
             var attr = GetClassSheshaAuthorize(serviceType);
@@ -93,7 +93,7 @@ namespace Shesha.Tests.Security
             var classAttr = GetClassSheshaAuthorize(typeof(NHibernateAppService));
             classAttr.Should().NotBeNull("NHibernateAppService must have class-level [SheshaAuthorize]");
             classAttr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
-            classAttr.Permissions.Should().Contain("app:Configurator");
+            classAttr.Permissions.Should().Contain("Application-Configure");
 
             // ExecuteHql must NOT have [AllowAnonymous] that would bypass the class guard
             var method = typeof(NHibernateAppService).GetMethod("ExecuteHql", BindingFlags.Public | BindingFlags.Instance);
@@ -126,7 +126,7 @@ namespace Shesha.Tests.Security
                 var anonAttr = method.GetCustomAttribute<AllowAnonymousAttribute>();
                 anonAttr.Should().BeNull(
                     $"NHibernateAppService.{method.Name} must not have [AllowAnonymous] — " +
-                    "all endpoints on this service execute database operations and must require app:Configurator");
+                    "all endpoints on this service execute database operations and must require Application-Configure");
             }
         }
 
@@ -143,7 +143,7 @@ namespace Shesha.Tests.Security
             var classAttr = GetClassSheshaAuthorize(typeof(OtpAppService));
             classAttr.Should().NotBeNull();
             classAttr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
-            classAttr.Permissions.Should().Contain("pages:maintenance");
+            classAttr.Permissions.Should().Contain("Application-Maintenance");
 
             // Methods that MUST be reachable by anonymous callers (login flow)
             var allowedAnonymous = new[] { "SendPinAsync", "ResendPinAsync", "VerifyPinAsync" };

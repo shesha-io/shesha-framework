@@ -32,7 +32,7 @@ using EntityExtensions = Shesha.Extensions.EntityExtensions;
 
 namespace Shesha.Users
 {
-    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Pages_Users)]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.User_Manage)]
 
     public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
@@ -649,7 +649,7 @@ namespace Shesha.Users
                 return false;
             }
             
-            if (!await PermissionChecker.IsGrantedAsync(PermissionNames.Users_ResetPassword))
+            if (!await PermissionChecker.IsGrantedAsync(PermissionNames.User_ResetPassword))
             {
                 throw new UserFriendlyException("You are not authorized to reset passwords.");
             }
