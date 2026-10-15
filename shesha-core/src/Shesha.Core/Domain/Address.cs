@@ -47,7 +47,6 @@ namespace Shesha.Domain
 
         //[EntityDisplayName] 
         [ReadonlyProperty]
-        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, ["CapturePerm"])]
         public virtual string FullAddress { get; set; }
 
         public virtual int? TenantId { get; set; }

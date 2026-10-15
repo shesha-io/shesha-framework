@@ -1,4 +1,7 @@
+using Abp.Authorization;
+using Shesha.Permissions.Entity;
 using Shesha.Reflection;
+using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.Linq;
@@ -21,7 +24,7 @@ namespace Shesha.Extensions
         /// properties to leak ordering information about sensitive fields
         /// (e.g. password hashes) — see issue #4774.
         /// </summary>
-        public static void EnsureSortingAllowed(Type entityType, string sorting)
+        public static void EnsureSortingAllowed(Type entityType, string sorting, IPermissionedEntityProvider permissionedEntityProvider = null)
         {
             if (string.IsNullOrWhiteSpace(sorting) || entityType == null)
                 return;
@@ -36,11 +39,11 @@ namespace Shesha.Extensions
                 if (string.IsNullOrEmpty(path))
                     continue;
 
-                EnsurePathAllowed(entityType, path);
+                EnsurePathAllowed(entityType, path, permissionedEntityProvider);
             }
         }
 
-        private static void EnsurePathAllowed(Type rootType, string propertyPath)
+        private static void EnsurePathAllowed(Type rootType, string propertyPath, IPermissionedEntityProvider permissionedEntityProvider)
         {
             var currentType = rootType;
             foreach (var segment in propertyPath.Split('.'))
@@ -55,12 +58,11 @@ namespace Shesha.Extensions
                 if (prop == null)
                     return;
 
+                if (permissionedEntityProvider != null && !permissionedEntityProvider.IsPropertyGranted(prop))
+                    throw new AbpAuthorizationException($"You don't have permission to order by '{propertyPath}' property.");
+
                 if (prop.IsJsonIgnored())
-                {
-                    throw new ArgumentException(
-                        $"Sorting by '{propertyPath}' is not allowed: property '{prop.Name}' is not sortable.",
-                        nameof(propertyPath));
-                }
+                    throw new ArgumentException($"Sorting by '{propertyPath}' is not allowed: property '{propertyPath}' is not sortable.", nameof(propertyPath));
 
                 currentType = prop.PropertyType;
             }

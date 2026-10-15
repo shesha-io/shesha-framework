@@ -19,6 +19,7 @@ using Shesha.GraphQL.Dtos;
 using Shesha.GraphQL.Provider.GraphTypes;
 using Shesha.JsonLogic;
 using Shesha.NHibernate;
+using Shesha.Permissions.Entity;
 using Shesha.QuickSearch;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -84,6 +85,7 @@ namespace Shesha.GraphQL.Provider.Queries
                     var entityFetcher = services.GetService<IEntityFetcher>();
                     var quickSearcher = services.GetRequiredService<IQuickSearcher>();
                     var specificationManager = services.GetRequiredService<ISpecificationManager>();
+                    var permissionedEntityProvider = services.GetRequiredService<IPermissionedEntityProvider>();
                     var jsonLogicConverter = services.GetRequiredService<IJsonLogic2LinqConverter>();
                     jsonLogicConverter.CheckPropertiesPermissions = true;
 
@@ -107,7 +109,7 @@ namespace Shesha.GraphQL.Provider.Queries
                     var totalCount = query.Count();
 
                     // apply sorting
-                    query = ApplySorting(query, input.Sorting);
+                    query = ApplySorting(query, input.Sorting, permissionedEntityProvider);
 
                     // apply paging
                     var pageQuery = query.Skip(input.SkipCount);
@@ -356,12 +358,12 @@ from
         /// <param name="query">Queryable to be sorted</param>
         /// <param name="sorting">Sorting string (in the standard SQL format e.g. "Property1 asc, Property2 desc")</param>
         /// <returns></returns>
-        private IQueryable<TEntity> ApplySorting(IQueryable<TEntity> query, string sorting)
+        private IQueryable<TEntity> ApplySorting(IQueryable<TEntity> query, string sorting, IPermissionedEntityProvider permissionedEntityProvider)
         {
             if (string.IsNullOrWhiteSpace(sorting))
                 return query;
 
-            SortingValidator.EnsureSortingAllowed(typeof(TEntity), sorting);
+            SortingValidator.EnsureSortingAllowed(typeof(TEntity), sorting, permissionedEntityProvider);
 
             var sortColumns = sorting.Split(',').Select(c => c.Trim()).Where(c => !string.IsNullOrWhiteSpace(c)).ToList();
             var sorted = false;
@@ -404,10 +406,10 @@ from
                     switch (direction)
                     {
                         case ListSortDirection.Ascending:
-                            query = orderedQuery.ThenBy(column, true);
+                            query = orderedQuery.ThenBy(column);
                             break;
                         case ListSortDirection.Descending:
-                            query = orderedQuery.ThenByDescending(column, true);
+                            query = orderedQuery.ThenByDescending(column);
                             break;
                     }
                 }
@@ -416,10 +418,10 @@ from
                     switch (direction)
                     {
                         case ListSortDirection.Ascending:
-                            query = query.OrderBy(column, true);
+                            query = query.OrderBy(column);
                             break;
                         case ListSortDirection.Descending:
-                            query = query.OrderByDescending(column, true);
+                            query = query.OrderByDescending(column);
                             break;
                     }
                 }

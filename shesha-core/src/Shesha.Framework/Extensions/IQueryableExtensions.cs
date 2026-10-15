@@ -21,67 +21,35 @@ namespace Shesha.Extensions
     /// </summary>
     public static class IQueryableExtensions
     {
-        public static IOrderedQueryable<T> OrderBy<T>(this IQueryable<T> query, string propertyName, bool checkPropertiesPermissions)
+        public static IOrderedQueryable<T> OrderBy<T>(this IQueryable<T> query, string propertyName, IComparer<object> comparer = null)
         {
-            return CallOrderedQueryable(query, "OrderBy", propertyName, null, checkPropertiesPermissions);
+            return CallOrderedQueryable(query, "OrderBy", propertyName, comparer);
         }
 
-        public static IOrderedQueryable<T> OrderByDescending<T>(this IQueryable<T> query, string propertyName, bool checkPropertiesPermissions)
+        public static IOrderedQueryable<T> OrderByDescending<T>(this IQueryable<T> query, string propertyName, IComparer<object> comparer = null)
         {
-            return CallOrderedQueryable(query, "OrderByDescending", propertyName, null, checkPropertiesPermissions);
+            return CallOrderedQueryable(query, "OrderByDescending", propertyName, comparer);
         }
 
-        public static IOrderedQueryable<T> ThenBy<T>(this IOrderedQueryable<T> query, string propertyName, bool checkPropertiesPermissions)
+        public static IOrderedQueryable<T> ThenBy<T>(this IOrderedQueryable<T> query, string propertyName, IComparer<object> comparer = null)
         {
-            return CallOrderedQueryable(query, "ThenBy", propertyName, null, checkPropertiesPermissions);
+            return CallOrderedQueryable(query, "ThenBy", propertyName, comparer);
         }
 
-        public static IOrderedQueryable<T> ThenByDescending<T>(this IOrderedQueryable<T> query, string propertyName, bool checkPropertiesPermissions)
+        public static IOrderedQueryable<T> ThenByDescending<T>(this IOrderedQueryable<T> query, string propertyName, IComparer<object> comparer = null)
         {
-            return CallOrderedQueryable(query, "ThenByDescending", propertyName, null, checkPropertiesPermissions);
-        }
-
-        public static IOrderedQueryable<T> OrderBy<T>(this IQueryable<T> query, string propertyName, IComparer<object> comparer = null, bool checkPropertiesPermissions = false)
-        {
-            return CallOrderedQueryable(query, "OrderBy", propertyName, comparer, checkPropertiesPermissions);
-        }
-
-        public static IOrderedQueryable<T> OrderByDescending<T>(this IQueryable<T> query, string propertyName, IComparer<object> comparer = null, bool checkPropertiesPermissions = false)
-        {
-            return CallOrderedQueryable(query, "OrderByDescending", propertyName, comparer, checkPropertiesPermissions);
-        }
-
-        public static IOrderedQueryable<T> ThenBy<T>(this IOrderedQueryable<T> query, string propertyName, IComparer<object> comparer = null, bool checkPropertiesPermissions = false)
-        {
-            return CallOrderedQueryable(query, "ThenBy", propertyName, comparer, checkPropertiesPermissions);
-        }
-
-        public static IOrderedQueryable<T> ThenByDescending<T>(this IOrderedQueryable<T> query, string propertyName, IComparer<object> comparer = null, bool checkPropertiesPermissions = false)
-        {
-            return CallOrderedQueryable(query, "ThenByDescending", propertyName, comparer, checkPropertiesPermissions);
+            return CallOrderedQueryable(query, "ThenByDescending", propertyName, comparer);
         }
 
         /// <summary>
         /// Builds the Queryable functions using a TSource property name.
         /// </summary>
         public static IOrderedQueryable<T> CallOrderedQueryable<T>(this IQueryable<T> query, string methodName, string propertyName,
-                IComparer<object> comparer = null, bool checkPropertiesPermissions = false)
+                IComparer<object> comparer = null)
         {
             var param = Expression.Parameter(typeof(T), "x");
 
-            Func<Expression, string, Expression> func = Expression.PropertyOrField;
-            if (checkPropertiesPermissions) {
-                var permissionedEntityProvider = StaticContext.IocManager.Resolve<IPermissionedEntityProvider>();
-                func = (expression, propertyName) =>
-                {
-                    var propInfo = (expression as Expression)?.Type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
-                    if (propInfo != null && !permissionedEntityProvider.IsPropertyGranted(propInfo))
-                        throw new AbpAuthorizationException($"You don't have permission to order by '{propertyName}' property.");
-                    return Expression.PropertyOrField(expression, propertyName);
-                };
-            }
-
-            var body = propertyName.Split('.').Aggregate<string, Expression>(param, func);
+            var body = propertyName.Split('.').Aggregate<string, Expression>(param, Expression.PropertyOrField);
 
             return comparer != null
                 ? (IOrderedQueryable<T>)query.Provider.CreateQuery(
