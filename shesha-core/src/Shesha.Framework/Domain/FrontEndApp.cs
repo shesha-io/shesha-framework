@@ -1,11 +1,14 @@
 ﻿using Abp.Domain.Repositories;
 using FluentValidation;
+using Shesha.Authorization;
+using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
+using Shesha.Extensions;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Linq;
-using Shesha.Extensions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
@@ -13,6 +16,10 @@ namespace Shesha.Domain
     /// A Front-end App represents the various front-end applications that build off this back-end. 
     /// For example, Admin Portal, Customer Portal, Customer Mobile App would be fairly typical examples.
     /// </summary>
+    [Entity(CrudActions = CrudActions.All, IsConfigurable = false, CrudActionsAccess = CrudActionsAccess.AllowAnonymous)]
+    [EntityAuthorize(CrudAction.Update, [PermissionNames.Application_Configure, PermissionNames.Application_Administer])]
+    [EntityAuthorize(CrudAction.Delete, [PermissionNames.Application_Configure, PermissionNames.Application_Administer])]
+    [EntityAuthorize(CrudAction.Create, [PermissionNames.Application_Configure, PermissionNames.Application_Administer])]
     public class FrontEndApp : FullPowerEntity
     {
         /// <summary>

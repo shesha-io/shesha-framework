@@ -13,7 +13,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Shesha.Domain
 {
     [Table("Frwk_UserLoginAttempts")]
-    [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
+    [Entity(CrudActions = CrudActions.Read, IsConfigurable = false, CrudActionsAccess = CrudActionsAccess.RequiresPermissions, CrudActionsPermissions = [PermissionNames.Application_Administer])]
     public class ShaUserLoginAttempt : Entity<Guid>, IHasCreationTime, IMayHaveTenant
     {
         /// <summary>

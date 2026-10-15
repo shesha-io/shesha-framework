@@ -30,9 +30,8 @@ namespace Shesha.Domain.Attributes
 
         public EntityAttribute()
         {
-            // backward compatibility
             IsConfigurable = true;
-            CrudActions = CrudActions.All;
+            CrudActions = CrudActions.None;
         }
 
         /// <summary>
@@ -57,11 +56,4 @@ namespace Shesha.Domain.Attributes
 
         public EntityCrudConfig GetCrudConfig() => new EntityCrudConfig(this);
     }
-
-    public enum GenerateApplicationServiceState
-    {
-        UseConfiguration = 0,
-        AlwaysGenerateApplicationService = 1,
-        DisableGenerateApplicationService = 2
-    }    
 }

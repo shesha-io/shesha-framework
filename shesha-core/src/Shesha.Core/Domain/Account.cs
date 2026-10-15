@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Shesha.Authorization;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System;
@@ -7,6 +8,11 @@ using System.ComponentModel.DataAnnotations;
 namespace Shesha.Domain
 {
     [Discriminator]
+    [Entity(CrudActions = CrudActions.All, CrudActionsAccess = CrudActionsAccess.RequiresPermissions)]
+    [EntityAuthorize(CrudAction.Create, [PermissionNames.Account_Create])]
+    [EntityAuthorize(CrudAction.Read, [PermissionNames.Account_View])]
+    [EntityAuthorize(CrudAction.Update, [PermissionNames.Account_Update])]
+    [EntityAuthorize(CrudAction.Delete, [PermissionNames.Account_Delete])]
     public class Account : FullAuditedEntity<Guid>
     {
         public virtual string Name { get; set; }

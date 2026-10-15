@@ -20,7 +20,7 @@ namespace Shesha.Domain
         public static IEntityCrudConfig Default => new EntityCrudConfig()
         {
             IsConfigurable = true,
-            CrudActions = CrudActions.All,
+            CrudActions = CrudActions.None,
             CrudActionsAccess = CrudActionsAccess.Inherited,
             CrudActionsPermissions = new string[] { },
         };
