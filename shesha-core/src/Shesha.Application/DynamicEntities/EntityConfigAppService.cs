@@ -172,7 +172,6 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
 
     [HttpPost]
     [AllowAnonymous]
-    [AbpAllowAnonymous]
     public async Task<SyncAllResponse> SyncClientApiAsync(SyncAllRequest input)
     {
         var metadataService = IocManager.Resolve<IMetadataAppService>();

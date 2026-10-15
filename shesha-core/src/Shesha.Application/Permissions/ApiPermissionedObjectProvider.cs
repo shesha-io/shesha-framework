@@ -119,24 +119,7 @@ namespace Shesha.Permissions
                                 : Domain.Enums.RefListPermissionedAccess.AnyAuthenticated;
                             permissions = shaAttr.Permissions.ToList();
                         }
-                    }
-                    var abpAttr = service.GetCustomAttribute<AbpAuthorizeAttribute>(true);
-                    if (abpAttr != null)
-                    {
-                        access = abpAttr.Permissions.Any()
-                            ? Domain.Enums.RefListPermissionedAccess.RequiresPermissions
-                            : Domain.Enums.RefListPermissionedAccess.AnyAuthenticated;
-                        permissions = abpAttr.Permissions.ToList();
-                        hardcoded = true;
-                    }
-                    var abpMvcAttr = service.GetCustomAttribute<AbpMvcAuthorizeAttribute>(true);
-                    if (abpMvcAttr != null)
-                    {
-                        access = abpMvcAttr.Permissions.Any()
-                            ? Domain.Enums.RefListPermissionedAccess.RequiresPermissions
-                            : Domain.Enums.RefListPermissionedAccess.AnyAuthenticated;
-                        permissions = abpMvcAttr.Permissions.ToList();
-                        hardcoded = true;
+                        hardcoded = !shaAttr.IsConfigurable;
                     }
                     if (service.HasAttribute<AllowAnonymousAttribute>(true) || service.HasAttribute<AbpAllowAnonymousAttribute>(true))
                     {
@@ -180,24 +163,7 @@ namespace Shesha.Permissions
                                     : Domain.Enums.RefListPermissionedAccess.AnyAuthenticated;
                                 permissions = shaAttr.Permissions.ToList();
                             }
-                        }
-                        abpAttr = methodInfo.Action.GetCustomAttribute<AbpAuthorizeAttribute>(true);
-                        if (abpAttr != null)
-                        {
-                            access = abpAttr.Permissions.Any()
-                                ? Domain.Enums.RefListPermissionedAccess.RequiresPermissions
-                                : Domain.Enums.RefListPermissionedAccess.AnyAuthenticated;
-                            permissions = abpAttr.Permissions.ToList();
-                            methodHardcoded = true;
-                        }
-                        abpMvcAttr = methodInfo.Action.GetCustomAttribute<AbpMvcAuthorizeAttribute>(true);
-                        if (abpMvcAttr != null)
-                        {
-                            access = abpMvcAttr.Permissions.Any()
-                                ? Domain.Enums.RefListPermissionedAccess.RequiresPermissions
-                                : Domain.Enums.RefListPermissionedAccess.AnyAuthenticated;
-                            permissions = abpMvcAttr.Permissions.ToList();
-                            methodHardcoded = true;
+                            methodHardcoded = !shaAttr.IsConfigurable;
                         }
                         if (methodInfo.Action.HasAttribute<AllowAnonymousAttribute>(true) || methodInfo.Action.HasAttribute<AbpAllowAnonymousAttribute>(true))
                         {
