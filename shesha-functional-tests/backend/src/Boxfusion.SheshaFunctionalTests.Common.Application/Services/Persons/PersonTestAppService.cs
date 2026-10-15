@@ -1,11 +1,8 @@
-﻿using Abp.Auditing;
-using Abp.Authorization;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Shesha;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
-using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
@@ -36,7 +33,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Persons
     }
 
 
-    [AbpAuthorize]
     public class PersonTestAppService : DynamicCrudAppService<Person, DynamicDto<Person, Guid>, Guid>, ITransientDependency
     {
         public PersonTestAppService(IRepository<Person, Guid> repository) : base(repository)
@@ -81,9 +77,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Persons
             //await MapJObjectToEntityAsync<Person, Guid>(input._jObject, pp, v);
         }
 
-        public override async Task<DynamicDto<Person, Guid>> UpdateAsync([DynamicBinder(UseDtoForEntityReferences = true, UseDynamicDtoProxy = true)] DynamicDto<Person, Guid> input)
+        public override Task<DynamicDto<Person, Guid>> UpdateAsync([DynamicBinder(UseDtoForEntityReferences = true, UseDynamicDtoProxy = true)] DynamicDto<Person, Guid> input)
         {
-            return await base.UpdateAsync(input);
+            return base.UpdateAsync(input);
         }
 
         [DisableSpecifications]

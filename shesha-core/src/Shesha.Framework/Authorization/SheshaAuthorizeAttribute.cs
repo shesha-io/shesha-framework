@@ -16,12 +16,21 @@ namespace Shesha.Authorization
         /// </summary>
         public string[] Permissions { get; }
 
-        public RefListPermissionedAccess Access { get; set; }
+        /// <summary>
+        /// Access type
+        /// </summary>
+        public RefListPermissionedAccess Access { get; }
+
+        /// <summary>
+        /// Allows to configure permissions using the Configurator
+        /// </summary>
+        public bool IsConfigurable { get; set; }
 
         public SheshaAuthorizeAttribute(RefListPermissionedAccess access, params string[] permissions)
         {
             Access = access;
             Permissions = permissions;
+            IsConfigurable = true;
         }
     }
 }

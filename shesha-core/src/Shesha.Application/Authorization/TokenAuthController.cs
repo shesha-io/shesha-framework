@@ -162,7 +162,7 @@ namespace Shesha.Authorization
         /// </summary>
         /// <returns>New JWT token with fresh expiration</returns>
         [HttpPost]
-        [Authorize]
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated, IsConfigurable = false)]
         public async Task<RefreshTokenResultModel> RefreshTokenAsync()
         {
             // 1. Get current user from JWT claims
@@ -220,7 +220,7 @@ namespace Shesha.Authorization
         /// <summary>
         /// Send authentication one-time pin to the user with a specified <paramref name="userNameOrMobileNo"/>
         /// </summary>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPinAsync(string userNameOrMobileNo)
         {

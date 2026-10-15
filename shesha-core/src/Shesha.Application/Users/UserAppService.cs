@@ -8,6 +8,7 @@ using Abp.IdentityFramework;
 using Abp.Linq.Extensions;
 using Abp.Runtime.Session;
 using Abp.UI;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
@@ -235,7 +236,7 @@ namespace Shesha.Users
         /// Send One-time pin for password reset
         /// </summary>
         /// <param name="mobileNo">mobile number of the user</param>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         public async Task<ResetPasswordSendOtpResponse> ResetPasswordSendOtpAsync(string mobileNo)
         {
             // todo: cleanup mobile number
@@ -259,7 +260,7 @@ namespace Shesha.Users
         /// <param name="username"></param>
         /// <returns></returns>
         /// <exception cref="UserFriendlyException"></exception>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         public async Task<List<ResetPasswordOptionDto>> GetUserPasswordResetOptionsAsync(string username)
         {
             var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
@@ -327,7 +328,7 @@ namespace Shesha.Users
         /// <param name="username"></param>
         /// <returns></returns>
         /// <exception cref="UserFriendlyException"></exception>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         public async Task<bool> SendSmsOtpAsync(string username)
         {
@@ -352,7 +353,7 @@ namespace Shesha.Users
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         public async Task<List<SecurityQuestionDto>> GetSecurityQuestionsAsync(string username)
         {
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
@@ -370,7 +371,7 @@ namespace Shesha.Users
         /// <param name="input"></param>
         /// <returns>Supposed to return the token required to reset password</returns>
         /// <exception cref="UserFriendlyException"></exception>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ResetPasswordVerifyOtpResponse> ValidateResetCodeAsync(ResetPasswordValidateCodeInput input)
         {
@@ -422,7 +423,7 @@ namespace Shesha.Users
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ResetPasswordVerifyOtpResponse> ValidateSecurityQuestionsAsync(SecurityQuestionVerificationDto input)
         {
@@ -473,7 +474,7 @@ namespace Shesha.Users
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         public async Task<bool> SendEmailLinkAsync(string username)
         {
@@ -499,7 +500,7 @@ namespace Shesha.Users
         /// <summary>
         /// Verify one-time pin that was used for password reset. Returns a token that should be used for password update
         /// </summary>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         public async Task<ResetPasswordVerifyOtpResponse> ResetPasswordVerifyOtpAsync(ResetPasswordVerifyOtpInput input)
         {
             var otp = await _otpManager.GetAsync(input.OperationId);
@@ -532,7 +533,7 @@ namespace Shesha.Users
         /// <summary>
         /// Resets a password of the user using token
         /// </summary>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         public async Task<bool> ResetPasswordUsingTokenAsync(ResetPasswordUsingTokenInput input)
         {
             var user = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.UserName == input.Username);
