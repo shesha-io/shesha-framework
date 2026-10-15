@@ -1,5 +1,10 @@
+using Abp.Authorization;
+using Shesha.Authorization;
+using Shesha.Domain.Enums;
 using Shesha.Extensions;
+using Shesha.Permissions.Entity;
 using System;
+using System.Reflection;
 using Xunit;
 
 namespace Shesha.Tests.Security
@@ -22,6 +27,10 @@ namespace Shesha.Tests.Security
 
             [System.Text.Json.Serialization.JsonIgnore]
             public virtual string SecretSystemTextJson { get; set; }
+
+            [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "test")]
+            public virtual SampleNested AuthNested { get; set; }
+
         }
 
         public class SampleEntity
@@ -31,6 +40,63 @@ namespace Shesha.Tests.Security
 
             [Newtonsoft.Json.JsonIgnore]
             public virtual SampleNested Hidden { get; set; }
+            
+            [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, ["test"])]
+            public virtual SampleNested Auth { get; set; }
+        }
+
+        public class PermissionedEntityProviderMock : IPermissionedEntityProvider
+        {
+            public PermissionedEntityProviderMock(string allowedPermission)
+            {
+                _allowedPermission = allowedPermission;
+            }
+
+            private string _allowedPermission;
+
+            public T GetPermissionedEntity<T>(T entity) where T : notnull
+            {
+                throw new NotImplementedException();
+            }
+
+            public T GetPermissionedEntityOrEntity<T>(T entity) where T : notnull
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool IsEntityTypePermissioned<T>(T entity) where T : notnull
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool IsPropertyGranted(PropertyInfo propertyInfo)
+            {
+                var permission = propertyInfo.GetCustomAttribute<SheshaAuthorizeAttribute>()?.Permissions[0];
+                return permission == null || permission == _allowedPermission;
+            }
+        }
+
+        [Theory]
+        [InlineData("Auth")]
+        [InlineData("Auth desc")]
+        [InlineData("Auth.Visible")]
+        [InlineData("Child.AuthNested")]
+        [InlineData("Name asc, Auth desc")]
+        public void EnsureSortingAllowed_AllowPermissioned(string sorting)
+        {
+            SortingValidator.EnsureSortingAllowed(typeof(SampleEntity), sorting, new PermissionedEntityProviderMock("test"));
+        }
+
+        [Theory]
+        [InlineData("Auth")]
+        [InlineData("Auth desc")]
+        [InlineData("Auth.Visible")]
+        [InlineData("Child.AuthNested")]
+        [InlineData("Name asc, Auth desc")]
+        public void EnsureSortingAllowed_RejectsPermissioned(string sorting)
+        {
+            Assert.Throws<AbpAuthorizationException>(() =>
+                SortingValidator.EnsureSortingAllowed(typeof(SampleEntity), sorting, new PermissionedEntityProviderMock("")));
         }
 
         [Theory]
