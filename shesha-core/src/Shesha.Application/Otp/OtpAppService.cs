@@ -1,17 +1,15 @@
 ﻿using Abp.Dependency;
-using Abp.Net.Mail;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.Domain.Enums;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
-using Shesha.Sms;
 using System.Threading.Tasks;
 
 namespace Shesha.Otp
 {
-    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "pages:maintenance")]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance)]
     public class OtpAppService : SheshaAppServiceBase, IOtpAppService, ITransientDependency
     {
         private readonly IOtpSettings _otpSettings;

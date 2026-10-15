@@ -27,7 +27,7 @@ namespace Shesha.Services
     /// <summary>
     /// NHibernate application service
     /// </summary>
-    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance, PermissionNames.Application_Configure)]
     public class NHibernateAppService: IApplicationService
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;

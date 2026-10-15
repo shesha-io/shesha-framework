@@ -14,7 +14,7 @@ namespace Shesha.Email
     /// <summary>
     /// Email Sender Application Service
     /// </summary>
-    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "pages:maintenance")]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance)]
     public class EmailSenderAppService : SheshaAppServiceBase, IEmailSenderAppService
     {
         private readonly IEmailSender _emailSender;

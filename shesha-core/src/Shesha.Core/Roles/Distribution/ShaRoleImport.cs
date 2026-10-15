@@ -1,11 +1,9 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Newtonsoft.Json;
-using Shesha.Authorization;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
-using Shesha.Permissions.Distribution.Dto;
 using Shesha.Roles.Distribution.Dto;
 using Shesha.Services.ConfigurationItems;
 using System;

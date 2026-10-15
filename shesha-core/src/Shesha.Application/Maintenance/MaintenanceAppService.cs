@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Maintenance
 {
-    [AbpMvcAuthorize(PermissionNames.Pages_Maintenance)]
+    [AbpMvcAuthorize(PermissionNames.Application_Maintenance)]
     public class MaintenanceAppService: SheshaAppServiceBase
     {
         [HttpPost]

@@ -1,5 +1,4 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Shesha.Authorization;
 using Shesha.Domain;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Permissions
 {
-    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, "pages:maintenance")]
+    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Administer)]
     public class PermissionedObjectAppService : SheshaCrudServiceBase<PermissionedObject, PermissionedObjectDto, Guid>, IPermissionedObjectAppService
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;

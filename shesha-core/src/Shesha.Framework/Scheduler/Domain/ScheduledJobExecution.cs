@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Shesha.Authorization;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -13,7 +14,12 @@ namespace Shesha.Scheduler.Domain
     /// <summary>
     /// Contains info about scheduled job execution
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Scheduler.ScheduledJobExecution", FriendlyName = "Scheduled Job Execution", CrudActions = CrudActions.None, IsConfigurable = false)]
+    [Entity(
+        TypeShortAlias = "Shesha.Scheduler.ScheduledJobExecution", 
+        FriendlyName = "Scheduled Job Execution", 
+        CrudActions = CrudActions.Read,
+        CrudActionsPermissions = [PermissionNames.Application_Administer, PermissionNames.Application_Maintenance],
+        IsConfigurable = false)]
     [Table("Core_ScheduledJobExecutions")]
     public class ScheduledJobExecution : FullAuditedEntity<Guid>
     {

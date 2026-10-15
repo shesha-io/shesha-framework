@@ -247,7 +247,7 @@ namespace Shesha.DynamicEntities
         /// Get specifications available for the specified entityType
         /// </summary>
         /// <returns></returns>
-        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure)]
         public Task<List<SpecificationDto>> SpecificationsAsync(string entityType)
         {
             var entityConfig = _entityConfigStore.Get(entityType);

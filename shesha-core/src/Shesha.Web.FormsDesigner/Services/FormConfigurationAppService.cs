@@ -36,7 +36,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
 {
-    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure)]
     public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationDto, UpdateFormConfigurationDto, GetFormByIdInput>
     {
 
