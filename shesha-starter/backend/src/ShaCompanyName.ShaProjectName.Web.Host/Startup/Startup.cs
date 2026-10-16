@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Shesha;
@@ -29,7 +28,6 @@ using Shesha.DynamicEntities.Swagger;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.GraphQL;
-using Shesha.GraphQL.Middleware;
 using Shesha.Identity;
 using Shesha.Scheduler.Extensions;
 using Shesha.Swagger;
@@ -214,11 +212,6 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			}); // URL: /swagger​
 
             app.UseSheshaHangfireDashboard();
-			app.UseMiddleware<GraphQLMiddleware>();
-			if (_hostEnvironment.IsDevelopment())
-			{
-				app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
-			}
 		}
 
 		private void AddApiVersioning(IServiceCollection services)
