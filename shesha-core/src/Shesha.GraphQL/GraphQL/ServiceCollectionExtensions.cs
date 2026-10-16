@@ -46,7 +46,6 @@ namespace Shesha.GraphQL
                 .AddMiddleware<GraphQLPermissionEntityFieldMiddleware>()
             );
 
-            services.AddSingleton<GraphQLMiddleware>();
             services.AddSingleton(new GraphQLSettings
             {
                 BuildUserContext = ctx => new GraphQLUserContext
