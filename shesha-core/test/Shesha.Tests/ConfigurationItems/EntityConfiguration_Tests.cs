@@ -444,6 +444,241 @@ namespace Shesha.Tests.ConfigurationItems
             imported.Label.ShouldBe("src-label", "fields should be updated from the imported package");
         }
 
+        [Fact]
+        public async Task When_Export_ChildAndItemsTypeRows_ShouldOnlyBeExportedNested_TestAsync()
+        {
+            // rows are shaped the way EntityConfigsBootstrapper stores them: nested properties and
+            // array items types belong to the same entity config and point at their parent property
+            var src = PrepareImportContext();
+            var module = await src.GetOrCreateModuleAsync("test-module");
+
+            var entityConfig = await src.AddEntityConfigAsync(c =>
+            {
+                c.Name = "test-entity";
+                c.ClassName = Cls;
+                c.Namespace = Ns;
+                c.Module = module;
+                return Task.CompletedTask;
+            });
+
+            var complexProp = await src.AddPropertyAsync(entityConfig, p =>
+            {
+                p.Name = "ComplexProp";
+                p.DataType = "object";
+            });
+            await src.AddPropertyAsync(entityConfig, p =>
+            {
+                p.Name = "ChildProp";
+                p.DataType = "string";
+                p.ParentProperty = complexProp;
+            });
+
+            var listProp = await src.AddPropertyAsync(entityConfig, p =>
+            {
+                p.Name = "ListProp";
+                p.DataType = "array";
+            });
+            listProp.ItemsType = await src.AddPropertyAsync(entityConfig, p =>
+            {
+                p.Name = "ListProp";
+                p.DataType = "entity";
+                p.ParentProperty = listProp;
+            });
+
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var export = new EntityConfigExport(src.EntityConfigRepo, src.EntityPropertyRepo, permissionedObjectManager);
+            var exported = await export.ExportItemAsync(entityConfig.Id) as DistributedEntityConfig;
+
+            exported.ShouldNotBeNull();
+            exported.Properties.Select(p => p.Name).ShouldBe(new[] { "ComplexProp", "ListProp" }, ignoreOrder: true, "only top-level properties should be exported at the top level");
+
+            var exportedList = exported.Properties.Single(p => p.Name == "ListProp");
+            exportedList.DataType.ShouldBe("array");
+            exportedList.ItemsType.ShouldNotBeNull("the items type should travel nested inside its array property");
+
+            var exportedComplex = exported.Properties.Single(p => p.Name == "ComplexProp");
+            exportedComplex.Properties.Select(p => p.Name).ShouldBe(new[] { "ChildProp" }, ignoreOrder: true, "nested properties should travel inside their parent");
+        }
+
+        [Fact]
+        public async Task When_Import_LegacyPackageWithLeakedItemsType_ShouldKeepArrayAndItemsType_TestAsync()
+        {
+            // packages exported before the exporter fix list the items type row of an array a second time at
+            // the top level, with the array's name (seen in the wild for Case.ChildCases). Importing that entry
+            // overwrote the array property and then added a second items type row, which violates
+            // uq_Frwk_EntityProperties_Path on SQL Server
+            var leakedItemsType = new DistributedEntityConfigProperty
+            {
+                Name = "ChildCases",
+                DataType = "entity",
+                EntityType = "SM.Case",
+                Source = MetadataSourceType.ApplicationCode,
+                SortOrder = 0,
+                Suppress = true,
+            };
+            var arrayProp = new DistributedEntityConfigProperty
+            {
+                Name = "ChildCases",
+                Label = "Child Cases",
+                DataType = "array",
+                DataFormat = "entity",
+                EntityType = "SM.Case",
+                Source = MetadataSourceType.ApplicationCode,
+                SortOrder = 13,
+                ItemsType = new DistributedEntityConfigProperty
+                {
+                    Name = "ChildCases",
+                    DataType = "entity",
+                    EntityType = "SM.Case",
+                    Source = MetadataSourceType.ApplicationCode,
+                    SortOrder = 0,
+                    Suppress = true,
+                },
+            };
+            var legacyPackage = new DistributedEntityConfig
+            {
+                Name = "test-entity",
+                ClassName = Cls,
+                Namespace = Ns,
+                ModuleName = "test-module",
+                // leaked entry first, as in the exported Case.json
+                Properties = new List<DistributedEntityConfigProperty> { leakedItemsType, arrayProp },
+            };
+
+            // destination already bootstrapped: the array and its items type row exist
+            var dst = PrepareImportContext();
+            var dstModule = await dst.GetOrCreateModuleAsync("test-module");
+            var dstEntityConfig = await dst.AddEntityConfigAsync(c =>
+            {
+                c.Name = "test-entity";
+                c.ClassName = Cls;
+                c.Namespace = Ns;
+                c.Module = dstModule;
+                c.SetIsLast(true);
+                return Task.CompletedTask;
+            });
+            var dstArray = await dst.AddPropertyAsync(dstEntityConfig, p =>
+            {
+                p.Name = "ChildCases";
+                p.DataType = "array";
+            });
+            var dstItemsType = await dst.AddPropertyAsync(dstEntityConfig, p =>
+            {
+                p.Name = "ChildCases";
+                p.DataType = "entity";
+                p.ParentProperty = dstArray;
+            });
+            dstArray.ItemsType = dstItemsType;
+
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var uowManager = Resolve<IUnitOfWorkManager>();
+            var modelConfigsCacheHolder = Resolve<IModelConfigsCacheHolder>();
+            var importer = new EntityConfigImport(dst.ModuleRepo, dst.FrontEndAppRepo, dst.EntityConfigRepo, dst.EntityPropertyRepo, permissionedObjectManager, null, uowManager, modelConfigsCacheHolder)
+            {
+                UnitOfWorkManager = uowManager,
+            };
+            var importContext = new PackageImportContext { CreateModules = true };
+
+            using (var uow = uowManager.Begin())
+            {
+                await importer.ImportItemAsync(legacyPackage, importContext);
+                await uow.CompleteAsync();
+            }
+
+            var childCasesRows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == dstEntityConfig && p.Name == "ChildCases").ToList();
+            childCasesRows.Count(p => p.ParentProperty == null).ShouldBe(1, "exactly one top-level ChildCases property");
+            childCasesRows.Count(p => p.ParentProperty == dstArray).ShouldBe(1, "exactly one ChildCases items type row");
+
+            var importedArray = childCasesRows.Single(p => p.ParentProperty == null);
+            importedArray.Id.ShouldBe(dstArray.Id);
+            importedArray.DataType.ShouldBe("array", "the leaked items type entry must not overwrite the array property");
+            importedArray.ItemsType.ShouldNotBeNull();
+            importedArray.ItemsType.Id.ShouldBe(dstItemsType.Id, "the existing items type row should be updated, not replaced by a new one");
+        }
+
+        [Fact]
+        public async Task When_Import_LegacyPackageWithItemsTypeLeakedAsChild_ShouldKeepSingleItemsType_TestAsync()
+        {
+            // some packages exported before the exporter fix also list the items type row inside the array's own
+            // Properties, as a child with the array's name (seen in the wild for Case.ChildCases and
+            // Case.SlaPolicyConditionLogs). The importer maps the items type from ItemsType and then maps that child
+            // under the same parent, so a second items type row is added and uq_Frwk_EntityProperties_Path is violated
+            var arrayProp = new DistributedEntityConfigProperty
+            {
+                Name = "ChildCases",
+                Label = "Child Cases",
+                DataType = "array",
+                DataFormat = "entity",
+                EntityType = "SM.Case",
+                Source = MetadataSourceType.ApplicationCode,
+                SortOrder = 13,
+                ItemsType = new DistributedEntityConfigProperty
+                {
+                    Name = "ChildCases",
+                    Label = "Child Case",
+                    DataType = "entity",
+                    EntityType = "SM.Case",
+                    Source = MetadataSourceType.ApplicationCode,
+                    SortOrder = 0,
+                    Suppress = false,
+                },
+                // the leaked copy is stale, so it differs from ItemsType - it must not be applied to the items type row
+                Properties = new List<DistributedEntityConfigProperty>
+                {
+                    new DistributedEntityConfigProperty
+                    {
+                        Name = "ChildCases",
+                        Label = "leaked",
+                        DataType = "entity",
+                        EntityType = "SM.Case",
+                        Source = MetadataSourceType.ApplicationCode,
+                        SortOrder = 0,
+                        Suppress = true,
+                    },
+                },
+            };
+            var legacyPackage = new DistributedEntityConfig
+            {
+                Name = "test-entity",
+                ClassName = Cls,
+                Namespace = Ns,
+                ModuleName = "test-module",
+                Properties = new List<DistributedEntityConfigProperty> { arrayProp },
+            };
+
+            // fresh destination (blank database). Under NHibernate the items type row created from ItemsType is not
+            // flushed yet when the nested child is looked up, so the child becomes a second row; the in-memory
+            // repository does find it, so there the leaked child overwrites the items type instead
+            var dst = PrepareImportContext();
+
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var uowManager = Resolve<IUnitOfWorkManager>();
+            var modelConfigsCacheHolder = Resolve<IModelConfigsCacheHolder>();
+            var importer = new EntityConfigImport(dst.ModuleRepo, dst.FrontEndAppRepo, dst.EntityConfigRepo, dst.EntityPropertyRepo, permissionedObjectManager, null, uowManager, modelConfigsCacheHolder)
+            {
+                UnitOfWorkManager = uowManager,
+            };
+            var importContext = new PackageImportContext { CreateModules = true };
+
+            EntityConfig imported;
+            using (var uow = uowManager.Begin())
+            {
+                imported = await importer.ImportItemAsync(legacyPackage, importContext) as EntityConfig;
+                await uow.CompleteAsync();
+            }
+            imported.ShouldNotBeNull();
+
+            var childCasesRows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported && p.Name == "ChildCases").ToList();
+            var importedArray = childCasesRows.Where(p => p.ParentProperty == null).ShouldHaveSingleItem("exactly one top-level ChildCases property");
+            importedArray.DataType.ShouldBe("array");
+            importedArray.ItemsType.ShouldNotBeNull("the items type should be imported from ItemsType");
+            importedArray.ItemsType.Label.ShouldBe("Child Case", "the items type must come from ItemsType, not from the leaked child");
+            importedArray.ItemsType.Suppress.ShouldBeFalse("the items type must come from ItemsType, not from the leaked child");
+
+            childCasesRows.Where(p => p.ParentProperty == importedArray && p != importedArray.ItemsType)
+                .ShouldBeEmpty("the items type repeated as a child of the array must not add a second items type row");
+        }
+
         #region private declarations
 
         private TestImportContext PrepareImportContext()
