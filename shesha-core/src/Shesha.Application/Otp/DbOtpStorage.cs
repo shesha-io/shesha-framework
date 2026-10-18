@@ -16,14 +16,16 @@ namespace Shesha.Otp
     public class DbOtpStorage : IOtpStorage, ITransientDependency
     {
         private readonly IRepository<OtpAuditItem, Guid> _otpAuditRepository;
+        private readonly IRepository<ConfigurationItem, Guid> _configurationItemRepository;
         private readonly IUnitOfWorkManager _uowManager;
 
         /// <summary>
         /// default constructor
         /// </summary>
-        public DbOtpStorage(IRepository<OtpAuditItem, Guid> otpAuditRepository, IUnitOfWorkManager uowManager)
+        public DbOtpStorage(IRepository<OtpAuditItem, Guid> otpAuditRepository, IRepository<ConfigurationItem, Guid> configurationItemRepository, IUnitOfWorkManager uowManager)
         {
             _otpAuditRepository = otpAuditRepository;
+            _configurationItemRepository = configurationItemRepository;
             _uowManager = uowManager;
         }
 
@@ -51,7 +53,11 @@ namespace Shesha.Otp
                     RecipientType = input.RecipientType,
                     SentOn = input.SentOn,
                     SendStatus = input.SendStatus,
-                    ErrorMessage = input.ErrorMessage
+                    ErrorMessage = input.ErrorMessage,
+                    OtpConfig = input.OtpConfigId.HasValue
+                        ? await _configurationItemRepository.GetAsync(input.OtpConfigId.Value)
+                        : null,
+                    Owner = input.Owner,
                 };
                 if (isNew) // note we generate Id manually
                     await _otpAuditRepository.InsertAsync(item);
@@ -95,7 +101,9 @@ namespace Shesha.Otp
                     RecipientType = item.RecipientType,
                     SentOn = item.SentOn,
                     SendStatus = item.SendStatus,
-                    ErrorMessage = item.ErrorMessage
+                    ErrorMessage = item.ErrorMessage,
+                    OtpConfigId = item.OtpConfig?.Id,
+                    Owner = item.Owner,
                 };
             }
         }

@@ -1,4 +1,5 @@
 ﻿using Shesha.Domain.Enums;
+using Shesha.EntityReferences;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -32,5 +33,15 @@ namespace Shesha.Otp.Dto
         /// Type of action (e.g. 'password restore'). May be used for audit purposes and template selection
         /// </summary>
         string? ActionType { get; }
+
+        /// <summary>
+        /// OTP configuration that defines how the pin is generated and delivered. When empty, the legacy behaviour based on <see cref="SendType"/> is used
+        /// </summary>
+        OtpConfigIdentifierDto? OtpConfig { get; }
+
+        /// <summary>
+        /// Entity that originated the OTP request
+        /// </summary>
+        GenericEntityReference? Owner { get; }
     }
 }
