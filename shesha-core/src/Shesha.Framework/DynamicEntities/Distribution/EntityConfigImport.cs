@@ -211,6 +211,9 @@ namespace Shesha.DynamicEntities.Distribution
 
                 if (src.Properties != null && src.Properties.Any())
                     await MapPropertiesAsync(item, src.Properties, dbItem, dbProperties, importedIds);
+
+                if (src.ItemsType?.Properties != null && src.ItemsType.Properties.Any())
+                    await MapPropertiesAsync(item, src.ItemsType.Properties, dbItem.ItemsType, dbProperties, importedIds);
             }
         }
 
@@ -223,13 +226,20 @@ namespace Shesha.DynamicEntities.Distribution
         /// Packages exported before the exporter walked the property tree list every row of the entity config at the top
         /// level, so each nested row (a child property or an array items type) also appears as a root entry identical to
         /// its nested copy. Importing those copies turns nested rows into root properties and overwrites an array with
-        /// its own items type, which shares its name. Such a package is recognised by every nested row having an
-        /// identical root entry, and those root entries are skipped. Any other package is imported as is.
+        /// its own items type, which shares its name.
+        /// A tree cannot have two root properties with the same name (uq_Frwk_EntityProperties_Path), so a package that
+        /// has them is flat - an identical root entry alone does not tell a copy from a root property that happens to
+        /// match a nested one. In a flat package where every nested row has an identical root entry, those root
+        /// entries are skipped. Any other package is imported as is.
         /// </summary>
         private static List<DistributedEntityConfigProperty> ExcludeFlattenedCopies(List<DistributedEntityConfigProperty> properties)
         {
             if (properties == null)
                 return new List<DistributedEntityConfigProperty>();
+
+            var isFlat = properties.GroupBy(p => p.Name, StringComparer.InvariantCultureIgnoreCase).Any(g => g.Count() > 1);
+            if (!isFlat)
+                return properties;
 
             // nested rows by path; an items type repeated among its array's Properties is the same row
             var nestedRows = new Dictionary<string, HashSet<string>>(StringComparer.InvariantCultureIgnoreCase);

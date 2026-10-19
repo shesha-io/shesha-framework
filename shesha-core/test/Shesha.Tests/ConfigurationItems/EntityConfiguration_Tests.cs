@@ -706,11 +706,16 @@ namespace Shesha.Tests.ConfigurationItems
             var items = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Items"; p.DataType = "array"; });
             items.ItemsType = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Items"; p.DataType = "entity"; p.ParentProperty = items; });
 
+            // array of objects: the items type has child properties of its own
+            var lines = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Lines"; p.DataType = "array"; });
+            lines.ItemsType = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Lines"; p.DataType = "object"; p.ParentProperty = lines; });
+            await src.AddPropertyAsync(entityConfig, p => { p.Name = "Amount"; p.DataType = "number"; p.ParentProperty = lines.ItemsType; });
+
             var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
             var export = new EntityConfigExport(src.EntityConfigRepo, src.EntityPropertyRepo, permissionedObjectManager);
             var exported = await export.ExportItemAsync(entityConfig.Id) as DistributedEntityConfig;
 
-            var expectedPaths = new[] { "Name", "Address", "Address/City", "Address/Tags", "Address/Tags/Tags", "Items", "Items/Items" };
+            var expectedPaths = new[] { "Name", "Address", "Address/City", "Address/Tags", "Address/Tags/Tags", "Items", "Items/Items", "Lines", "Lines/Lines", "Lines/Lines/Amount" };
 
             // blank destination
             var dst = PrepareImportContext();
@@ -720,6 +725,7 @@ namespace Shesha.Tests.ConfigurationItems
             rows.Select(GetPath).ShouldBe(expectedPaths, ignoreOrder: true, "every row of the tree should be imported exactly once, under its own parent");
             GetPath(rows.Single(p => GetPath(p) == "Items").ItemsType).ShouldBe("Items/Items");
             GetPath(rows.Single(p => GetPath(p) == "Address/Tags").ItemsType).ShouldBe("Address/Tags/Tags");
+            GetPath(rows.Single(p => GetPath(p) == "Lines").ItemsType).ShouldBe("Lines/Lines");
 
             // importing the same package again updates the same rows. IsLast is maintained by the database, not by
             // the in-memory repository, so it is set here for the importer to find the existing config
@@ -736,8 +742,17 @@ namespace Shesha.Tests.ConfigurationItems
         public async Task When_Import_LegacyPackageWithFlattenedChild_ShouldKeepChildNested_TestAsync()
         {
             // packages exported before the exporter walked the tree list every row at the top level, so a nested
-            // property also appears as an identical root entry. Importing it made the child a root property
+            // property also appears as an identical root entry. Importing it made the child a root property. The
+            // array and its flattened items type share a name, which is what marks the package as flat
             var flattenedChild = new DistributedEntityConfigProperty { Name = "ChildProp", DataType = "string", Source = MetadataSourceType.UserDefined };
+            var flattenedItemsType = new DistributedEntityConfigProperty { Name = "ListProp", DataType = "entity", Source = MetadataSourceType.UserDefined };
+            var listProp = new DistributedEntityConfigProperty
+            {
+                Name = "ListProp",
+                DataType = "array",
+                Source = MetadataSourceType.UserDefined,
+                ItemsType = new DistributedEntityConfigProperty { Name = "ListProp", DataType = "entity", Source = MetadataSourceType.UserDefined },
+            };
             var complexProp = new DistributedEntityConfigProperty
             {
                 Name = "ComplexProp",
@@ -754,21 +769,22 @@ namespace Shesha.Tests.ConfigurationItems
                 ClassName = Cls,
                 Namespace = Ns,
                 ModuleName = "test-module",
-                Properties = new List<DistributedEntityConfigProperty> { complexProp, flattenedChild },
+                Properties = new List<DistributedEntityConfigProperty> { complexProp, flattenedChild, flattenedItemsType, listProp },
             };
 
             var dst = PrepareImportContext();
             var imported = await ImportAsync(dst, legacyPackage);
 
             var rows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported).ToList();
-            rows.Select(GetPath).ShouldBe(new[] { "ComplexProp", "ComplexProp/ChildProp" }, ignoreOrder: true, "the flattened copy of a nested property must not become a root property");
+            rows.Select(GetPath).ShouldBe(new[] { "ComplexProp", "ComplexProp/ChildProp", "ListProp", "ListProp/ListProp" }, ignoreOrder: true, "the flattened copies of nested rows must not become root properties");
+            rows.Single(p => GetPath(p) == "ListProp").DataType.ShouldBe("array");
         }
 
         [Fact]
         public async Task When_Import_RootPropertyMatchingNestedProperty_ShouldImportBoth_TestAsync()
         {
-            // a root property may legitimately look like a nested one - only a package where every nested row has
-            // a root copy was produced by the old flat exporter, so nothing is skipped here
+            // a root property may legitimately look like a nested one. Here the only nested row has an identical root
+            // entry, but the package has no two roots with the same name, so it is a tree and nothing is skipped
             var legacyLookingRoot = new DistributedEntityConfigProperty { Name = "Name", DataType = "string", Source = MetadataSourceType.UserDefined };
             var address = new DistributedEntityConfigProperty
             {
@@ -778,7 +794,6 @@ namespace Shesha.Tests.ConfigurationItems
                 Properties = new List<DistributedEntityConfigProperty>
                 {
                     new DistributedEntityConfigProperty { Name = "Name", DataType = "string", Source = MetadataSourceType.UserDefined },
-                    new DistributedEntityConfigProperty { Name = "City", DataType = "string", Source = MetadataSourceType.UserDefined },
                 },
             };
             var package = new DistributedEntityConfig
@@ -794,7 +809,7 @@ namespace Shesha.Tests.ConfigurationItems
             var imported = await ImportAsync(dst, package);
 
             var rows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported).ToList();
-            rows.Select(GetPath).ShouldBe(new[] { "Name", "Address", "Address/Name", "Address/City" }, ignoreOrder: true);
+            rows.Select(GetPath).ShouldBe(new[] { "Name", "Address", "Address/Name" }, ignoreOrder: true, "a root property that looks like a nested one must be kept");
         }
 
         #region private declarations
