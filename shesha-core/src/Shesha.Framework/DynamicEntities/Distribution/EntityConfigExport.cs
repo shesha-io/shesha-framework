@@ -94,14 +94,13 @@ namespace Shesha.DynamicEntities.Distribution
         {
             var dbProperties = await _entityPropertyRepo.GetAll().Where(p => p.EntityConfig == entityConfig).ToListAsync();
 
-            // nested properties and array items types are rows of the same entity config, but they are
-            // exported inside their parent (Properties/ItemsType) - exporting them again at the top level
-            // makes the import overwrite the parent and duplicate the row
+            // properties are a tree: only the roots are listed here, every other row is exported inside its parent
+            // (Properties/ItemsType). An items type belongs to its array even when its ParentProperty is not set
             var itemsTypeIds = dbProperties.Where(p => p.ItemsType != null).Select(p => p.ItemsType.Id).ToHashSet();
-            var topLevelProperties = dbProperties.Where(p => p.ParentProperty == null && !itemsTypeIds.Contains(p.Id));
+            var roots = dbProperties.Where(p => p.ParentProperty == null && !itemsTypeIds.Contains(p.Id));
 
             var properties = new List<DistributedEntityConfigProperty>();
-            foreach (var dbProp in topLevelProperties)
+            foreach (var dbProp in roots)
             {
                 properties.Add(await MapPropertyAsync(dbProp));
             }
@@ -142,7 +141,8 @@ namespace Shesha.DynamicEntities.Distribution
             property.CascadeUpdate = src.CascadeUpdate;
             property.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
 
-            foreach (var childProp in src.Properties) 
+            // the items type row of an array is also a child of the array - it is exported once, as ItemsType
+            foreach (var childProp in src.Properties.Where(p => p.Id != src.ItemsType?.Id))
             {
                 property.Properties.Add(await MapPropertyAsync(childProp));
             }

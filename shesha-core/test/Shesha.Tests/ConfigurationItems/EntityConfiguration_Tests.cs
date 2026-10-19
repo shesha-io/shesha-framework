@@ -495,6 +495,7 @@ namespace Shesha.Tests.ConfigurationItems
             var exportedList = exported.Properties.Single(p => p.Name == "ListProp");
             exportedList.DataType.ShouldBe("array");
             exportedList.ItemsType.ShouldNotBeNull("the items type should travel nested inside its array property");
+            exportedList.Properties.ShouldBeEmpty("the items type row is also a child of the array, but it is exported once - as ItemsType");
 
             var exportedComplex = exported.Properties.Single(p => p.Name == "ComplexProp");
             exportedComplex.Properties.Select(p => p.Name).ShouldBe(new[] { "ChildProp" }, ignoreOrder: true, "nested properties should travel inside their parent");
@@ -679,7 +680,150 @@ namespace Shesha.Tests.ConfigurationItems
                 .ShouldBeEmpty("the items type repeated as a child of the array must not add a second items type row");
         }
 
+        [Fact]
+        public async Task When_ExportAndImport_PropertyTree_ShouldRecreateEveryRowOnce_TestAsync()
+        {
+            // rows are shaped the way EntityConfigsBootstrapper stores them: every row belongs to the entity config,
+            // and an array's items type is also a child of the array
+            var src = PrepareImportContext();
+            var module = await src.GetOrCreateModuleAsync("test-module");
+            var entityConfig = await src.AddEntityConfigAsync(c =>
+            {
+                c.Name = "test-entity";
+                c.ClassName = Cls;
+                c.Namespace = Ns;
+                c.Module = module;
+                return Task.CompletedTask;
+            });
+
+            await src.AddPropertyAsync(entityConfig, p => { p.Name = "Name"; p.DataType = "string"; });
+
+            var address = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Address"; p.DataType = "object"; });
+            await src.AddPropertyAsync(entityConfig, p => { p.Name = "City"; p.DataType = "string"; p.ParentProperty = address; });
+            var tags = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Tags"; p.DataType = "array"; p.ParentProperty = address; });
+            tags.ItemsType = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Tags"; p.DataType = "string"; p.ParentProperty = tags; });
+
+            var items = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Items"; p.DataType = "array"; });
+            items.ItemsType = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Items"; p.DataType = "entity"; p.ParentProperty = items; });
+
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var export = new EntityConfigExport(src.EntityConfigRepo, src.EntityPropertyRepo, permissionedObjectManager);
+            var exported = await export.ExportItemAsync(entityConfig.Id) as DistributedEntityConfig;
+
+            var expectedPaths = new[] { "Name", "Address", "Address/City", "Address/Tags", "Address/Tags/Tags", "Items", "Items/Items" };
+
+            // blank destination
+            var dst = PrepareImportContext();
+            var imported = await ImportAsync(dst, exported);
+
+            var rows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported).ToList();
+            rows.Select(GetPath).ShouldBe(expectedPaths, ignoreOrder: true, "every row of the tree should be imported exactly once, under its own parent");
+            GetPath(rows.Single(p => GetPath(p) == "Items").ItemsType).ShouldBe("Items/Items");
+            GetPath(rows.Single(p => GetPath(p) == "Address/Tags").ItemsType).ShouldBe("Address/Tags/Tags");
+
+            // importing the same package again updates the same rows. IsLast is maintained by the database, not by
+            // the in-memory repository, so it is set here for the importer to find the existing config
+            imported.SetIsLast(true);
+            var reimported = await ImportAsync(dst, exported);
+            reimported.Id.ShouldBe(imported.Id, "re-import should update the existing entity config");
+
+            var reimportedRows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported).ToList();
+            reimportedRows.Select(GetPath).ShouldBe(expectedPaths, ignoreOrder: true, "re-import should not add or remove rows");
+            reimportedRows.Select(p => p.Id).ShouldBe(rows.Select(p => p.Id), ignoreOrder: true, "re-import should update the existing rows in place");
+        }
+
+        [Fact]
+        public async Task When_Import_LegacyPackageWithFlattenedChild_ShouldKeepChildNested_TestAsync()
+        {
+            // packages exported before the exporter walked the tree list every row at the top level, so a nested
+            // property also appears as an identical root entry. Importing it made the child a root property
+            var flattenedChild = new DistributedEntityConfigProperty { Name = "ChildProp", DataType = "string", Source = MetadataSourceType.UserDefined };
+            var complexProp = new DistributedEntityConfigProperty
+            {
+                Name = "ComplexProp",
+                DataType = "object",
+                Source = MetadataSourceType.UserDefined,
+                Properties = new List<DistributedEntityConfigProperty>
+                {
+                    new DistributedEntityConfigProperty { Name = "ChildProp", DataType = "string", Source = MetadataSourceType.UserDefined },
+                },
+            };
+            var legacyPackage = new DistributedEntityConfig
+            {
+                Name = "test-entity",
+                ClassName = Cls,
+                Namespace = Ns,
+                ModuleName = "test-module",
+                Properties = new List<DistributedEntityConfigProperty> { complexProp, flattenedChild },
+            };
+
+            var dst = PrepareImportContext();
+            var imported = await ImportAsync(dst, legacyPackage);
+
+            var rows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported).ToList();
+            rows.Select(GetPath).ShouldBe(new[] { "ComplexProp", "ComplexProp/ChildProp" }, ignoreOrder: true, "the flattened copy of a nested property must not become a root property");
+        }
+
+        [Fact]
+        public async Task When_Import_RootPropertyMatchingNestedProperty_ShouldImportBoth_TestAsync()
+        {
+            // a root property may legitimately look like a nested one - only a package where every nested row has
+            // a root copy was produced by the old flat exporter, so nothing is skipped here
+            var legacyLookingRoot = new DistributedEntityConfigProperty { Name = "Name", DataType = "string", Source = MetadataSourceType.UserDefined };
+            var address = new DistributedEntityConfigProperty
+            {
+                Name = "Address",
+                DataType = "object",
+                Source = MetadataSourceType.UserDefined,
+                Properties = new List<DistributedEntityConfigProperty>
+                {
+                    new DistributedEntityConfigProperty { Name = "Name", DataType = "string", Source = MetadataSourceType.UserDefined },
+                    new DistributedEntityConfigProperty { Name = "City", DataType = "string", Source = MetadataSourceType.UserDefined },
+                },
+            };
+            var package = new DistributedEntityConfig
+            {
+                Name = "test-entity",
+                ClassName = Cls,
+                Namespace = Ns,
+                ModuleName = "test-module",
+                Properties = new List<DistributedEntityConfigProperty> { legacyLookingRoot, address },
+            };
+
+            var dst = PrepareImportContext();
+            var imported = await ImportAsync(dst, package);
+
+            var rows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported).ToList();
+            rows.Select(GetPath).ShouldBe(new[] { "Name", "Address", "Address/Name", "Address/City" }, ignoreOrder: true);
+        }
+
         #region private declarations
+
+        private async Task<EntityConfig> ImportAsync(TestImportContext dst, DistributedEntityConfig package)
+        {
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var uowManager = Resolve<IUnitOfWorkManager>();
+            var modelConfigsCacheHolder = Resolve<IModelConfigsCacheHolder>();
+            var importer = new EntityConfigImport(dst.ModuleRepo, dst.FrontEndAppRepo, dst.EntityConfigRepo, dst.EntityPropertyRepo, permissionedObjectManager, null, uowManager, modelConfigsCacheHolder)
+            {
+                UnitOfWorkManager = uowManager,
+            };
+            var importContext = new PackageImportContext { CreateModules = true };
+
+            EntityConfig imported;
+            using (var uow = uowManager.Begin())
+            {
+                imported = await importer.ImportItemAsync(package, importContext) as EntityConfig;
+                await uow.CompleteAsync();
+            }
+            imported.ShouldNotBeNull();
+            return imported;
+        }
+
+        private static string GetPath(EntityProperty property)
+        {
+            return property.ParentProperty == null ? property.Name : $"{GetPath(property.ParentProperty)}/{property.Name}";
+        }
 
         private TestImportContext PrepareImportContext()
         {
