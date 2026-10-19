@@ -41,7 +41,7 @@ namespace Shesha.Tests.Security
             var attr = GetRequiredClassAuthorize(typeof(PermissionedObjectAppService));
 
             attr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
-            attr.Permissions.Should().Contain(ShaPermissionNames.Pages_Maintenance);
+            attr.Permissions.Should().Contain(PermissionNames.Application_Maintenance);
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace Shesha.Tests.Security
             var attr = GetRequiredClassAuthorize(typeof(PermissionAppService));
 
             attr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
-            attr.Permissions.Should().Contain(ShaPermissionNames.Application_Configurator);
+            attr.Permissions.Should().Contain(PermissionNames.Application_Configure);
         }
 
         [Theory]

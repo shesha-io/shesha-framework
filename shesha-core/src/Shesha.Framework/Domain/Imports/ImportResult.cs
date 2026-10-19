@@ -1,4 +1,5 @@
 ﻿using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -11,6 +12,7 @@ namespace Shesha.Domain
     [Discriminator]
     [Table("import_results", Schema = "frwk")]
     [SnakeCaseNaming]
+    [Entity(CrudActions = CrudActions.Read, IsConfigurable = false)]
     public class ImportResult : FullPowerEntity
     {
         /// <summary>

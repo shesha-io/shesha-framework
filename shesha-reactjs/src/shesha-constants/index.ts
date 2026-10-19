@@ -12,8 +12,7 @@ export const URL_SETTINGS = '/settings/overview';
 export const CONFIG_KEY = '__APP_CONFIG__';
 
 //#region permissions
-export const PERM_PAGES_APP_SETTINGS = 'pages:applicationSettings';
-export const PERM_APP_CONFIGURATOR = 'app:Configurator';
+export const PERM_APP_CONFIGURATOR = 'Application-Configure';
 export const SIDEBAR_MENU_ID = '9362F11A-EA9C-4152-9855-9516123467F7';
 export const SIDEBAR_MENU_NAME = 'sidebar-menu';
 //#region

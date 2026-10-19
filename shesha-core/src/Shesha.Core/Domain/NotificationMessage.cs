@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities;
+using Shesha.Authorization;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System;
@@ -7,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Core.NotificationMessage")]
+    [Entity(TypeShortAlias = "Shesha.Core.NotificationMessage", CrudActions = CrudActions.Read, CrudActionsPermissions = [PermissionNames.Application_Administer], IsConfigurable = false)]
     public class NotificationMessage : FullAuditedEntityWithExternalSync<Guid>, IMayHaveTenant
     {
         /// <summary>

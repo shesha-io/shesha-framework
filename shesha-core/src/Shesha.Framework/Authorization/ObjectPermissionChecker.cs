@@ -8,6 +8,7 @@ using Shesha.Domain.Enums;
 using Shesha.Permissions;
 using Shesha.Utilities;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,21 +22,18 @@ namespace Shesha.Authorization
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IShaPermissionChecker _permissionChecker;
         private readonly ILocalizationManager _localizationManager;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
         public ObjectPermissionChecker(
             IAuthorizationConfiguration authConfiguration,
             IPermissionedObjectManager permissionedObjectManager,
             IShaPermissionChecker permissionChecker,
-            ILocalizationManager localizationManager,
-            IUnitOfWorkManager unitOfWorkManager
+            ILocalizationManager localizationManager
         )
         {
             _authConfiguration = authConfiguration;
             _permissionedObjectManager = permissionedObjectManager;
             _permissionChecker = permissionChecker;
             _localizationManager = localizationManager;
-            _unitOfWorkManager = unitOfWorkManager;
         }
 
         [UnitOfWork]
@@ -44,60 +42,79 @@ namespace Shesha.Authorization
             string permissionedObject,
             string method,
             string objectType,
-            bool IsAuthenticated,
+            bool isAuthenticated,
             RefListPermissionedAccess? defaultAccess = null,
             List<string>? defaultPermissions = null
             )
         {
             if (!_authConfiguration.IsEnabled)
-            {
                 return;
-            }
 
             var methodName = PermissionedObjectManager.GetCrudMethod(method, method);
             var permissionName = $"{permissionedObject}@{methodName}";
 
             var permission = await _permissionedObjectManager.GetOrDefaultAsync(permissionName, objectType);
-
-            var actualAccess = defaultAccess != null && permission?.ActualAccess == RefListPermissionedAccess.Inherited
-                ? defaultAccess
-                : permission?.ActualAccess;
-
-            if (permission == null
-                || actualAccess == RefListPermissionedAccess.AllowAnonymous
-                || actualAccess == RefListPermissionedAccess.AnyAuthenticated && IsAuthenticated)
+            if (permission == null)
                 return;
 
-            if (!IsAuthenticated)
+            var actualAccess = defaultAccess != null && permission.ActualAccess == RefListPermissionedAccess.Inherited
+                ? defaultAccess
+                : permission.ActualAccess;
+            var actualPermissions = defaultPermissions != null && defaultAccess == RefListPermissionedAccess.RequiresPermissions
+                ? defaultPermissions
+                : permission.ActualPermissions;
+
+            switch (actualAccess)
             {
+                case RefListPermissionedAccess.AllowAnonymous:
+                    return;
+                case RefListPermissionedAccess.Disable:
+                    ThrowNotFound();
+                    return;
+                case RefListPermissionedAccess.AnyAuthenticated:
+                    {
+                        EnsureAuthenticated(isAuthenticated);
+                        return;
+                    }
+                case RefListPermissionedAccess.RequiresPermissions:
+                    {
+                        EnsureAuthenticated(isAuthenticated);
+                        if (actualPermissions == null || !actualPermissions.Any())
+                            ThrowAccessDenied();
+
+                        // Note: requireAll is intentionally false — multiple permissions are OR'd (any single permission grants access)
+                        await _permissionChecker.AuthorizeAsync(false, actualPermissions.ToArray());
+                        return;
+                    }
+                default:
+                    ThrowAccessDenied();
+                    return;
+            }
+        }
+
+        private void EnsureAuthenticated(bool isAuthenticated)
+        {
+            if (!isAuthenticated)
                 throw new AbpAuthorizationException(
-                    _localizationManager?.GetString(SheshaConsts.LocalizationSourceName, "CurrentUserDidNotLoginToTheApplication") 
+                    _localizationManager?.GetString(SheshaConsts.LocalizationSourceName, "CurrentUserDidNotLoginToTheApplication")
                     ?? "Current user did not login to the application!"
                 );
-            }
-            if (actualAccess == RefListPermissionedAccess.Disable)
-            {
-                throw new EntityNotFoundException(
-                    _localizationManager?.GetString(SheshaConsts.LocalizationSourceName, "NotFound") ?? "Not found"
-                );
-            }
+        }
 
-            var actualPermissions = permission?.ActualAccess == RefListPermissionedAccess.Inherited && defaultAccess == RefListPermissionedAccess.RequiresPermissions
-                ? defaultPermissions
-                : permission?.ActualPermissions;
+        [DoesNotReturn]
+        private void ThrowAccessDenied()
+        {
+            throw new AbpAuthorizationException(
+                _localizationManager?.GetString(SheshaConsts.LocalizationSourceName, "AccessDenied") ?? "Access Denied"
+            );
+        }
 
-            if (actualAccess == RefListPermissionedAccess.RequiresPermissions
-                && (actualPermissions == null || !actualPermissions.Any())
-            )
-            {
-                throw new AbpAuthorizationException(
-                    _localizationManager?.GetString(SheshaConsts.LocalizationSourceName, "AccessDenied") ?? "Access Denied"
-                );
-            }
-
-            var ty = _permissionChecker.GetType();// (_permissionChecker as IProxyTargetAccessor).DynProxyGetTarget().GetType();
-            // Note: requireAll is intentionally false — multiple permissions are OR'd (any single permission grants access)
-            await _permissionChecker.AuthorizeAsync(false, actualPermissions?.ToArray());
+        [DoesNotReturn]
+        private void ThrowNotFound()
+        {
+            throw new EntityNotFoundException(
+                _localizationManager?.GetString(SheshaConsts.LocalizationSourceName, "NotFound") ?? "Not found"
+            );
         }
     }
 }

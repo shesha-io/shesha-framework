@@ -3,6 +3,7 @@ using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Reflection;
@@ -17,7 +18,7 @@ namespace Shesha.Domain
     /// </summary>
     [SnakeCaseNaming]
     [Table("stored_files", Schema = "frwk")]
-    [Entity(TypeShortAlias = "Shesha.Framework.StoredFile", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Framework.StoredFile", CrudActions = CrudActions.None, IsConfigurable = false)]
     public class StoredFile : FullAuditedEntity<Guid>, IMayHaveTenant
     {
         /// <summary>

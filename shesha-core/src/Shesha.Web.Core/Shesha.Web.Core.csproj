@@ -18,12 +18,15 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Application\PublicHolidays\**" />
+    <Compile Remove="Application\**" />
     <Compile Remove="Authentication\**" />
-    <EmbeddedResource Remove="Application\PublicHolidays\**" />
+    <Compile Remove="Configuration\**" />
+    <EmbeddedResource Remove="Application\**" />
     <EmbeddedResource Remove="Authentication\**" />
-    <None Remove="Application\PublicHolidays\**" />
+    <EmbeddedResource Remove="Configuration\**" />
+    <None Remove="Application\**" />
     <None Remove="Authentication\**" />
+    <None Remove="Configuration\**" />
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
@@ -58,10 +61,6 @@
     <PackageReference Include="System.ValueTuple" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Application\Gql\" />
-    <Folder Include="Configuration\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub">

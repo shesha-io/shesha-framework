@@ -68,7 +68,7 @@ namespace Shesha.Sessions
                 };
 
                 // Send initialization errors only for Application Configurators
-                if (await _permissionChecker.IsGrantedAsync(ShaPermissionNames.Application_Configurator))
+                if (await _permissionChecker.IsGrantedAsync(PermissionNames.Application_Configure))
                     output.InitializationErrors = new InitializationErrorsInfoDto()
                     {
                         LastInitialization = _dynamicEntitiesErrorHandler.LastComplete,

@@ -2,6 +2,7 @@
 using Abp.Domain.Entities;
 using Abp.Events.Bus;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Authorization;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Dtos;
 using Shesha.ConfigurationItems.Events;
@@ -13,7 +14,7 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Common Configuration Item application service
     /// </summary>
-    [Authorization.SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
+    [Authorization.SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure)]
     public class ConfigurationItemAppService: SheshaAppServiceBase
     {
         private readonly IConfigurationItemClientSideCache _clientSideCache;

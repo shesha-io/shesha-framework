@@ -46,7 +46,6 @@ namespace Shesha.GraphQL
                 .AddSystemTextJson() // For .NET Core 3+
             );
 
-            services.AddSingleton<GraphQLMiddleware>();
             services.AddSingleton(new GraphQLSettings
             {
                 BuildUserContext = ctx => new GraphQLUserContext

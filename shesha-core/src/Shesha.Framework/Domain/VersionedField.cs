@@ -1,4 +1,5 @@
 ﻿using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -9,7 +10,7 @@ namespace Shesha.Domain
     /// </summary>
     [SnakeCaseNaming]
     [Table("versioned_fields", Schema = "frwk")]
-    [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
     public class VersionedField : FullPowerChildEntity
     {
         /// <summary>

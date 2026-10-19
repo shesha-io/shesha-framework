@@ -17,7 +17,7 @@ namespace Shesha.Domain
     [Discriminator(DiscriminatorColumn = "item_type")]
     [Table("configuration_items", Schema = "frwk")]
     [SnakeCaseNaming]
-    [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
     public class ConfigurationItem : FullAuditedEntity<Guid>, IMayHaveFrontEndApplication
     {
         [ReadonlyProperty]

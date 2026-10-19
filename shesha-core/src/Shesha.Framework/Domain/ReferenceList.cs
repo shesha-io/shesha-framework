@@ -1,16 +1,23 @@
 ﻿using Abp.Domain.Entities;
+using Shesha.Authorization;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Constants;
+using Shesha.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
     [Entity(
-        FriendlyName = "List of Values",
-        TypeShortAlias = "Shesha.Framework.ReferenceList", 
-        GenerateApplicationService = GenerateApplicationServiceState.AlwaysGenerateApplicationService
+        FriendlyName = "List of Values", 
+        TypeShortAlias = "Shesha.Framework.ReferenceList",
+        CrudActions = CrudActions.All,
+        IsConfigurable = false,
+        CrudActionsAccess = CrudActionsAccess.AllowAnonymous
     )]
+    [EntityAuthorize(CrudAction.Create, [PermissionNames.Application_Configure, PermissionNames.Application_Administer])]
+    [EntityAuthorize(CrudAction.Update, [PermissionNames.Application_Configure, PermissionNames.Application_Administer])]
+    [EntityAuthorize(CrudAction.Delete, [PermissionNames.Application_Configure, PermissionNames.Application_Administer])]
     [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-reflist-create")]
     [JoinedProperty("reference_lists", Schema = "frwk")]
     [DiscriminatorValue(ItemTypeName)]

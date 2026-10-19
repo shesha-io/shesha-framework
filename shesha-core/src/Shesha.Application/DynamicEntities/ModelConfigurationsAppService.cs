@@ -2,6 +2,7 @@
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Authorization;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
@@ -16,7 +17,7 @@ namespace Shesha.DynamicEntities
     /// Model Configurations application service
     /// </summary>
     [Route("api/ModelConfigurations")]
-    [Authorization.SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
+    [Authorization.SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure)]
     public class ModelConfigurationsAppService : SheshaAppServiceBase, IApplicationService
     {
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;

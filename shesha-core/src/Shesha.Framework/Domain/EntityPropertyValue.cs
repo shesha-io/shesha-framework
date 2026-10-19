@@ -1,4 +1,5 @@
 ﻿using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,7 +8,7 @@ namespace Shesha.Domain
     /// <summary>
     /// Entity property value (initially for Dynamic properties)
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Framework.EntityPropertyValue", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Framework.EntityPropertyValue", CrudActions = CrudActions.None, IsConfigurable = false)]
     [SnakeCaseNaming]
     [Table("entity_property_values", Schema = "frwk")]
     public class EntityPropertyValue : FullPowerChildEntity

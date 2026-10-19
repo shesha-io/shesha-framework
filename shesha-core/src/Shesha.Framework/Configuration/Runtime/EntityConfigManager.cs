@@ -55,6 +55,7 @@ namespace Shesha.Configuration.Runtime
                     Source = x.Source,
 
                     GenerateAppService = x.GenerateAppService,
+                    IsConfigurable = x.IsConfigurable,
                 }).ToListAsync();
 
             return implemented ?? false
@@ -149,6 +150,7 @@ namespace Shesha.Configuration.Runtime
             destination.HardcodedPropertiesMD5 = source.HardcodedPropertiesMD5;
             destination.ViewConfigurations = source.ViewConfigurations?.Select(v => v.Clone()).ToList() ?? new List<EntityViewConfigurationDto>();
             destination.GenerateAppService = source.GenerateAppService;
+            destination.IsConfigurable = source.IsConfigurable;
             destination.Source = source.Source;
             destination.Accessor = source.Accessor;
 

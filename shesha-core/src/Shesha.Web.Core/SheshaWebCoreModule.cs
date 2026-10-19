@@ -6,18 +6,16 @@ using Abp.FluentValidation;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Zero.Configuration;
-using Boxfusion.Authorization;
-using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Shesha.Authentication.JwtBearer;
-using Shesha.Authorization;
 using Shesha.Bootstrappers;
 using Shesha.Configuration;
 using Shesha.Configuration.Startup;
 using Shesha.Elmah;
 using Shesha.Languages;
+using Shesha.Modules;
 using Shesha.NHibernate;
 using Shesha.Scheduler;
 using System;
@@ -37,14 +35,19 @@ namespace Shesha
         typeof(SheshaApplicationModule),
         typeof(AbpFluentValidationModule)
      )]
-    public class SheshaWebCoreModule : AbpModule
+    public class SheshaWebCoreModule : SheshaModule
     {
-        private readonly IWebHostEnvironment _env;
+        public const string ModuleName = "Shesha.Web";
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
+        {
+            FriendlyName = "Shesha Web (empty test project)",
+            Publisher = "Boxfusion",
+        };
+        
         private readonly IConfigurationRoot _appConfiguration;
 
         public SheshaWebCoreModule(IWebHostEnvironment env)
         {
-            _env = env;
             _appConfiguration = env.GetAppConfiguration();
         }
 
@@ -84,9 +87,6 @@ namespace Shesha
         public override void Initialize()
         {
             IocManager.RegisterAssemblyByConvention(typeof(SheshaWebCoreModule).GetAssembly());
-            IocManager.IocContainer.Register(
-              Component.For<ICustomPermissionChecker>().Forward<ISheshaWebCorePermissionChecker>().Forward<SheshaWebCorePermissionChecker>().ImplementedBy<SheshaWebCorePermissionChecker>().LifestyleTransient()
-            );
             IocManager.Register<IBootstrapper, SouthAfricaLanguagesCreator>();
         }
     }

@@ -21,7 +21,7 @@ namespace Shesha.Tests.Security
 
             attr.Should().NotBeNull("SpecificationsAsync should have [SheshaAuthorize]");
             attr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
-            attr.Permissions.Should().Contain("app:Configurator");
+            attr.Permissions.Should().Contain(PermissionNames.Application_Configure);
         }
 
         [Fact]

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
 using Shesha.Authorization;
-using Shesha.ConfigurationItems.Cache;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
@@ -29,7 +28,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
 {
-    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, ShaPermissionNames.Application_Configurator)]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure)]
     public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationRequest, UpdateFormConfigurationDto, GetFormByIdInput>
     {
         private readonly IRepository<ConfigurationItemFolder, Guid> _folderRepository;

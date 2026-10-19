@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,7 +13,7 @@ namespace Shesha.Domain
     /// </summary>
     [SnakeCaseNaming]
     [Table("stored_file_versions", Schema = "frwk")]
-    [Entity(TypeShortAlias = "Shesha.Framework.StoredFileVersion", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Framework.StoredFileVersion", CrudActions = CrudActions.None, IsConfigurable = false)]
     public class StoredFileVersion : FullAuditedEntity<Guid>, IMayHaveTenant
     {
         /// <summary>

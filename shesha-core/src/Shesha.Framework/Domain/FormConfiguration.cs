@@ -1,6 +1,8 @@
 ﻿using JetBrains.Annotations;
+using Shesha.Authorization;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Constants;
+using Shesha.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,7 +11,13 @@ namespace Shesha.Domain
     /// <summary>
     /// Form configuration
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Core.FormConfiguration", FriendlyName = "Form", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Core.FormConfiguration",
+        FriendlyName = "Form",
+        CrudActions = CrudActions.Read,
+        IsConfigurable = false,
+        CrudActionsAccess = CrudActionsAccess.RequiresPermissions,
+        CrudActionsPermissions = [PermissionNames.Application_Configure]
+    )]
     [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-form-create")]
     [DiscriminatorValue(ItemTypeName)]
     [JoinedProperty("form_configurations", Schema = "frwk")]

@@ -7,6 +7,7 @@ using Abp.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Shesha.Application.Services;
 using Shesha.Authorization;
 using Shesha.ConfigurationItems;
 using Shesha.Extensions;
@@ -79,7 +80,7 @@ namespace Shesha.Permissions
                     var service = descriptor.ControllerTypeInfo.AsType();
                     var assembly = service.Assembly;
                     var name = service.Name;
-                    var isDynamic = service.IsSheshaDynamicCrudAppService();
+                    var isDynamic = AppServiceHelper.IsDynamicAppService(service);
 
                     if (isDynamic || skipUnchangedAssembly && _startupSession.AssemblyStaysUnchanged(assembly))
                         continue;

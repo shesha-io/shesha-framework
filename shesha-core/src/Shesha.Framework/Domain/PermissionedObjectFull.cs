@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Framework.PermissionedObjectFull", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Framework.PermissionedObjectFull", CrudActions = CrudActions.None, IsConfigurable = false)]
     [Table("vw_permissioned_objects_full", Schema = "frwk")]
     [ImMutable]
     [SnakeCaseNaming]

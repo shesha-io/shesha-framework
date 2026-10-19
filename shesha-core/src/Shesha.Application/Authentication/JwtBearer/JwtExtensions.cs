@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -14,7 +12,7 @@ namespace Shesha.Authentication.JwtBearer
     /// </summary>
     public static class JwtExtensions
     {
-        public static async Task EnsureTokenIsNotBlacklistedAsync(this TokenValidatedContext context) 
+        public static async Task EnsureTokenIsNotBlacklistedAsync(this TokenValidatedContext context)
         {
             var tokenBlacklistService = context.HttpContext.RequestServices.GetRequiredService<ITokenBlacklistService>();
 
@@ -23,12 +21,12 @@ namespace Shesha.Authentication.JwtBearer
                 context.Fail("Token is blacklisted");
         }
 
-        public static string? GetTokenId(this ClaimsPrincipal principal) 
+        public static string? GetTokenId(this ClaimsPrincipal principal)
         {
             return principal.FindFirst("jti")?.Value;
         }
 
-        public static DateTime? GetTokenExpirationDate(this ClaimsPrincipal principal) 
+        public static DateTime? GetTokenExpirationDate(this ClaimsPrincipal principal)
         {
             var expClaim = principal.FindFirst("exp")?.Value;
 
@@ -37,28 +35,11 @@ namespace Shesha.Authentication.JwtBearer
                 : null;
         }
 
-        public static JwtSecurityToken? GetSecurityToken(this HttpContext httpContext)
+        public static string? GetAuthTokenCookie(this HttpContext httpContext)
         {
-            var cookies = httpContext?.Request.Cookies;
-            var jwtToken = cookies?["Abp.AuthToken"];
-            if (string.IsNullOrWhiteSpace(jwtToken))
-                return null;
-
-            try
-            {
-                var handler = new JwtSecurityTokenHandler();
-                return handler.ReadToken(jwtToken) as JwtSecurityToken;
-            }
-            catch
-            {
-                return null;
-            }            
-        }
-
-        public static string? GetUsernameFromJwtToken(this HttpContext httpContext)
-        {
-            var token = httpContext.GetSecurityToken();
-            return token?.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name)?.Value;
+            return httpContext != null
+                ? httpContext.Request.Cookies["Abp.AuthToken"]
+                : null;
         }
     }
 }

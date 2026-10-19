@@ -1,12 +1,11 @@
 ﻿using Abp.Auditing;
-using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Localization;
 using Abp.Timing;
 using FluentValidation;
 using JetBrains.Annotations;
-using Newtonsoft.Json;
+using Shesha.Authorization;
 using Shesha.Authorization.Users;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
@@ -23,7 +22,11 @@ using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Core.Person")]
+    [Entity(TypeShortAlias = "Shesha.Core.Person", CrudActions = CrudActions.All, CrudActionsAccess = CrudActionsAccess.RequiresPermissions)]
+    [EntityAuthorize(CrudAction.Create, [PermissionNames.Person_Create])]
+    [EntityAuthorize(CrudAction.Read, [PermissionNames.Person_View])]
+    [EntityAuthorize(CrudAction.Update, [PermissionNames.Person_Update])]
+    [EntityAuthorize(CrudAction.Delete, [PermissionNames.Person_Delete])]
     [Table("Core_Persons") /* pluralize() returns wrong version */]
     [Discriminator]
     [DisplayManyToManyAuditTrail(typeof(ShaRoleAppointedPerson), "Role", DisplayName = "Role Appointment")]

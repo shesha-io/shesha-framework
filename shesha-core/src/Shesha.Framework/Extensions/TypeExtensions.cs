@@ -7,16 +7,6 @@ namespace Shesha.Extensions
     public static class TypeExtensions
     {
         /// <summary>
-        /// Check if the type is SheshaDynamicCrudAppService (implement IDynamicCrudAppService)
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static bool IsSheshaDynamicCrudAppService(this Type type)
-        {
-            return type.ImplementsGenericInterface(typeof(IDynamicCrudAppService<,,>));
-        }
-
-        /// <summary>
         /// Get base generic type for this type
         /// </summary>
         /// <param name="type"></param>

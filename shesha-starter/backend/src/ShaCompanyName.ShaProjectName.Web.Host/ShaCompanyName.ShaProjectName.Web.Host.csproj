@@ -16,6 +16,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="App_Data\**" />
+    <Content Remove="App_Data\**" />
+    <EmbeddedResource Remove="App_Data\**" />
+    <None Remove="App_Data\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="wwwroot\swagger\ui\index.html" />
   </ItemGroup>
 
@@ -42,7 +49,6 @@
     <PackageReference Include="Abp.Castle.Log4Net" Version="10.3.0" />
     <PackageReference Include="Abp.TestBase" Version="10.3.0" />
     <PackageReference Include="ElmahCore" Version="2.1.2" />
-    <PackageReference Include="GraphQL.Server.Ui.Playground" Version="6.1.0" />
     <PackageReference Include="Hangfire.Core" Version="1.8.23" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.21.1" />
 	<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
@@ -66,7 +72,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="App_Data\ElmahLogs\" />
     <Folder Include="Plugins\" />
   </ItemGroup>
 
