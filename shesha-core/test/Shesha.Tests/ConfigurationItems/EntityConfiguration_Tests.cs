@@ -490,6 +490,7 @@ namespace Shesha.Tests.ConfigurationItems
             var exported = await export.ExportItemAsync(entityConfig.Id) as DistributedEntityConfig;
 
             exported.ShouldNotBeNull();
+            exported.PropertiesFormat.ShouldBe(DistributedEntityConfig.TreePropertiesFormat);
             exported.Properties.Select(p => p.Name).ShouldBe(new[] { "ComplexProp", "ListProp" }, ignoreOrder: true, "only top-level properties should be exported at the top level");
 
             var exportedList = exported.Properties.Single(p => p.Name == "ListProp");
@@ -742,17 +743,9 @@ namespace Shesha.Tests.ConfigurationItems
         public async Task When_Import_LegacyPackageWithFlattenedChild_ShouldKeepChildNested_TestAsync()
         {
             // packages exported before the exporter walked the tree list every row at the top level, so a nested
-            // property also appears as an identical root entry. Importing it made the child a root property. The
-            // array and its flattened items type share a name, which is what marks the package as flat
+            // property also appears as an identical root entry. Importing it made the child a root property. The root
+            // names are unique here - the package is recognised by having no PropertiesFormat
             var flattenedChild = new DistributedEntityConfigProperty { Name = "ChildProp", DataType = "string", Source = MetadataSourceType.UserDefined };
-            var flattenedItemsType = new DistributedEntityConfigProperty { Name = "ListProp", DataType = "entity", Source = MetadataSourceType.UserDefined };
-            var listProp = new DistributedEntityConfigProperty
-            {
-                Name = "ListProp",
-                DataType = "array",
-                Source = MetadataSourceType.UserDefined,
-                ItemsType = new DistributedEntityConfigProperty { Name = "ListProp", DataType = "entity", Source = MetadataSourceType.UserDefined },
-            };
             var complexProp = new DistributedEntityConfigProperty
             {
                 Name = "ComplexProp",
@@ -769,22 +762,59 @@ namespace Shesha.Tests.ConfigurationItems
                 ClassName = Cls,
                 Namespace = Ns,
                 ModuleName = "test-module",
-                Properties = new List<DistributedEntityConfigProperty> { complexProp, flattenedChild, flattenedItemsType, listProp },
+                Properties = new List<DistributedEntityConfigProperty> { complexProp, flattenedChild },
             };
 
             var dst = PrepareImportContext();
             var imported = await ImportAsync(dst, legacyPackage);
 
             var rows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported).ToList();
-            rows.Select(GetPath).ShouldBe(new[] { "ComplexProp", "ComplexProp/ChildProp", "ListProp", "ListProp/ListProp" }, ignoreOrder: true, "the flattened copies of nested rows must not become root properties");
-            rows.Single(p => GetPath(p) == "ListProp").DataType.ShouldBe("array");
+            rows.Select(GetPath).ShouldBe(new[] { "ComplexProp", "ComplexProp/ChildProp" }, ignoreOrder: true, "the flattened copy of a nested property must not become a root property");
+        }
+
+        [Fact]
+        public async Task When_Import_LegacyPackageWithDeepTree_ShouldSkipEachCopyOnce_TestAsync()
+        {
+            // the old exporter listed every row once at the top level: Address, its child Contact, Contact's child Name,
+            // and a root Name property that is identical to the nested one. Contact's copy repeats Name inside it,
+            // which must not be counted as a second nested Name - otherwise the root Name property would be skipped too
+            DistributedEntityConfigProperty NewName() => new DistributedEntityConfigProperty { Name = "Name", DataType = "string", Source = MetadataSourceType.UserDefined };
+            DistributedEntityConfigProperty NewContact() => new DistributedEntityConfigProperty
+            {
+                Name = "Contact",
+                DataType = "object",
+                Source = MetadataSourceType.UserDefined,
+                Properties = new List<DistributedEntityConfigProperty> { NewName() },
+            };
+            var address = new DistributedEntityConfigProperty
+            {
+                Name = "Address",
+                DataType = "object",
+                Source = MetadataSourceType.UserDefined,
+                Properties = new List<DistributedEntityConfigProperty> { NewContact() },
+            };
+            var legacyPackage = new DistributedEntityConfig
+            {
+                Name = "test-entity",
+                ClassName = Cls,
+                Namespace = Ns,
+                ModuleName = "test-module",
+                // root Name, Address, then the copies of Address.Contact and Address.Contact.Name
+                Properties = new List<DistributedEntityConfigProperty> { NewName(), address, NewContact(), NewName() },
+            };
+
+            var dst = PrepareImportContext();
+            var imported = await ImportAsync(dst, legacyPackage);
+
+            var rows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported).ToList();
+            rows.Select(GetPath).ShouldBe(new[] { "Name", "Address", "Address/Contact", "Address/Contact/Name" }, ignoreOrder: true);
         }
 
         [Fact]
         public async Task When_Import_RootPropertyMatchingNestedProperty_ShouldImportBoth_TestAsync()
         {
             // a root property may legitimately look like a nested one. Here the only nested row has an identical root
-            // entry, but the package has no two roots with the same name, so it is a tree and nothing is skipped
+            // entry, but the package is in the tree format, so nothing is skipped
             var legacyLookingRoot = new DistributedEntityConfigProperty { Name = "Name", DataType = "string", Source = MetadataSourceType.UserDefined };
             var address = new DistributedEntityConfigProperty
             {
@@ -803,6 +833,7 @@ namespace Shesha.Tests.ConfigurationItems
                 Namespace = Ns,
                 ModuleName = "test-module",
                 Properties = new List<DistributedEntityConfigProperty> { legacyLookingRoot, address },
+                PropertiesFormat = DistributedEntityConfig.TreePropertiesFormat,
             };
 
             var dst = PrepareImportContext();

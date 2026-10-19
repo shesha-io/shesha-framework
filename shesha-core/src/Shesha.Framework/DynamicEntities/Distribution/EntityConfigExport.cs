@@ -79,6 +79,7 @@ namespace Shesha.DynamicEntities.Distribution
                
                 ViewConfigurations = MapViewConfigurations(entityConfig),
                 Properties = await MapPropertiesAsync(entityConfig),
+                PropertiesFormat = DistributedEntityConfig.TreePropertiesFormat,
 
                 Permission = await _permissionedObjectManager.GetOrDefaultAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}", ShaPermissionedObjectsTypes.Entity),
                 PermissionGet = await _permissionedObjectManager.GetOrDefaultAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Get", ShaPermissionedObjectsTypes.EntityAction),

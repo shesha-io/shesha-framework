@@ -3,7 +3,6 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Runtime.Caching;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
@@ -87,7 +86,7 @@ namespace Shesha.DynamicEntities.Distribution
 
                 await _entityConfigRepo.UpdateAsync(dbItem);
 
-                await MapPropertiesAsync(dbItem, item.Properties);
+                await MapPropertiesAsync(dbItem, GetRootProperties(item));
 
                 await _modelConfigsCache.RemoveAsync($"{dbItem.Namespace}|{dbItem.ClassName}");
 
@@ -110,7 +109,7 @@ namespace Shesha.DynamicEntities.Distribution
 
                 await _entityConfigRepo.InsertAsync(newItem);
 
-                await MapPropertiesAsync(newItem, item.Properties);
+                await MapPropertiesAsync(newItem, GetRootProperties(item));
 
                 return newItem;
             }
@@ -176,7 +175,7 @@ namespace Shesha.DynamicEntities.Distribution
             var dbProperties = existingProperties.ToList();
 
             var importedIds = new HashSet<Guid>();
-            await MapPropertiesAsync(item, ExcludeFlattenedCopies(Properties), null, dbProperties, importedIds);
+            await MapPropertiesAsync(item, Properties ?? new List<DistributedEntityConfigProperty>(), null, dbProperties, importedIds);
 
             // delete properties absent from the imported package, mirroring
             // ModelConfigurationManager.cs's deletion semantics
@@ -223,83 +222,55 @@ namespace Shesha.DynamicEntities.Distribution
         }
 
         /// <summary>
-        /// Packages exported before the exporter walked the property tree list every row of the entity config at the top
-        /// level, so each nested row (a child property or an array items type) also appears as a root entry identical to
-        /// its nested copy. Importing those copies turns nested rows into root properties and overwrites an array with
-        /// its own items type, which shares its name.
-        /// A tree cannot have two root properties with the same name (uq_Frwk_EntityProperties_Path), so a package that
-        /// has them is flat - an identical root entry alone does not tell a copy from a root property that happens to
-        /// match a nested one. In a flat package where every nested row has an identical root entry, those root
-        /// entries are skipped. Any other package is imported as is.
+        /// Returns the root properties of the imported package. A package in the tree format lists them as they are.
+        /// Packages exported before it list every property row of the entity config at the top level, so a nested row
+        /// (a child property or an array items type) also appears as a root entry identical to its nested copy, and
+        /// importing those copies turns nested rows into root properties and overwrites an array with its own items
+        /// type, which shares its name. Every row is listed once, so each direct child of a root entry has exactly one
+        /// identical root entry that is its copy, and those are skipped. A root property identical to a nested one is
+        /// listed too, so one identical entry remains for it.
         /// </summary>
-        private static List<DistributedEntityConfigProperty> ExcludeFlattenedCopies(List<DistributedEntityConfigProperty> properties)
+        private static List<DistributedEntityConfigProperty> GetRootProperties(DistributedEntityConfig item)
         {
-            if (properties == null)
-                return new List<DistributedEntityConfigProperty>();
-
-            var isFlat = properties.GroupBy(p => p.Name, StringComparer.InvariantCultureIgnoreCase).Any(g => g.Count() > 1);
-            if (!isFlat)
+            var properties = item.Properties ?? new List<DistributedEntityConfigProperty>();
+            if (item.PropertiesFormat == DistributedEntityConfig.TreePropertiesFormat)
                 return properties;
 
-            // nested rows by path; an items type repeated among its array's Properties is the same row
-            var nestedRows = new Dictionary<string, HashSet<string>>(StringComparer.InvariantCultureIgnoreCase);
-            CollectNestedRows(properties, string.Empty, nestedRows);
-            if (!nestedRows.Any())
-                return properties;
-
-            var roots = properties.Select(p => new { Property = p, Fields = GetOwnFields(p) }).ToList();
+            var roots = properties.Select(p => new { Property = p, Content = GetContent(p) }).ToList();
             var copies = new HashSet<DistributedEntityConfigProperty>();
-            foreach (var nestedRow in nestedRows.Values)
+            foreach (var child in properties.SelectMany(GetChildRows))
             {
-                var copy = roots.FirstOrDefault(r => !copies.Contains(r.Property) && nestedRow.Contains(r.Fields));
-                if (copy == null)
-                    return properties;
-
-                copies.Add(copy.Property);
+                var childContent = GetContent(child);
+                var copy = roots.FirstOrDefault(r => !copies.Contains(r.Property) && r.Content == childContent);
+                if (copy != null)
+                    copies.Add(copy.Property);
             }
 
             return properties.Where(p => !copies.Contains(p)).ToList();
         }
 
-        private static void CollectNestedRows(List<DistributedEntityConfigProperty> properties, string parentPath, Dictionary<string, HashSet<string>> nestedRows)
+        /// <summary>
+        /// Child rows of a property: its items type and its child properties. The items type row is also a child of the array,
+        /// and these packages repeat it among the array's Properties - it is the same row
+        /// </summary>
+        private static IEnumerable<DistributedEntityConfigProperty> GetChildRows(DistributedEntityConfigProperty property)
         {
-            if (properties == null)
-                return;
+            if (property.ItemsType != null)
+                yield return property.ItemsType;
 
-            foreach (var property in properties)
+            foreach (var child in property.Properties ?? new List<DistributedEntityConfigProperty>())
             {
-                var path = $"{parentPath}/{property.Name}";
-                var isNested = !string.IsNullOrEmpty(parentPath);
-                if (isNested)
-                    AddNestedRow(nestedRows, path, property);
-
-                if (property.ItemsType != null)
-                {
-                    var itemsTypePath = $"{path}/{property.ItemsType.Name}";
-                    AddNestedRow(nestedRows, itemsTypePath, property.ItemsType);
-                    CollectNestedRows(property.ItemsType.Properties, itemsTypePath, nestedRows);
-                }
-
-                CollectNestedRows(property.Properties, path, nestedRows);
+                if (property.ItemsType == null || !string.Equals(child.Name, property.ItemsType.Name, StringComparison.InvariantCultureIgnoreCase))
+                    yield return child;
             }
         }
 
-        private static void AddNestedRow(Dictionary<string, HashSet<string>> nestedRows, string path, DistributedEntityConfigProperty property)
-        {
-            if (!nestedRows.TryGetValue(path, out var fields))
-                nestedRows[path] = fields = new HashSet<string>();
-            fields.Add(GetOwnFields(property));
-        }
-
         /// <summary>
-        /// Fields of the property itself, without its children, for comparing two entries of the same row
+        /// The property with all of its descendants, for comparing two entries of the same row
         /// </summary>
-        private static string GetOwnFields(DistributedEntityConfigProperty property)
+        private static string GetContent(DistributedEntityConfigProperty property)
         {
-            var json = JObject.FromObject(property);
-            json.Remove(nameof(DistributedEntityConfigProperty.Properties));
-            json.Remove(nameof(DistributedEntityConfigProperty.ItemsType));
-            return json.ToString(Formatting.None);
+            return JsonConvert.SerializeObject(property, Formatting.None);
         }
 
         private async Task<EntityProperty> MapPropertyAsync(
