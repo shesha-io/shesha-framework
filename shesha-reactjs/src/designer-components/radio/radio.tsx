@@ -36,6 +36,7 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const RadioComponent: RadioComponentDefinition = {
   styleGroup: 'inputs',
+  themeGroup: 'input',
   allowInherit: true,
   type: 'radio',
   name: 'Radio',

@@ -150,6 +150,10 @@ export const getThemeGroupForStyleGroup = (styleGroup: StyleGroups | undefined):
 /**
  * The `ThemeComponentGroup` tab a component inherits its group-tier styles from: its `themeGroup`
  * when set, otherwise the tab implied by its `styleGroup` (see THEME_GROUP_STYLE_GROUPS).
+ *
+ * @deprecated This function is deprecated and should not be used for applying theme group styles.
+ * Components should only inherit theme group styles if they have an explicit `themeGroup` property set.
+ * Use `component?.themeGroup` directly to check if a component should inherit theme group styles.
  */
 export const getThemeGroupForComponent = (component: Pick<IToolboxComponentBase, 'styleGroup' | 'themeGroup'> | undefined): ThemeComponentGroup =>
   component?.themeGroup ?? getThemeGroupForStyleGroup(component?.styleGroup);
@@ -164,7 +168,10 @@ export type IToolboxComponentBase = {
   /**
    * Theme tab (Input/Inline/Standard/Layout Components) whose group styles this component inherits.
    * Use this - not `styleGroup`, which also selects the script style API - to place a component in a
-   * theme tab. Falls back to the tab implied by an existing `styleGroup`, else 'standard'.
+   * theme tab and enable theme group styling for the component.
+   *
+   * IMPORTANT: Only components with an explicit `themeGroup` property will inherit theme group styles.
+   * Components with only `styleGroup` (without `themeGroup`) will NOT be affected by theme group styles.
    */
   themeGroup?: ThemeComponentGroup | undefined;
 

@@ -71,6 +71,7 @@ export type { IEntityPickerComponentProps };
 
 const EntityPickerComponent: EntityPickerComponentDefinition = {
   styleGroup: 'inputs',
+  themeGroup: 'input',
   allowInherit: true,
   type: 'entityPicker',
   isInput: true,

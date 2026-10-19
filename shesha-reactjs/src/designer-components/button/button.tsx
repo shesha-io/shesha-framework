@@ -29,6 +29,7 @@ export type IActionParameters = [{ key: string; value: string }];
 
 const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   styleGroup: 'common',
+  themeGroup: 'input',
   allowInherit: true,
   type: 'button',
   isInput: false,

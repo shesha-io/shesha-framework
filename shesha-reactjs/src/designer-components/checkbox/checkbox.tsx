@@ -30,6 +30,7 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const CheckboxComponent: CheckboxComponentDefinition = {
   styleGroup: 'inputs',
+  themeGroup: 'input',
   allowInherit: true,
   type: 'checkbox',
   isInput: true,
