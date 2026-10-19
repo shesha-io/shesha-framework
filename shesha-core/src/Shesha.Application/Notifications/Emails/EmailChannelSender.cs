@@ -54,7 +54,9 @@ namespace Shesha.Notifications
             if (string.IsNullOrWhiteSpace(toAddress))
                 return SendStatus.Failed("Recipient address is empty");
 
-            using (var mail = BuildMessageWith(sender?.GetAddress(this), toAddress, message.Subject, message.Message, message.Cc))
+            var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
+
+            using (var mail = BuildMessageWith(smtpSettings, sender?.GetAddress(this), toAddress, message.Subject, message.Message, message.Cc))
             {
                 if (attachments != null)
                 {
@@ -65,7 +67,7 @@ namespace Shesha.Notifications
                 }
                 try
                 {
-                    await SendEmailAsync(mail);
+                    await SendEmailAsync(mail, smtpSettings);
                     return SendStatus.Success();
                 }
                 catch (Exception e)
@@ -82,13 +84,15 @@ namespace Shesha.Notifications
         /// 
         /// </summary>
         /// <param name="mail"></param>
-        private async Task SendEmailAsync(MailMessage mail)
+        /// <param name="smtpSettings"></param>
+        private async Task SendEmailAsync(MailMessage mail, SmtpSettings smtpSettings)
         {
             try
             {
-                using (var smtpClient = await GetSmtpClientAsync())
+                using (var smtpClient = GetSmtpClient(smtpSettings))
                 {
-                    smtpClient.Send(mail);
+                    // Note: use async send to avoid blocking a thread pool thread for the whole SMTP conversation
+                    await smtpClient.SendMailAsync(mail);
                 }
             }
             catch (Exception ex)
@@ -96,12 +100,6 @@ namespace Shesha.Notifications
                 Logger.Error($"Error sending email: {ex.Message}", ex);
                 throw new InvalidOperationException($"An error occurred while sending the email. Message: {ex.Message} ", ex);
             }
-        }
-
-        private async Task<SmtpClient> GetSmtpClientAsync() 
-        {
-            var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
-            return GetSmtpClient(smtpSettings);
         }
 
         /// <summary>
@@ -123,15 +121,15 @@ namespace Shesha.Notifications
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="smtpSettings"></param>
         /// <param name="fromAddress"></param>
         /// <param name="toAddress"></param>
         /// <param name="subject"></param>
         /// <param name="body"></param>
         /// <param name="cc"></param>
         /// <returns></returns>
-        private MailMessage BuildMessageWith(string? fromAddress, string toAddress, string subject, string body, string? cc = null)
+        private MailMessage BuildMessageWith(SmtpSettings smtpSettings, string? fromAddress, string toAddress, string subject, string body, string? cc = null)
         {
-            var smtpSettings = _emailSettings.SmtpSettings.GetValue();
             var message = new MailMessage
             {
                 Subject = (subject ?? "").Replace("\r", " ").Replace("\n", " ").RemoveDoubleSpaces(),

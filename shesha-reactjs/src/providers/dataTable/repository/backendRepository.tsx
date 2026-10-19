@@ -248,7 +248,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
     let excelColumns: IExcelColumn[] = [];
 
     for (const prop of payload.columns) {
-      if (isDataColumn(prop) && !isNullOrWhiteSpace(prop.propertyName))
+      if (isDataColumn(prop) && prop.show !== false && !isNullOrWhiteSpace(prop.propertyName))
         excelColumns.push({ propertyName: prop.propertyName, label: prop.caption ?? "" });
     }
 

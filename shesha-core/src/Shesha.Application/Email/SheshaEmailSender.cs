@@ -27,9 +27,14 @@ namespace Shesha.Email
             _imagesHelper = imagesHelper;
         }
 
-        private bool EmailsEnabled() 
+        private bool EmailsEnabled()
         {
-            var enabled = _emailSettings.EmailSettings.GetValue().EmailsEnabled;
+            return EmailsEnabled(_emailSettings.EmailSettings.GetValue());
+        }
+
+        private bool EmailsEnabled(EmailSettings emailSettings)
+        {
+            var enabled = emailSettings.EmailsEnabled;
             if (!enabled)
                 Logger.Warn("Emails are disabled");
 
@@ -69,13 +74,14 @@ namespace Shesha.Email
 
         protected override async Task SendEmailAsync(MailMessage mail)
         {
-            if (!EmailsEnabled())
+            var emailSettings = await _emailSettings.EmailSettings.GetValueAsync();
+            if (!EmailsEnabled(emailSettings))
                 return;
 
             var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
 
             // change recipient if the redirect is configured (is used for testing)
-            if (!PrepareAndCheckMail(mail, smtpSettings))
+            if (!PrepareAndCheckMail(mail, smtpSettings, emailSettings.RedirectAllMessagesTo))
                 return;
 
             using (var smtpClient = GetSmtpClient(smtpSettings))
@@ -86,13 +92,14 @@ namespace Shesha.Email
 
         protected override void SendEmail(MailMessage mail)
         {
-            if (!EmailsEnabled())
+            var emailSettings = _emailSettings.EmailSettings.GetValue();
+            if (!EmailsEnabled(emailSettings))
                 return;
 
             var smtpSettings = _emailSettings.SmtpSettings.GetValue();
 
             // change recipient if the redirect is configured (is used for testing)
-            if (!PrepareAndCheckMail(mail, smtpSettings))
+            if (!PrepareAndCheckMail(mail, smtpSettings, emailSettings.RedirectAllMessagesTo))
                 return;
 
             using (var smtpClient = GetSmtpClient(smtpSettings))
@@ -108,8 +115,9 @@ namespace Shesha.Email
         /// </summary>
         /// <param name="mail">Mail to prepare</param>
         /// <param name="smtpSettings">SMPT settings</param>
+        /// <param name="redirectTo">Address to redirect all messages to (is used for testing)</param>
         /// <returns></returns>
-        private bool PrepareAndCheckMail(MailMessage mail, SmtpSettings smtpSettings)
+        private bool PrepareAndCheckMail(MailMessage mail, SmtpSettings smtpSettings, string? redirectTo)
         {
             NormalizeMail(mail);
             NormalizeMailSender(mail, smtpSettings);
@@ -128,7 +136,6 @@ namespace Shesha.Email
                 return false;
             }
 
-            var redirectTo = _emailSettings.EmailSettings.GetValue().RedirectAllMessagesTo;
             if (!string.IsNullOrWhiteSpace(redirectTo))
             {
                 mail.To.Clear();
