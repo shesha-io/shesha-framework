@@ -59,6 +59,11 @@ namespace Shesha.DynamicEntities
                         if (entityType == null)
                             continue;
 
+                        // Skip APIs which are disabled in code explicitly (IsConfigurable = false and CrudActions = CrudActions.None)
+                        // Non-configurable actions with CrudActions != CrudActions.None will be processed by permissions on later stage
+                        if (EntityCrudHelper.IsApisTotallyDisabledInCode(entityType))
+                            continue;
+
                         // Get default AppServiceType
                         var defaultAppServiceType = entityConfiguration?.DefaultAppServiceType;
                         if (defaultAppServiceType == null)
@@ -103,7 +108,10 @@ namespace Shesha.DynamicEntities
                                 _iocManager.Register(dynamicAppServiceType, lifeStyle: DependencyLifeStyle.Transient);
                         }
                     }
-                    catch { }
+                    catch (Exception e)
+                    {
+                        _logger.Error($"Failed to generate controller for entity {entityConfig.FullClassName}", e);
+                    }
                 }
                 uow.Complete();
 

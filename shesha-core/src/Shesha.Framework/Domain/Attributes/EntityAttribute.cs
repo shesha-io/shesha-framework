@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shesha.Domain.Enums;
+using System;
 
 namespace Shesha.Domain.Attributes
 {
@@ -23,29 +24,36 @@ namespace Shesha.Domain.Attributes
         public string? TypeShortAlias { get; set; }
 
         /// <summary>
-        /// If AlwaysGenerateApplicationService, indicates that an Application Service should be generated for this entity.
-        /// If DisableGenerateApplicationService, indicates that an Application Service should not be generated for this entity.
-        /// If UseConfiguration, indicates that an Application Service should be generated for this entity according to configuration.
-        /// 
-        /// UseConfiguration by default
-        /// </summary>
-        public GenerateApplicationServiceState GenerateApplicationService { get; set; } = GenerateApplicationServiceState.UseConfiguration;
-
-        /// <summary>
-        /// Name of the auto-generated applicaiton service, applicable only when <see cref="GenerateApplicationService"/> is true. Leave empty to use `{class name}Crud` as a name of the applicaiton service
+        /// Name of the auto-generated applicaiton service, applicable only when <see cref="CrudActions"/> != <see cref="CrudActions.None"/>. Leave empty to use `{class name}Crud` as a name of the applicaiton service
         /// </summary>
         public string? ApplicationServiceName { get; set; }
 
         public EntityAttribute()
         {
-            GenerateApplicationService = GenerateApplicationServiceState.UseConfiguration;
+            IsConfigurable = true;
+            CrudActions = CrudActions.None;
         }
-    }
 
-    public enum GenerateApplicationServiceState
-    {
-        UseConfiguration = 0,
-        AlwaysGenerateApplicationService = 1,
-        DisableGenerateApplicationService = 2
+        /// <summary>
+        /// List of CRUD actions exposed by default application service
+        /// </summary>
+        public CrudActions CrudActions { get; set; }
+
+        /// <summary>
+        /// Default CRUD actions access 
+        /// </summary>
+        public CrudActionsAccess CrudActionsAccess { get; set; } = CrudActionsAccess.AnyAuthenticated;
+
+        /// <summary>
+        /// Permissions required to access CRUD actions
+        /// </summary>
+        public string[] CrudActionsPermissions { get; set; } = [];
+
+        /// <summary>
+        /// Indicates that the entity is configurable
+        /// </summary>
+        public bool IsConfigurable { get; set; }
+
+        public EntityCrudConfig GetCrudConfig() => new EntityCrudConfig(this);
     }
 }

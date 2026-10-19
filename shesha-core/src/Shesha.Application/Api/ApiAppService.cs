@@ -1,11 +1,9 @@
-﻿using Abp.Authorization;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.Extensions.Hosting.Internal;
 using Shesha.Api.Dto;
 using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
@@ -21,7 +19,7 @@ namespace Shesha.Api
     /// <summary>
     /// API application service
     /// </summary>
-    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure)]
     public class ApiAppService: SheshaAppServiceBase//, IApiAppService
     {
         private readonly IApiDescriptionGroupCollectionProvider _apiDescriptionsProvider;

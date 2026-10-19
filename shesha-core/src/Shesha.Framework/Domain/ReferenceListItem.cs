@@ -1,16 +1,25 @@
-﻿using System;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
+using Shesha.Authorization;
+using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Domain.Entities;
-using Abp.Domain.Entities.Auditing;
-using Shesha.Domain.Attributes;
 
 namespace Shesha.Domain
 {
     /// <summary>
     /// Reference list item
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Framework.ReferenceListItem", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Framework.ReferenceListItem",
+        CrudActions = CrudActions.All,
+        IsConfigurable = false,
+        CrudActionsAccess = CrudActionsAccess.AllowAnonymous
+    )]
+    [EntityAuthorize(CrudAction.Create, [PermissionNames.Application_Configure, PermissionNames.Application_Administer])]
+    [EntityAuthorize(CrudAction.Update, [PermissionNames.Application_Configure, PermissionNames.Application_Administer])]
+    [EntityAuthorize(CrudAction.Delete, [PermissionNames.Application_Configure, PermissionNames.Application_Administer])]
     [SnakeCaseNaming]
     [Table("reference_list_items", Schema = "frwk")]
     public class ReferenceListItem : FullAuditedEntity<Guid>, IMayHaveTenant

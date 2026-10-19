@@ -66,4 +66,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Hangfire\" />
+  </ItemGroup>
+
 </Project>

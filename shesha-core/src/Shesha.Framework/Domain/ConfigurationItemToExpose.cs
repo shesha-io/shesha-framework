@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Entities;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Shesha.Domain
 {
     [SnakeCaseNaming]
-    [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(CrudActions = CrudActions.Read, IsConfigurable = false)]
     [Table("vw_configuration_items_to_expose", Schema = "frwk")]
     [ImMutable]
     public class ConfigurationItemToExpose : Entity<Guid>

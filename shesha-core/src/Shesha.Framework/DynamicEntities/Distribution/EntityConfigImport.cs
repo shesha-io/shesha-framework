@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Caching;
+using NetTopologySuite.Index.HPRtree;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -105,6 +106,7 @@ namespace Shesha.DynamicEntities.Distribution
                 item.Source == distributedItem.Source &&
 
                 item.GenerateAppService == distributedItem.GenerateAppService &&
+                item.IsConfigurable == distributedItem.IsConfigurable &&
                 item.HardcodedPropertiesMD5 == distributedItem.PropertiesMD5;
                 // TODO: implement 
                 //revision.ViewConfigurations == distributedItem.ViewConfigurations.ToList() &&
@@ -125,6 +127,7 @@ namespace Shesha.DynamicEntities.Distribution
             item.Source = distributedItem.Source ?? MetadataSourceType.UserDefined;
 
             item.GenerateAppService = distributedItem.GenerateAppService;
+            item.IsConfigurable = distributedItem.IsConfigurable;
             item.HardcodedPropertiesMD5 = distributedItem.PropertiesMD5;
             item.ViewConfigurations = distributedItem.ViewConfigurations.ToList();
 

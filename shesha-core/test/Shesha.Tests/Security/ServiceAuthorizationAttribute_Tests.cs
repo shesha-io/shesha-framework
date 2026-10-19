@@ -35,11 +35,11 @@ namespace Shesha.Tests.Security
         }
 
         [Theory]
-        [InlineData(typeof(NHibernateAppService), "app:Configurator")]
-        [InlineData(typeof(ApiAppService), "app:Configurator")]
-        [InlineData(typeof(AuthorizationSettingsAppService), "app:Configurator")]
-        [InlineData(typeof(ConfigurationItemAppService), "app:Configurator")]
-        [InlineData(typeof(ModelConfigurationsAppService), "app:Configurator")]
+        [InlineData(typeof(NHibernateAppService), PermissionNames.Application_Configure)]
+        [InlineData(typeof(ApiAppService), PermissionNames.Application_Configure)]
+        [InlineData(typeof(AuthorizationSettingsAppService), PermissionNames.Application_Configure)]
+        [InlineData(typeof(ConfigurationItemAppService), PermissionNames.Application_Configure)]
+        [InlineData(typeof(ModelConfigurationsAppService), PermissionNames.Application_Configure)]
         public void Configurator_services_should_require_app_Configurator(Type serviceType, string expectedPermission)
         {
             var attr = GetClassSheshaAuthorize(serviceType);
@@ -50,9 +50,9 @@ namespace Shesha.Tests.Security
         }
 
         [Theory]
-        [InlineData(typeof(ScheduledJobAppService), "pages:maintenance")]
-        [InlineData(typeof(EmailSenderAppService), "pages:maintenance")]
-        [InlineData(typeof(OtpAppService), "pages:maintenance")]
+        [InlineData(typeof(ScheduledJobAppService), PermissionNames.Application_Maintenance)]
+        [InlineData(typeof(EmailSenderAppService), PermissionNames.Application_Maintenance)]
+        [InlineData(typeof(OtpAppService), PermissionNames.Application_Maintenance)]
         public void Maintenance_services_should_require_pages_maintenance(Type serviceType, string expectedPermission)
         {
             var attr = GetClassSheshaAuthorize(serviceType);

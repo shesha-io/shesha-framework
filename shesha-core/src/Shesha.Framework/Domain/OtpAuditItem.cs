@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Shesha.Authorization;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System;
@@ -9,7 +10,7 @@ namespace Shesha.Domain
 {
     [SnakeCaseNaming]
     [Table("otp_audit_items", Schema = "frwk")]
-    [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(CrudActions = CrudActions.Read, IsConfigurable = false, CrudActionsAccess = CrudActionsAccess.RequiresPermissions, CrudActionsPermissions = [PermissionNames.Application_Administer])]
     public class OtpAuditItem: FullAuditedEntity<Guid>
     {
         /// <summary>

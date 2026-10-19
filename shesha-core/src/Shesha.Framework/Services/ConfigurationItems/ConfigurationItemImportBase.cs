@@ -262,6 +262,8 @@ namespace Shesha.Services.ConfigurationItems
                 else
                     await Repository.UpdateAsync(item);
 
+                await InitRelatedItemsAsync(item, distributedItem);
+
                 var revision = item.MakeNewRevision(context.RevisionCreationMethod);
                 revision.CreatedByImport = context.ImportResult;
 
@@ -313,5 +315,13 @@ namespace Shesha.Services.ConfigurationItems
         }
 
         protected abstract Task MapCustomPropsToItemAsync(TItem item, TDistributedItem distributedItem);
+
+        /// <summary>
+        /// Init related/attached items. Called after item is imported
+        /// </summary>
+        protected virtual Task InitRelatedItemsAsync(TItem item, TDistributedItem distributedItem) 
+        {
+            return Task.CompletedTask;
+        }
     }    
 }

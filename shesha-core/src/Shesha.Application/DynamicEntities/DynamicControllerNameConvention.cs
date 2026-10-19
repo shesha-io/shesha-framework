@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Shesha.Application.Services;
 using Shesha.Domain.Attributes;
 using Shesha.Reflection;
 using System;
@@ -14,14 +15,11 @@ namespace Shesha.DynamicEntities
     {
         public void Apply(ControllerModel controller)
         {
-            if (!controller.ControllerType.IsGenericType || controller.ControllerType.GetGenericTypeDefinition() !=
-                typeof(DynamicCrudAppService<,,,,>))
-            {
-                // Not a GenericController, ignore.
+            // If not a GenericController - ignore.
+            if (!AppServiceHelper.IsDynamicAppService(controller.ControllerType))
                 return;
-            }
 
-            var entityType = controller.ControllerType.GenericTypeArguments[0];
+            var entityType = AppServiceHelper.GetEntityTypeFromDynamicAppService(controller.ControllerType);
 
             var entityAttribute = entityType.GetAttributeOrNull<EntityAttribute>();
             controller.ControllerName = !string.IsNullOrWhiteSpace(entityAttribute?.ApplicationServiceName)

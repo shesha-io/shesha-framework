@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Abp.Domain.Entities.Auditing;
+using Shesha.Authorization;
+using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
+using Shesha.Scheduler.Domain.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Domain.Entities.Auditing;
-using Shesha.Domain.Attributes;
-using Shesha.Scheduler.Domain.Enums;
 
 namespace Shesha.Scheduler.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Scheduler.ScheduledJob")]
+    [Entity(TypeShortAlias = "Shesha.Scheduler.ScheduledJob", CrudActions = CrudActions.Read | CrudActions.Delete, CrudActionsPermissions = [PermissionNames.Application_Configure, PermissionNames.Application_Administer], IsConfigurable = false)]
     [Table("Core_ScheduledJobs")]
     public class ScheduledJob: FullAuditedEntity<Guid>
     {

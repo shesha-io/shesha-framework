@@ -1,10 +1,11 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using System;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Core.UserNotificationPreference")]
+    [Entity(TypeShortAlias = "Shesha.Core.UserNotificationPreference", CrudActions = CrudActions.None, IsConfigurable = false)]
     public class UserNotificationPreference: FullAuditedEntity<Guid>
     {
         public virtual Person User { get; set; }

@@ -7,18 +7,27 @@
             "label": "Alert1",
             "labelAlign": "right",
             "parentId": "root",
-            "hidden": {
-                "_code": "return !getSettingValue(data?.notImplemented);",
-                "_mode": "code",
-                "_value": false
-            },
             "isDynamic": false,
             "alertType": "error",
             "text": "Entity configuration has 'Application Code' source type but is not implemented. Please note that you will not be able to use it.",
             "description": "",
             "showIcon": true,
             "icon": "CloseCircleFilled",
-            "version": 2
+            "version": 3,
+            "desktop": {
+                "stylingBoxJson": {
+                    "_type": "styleBox",
+                    "paddingBottom": 8,
+                    "paddingLeft": 8,
+                    "paddingRight": 8,
+                    "paddingTop": 8
+                }
+            },
+            "visible": {
+                "_code": "// Automatically updated from 'hidden' property, please review\n\nreturn !(() => {\n    // Source code\n\nreturn !getSettingValue(data?.notImplemented);\n\n})();",
+                "_mode": "code",
+                "_value": true
+            }
         },
         {
             "id": "11GhkdPW0u1GUZOZs6MOG",
@@ -27,18 +36,32 @@
             "label": "Alert2",
             "labelAlign": "right",
             "parentId": "root",
-            "hidden": {
-                "_code": "return  !getSettingValue(data?.suppress) !== 'url';",
-                "_mode": "code",
-                "_value": false
-            },
             "isDynamic": false,
             "alertType": "warning",
             "text": "Entity configuration is suppressed and can not be used for other purposes.",
             "description": "",
             "showIcon": true,
             "icon": "WarningFilled",
-            "version": 2
+            "version": 3,
+            "desktop": {
+                "stylingBoxJson": {
+                    "_type": "styleBox",
+                    "paddingBottom": 8,
+                    "paddingLeft": 8,
+                    "paddingRight": 8,
+                    "paddingTop": 8
+                },
+                "dimensions": {}
+            },
+            "visible": {
+                "_code": "    return  getSettingValue(data?.suppress) === true;",
+                "_mode": "code",
+                "_value": true,
+                "_lazy": false
+            },
+            "stylingBox": {
+                "_type": "styleBox"
+            }
         },
         {
             "id": "21GhkdPW0u1GUZOZs6MOG",
@@ -47,18 +70,27 @@
             "label": "Alert3",
             "labelAlign": "right",
             "parentId": "root",
-            "hidden": {
-                "_code": "return  getSettingValue(data?.entityConfigType) !== 2;",
-                "_mode": "code",
-                "_value": false
-            },
             "isDynamic": false,
             "alertType": "warning",
             "text": "Entity configuration is a `Part of Entity` and can be used only as a type of `Part of Entity` properties. Application services is not available for this entity type",
             "description": "",
             "showIcon": true,
             "icon": "WarningFilled",
-            "version": 2
+            "version": 3,
+            "desktop": {
+                "stylingBoxJson": {
+                    "_type": "styleBox",
+                    "paddingBottom": 8,
+                    "paddingLeft": 8,
+                    "paddingRight": 8,
+                    "paddingTop": 8
+                }
+            },
+            "visible": {
+                "_code": "// Automatically updated from 'hidden' property, please review\n\nreturn !(() => {\n    // Source code\n\nreturn  getSettingValue(data?.entityConfigType) !== 2;\n\n})();",
+                "_mode": "code",
+                "_value": true
+            }
         },
         {
             "alertType": "warning",
@@ -69,16 +101,25 @@
             "label": "Alert4",
             "labelAlign": "right",
             "parentId": "root",
-            "hidden": {
-                "_mode": "code",
-                "_code": "    return data.source !== 1;",
-                "_value": false
-            },
             "isDynamic": false,
-            "version": 2,
+            "version": 3,
             "text": "The entity has been declared in code. It is not possible to add new properties through configuration.",
             "showIcon": true,
-            "icon": "WarningFilled"
+            "icon": "WarningFilled",
+            "desktop": {
+                "stylingBoxJson": {
+                    "_type": "styleBox",
+                    "paddingBottom": 8,
+                    "paddingLeft": 8,
+                    "paddingRight": 8,
+                    "paddingTop": 8
+                }
+            },
+            "visible": {
+                "_mode": "code",
+                "_code": "// Automatically updated from 'hidden' property, please review\n\nreturn !(() => {\n    // Source code\n\n    return data.source !== 1;\n\n})();",
+                "_value": true
+            }
         },
         {
             "alertType": "warning",
@@ -89,16 +130,25 @@
             "label": "Alert5",
             "labelAlign": "right",
             "parentId": "root",
-            "hidden": {
-                "_mode": "code",
-                "_code": "    return !data.cratedInDb;",
-                "_value": false
-            },
             "isDynamic": false,
-            "version": 2,
+            "version": 3,
             "text": "Entity configuration has not yet been initialized in the database and backend. Please note that you will not be able to use it before initialization.",
             "showIcon": true,
-            "icon": "WarningFilled"
+            "icon": "WarningFilled",
+            "desktop": {
+                "stylingBoxJson": {
+                    "_type": "styleBox",
+                    "paddingBottom": 8,
+                    "paddingLeft": 8,
+                    "paddingRight": 8,
+                    "paddingTop": 8
+                }
+            },
+            "visible": {
+                "_mode": "code",
+                "_code": "// Automatically updated from 'hidden' property, please review\n\nreturn !(() => {\n    // Source code\n\n    return !data.cratedInDb;\n\n})();",
+                "_value": true
+            }
         },
         {
             "id": "B33BFC-6613TjXmCG6jdG",
@@ -107,7 +157,6 @@
             "label": "Tabs1",
             "labelAlign": "right",
             "parentId": "root",
-            "hidden": false,
             "isDynamic": false,
             "tabs": [
                 {
@@ -123,7 +172,6 @@
                             "label": "Module",
                             "labelAlign": "right",
                             "parentId": "X932kk2zE7XZCt3PB8aeq",
-                            "hidden": false,
                             "valueFormat": "simple",
                             "isDynamic": false,
                             "description": "",
@@ -144,7 +192,7 @@
                                     "propertyName": "name"
                                 }
                             ],
-                            "version": 10,
+                            "version": 16,
                             "mode": "single",
                             "useRawValues": true,
                             "footerButtons": "none",
@@ -307,7 +355,10 @@
                             },
                             "border": {
                                 "radiusType": "all"
-                            }
+                            },
+                            "buttons": [],
+                            "visible": true,
+                            "modalWidth": "40%"
                         },
                         {
                             "id": "YUe0ohvKVB2HRl-R8IAscD0ydd4jd1",
@@ -317,9 +368,8 @@
                             "label": "Inherited From",
                             "labelAlign": "right",
                             "parentId": "X932kk2zE7XZCt3PB8aeq",
-                            "hidden": false,
                             "isDynamic": false,
-                            "version": 8,
+                            "version": 9,
                             "dataSourceType": "entitiesList",
                             "useRawValues": false,
                             "desktop": {
@@ -397,6 +447,9 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
                             },
                             "tablet": {
@@ -474,6 +527,9 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
                             },
                             "mobile": {
@@ -551,6 +607,9 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
                             },
                             "mode": "single",
@@ -569,7 +628,8 @@
                             "fields": [
                                 "name",
                                 "className"
-                            ]
+                            ],
+                            "visible": true
                         },
                         {
                             "textType": "text",
@@ -579,13 +639,12 @@
                             "label": "Name",
                             "labelAlign": "right",
                             "parentId": "X932kk2zE7XZCt3PB8aeq",
-                            "hidden": false,
                             "description": null,
                             "validate": {
                                 "required": true
                             },
                             "maxLength": null,
-                            "version": 6,
+                            "version": 8,
                             "editMode": {
                                 "_mode": "code",
                                 "_code": "    return data.id ? 'readOnly' : 'inherited';",
@@ -665,6 +724,9 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
                             },
                             "tablet": {
@@ -741,6 +803,9 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
                             },
                             "mobile": {
@@ -817,8 +882,12 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
-                            }
+                            },
+                            "visible": true
                         },
                         {
                             "textType": "text",
@@ -827,11 +896,10 @@
                             "propertyName": "label",
                             "label": "Label",
                             "labelAlign": "right",
-                            "hidden": false,
                             "isDynamic": false,
                             "maxLength": null,
                             "parentId": "X932kk2zE7XZCt3PB8aeq",
-                            "version": 6,
+                            "version": 8,
                             "editMode": "inherited",
                             "desktop": {
                                 "stylingBox": "{}",
@@ -907,6 +975,9 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
                             },
                             "tablet": {
@@ -983,6 +1054,9 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
                             },
                             "mobile": {
@@ -1059,8 +1133,12 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
-                            }
+                            },
+                            "visible": true
                         },
                         {
                             "textType": "text",
@@ -1069,11 +1147,10 @@
                             "propertyName": "description",
                             "label": "Description",
                             "labelAlign": "right",
-                            "hidden": false,
                             "isDynamic": false,
                             "maxLength": null,
                             "parentId": "X932kk2zE7XZCt3PB8aeq",
-                            "version": 6,
+                            "version": 8,
                             "editMode": "inherited",
                             "desktop": {
                                 "stylingBox": "{}",
@@ -1149,6 +1226,9 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
                             },
                             "tablet": {
@@ -1225,6 +1305,9 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
                             },
                             "mobile": {
@@ -1301,8 +1384,12 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
-                            }
+                            },
+                            "visible": true
                         },
                         {
                             "id": "xeYsci9rUYG88r6Wk_DamOTzbe2q5n",
@@ -1312,10 +1399,9 @@
                             "label": "DB table Name",
                             "labelAlign": "right",
                             "parentId": "X932kk2zE7XZCt3PB8aeq",
-                            "hidden": false,
                             "isDynamic": false,
                             "textType": "text",
-                            "version": 6,
+                            "version": 8,
                             "editMode": "readOnly",
                             "desktop": {
                                 "stylingBox": "{}",
@@ -1391,6 +1477,9 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
                             },
                             "tablet": {
@@ -1467,6 +1556,9 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
                             },
                             "mobile": {
@@ -1543,18 +1635,23 @@
                                     "color": "#000",
                                     "blurRadius": 0,
                                     "spreadRadius": 0
+                                },
+                                "stylingBoxJson": {
+                                    "_type": "styleBox"
                                 }
                             },
                             "description": null,
                             "border": {
                                 "radiusType": "all"
-                            }
+                            },
+                            "visible": true
                         }
                     ],
                     "itemType": "item",
                     "chosen": false,
                     "selected": false,
-                    "editMode": "inherited"
+                    "editMode": "inherited",
+                    "visible": true
                 },
                 {
                     "id": "1vUF3pPcFNkvvKn6q3O59",
@@ -1577,7 +1674,8 @@
                     ],
                     "chosen": false,
                     "label": "Properties",
-                    "editMode": "inherited"
+                    "editMode": "inherited",
+                    "visible": true
                 },
                 {
                     "id": "1p3PpY7RbUyx1NMV3e5PA",
@@ -1585,490 +1683,752 @@
                     "sortOrder": 5,
                     "propertyName": "",
                     "key": "appService",
-                    "hidden": {
-                        "_code": "return  getSettingValue(data?.entityConfigType) !== 1;",
-                        "_mode": "code",
-                        "_value": false
-                    },
                     "title": "CRUD APIs",
                     "components": [
                         {
-                            "id": "dNzhkcchpcbIupEVK4vjq",
-                            "type": "checkbox",
-                            "propertyName": "generateAppService",
-                            "label": "Generate CRUD APIs",
+                            "alertType": "warning",
+                            "id": "Ith5o-0_jjoBjfl3XAyctHpAso7ehA",
+                            "type": "alert",
+                            "propertyName": "alert6",
+                            "componentName": "alert6",
+                            "label": "Alert6",
                             "labelAlign": "right",
                             "parentId": "1p3PpY7RbUyx1NMV3e5PA",
-                            "hidden": false,
                             "isDynamic": false,
-                            "description": "",
-                            "version": 4,
-                            "desktop": {},
-                            "tablet": {},
-                            "mobile": {}
+                            "version": 3,
+                            "text": "Configuration of CRUD APIs are disabled in the code",
+                            "visible": {
+                                "_mode": "code",
+                                "_value": true,
+                                "_code": "    return data?.permission?.hardcoded === true;",
+                                "_lazy": false
+                            },
+                            "stylingBox": {
+                                "_type": "styleBox"
+                            },
+                            "showIcon": false,
+                            "desktop": {
+                                "dimensions": {}
+                            }
                         },
                         {
-                            "id": "Ak0H5UUnfskW9Dtj7GKjM",
-                            "type": "tabs",
-                            "propertyName": "appService",
-                            "label": "Tabs2",
+                            "id": "uS09qOQVxep5uky2ODwPMqCLD8Sw07",
+                            "type": "container",
+                            "propertyName": "container1",
+                            "componentName": "container1",
+                            "label": "Container1",
                             "labelAlign": "right",
                             "parentId": "1p3PpY7RbUyx1NMV3e5PA",
                             "isDynamic": false,
-                            "tabs": [
+                            "version": 9,
+                            "direction": "vertical",
+                            "justifyContent": "left",
+                            "flexWrap": "wrap",
+                            "components": [
                                 {
-                                    "id": "hcBv9ySji5XEWPJNLjNOz",
-                                    "itemType": "item",
-                                    "sortOrder": 4,
-                                    "propertyName": "",
-                                    "key": "permission",
-                                    "title": "Permission",
-                                    "components": [
-                                        {
-                                            "id": "xqWeADxctxJJKvGQYeQd4",
-                                            "type": "section",
-                                            "propertyName": "permission",
-                                            "label": "Section2",
-                                            "labelAlign": "right",
-                                            "parentId": "hcBv9ySji5XEWPJNLjNOz",
-                                            "hidden": false,
-                                            "isDynamic": false,
-                                            "version": 0
+                                    "id": "dNzhkcchpcbIupEVK4vjq",
+                                    "type": "checkbox",
+                                    "propertyName": "generateAppService",
+                                    "label": "Generate CRUD APIs",
+                                    "labelAlign": "right",
+                                    "parentId": "uS09qOQVxep5uky2ODwPMqCLD8Sw07",
+                                    "isDynamic": false,
+                                    "description": "",
+                                    "version": 7,
+                                    "desktop": {
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#d9d9d9"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {
+                                                "all": 4
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "color": "",
+                                            "repeat": "no-repeat",
+                                            "size": "auto",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": []
+                                            },
+                                            "url": ""
+                                        },
+                                        "font": {
+                                            "color": "",
+                                            "type": "Segoe UI",
+                                            "align": "left",
+                                            "size": 14,
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "14px",
+                                            "height": "14px",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}",
+                                        "enableStyleOnReadonly": false,
+                                        "stylingBoxJson": {
+                                            "_type": "styleBox"
                                         }
-                                    ],
-                                    "label": "Permission",
-                                    "editMode": "inherited"
+                                    },
+                                    "tablet": {
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#d9d9d9"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {
+                                                "all": 4
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "color": "",
+                                            "repeat": "no-repeat",
+                                            "size": "auto",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": []
+                                            },
+                                            "url": ""
+                                        },
+                                        "font": {
+                                            "color": "",
+                                            "type": "Segoe UI",
+                                            "align": "left",
+                                            "size": 14,
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "14px",
+                                            "height": "14px",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}",
+                                        "enableStyleOnReadonly": false,
+                                        "stylingBoxJson": {
+                                            "_type": "styleBox"
+                                        }
+                                    },
+                                    "mobile": {
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#d9d9d9"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {
+                                                "all": 4
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "color": "",
+                                            "repeat": "no-repeat",
+                                            "size": "auto",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": []
+                                            },
+                                            "url": ""
+                                        },
+                                        "font": {
+                                            "color": "",
+                                            "type": "Segoe UI",
+                                            "align": "left",
+                                            "size": 14,
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "14px",
+                                            "height": "14px",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}",
+                                        "enableStyleOnReadonly": false,
+                                        "stylingBoxJson": {
+                                            "_type": "styleBox"
+                                        }
+                                    },
+                                    "enableStyleOnReadonly": false,
+                                    "visible": true
                                 },
                                 {
-                                    "id": "479TB2pkRysWCIxabiw-j",
-                                    "itemType": "item",
-                                    "sortOrder": 3,
-                                    "propertyName": "",
-                                    "key": "getPermission",
-                                    "title": "Get",
-                                    "components": [
+                                    "id": "Ak0H5UUnfskW9Dtj7GKjM",
+                                    "type": "tabs",
+                                    "propertyName": "appService",
+                                    "label": "Tabs2",
+                                    "labelAlign": "right",
+                                    "parentId": "uS09qOQVxep5uky2ODwPMqCLD8Sw07",
+                                    "isDynamic": false,
+                                    "tabs": [
                                         {
-                                            "id": "yOEiaVpn3jN5W4DeOXs9r",
-                                            "type": "section",
-                                            "propertyName": "permissionGet",
-                                            "label": "Section3",
-                                            "labelAlign": "right",
-                                            "parentId": "479TB2pkRysWCIxabiw-j",
-                                            "hidden": false,
-                                            "isDynamic": false,
-                                            "version": 0
+                                            "id": "hcBv9ySji5XEWPJNLjNOz",
+                                            "itemType": "item",
+                                            "sortOrder": 4,
+                                            "propertyName": "",
+                                            "key": "permission",
+                                            "title": "Permission",
+                                            "components": [
+                                                {
+                                                    "id": "xqWeADxctxJJKvGQYeQd4",
+                                                    "type": "section",
+                                                    "propertyName": "permission",
+                                                    "label": "Section2",
+                                                    "labelAlign": "right",
+                                                    "parentId": "hcBv9ySji5XEWPJNLjNOz",
+                                                    "hidden": false,
+                                                    "isDynamic": false,
+                                                    "version": 0
+                                                }
+                                            ],
+                                            "label": "Permission",
+                                            "editMode": "inherited",
+                                            "visible": true
+                                        },
+                                        {
+                                            "id": "479TB2pkRysWCIxabiw-j",
+                                            "itemType": "item",
+                                            "sortOrder": 3,
+                                            "propertyName": "",
+                                            "key": "getPermission",
+                                            "title": "Get",
+                                            "components": [
+                                                {
+                                                    "id": "yOEiaVpn3jN5W4DeOXs9r",
+                                                    "type": "section",
+                                                    "propertyName": "permissionGet",
+                                                    "label": "Section3",
+                                                    "labelAlign": "right",
+                                                    "parentId": "479TB2pkRysWCIxabiw-j",
+                                                    "hidden": false,
+                                                    "isDynamic": false,
+                                                    "version": 0
+                                                }
+                                            ],
+                                            "label": "Get",
+                                            "chosen": false,
+                                            "editMode": "inherited",
+                                            "visible": true
+                                        },
+                                        {
+                                            "id": "puDwy9ITCklFSVGyvrsEW",
+                                            "itemType": "item",
+                                            "sortOrder": 2,
+                                            "propertyName": "",
+                                            "key": "createPermission",
+                                            "title": "Create",
+                                            "components": [
+                                                {
+                                                    "id": "Xz1oMGB2DniV2Q-_bBbEF",
+                                                    "type": "section",
+                                                    "propertyName": "permissionCreate",
+                                                    "label": "Section4",
+                                                    "labelAlign": "right",
+                                                    "parentId": "puDwy9ITCklFSVGyvrsEW",
+                                                    "hidden": false,
+                                                    "isDynamic": false,
+                                                    "version": 0
+                                                }
+                                            ],
+                                            "label": "Create",
+                                            "chosen": false,
+                                            "editMode": "inherited",
+                                            "visible": true
+                                        },
+                                        {
+                                            "id": "fjUPjNWgHmBwuFVaSMF6z",
+                                            "itemType": "item",
+                                            "sortOrder": 1,
+                                            "propertyName": "",
+                                            "key": "updatePermission",
+                                            "title": "Update",
+                                            "components": [
+                                                {
+                                                    "id": "aKMfCJHhnTI9a06-IDyTN",
+                                                    "type": "section",
+                                                    "propertyName": "permissionUpdate",
+                                                    "label": "Section5",
+                                                    "labelAlign": "right",
+                                                    "parentId": "fjUPjNWgHmBwuFVaSMF6z",
+                                                    "hidden": false,
+                                                    "isDynamic": false,
+                                                    "version": 0
+                                                }
+                                            ],
+                                            "label": "Update",
+                                            "chosen": false,
+                                            "editMode": "inherited",
+                                            "visible": true
+                                        },
+                                        {
+                                            "id": "FrhlkvrUWn9FRyk6LQ-OH",
+                                            "label": "Delete",
+                                            "title": "Delete",
+                                            "key": "deletePermission",
+                                            "components": [
+                                                {
+                                                    "id": "bhsj5d9zq8N4p6sglCvE1",
+                                                    "type": "section",
+                                                    "propertyName": "permissionDelete",
+                                                    "label": "Section6",
+                                                    "labelAlign": "right",
+                                                    "parentId": "FrhlkvrUWn9FRyk6LQ-OH",
+                                                    "hidden": false,
+                                                    "isDynamic": false,
+                                                    "version": 0
+                                                }
+                                            ],
+                                            "itemType": "item",
+                                            "chosen": false,
+                                            "selected": false,
+                                            "editMode": "inherited",
+                                            "visible": true
                                         }
                                     ],
-                                    "label": "Get",
-                                    "chosen": false,
-                                    "editMode": "inherited"
-                                },
-                                {
-                                    "id": "puDwy9ITCklFSVGyvrsEW",
-                                    "itemType": "item",
-                                    "sortOrder": 2,
-                                    "propertyName": "",
-                                    "key": "createPermission",
-                                    "title": "Create",
-                                    "components": [
-                                        {
-                                            "id": "Xz1oMGB2DniV2Q-_bBbEF",
-                                            "type": "section",
-                                            "propertyName": "permissionCreate",
-                                            "label": "Section4",
-                                            "labelAlign": "right",
-                                            "parentId": "puDwy9ITCklFSVGyvrsEW",
-                                            "hidden": false,
-                                            "isDynamic": false,
-                                            "version": 0
+                                    "defaultActiveKey": "permission",
+                                    "tabType": "line",
+                                    "version": 11,
+                                    "desktop": {
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                },
+                                                "top": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                },
+                                                "bottom": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                },
+                                                "left": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                },
+                                                "right": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                }
+                                            },
+                                            "radius": {
+                                                "all": 8,
+                                                "topLeft": 0,
+                                                "topRight": 0,
+                                                "bottomLeft": 0,
+                                                "bottomRight": 0
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "color": "#FFFFFF",
+                                            "repeat": "no-repeat",
+                                            "size": "cover",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": []
+                                            },
+                                            "url": ""
+                                        },
+                                        "font": {
+                                            "color": "",
+                                            "type": "Segoe UI",
+                                            "align": "left",
+                                            "size": 14,
+                                            "weight": "500"
+                                        },
+                                        "dimensions": {
+                                            "width": "auto",
+                                            "height": "auto",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "rgba(0, 0, 0, 0.15)",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{\"marginBottom\":\"5\",\"paddingLeft\":\"16\",\"paddingBottom\":\"16\",\"paddingTop\":\"16\",\"paddingRight\":\"16\"}",
+                                        "card": {
+                                            "font": {
+                                                "size": 14,
+                                                "weight": "400",
+                                                "type": "Segoe UI",
+                                                "color": "#000000"
+                                            },
+                                            "dimensions": {
+                                                "width": "auto",
+                                                "height": "auto",
+                                                "minHeight": "0px",
+                                                "maxHeight": "auto",
+                                                "minWidth": "0px",
+                                                "maxWidth": "auto"
+                                            },
+                                            "background": {
+                                                "type": "color",
+                                                "color": "rgba(0,0,0,0.02)",
+                                                "repeat": "repeat",
+                                                "size": "cover",
+                                                "position": "center"
+                                            }
+                                        },
+                                        "stylingBoxJson": {
+                                            "marginBottom": "5",
+                                            "paddingLeft": "16",
+                                            "paddingBottom": "16",
+                                            "paddingTop": "16",
+                                            "paddingRight": "16",
+                                            "_type": "styleBox"
                                         }
-                                    ],
-                                    "label": "Create",
-                                    "chosen": false,
-                                    "editMode": "inherited"
-                                },
-                                {
-                                    "id": "fjUPjNWgHmBwuFVaSMF6z",
-                                    "itemType": "item",
-                                    "sortOrder": 1,
-                                    "propertyName": "",
-                                    "key": "updatePermission",
-                                    "title": "Update",
-                                    "components": [
-                                        {
-                                            "id": "aKMfCJHhnTI9a06-IDyTN",
-                                            "type": "section",
-                                            "propertyName": "permissionUpdate",
-                                            "label": "Section5",
-                                            "labelAlign": "right",
-                                            "parentId": "fjUPjNWgHmBwuFVaSMF6z",
-                                            "hidden": false,
-                                            "isDynamic": false,
-                                            "version": 0
+                                    },
+                                    "tablet": {
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                },
+                                                "top": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                },
+                                                "bottom": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                },
+                                                "left": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                },
+                                                "right": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                }
+                                            },
+                                            "radius": {
+                                                "all": 8,
+                                                "topLeft": 0,
+                                                "topRight": 0,
+                                                "bottomLeft": 0,
+                                                "bottomRight": 0
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "color": "#FFFFFF",
+                                            "repeat": "no-repeat",
+                                            "size": "cover",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": []
+                                            },
+                                            "url": ""
+                                        },
+                                        "font": {
+                                            "color": "",
+                                            "type": "Segoe UI",
+                                            "align": "left",
+                                            "size": 14,
+                                            "weight": "500"
+                                        },
+                                        "dimensions": {
+                                            "width": "auto",
+                                            "height": "auto",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "rgba(0, 0, 0, 0.15)",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{\"marginBottom\":\"5\",\"paddingLeft\":\"16\",\"paddingBottom\":\"16\",\"paddingTop\":\"16\",\"paddingRight\":\"16\"}",
+                                        "card": {
+                                            "font": {
+                                                "size": 14,
+                                                "weight": "400",
+                                                "type": "Segoe UI",
+                                                "color": "#000000"
+                                            },
+                                            "dimensions": {
+                                                "width": "auto",
+                                                "height": "auto",
+                                                "minHeight": "0px",
+                                                "maxHeight": "auto",
+                                                "minWidth": "0px",
+                                                "maxWidth": "auto"
+                                            },
+                                            "background": {
+                                                "type": "color",
+                                                "color": "rgba(0,0,0,0.02)",
+                                                "repeat": "repeat",
+                                                "size": "cover",
+                                                "position": "center"
+                                            }
+                                        },
+                                        "stylingBoxJson": {
+                                            "marginBottom": "5",
+                                            "paddingLeft": "16",
+                                            "paddingBottom": "16",
+                                            "paddingTop": "16",
+                                            "paddingRight": "16",
+                                            "_type": "styleBox"
                                         }
-                                    ],
-                                    "label": "Update",
-                                    "chosen": false,
-                                    "editMode": "inherited"
-                                },
-                                {
-                                    "id": "FrhlkvrUWn9FRyk6LQ-OH",
-                                    "label": "Delete",
-                                    "title": "Delete",
-                                    "key": "deletePermission",
-                                    "components": [
-                                        {
-                                            "id": "bhsj5d9zq8N4p6sglCvE1",
-                                            "type": "section",
-                                            "propertyName": "permissionDelete",
-                                            "label": "Section6",
-                                            "labelAlign": "right",
-                                            "parentId": "FrhlkvrUWn9FRyk6LQ-OH",
-                                            "hidden": false,
-                                            "isDynamic": false,
-                                            "version": 0
+                                    },
+                                    "mobile": {
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                },
+                                                "top": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                },
+                                                "bottom": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                },
+                                                "left": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                },
+                                                "right": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#f0f0f0"
+                                                }
+                                            },
+                                            "radius": {
+                                                "all": 8,
+                                                "topLeft": 0,
+                                                "topRight": 0,
+                                                "bottomLeft": 0,
+                                                "bottomRight": 0
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "color": "#FFFFFF",
+                                            "repeat": "no-repeat",
+                                            "size": "cover",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": []
+                                            },
+                                            "url": ""
+                                        },
+                                        "font": {
+                                            "color": "",
+                                            "type": "Segoe UI",
+                                            "align": "left",
+                                            "size": 14,
+                                            "weight": "500"
+                                        },
+                                        "dimensions": {
+                                            "width": "auto",
+                                            "height": "auto",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "rgba(0, 0, 0, 0.15)",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{\"marginBottom\":\"5\",\"paddingLeft\":\"16\",\"paddingBottom\":\"16\",\"paddingTop\":\"16\",\"paddingRight\":\"16\"}",
+                                        "card": {
+                                            "font": {
+                                                "size": 14,
+                                                "weight": "400",
+                                                "type": "Segoe UI",
+                                                "color": "#000000"
+                                            },
+                                            "dimensions": {
+                                                "width": "auto",
+                                                "height": "auto",
+                                                "minHeight": "0px",
+                                                "maxHeight": "auto",
+                                                "minWidth": "0px",
+                                                "maxWidth": "auto"
+                                            },
+                                            "background": {
+                                                "type": "color",
+                                                "color": "rgba(0,0,0,0.02)",
+                                                "repeat": "repeat",
+                                                "size": "cover",
+                                                "position": "center"
+                                            }
+                                        },
+                                        "stylingBoxJson": {
+                                            "marginBottom": "5",
+                                            "paddingLeft": "16",
+                                            "paddingBottom": "16",
+                                            "paddingTop": "16",
+                                            "paddingRight": "16",
+                                            "_type": "styleBox"
                                         }
-                                    ],
-                                    "itemType": "item",
-                                    "chosen": false,
-                                    "selected": false,
-                                    "editMode": "inherited"
+                                    },
+                                    "card": {
+                                        "font": {
+                                            "size": 14,
+                                            "weight": "400",
+                                            "type": "Segoe UI",
+                                            "color": "#000000"
+                                        },
+                                        "dimensions": {
+                                            "width": "auto",
+                                            "height": "auto",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "color": "rgba(0,0,0,0.02)",
+                                            "repeat": "repeat",
+                                            "size": "cover",
+                                            "position": "center"
+                                        }
+                                    },
+                                    "components": [],
+                                    "visible": {
+                                        "_code": "// Automatically updated from 'hidden' property, please review\n\nreturn !(() => {\n    // Source code\n\nreturn  !getSettingValue(data.generateAppService);\n\n})();",
+                                        "_mode": "code",
+                                        "_value": true
+                                    }
                                 }
                             ],
-                            "defaultActiveKey": "permission",
-                            "tabType": "line",
-                            "hidden": {
-                                "_code": "return  !getSettingValue(data.generateAppService);",
+                            "editMode": "inherited",
+                            "visible": {
                                 "_mode": "code",
-                                "_value": false
+                                "_value": true,
+                                "_code": "    return data?.permission?.hardcoded === false;",
+                                "_lazy": false
                             },
-                            "version": 4,
+                            "stylingBox": {
+                                "_type": "styleBox"
+                            },
                             "desktop": {
-                                "border": {
-                                    "hideBorder": false,
-                                    "radiusType": "all",
-                                    "borderType": "all",
-                                    "border": {
-                                        "all": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        },
-                                        "top": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        },
-                                        "bottom": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        },
-                                        "left": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        },
-                                        "right": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        }
-                                    },
-                                    "radius": {
-                                        "all": 8,
-                                        "topLeft": 0,
-                                        "topRight": 0,
-                                        "bottomLeft": 0,
-                                        "bottomRight": 0
-                                    }
-                                },
-                                "background": {
-                                    "type": "color",
-                                    "color": "#FFFFFF",
-                                    "repeat": "no-repeat",
-                                    "size": "cover",
-                                    "position": "center",
-                                    "gradient": {
-                                        "direction": "to right",
-                                        "colors": []
-                                    },
-                                    "url": ""
-                                },
-                                "font": {
-                                    "color": "",
-                                    "type": "Segoe UI",
-                                    "align": "left",
-                                    "size": 14,
-                                    "weight": "500"
-                                },
-                                "dimensions": {
-                                    "width": "auto",
-                                    "height": "auto",
-                                    "minHeight": "0px",
-                                    "maxHeight": "auto",
-                                    "minWidth": "0px",
-                                    "maxWidth": "auto"
-                                },
-                                "shadow": {
-                                    "offsetX": 0,
-                                    "offsetY": 0,
-                                    "color": "rgba(0, 0, 0, 0.15)",
-                                    "blurRadius": 0,
-                                    "spreadRadius": 0
-                                },
-                                "stylingBox": "{\"marginBottom\":\"5\",\"paddingLeft\":\"16\",\"paddingBottom\":\"16\",\"paddingTop\":\"16\",\"paddingRight\":\"16\"}",
-                                "card": {
-                                    "font": {
-                                        "size": 14,
-                                        "weight": "400",
-                                        "type": "Segoe UI",
-                                        "color": "#000000"
-                                    },
-                                    "dimensions": {
-                                        "width": "auto",
-                                        "height": "auto",
-                                        "minHeight": "0px",
-                                        "maxHeight": "auto",
-                                        "minWidth": "0px",
-                                        "maxWidth": "auto"
-                                    },
-                                    "background": {
-                                        "type": "color",
-                                        "color": "rgba(0,0,0,0.02)",
-                                        "repeat": "repeat",
-                                        "size": "cover",
-                                        "position": "center"
-                                    }
-                                }
-                            },
-                            "tablet": {
-                                "border": {
-                                    "hideBorder": false,
-                                    "radiusType": "all",
-                                    "borderType": "all",
-                                    "border": {
-                                        "all": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        },
-                                        "top": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        },
-                                        "bottom": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        },
-                                        "left": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        },
-                                        "right": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        }
-                                    },
-                                    "radius": {
-                                        "all": 8,
-                                        "topLeft": 0,
-                                        "topRight": 0,
-                                        "bottomLeft": 0,
-                                        "bottomRight": 0
-                                    }
-                                },
-                                "background": {
-                                    "type": "color",
-                                    "color": "#FFFFFF",
-                                    "repeat": "no-repeat",
-                                    "size": "cover",
-                                    "position": "center",
-                                    "gradient": {
-                                        "direction": "to right",
-                                        "colors": []
-                                    },
-                                    "url": ""
-                                },
-                                "font": {
-                                    "color": "",
-                                    "type": "Segoe UI",
-                                    "align": "left",
-                                    "size": 14,
-                                    "weight": "500"
-                                },
-                                "dimensions": {
-                                    "width": "auto",
-                                    "height": "auto",
-                                    "minHeight": "0px",
-                                    "maxHeight": "auto",
-                                    "minWidth": "0px",
-                                    "maxWidth": "auto"
-                                },
-                                "shadow": {
-                                    "offsetX": 0,
-                                    "offsetY": 0,
-                                    "color": "rgba(0, 0, 0, 0.15)",
-                                    "blurRadius": 0,
-                                    "spreadRadius": 0
-                                },
-                                "stylingBox": "{\"marginBottom\":\"5\",\"paddingLeft\":\"16\",\"paddingBottom\":\"16\",\"paddingTop\":\"16\",\"paddingRight\":\"16\"}",
-                                "card": {
-                                    "font": {
-                                        "size": 14,
-                                        "weight": "400",
-                                        "type": "Segoe UI",
-                                        "color": "#000000"
-                                    },
-                                    "dimensions": {
-                                        "width": "auto",
-                                        "height": "auto",
-                                        "minHeight": "0px",
-                                        "maxHeight": "auto",
-                                        "minWidth": "0px",
-                                        "maxWidth": "auto"
-                                    },
-                                    "background": {
-                                        "type": "color",
-                                        "color": "rgba(0,0,0,0.02)",
-                                        "repeat": "repeat",
-                                        "size": "cover",
-                                        "position": "center"
-                                    }
-                                }
-                            },
-                            "mobile": {
-                                "border": {
-                                    "hideBorder": false,
-                                    "radiusType": "all",
-                                    "borderType": "all",
-                                    "border": {
-                                        "all": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        },
-                                        "top": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        },
-                                        "bottom": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        },
-                                        "left": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        },
-                                        "right": {
-                                            "width": "1px",
-                                            "style": "solid",
-                                            "color": "#f0f0f0"
-                                        }
-                                    },
-                                    "radius": {
-                                        "all": 8,
-                                        "topLeft": 0,
-                                        "topRight": 0,
-                                        "bottomLeft": 0,
-                                        "bottomRight": 0
-                                    }
-                                },
-                                "background": {
-                                    "type": "color",
-                                    "color": "#FFFFFF",
-                                    "repeat": "no-repeat",
-                                    "size": "cover",
-                                    "position": "center",
-                                    "gradient": {
-                                        "direction": "to right",
-                                        "colors": []
-                                    },
-                                    "url": ""
-                                },
-                                "font": {
-                                    "color": "",
-                                    "type": "Segoe UI",
-                                    "align": "left",
-                                    "size": 14,
-                                    "weight": "500"
-                                },
-                                "dimensions": {
-                                    "width": "auto",
-                                    "height": "auto",
-                                    "minHeight": "0px",
-                                    "maxHeight": "auto",
-                                    "minWidth": "0px",
-                                    "maxWidth": "auto"
-                                },
-                                "shadow": {
-                                    "offsetX": 0,
-                                    "offsetY": 0,
-                                    "color": "rgba(0, 0, 0, 0.15)",
-                                    "blurRadius": 0,
-                                    "spreadRadius": 0
-                                },
-                                "stylingBox": "{\"marginBottom\":\"5\",\"paddingLeft\":\"16\",\"paddingBottom\":\"16\",\"paddingTop\":\"16\",\"paddingRight\":\"16\"}",
-                                "card": {
-                                    "font": {
-                                        "size": 14,
-                                        "weight": "400",
-                                        "type": "Segoe UI",
-                                        "color": "#000000"
-                                    },
-                                    "dimensions": {
-                                        "width": "auto",
-                                        "height": "auto",
-                                        "minHeight": "0px",
-                                        "maxHeight": "auto",
-                                        "minWidth": "0px",
-                                        "maxWidth": "auto"
-                                    },
-                                    "background": {
-                                        "type": "color",
-                                        "color": "rgba(0,0,0,0.02)",
-                                        "repeat": "repeat",
-                                        "size": "cover",
-                                        "position": "center"
-                                    }
-                                }
-                            },
-                            "card": {
-                                "font": {
-                                    "size": 14,
-                                    "weight": "400",
-                                    "type": "Segoe UI",
-                                    "color": "#000000"
-                                },
-                                "dimensions": {
-                                    "width": "auto",
-                                    "height": "auto",
-                                    "minHeight": "0px",
-                                    "maxHeight": "auto",
-                                    "minWidth": "0px",
-                                    "maxWidth": "auto"
-                                },
-                                "background": {
-                                    "type": "color",
-                                    "color": "rgba(0,0,0,0.02)",
-                                    "repeat": "repeat",
-                                    "size": "cover",
-                                    "position": "center"
-                                }
-                            },
-                            "components": []
+                                "dimensions": {}
+                            }
                         }
                     ],
                     "label": "Application Service",
                     "chosen": false,
-                    "editMode": "inherited"
+                    "editMode": "inherited",
+                    "visible": {
+                        "_code": "// Automatically updated from 'hidden' property, please review\n\nreturn !(() => {\n    // Source code\n\nreturn  getSettingValue(data?.entityConfigType) !== 1;\n\n})();",
+                        "_mode": "code",
+                        "_value": true
+                    }
                 },
                 {
                     "id": "1132kk2zE7XZCt3PB8ae1",
@@ -2091,12 +2451,13 @@
                     "itemType": "item",
                     "chosen": false,
                     "selected": false,
-                    "editMode": "inherited"
+                    "editMode": "inherited",
+                    "visible": true
                 }
             ],
             "defaultActiveKey": "general",
             "tabType": "line",
-            "version": 4,
+            "version": 11,
             "desktop": {
                 "border": {
                     "hideBorder": false,
@@ -2195,7 +2556,15 @@
                         "position": "center"
                     }
                 },
-                "tabPosition": "top"
+                "tabPosition": "top",
+                "stylingBoxJson": {
+                    "marginBottom": "5",
+                    "paddingLeft": "16",
+                    "paddingBottom": "16",
+                    "paddingTop": "16",
+                    "paddingRight": "16",
+                    "_type": "styleBox"
+                }
             },
             "tablet": {
                 "border": {
@@ -2294,6 +2663,14 @@
                         "size": "cover",
                         "position": "center"
                     }
+                },
+                "stylingBoxJson": {
+                    "marginBottom": "5",
+                    "paddingLeft": "16",
+                    "paddingBottom": "16",
+                    "paddingTop": "16",
+                    "paddingRight": "16",
+                    "_type": "styleBox"
                 }
             },
             "mobile": {
@@ -2393,6 +2770,14 @@
                         "size": "cover",
                         "position": "center"
                     }
+                },
+                "stylingBoxJson": {
+                    "marginBottom": "5",
+                    "paddingLeft": "16",
+                    "paddingBottom": "16",
+                    "paddingTop": "16",
+                    "paddingRight": "16",
+                    "_type": "styleBox"
                 }
             },
             "card": {
@@ -2422,7 +2807,8 @@
             "border": {
                 "radiusType": "all"
             },
-            "components": []
+            "components": [],
+            "visible": true
         }
     ],
     "formSettings": {
@@ -2458,7 +2844,7 @@
         "uniqueFormId": "",
         "access": 3,
         "permissions": [],
-        "version": 7,
+        "version": 10,
         "dataLoaderType": "gql",
         "dataSubmitterType": "gql",
         "onBeforeDataLoad": "    form.setFieldsValue({...form.formArguments});",

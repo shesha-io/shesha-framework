@@ -12,6 +12,7 @@ using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
+using Shesha.Domain.Interfaces;
 using Shesha.DynamicEntities.Enums;
 using Shesha.DynamicEntities.ErrorHandler;
 using Shesha.Extensions;
@@ -102,8 +103,10 @@ namespace Shesha.DynamicEntities
                                 && x.Source == MetadataSourceType.ApplicationCode
                             ).All(x => x.ColumnName == null)
                     ;
-                    var entityTypes = (forceUpdate ? assemblies : filteredAssemblies).SelectMany(x => x.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t))).ToList();
-                    await ProcessAsync(entityTypes);
+
+                    var assembliesToProcess = forceUpdate ? assemblies : filteredAssemblies;
+                    if (assembliesToProcess.Any())
+                        await ProcessAsync(assembliesToProcess);
                 }
                 await unitOfWork.CompleteAsync();
             }
@@ -111,8 +114,10 @@ namespace Shesha.DynamicEntities
             LogInfo("Bootstrap entity configs finished successfully");
         }
 
-        private async Task ProcessAsync(List<Type> entityTypes)
+        private async Task ProcessAsync(List<Assembly> assemblies)
         {
+            var entityTypes = assemblies.SelectMany(x => x.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t))).ToList();
+
             var modules = new Dictionary<string, Module?>();
 
             LogInfo($"Found {entityTypes.Count()} entity types");
@@ -123,7 +128,7 @@ namespace Shesha.DynamicEntities
                 var codeProperties = _metadataProvider.GetProperties(t);
                 var moduleName = t.GetConfigurableModuleName();
 
-                return new
+                return new CodeConfig
                 {
                     Config = config,
                     Properties = codeProperties,
@@ -134,22 +139,30 @@ namespace Shesha.DynamicEntities
 
             LogInfo($"Found {_dbAllConfigs.Count()} entity in the DB");
 
-            var configEntities = _dbAllConfigs
-                .Select(ec =>
-                {
-                    var code = entitiesConfigs.FirstOrDefault(c =>
+            var configEntities = new List<ProcessingItem>();
+            var toDelete = new List<EntityConfig>();
+            foreach (var ec in _dbAllConfigs) 
+            {
+                var code = entitiesConfigs.FirstOrDefault(c =>
                         c.Config.EntityType.Name.Equals(ec.ClassName, StringComparison.InvariantCultureIgnoreCase)
                         && string.Equals(c.Config.EntityType.Namespace, ec.Namespace, StringComparison.InvariantCultureIgnoreCase)
                         && c.ModuleName == ec.Module?.Name
                     );
-                    return new
+                if (code != null)
+                {
+                    configEntities.Add(new ProcessingItem
                     {
-                        db = ec,
-                        dbProperties = _dbAllProperties.Where(x => x.EntityConfig == ec && !x.IsDeleted).ToList(),
-                        code,
-                        attr = code?.Config.EntityType.GetAttributeOrNull<EntityAttribute>(),
-                    };
-                }).ToList();
+                        Db = ec,
+                        DbProperties = _dbAllProperties.Where(x => x.EntityConfig == ec && !x.IsDeleted).ToList(),
+                        Code = code,
+                        CrudConfig = EntityCrudHelper.GetHardcodedEntityCrudConfig(code.Config.EntityType),
+                    });
+                }
+                else { 
+                    if (ec.Source == MetadataSourceType.ApplicationCode && !ec.IsDeleted)
+                        toDelete.Add(ec);
+                }
+            }
 
             // Update out-of-date configs
             var toUpdate = ForceUpdate
@@ -157,20 +170,20 @@ namespace Shesha.DynamicEntities
                 : configEntities
                 .Where(
                     c =>
-                        c.code != null &&
+                        c.Code != null &&
                         (
-                            c.db.TableName != c.code.Config.TableName ||
-                            c.db.DiscriminatorValue != c.code.Config.DiscriminatorValue ||
-                            c.db.Label != c.code.Config.FriendlyName ||
-                            c.db.Accessor != c.code.Config.Accessor ||
-                            c.db.TypeShortAlias != c.code.Config.SafeTypeShortAlias ||
-                            c.db.HardcodedPropertiesMD5 != c.code.PropertiesMD5 ||
+                            c.Db.TableName != c.Code.Config.TableName ||
+                            c.Db.DiscriminatorValue != c.Code.Config.DiscriminatorValue ||
+                            c.Db.Label != c.Code.Config.FriendlyName ||
+                            c.Db.Accessor != c.Code.Config.Accessor ||
+                            c.Db.TypeShortAlias != c.Code.Config.SafeTypeShortAlias ||
+                            c.Db.HardcodedPropertiesMD5 != c.Code.PropertiesMD5 ||
 
-                            c.dbProperties.Any(x => x.ColumnName == null) ||
-                            c.db.InheritedFrom == null ||
-                            c.attr != null
-                                && c.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration
-                                && c.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService ^ c.db.GenerateAppService
+                            c.DbProperties.Any(x => x.ColumnName == null) ||
+                            c.Db.InheritedFrom == null ||
+                            
+                            c.CrudConfig.IsConfigurable != c.Db.IsConfigurable ||
+                            !c.CrudConfig.IsConfigurable && c.Db.GenerateAppService != (c.CrudConfig.CrudActions != CrudActions.None)
                         ))
                 .ToList();
 
@@ -178,65 +191,66 @@ namespace Shesha.DynamicEntities
 
             // Sort by inheritance
             var allUpdate = toUpdate.Count;
-            var sortedToUpdate = toUpdate.Where(x => toUpdate.All(y => x.code?.Config.EntityType.BaseType?.Name != y.code?.Config.EntityType.Name)).ToList();
-            var nextLevelUpdate = toUpdate.Where(x => sortedToUpdate.Any(y => x.code?.Config.EntityType.BaseType?.Name == y.code?.Config.EntityType.Name)).ToList();
+            var sortedToUpdate = toUpdate.Where(x => toUpdate.All(y => x.Code.Config.EntityType.BaseType?.Name != y.Code.Config.EntityType.Name)).ToList();
+            var nextLevelUpdate = toUpdate.Where(x => sortedToUpdate.Any(y => x.Code.Config.EntityType.BaseType?.Name == y.Code.Config.EntityType.Name)).ToList();
             while (sortedToUpdate.Count < allUpdate && nextLevelUpdate.Count > 0)
             {
                 sortedToUpdate.AddRange(nextLevelUpdate);
                 nextLevelUpdate = toUpdate
-                    .Where(x => !sortedToUpdate.Contains(x) && sortedToUpdate.Any(y => x.code?.Config.EntityType.BaseType?.Name == y.code?.Config.EntityType.Name))
+                    .Where(x => !sortedToUpdate.Contains(x) && sortedToUpdate.Any(y => x.Code.Config.EntityType.BaseType?.Name == y.Code.Config.EntityType.Name))
                     .ToList();
             }
 
             foreach (var config in sortedToUpdate)
             {
-                config.db.Label = config.code.NotNull().Config.FriendlyName;
-                config.db.Accessor = config.code.Config.Accessor;
-                config.db.TypeShortAlias = config.code.Config.SafeTypeShortAlias;
+                config.Db.Label = config.Code.NotNull().Config.FriendlyName;
+                config.Db.Accessor = config.Code.Config.Accessor;
+                config.Db.TypeShortAlias = config.Code.Config.SafeTypeShortAlias;
 
-                var inheritedFrom = _dbAllConfigs.FirstOrDefault(x => x.FullClassName == config.code.Config.EntityType.BaseType?.FullName && !x.IsExposed);
-                config.db.InheritedFrom = inheritedFrom;
+                var inheritedFrom = _dbAllConfigs.FirstOrDefault(x => x.FullClassName == config.Code.Config.EntityType.BaseType?.FullName && !x.IsExposed);
+                config.Db.InheritedFrom = inheritedFrom;
 
-                var parts = config.code.Config.TableName?.Split(".");
+                var parts = config.Code.Config.TableName?.Split(".");
 
-                config.db.SchemaName = parts?.Length == 2 ? parts[0] : null;
-                config.db.TableName = parts?.Length == 1 
-                    ? config.code.Config.TableName
+                config.Db.SchemaName = parts?.Length == 2 ? parts[0] : null;
+                config.Db.TableName = parts?.Length == 1 
+                    ? config.Code.Config.TableName
                     : parts?.Length == 2
                         ? parts[1]
                         // use full table name for unknown format
-                        : config.code.Config.TableName;
-                config.db.DiscriminatorValue = config.code.Config.DiscriminatorValue;
-                config.db.IsCodeBased = true;
-                config.db.SurfaceStatus = RefListSurfaceStatus.Visible;
+                        : config.Code.Config.TableName;
+                config.Db.DiscriminatorValue = config.Code.Config.DiscriminatorValue;
+                config.Db.IsCodeBased = true;
+                config.Db.SurfaceStatus = RefListSurfaceStatus.Visible;
 
                 // restore entity if deleted
-                config.db.IsDeleted = false;
-                config.db.DeletionTime = null;
-                config.db.DeleterUserId = null;
+                config.Db.IsDeleted = false;
+                config.Db.DeletionTime = null;
+                config.Db.DeleterUserId = null;
 
-                if (config.attr != null && config.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration)
-                    config.db.GenerateAppService = config.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService;
+                config.Db.IsConfigurable = config.CrudConfig.IsConfigurable;
+                if (!config.CrudConfig.IsConfigurable)
+                    config.Db.GenerateAppService = config.CrudConfig.CrudActions != CrudActions.None;
 
-                var assemblyName = config.code.Config.EntityType.Assembly.FullName ?? "";
+                var assemblyName = config.Code.Config.EntityType.Assembly.FullName ?? "";
                 var module = modules.ContainsKey(assemblyName)
                     ? modules[assemblyName]
                     : null;
                 if (module == null && !modules.ContainsKey(assemblyName))
                 {
-                    module = await _moduleManager.GetOrCreateModuleAsync(config.code.Config.EntityType.Assembly);
+                    module = await _moduleManager.GetOrCreateModuleAsync(config.Code.Config.EntityType.Assembly);
                     modules.Add(assemblyName, module);
                 }
 
-                if (config.db.Module != module)
-                    config.db.Module = module;
+                if (config.Db.Module != module)
+                    config.Db.Module = module;
 
-                await _entityConfigRepository.UpdateAsync(config.db);
+                await _entityConfigRepository.UpdateAsync(config.Db);
 
-                if (config.db.HardcodedPropertiesMD5 != config.code.PropertiesMD5
-                    || (config.db.EntityConfigType == EntityConfigTypes.Class && config.dbProperties.Any(x => x.ColumnName == null))
+                if (config.Db.HardcodedPropertiesMD5 != config.Code.PropertiesMD5
+                    || (config.Db.EntityConfigType == EntityConfigTypes.Class && config.DbProperties.Any(x => x.ColumnName == null))
                     || ForceUpdate)
-                    await UpdatePropertiesAsync(config.db, config.code.Config.EntityType, config.code.Properties, config.code.PropertiesMD5);
+                    await UpdatePropertiesAsync(config.Db, config.Code.Config.EntityType, config.Code.Properties, config.Code.PropertiesMD5);
             }
 
             // Add news configs
@@ -261,6 +275,7 @@ namespace Shesha.DynamicEntities
             foreach (var config in sortedToAdd)
             {
                 var attr = config.Config.EntityType.GetAttributeOrNull<EntityAttribute>();
+                var crudConfig = EntityCrudHelper.GetHardcodedEntityCrudConfig(config.Config.EntityType);
 
                 var className = config.Config.EntityType.Name;
                 var @namespace = config.Config.EntityType.Namespace;
@@ -298,7 +313,9 @@ namespace Shesha.DynamicEntities
                 ec.Source = MetadataSourceType.ApplicationCode;
                 ec.Label = config.Config.FriendlyName;
                 ec.Description = null;
-                ec.GenerateAppService = attr == null || attr.GenerateApplicationService != GenerateApplicationServiceState.DisableGenerateApplicationService;
+                ec.GenerateAppService = crudConfig.CrudActions != CrudActions.None;
+                ec.IsConfigurable = crudConfig.IsConfigurable;
+
                 ec.TypeShortAlias = config.Config.SafeTypeShortAlias;
 
                 ec.Source = MetadataSourceType.ApplicationCode;
@@ -312,6 +329,15 @@ namespace Shesha.DynamicEntities
                 await UpdatePropertiesAsync(ec, config.Config.EntityType, config.Properties, config.PropertiesMD5);
 
                 addedEntityConfigs.Add(ec);
+            }
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+
+            // delete removed configs
+            LogInfo(toAdd.Any() ? $"Found {toDelete.Count()} entities to delete" : $"Entities to delete not found");
+            foreach (var ec in toDelete)
+            {
+                await _entityConfigRepository.DeleteAsync(ec.Id);
             }
         }
 
@@ -739,6 +765,22 @@ namespace Shesha.DynamicEntities
             }
 
             ConfigureArrayListConfiguration(dst, src.ListConfiguration);
+        }
+
+        private class CodeConfig 
+        {
+            public EntityTypeConfiguration Config { get; set; }
+            public List<PropertyMetadataDto> Properties { get; set; }            
+            public string PropertiesMD5 { get; set; }
+            public string? ModuleName { get; set; }
+        }
+
+        private class ProcessingItem 
+        {
+            public EntityConfig Db { get; set; }
+            public List<EntityProperty> DbProperties { get; set; }            
+            public CodeConfig Code { get; set; }
+            public IEntityCrudConfig CrudConfig { get; set; }
         }
     }
 }

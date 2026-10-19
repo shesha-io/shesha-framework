@@ -46,6 +46,8 @@ namespace Shesha.DynamicEntities.Dtos
 
         public bool GenerateAppService { get; set; }
 
+        public bool IsConfigurable { get; set; }
+
         // From ConfigurationItem
         public bool Suppress { get; set; }
         public string? Module { get; set; }

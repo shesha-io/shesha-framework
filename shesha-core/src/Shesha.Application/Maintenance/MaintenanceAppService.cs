@@ -11,6 +11,7 @@ using Shesha.DynamicEntities;
 using Shesha.Elmah;
 using Shesha.Extensions;
 using Shesha.Modules;
+using Shesha.Permission;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Settings;
@@ -24,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Controllers
 {
-    [AbpMvcAuthorize(ShaPermissionNames.Pages_Maintenance)]
+    [AbpMvcAuthorize(PermissionNames.Application_Maintenance)]
     public class MaintenanceAppService : SheshaAppServiceBase
     {
         [HttpPost]
@@ -119,6 +120,14 @@ namespace Shesha.Controllers
         {
             var bootstrapper = IocManager.Resolve<EntityConfigsBootstrapper>();
             return bootstrapper.ProcessAsync(force);
+        }
+
+        [HttpPost]
+        [DontWrapResult]
+        public async Task BootstrapPermissionedObjectsAsync(bool force)
+        {
+            var bootstrapper = IocManager.Resolve<PermissionedObjectsBootstrapper>();
+            await bootstrapper.ProcessAsync(force);
         }
 
         public class ExceptionInput

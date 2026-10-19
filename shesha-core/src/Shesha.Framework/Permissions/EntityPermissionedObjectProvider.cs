@@ -1,20 +1,18 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
-using Castle.Core.Internal;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
-using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Startup;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Module = Shesha.Domain.Module;
 
 namespace Shesha.Permissions
 {
@@ -83,92 +81,93 @@ namespace Shesha.Permissions
             return list;
         }
 
-        private PermissionedObjectDto MakeDto(
-            string objectName,
-            string? parent,
-            string name,
-            string description,
-            Module? module,
-            RefListPermissionedAccess? access,
-            List<string>? permissions,
-            bool hardcoded,
-            string type
-            )
-        {
-            RefListPermissionedAccess? _access = access;
-            var _permissions = new List<string>();
-            if (_access == RefListPermissionedAccess.RequiresPermissions)
-            {
-                _access = permissions?.Any() ?? false
-                    ? RefListPermissionedAccess.RequiresPermissions
-                    : RefListPermissionedAccess.AnyAuthenticated;
-                _permissions = permissions?.ToList();
-            }
-
-            var dto = new PermissionedObjectDto()
-            {
-                Object = objectName,
-                Parent = parent ?? string.Empty,
-                ModuleId = module?.Id,
-                Module = module?.Name,
-                Name = name,
-                Type = type,
-                Description = description,
-                Access = _access,
-                Permissions = _permissions,
-                Hardcoded = hardcoded,
-            };
-            dto.Md5 = GetMd5(dto);
-            return dto;
-        }
-
         private async Task<List<PermissionedObjectDto>> ProcessAssemblyAsync(Assembly assembly, List<string> hardcoded)
         {
-            var m = await _moduleManager.GetOrCreateModuleAsync(assembly);
+            var module = await _moduleManager.GetOrCreateModuleAsync(assembly);
+            var crudActions = new List<CrudAction> { CrudAction.Create, CrudAction.Read, CrudAction.Update, CrudAction.Delete };
 
             var entityTypes = assembly.GetTypes().Where(MappingHelper.IsEntity).ToList();
 
             var list = new List<PermissionedObjectDto>();
 
-            foreach (var et in entityTypes)
+            foreach (var entityType in entityTypes)
             {
-                // Get all CrudAccessAttribute
-                var accessAttributes = et.GetAttributes<CrudAccessAttribute>();
-                var disableAttribute = et.GetAttribute<CrudDisableActionsAttribute>();
-                if (disableAttribute == null && !accessAttributes.Any() && !hardcoded.Contains(et.GetRequiredFullName()))
-                    continue;
+                var config = EntityCrudHelper.GetHardcodedEntityCrudConfig(entityType);
 
-                // But use only one for each type of action
-                var all = accessAttributes.FirstOrDefault(x => x.All != null);
-                var c = accessAttributes.FirstOrDefault(x => x.Create != null);
-                var r = accessAttributes.FirstOrDefault(x => x.Read != null);
-                var u = accessAttributes.FirstOrDefault(x => x.Update != null);
-                var d = accessAttributes.FirstOrDefault(x => x.Delete != null);
-                var fn = et.GetRequiredFullName();
-                var e = ShaPermissionedObjectsTypes.Entity;
-                var ea = ShaPermissionedObjectsTypes.EntityAction;
-
-                if (disableAttribute != null)
+                var parent = new PermissionedObjectDto(module)
                 {
-                    if (disableAttribute.Disable.HasFlag(CrudActions.All))
-                        all = new CrudAccessAttribute(CrudActions.All, false);
-                    if (disableAttribute.Disable.HasFlag(CrudActions.Create))
-                        c = new CrudAccessAttribute(CrudActions.Create, false);
-                    if (disableAttribute.Disable.HasFlag(CrudActions.Read))
-                        r = new CrudAccessAttribute(CrudActions.Read, false);
-                    if (disableAttribute.Disable.HasFlag(CrudActions.Update))
-                        u = new CrudAccessAttribute(CrudActions.Update, false);
-                    if (disableAttribute.Disable.HasFlag(CrudActions.Delete))
-                        d = new CrudAccessAttribute(CrudActions.Delete, false);
-                }
+                    Name = entityType.Name,
+                    Object = entityType.GetRequiredFullName(),
+                    Type = ShaPermissionedObjectsTypes.Entity,
+                    Description = GetDescription(entityType),
+                    Hardcoded = !config.IsConfigurable,
+                };
+                parent.Md5 = GetMd5(parent);
+                list.Add(parent);
 
-                list.Add(MakeDto(fn, null, et.Name, GetDescription(et), m, all?.All ?? RefListPermissionedAccess.Inherited, all?.AllPermissions, all != null, e));
-                list.Add(MakeDto($"{fn}@Create", fn, "Create", "Create CRUD operation", m, c?.Create, c?.CreatePermissions, c != null, ea));
-                list.Add(MakeDto($"{fn}@Get", fn, "Get", "Read CRUD operation", m, r?.Read, r?.ReadPermissions, r != null, ea));
-                list.Add(MakeDto($"{fn}@Update", fn, "Update", "Update CRUD operation", m, u?.Update, u?.UpdatePermissions, u != null, ea));
-                list.Add(MakeDto($"{fn}@Delete", fn, "Delete", "Delete CRUD operation", m, d?.Delete, d?.DeletePermissions, d != null, ea));
+                foreach (var crudAction in crudActions)
+                {
+                    var name = CrudAction2Name(crudAction);
+                    var objectName = GetObjectName(entityType, crudAction);
+
+                    var child = new PermissionedObjectDto(module)
+                    {
+                        Name = name,
+                        Object = objectName,
+                        Type = ShaPermissionedObjectsTypes.EntityAction,
+                        Parent = parent.Object,
+                        Description = name,
+
+                        Hardcoded = !config.IsConfigurable || config.IsImmutable && crudAction != CrudAction.Read,
+                    };
+
+                    // fill access
+                    if (EntityCrudHelper.IsActionDisabled(config, crudAction))
+                    {
+                        child.Access = RefListPermissionedAccess.Disable;
+                    }
+                    else
+                    {
+                        var actionConfig = EntityCrudHelper.GetCodebasedCrudActionConfig(entityType, crudAction);
+                        switch (actionConfig.CrudActionsAccess)
+                        {
+                            case CrudActionsAccess.Inherited:
+                                child.Access = RefListPermissionedAccess.Inherited;
+                                break;
+                            case CrudActionsAccess.AllowAnonymous:
+                                child.Access = RefListPermissionedAccess.AllowAnonymous;
+                                break;
+                            case CrudActionsAccess.AnyAuthenticated:
+                                child.Access = RefListPermissionedAccess.AnyAuthenticated;
+                                break;
+                            case CrudActionsAccess.RequiresPermissions:
+                                child.Access = RefListPermissionedAccess.RequiresPermissions;
+                                child.Permissions = actionConfig.CrudActionsPermissions?.ToList() ?? new List<string>();
+                                break;
+                        }
+                    }
+                    child.Md5 = GetMd5(child);
+                    list.Add(child);
+                }
             }
             return list;
+        }
+
+        private static string CrudAction2Name(CrudAction action)
+        {
+            switch (action)
+            {
+                case CrudAction.Create: return "Create";
+                case CrudAction.Update: return "Update";
+                case CrudAction.Delete: return "Delete";
+                case CrudAction.Read: return "Get";
+                default: throw new ArgumentException($"Unknown action: ${action}");
+            }
+        }
+
+        private static string GetObjectName(Type entityType, CrudAction action)
+        {
+            return $"{entityType.FullName}@{CrudAction2Name(action)}";
         }
     }
 }

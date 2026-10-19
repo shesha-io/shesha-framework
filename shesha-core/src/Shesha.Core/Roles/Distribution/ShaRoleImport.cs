@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
+using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Roles.Distribution.Dto;
@@ -84,11 +85,15 @@ namespace Shesha.DynamicEntities.Distribution
             return dbPermissions.Delimited(",") == distributedPermissions.Delimited(",");
         }
 
-        protected override async Task MapCustomPropsToItemAsync(ShaRole item, DistributedShaRole distributedItem)
+        protected override Task MapCustomPropsToItemAsync(ShaRole item, DistributedShaRole distributedItem)
         {
             item.NameSpace = distributedItem.NameSpace;
             item.SetHardLinkToApplication(distributedItem.HardLinkToApplication);
+            return Task.CompletedTask;
+        }
 
+        protected override async Task AfterImportAsync(ShaRole item, DistributedShaRole distributedItem, IConfigurationItemsImportContext context)
+        {
             await ImportPermissionsAsync(item, distributedItem);
         }
     }

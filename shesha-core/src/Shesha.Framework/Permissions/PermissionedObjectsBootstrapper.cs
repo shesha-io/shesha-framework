@@ -84,11 +84,12 @@ namespace Shesha.Permission
                         dbItem.Module = await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == item.ModuleId);
                         dbItem.Parent = item.Parent ?? string.Empty;
                         dbItem.Name = item.Name;
+                        dbItem.Hardcoded = item.Hardcoded ?? false;
+                        // Update access and permissions only for hardcoded and inherited items
                         if (item.Hardcoded == true || dbItem.Access == Domain.Enums.RefListPermissionedAccess.Inherited)
                         {
                             dbItem.Access = item.Access ?? Domain.Enums.RefListPermissionedAccess.Inherited;
                             dbItem.Permissions = string.Join(",", item.Permissions ?? []);
-                            dbItem.Hardcoded = item.Hardcoded ?? false;
                         }
                         dbItem.Md5 = item.Md5 ?? "";
 

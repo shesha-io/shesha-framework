@@ -1,11 +1,9 @@
 using Abp.AspNetCore;
 using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
-using Abp.Extensions;
 using Castle.Facilities.Logging;
 using ElmahCore.Mvc;
 using GraphQL;
-using GraphQL.NewtonsoftJson;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
@@ -13,32 +11,27 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using Shesha.Authentication;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
-using Shesha.DynamicEntities.Swagger;
 using Shesha.Elmah;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.GraphQL;
-using Shesha.GraphQL.Middleware;
-using Shesha.GraphQL.Swagger;
 using Shesha.HealthChecks;
 using Shesha.Identity;
 using Shesha.Notifications;
 using Shesha.Notifications.SMS;
 using Shesha.RateLimiting;
 using Shesha.Scheduler.Extensions;
-using Shesha.Scheduler.Hangfire;
 using Shesha.Specifications;
 using Shesha.Swagger;
 using Swashbuckle.AspNetCore.Swagger;
@@ -219,16 +212,7 @@ namespace Shesha.Web.Host.Startup
                     .GetManifestResourceStream("Shesha.Web.Host.wwwroot.swagger.ui.index.html");
             }); // URL: /swagger
 
-            app.UseHangfireDashboard("/hangfire", new DashboardOptions
-            {
-                Authorization = new [] {new HangfireAuthorizationFilter() }
-            });
-
-            app.UseMiddleware<GraphQLMiddleware>();
-            if (!_hostEnvironment.IsProduction())
-            {
-                app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
-            }
+            app.UseSheshaHangfireDashboard();
         }
 
         private void AddApiVersioning(IServiceCollection services)
@@ -241,19 +225,7 @@ namespace Shesha.Web.Host.Startup
             //Swagger - Enable this line and the related lines in Configure method to enable swagger UI
             services.AddSwaggerGen(options =>
             {
-                options.DescribeAllParametersInCamelCase();
-                options.IgnoreObsoleteActions();
-                options.AddXmlDocuments();
-
-                options.SchemaFilter<JsonIgnoreSchemaFilter>();
-                options.SchemaFilter<GraphQLSchemaFilter>();
-                options.SchemaFilter<DynamicDtoSchemaFilter>();
-                options.OperationFilter<SwaggerOperationFilter>();
-                options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
-
-                options.CustomOperationIds(desc => desc.ActionDescriptor is ControllerActionDescriptor d
-                    ? d.ControllerName.ToCamelCase() + d.ActionName.ToPascalCase()
-                    : null);
+                options.UseSheshaDefaults();
 
                 options.AddDocumentsPerService();
 
@@ -269,9 +241,8 @@ namespace Shesha.Web.Host.Startup
                 options.ResolveConflictingActions(apiDescriptions => 
                     apiDescriptions.FirstOrDefault()
                 );
-                //options.SchemaFilter<DynamicDtoSchemaFilter>();
             });
-            services.Replace(ServiceDescriptor.Transient<ISwaggerProvider, CachingSwaggerProvider>());
+            services.Replace(ServiceDescriptor.Transient<IAsyncSwaggerProvider, CachingSwaggerProvider>());
 
             services.AddApiVersioning(options =>
             {

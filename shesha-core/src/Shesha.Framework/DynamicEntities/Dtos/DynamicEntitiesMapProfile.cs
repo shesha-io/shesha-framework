@@ -82,7 +82,7 @@ namespace Shesha.DynamicEntities.Dtos
         private bool AllowConfigureAppService(EntityConfig entityConfig)
         {
             var attr = StaticContext.IocManager.Resolve<IEntityTypeConfigurationStore>().GetOrNull(entityConfig.FullClassName)?.EntityType?.GetAttributeOrNull<EntityAttribute>();
-            return attr == null || attr.GenerateApplicationService == GenerateApplicationServiceState.UseConfiguration;
+            return attr == null || attr.IsConfigurable;
         }
     }
 }

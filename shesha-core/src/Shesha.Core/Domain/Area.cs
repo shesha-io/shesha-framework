@@ -1,9 +1,9 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
@@ -11,7 +11,7 @@ namespace Shesha.Domain
     /// This class is supposed to be replaced by the Site entity
     /// </summary>
     [Obsolete]
-    [Entity(TypeShortAlias = "Shesha.Core.Area", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Core.Area", CrudActions = CrudActions.None, IsConfigurable = false)]
     [Discriminator]
     public class Area : FullAuditedEntity<Guid>, IMayHaveTenant
     {

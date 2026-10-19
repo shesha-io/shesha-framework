@@ -16,7 +16,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
     /// <summary>
     /// Scheduled Job application service
     /// </summary>
-    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "pages:maintenance")]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, PermissionNames.Application_Administer, PermissionNames.Application_Maintenance)]
     public class ScheduledJobAppService : DynamicCrudAppService<ScheduledJob, DynamicDto<ScheduledJob, Guid>, Guid>, ITransientDependency
     {
         private readonly IScheduledJobManager _jobManager;

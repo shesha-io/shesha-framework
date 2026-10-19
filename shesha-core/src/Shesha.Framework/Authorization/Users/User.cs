@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using Abp.Extensions;
+using Castle.Components.DictionaryAdapter.Xml;
 using Newtonsoft.Json;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.EntityHistory;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Authorization.Users
 {
     [Table("AbpUsers")]
+    [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
     public class User : AbpUser<User>
     {
         public const string DefaultPassword = "123qwe";
@@ -170,8 +172,6 @@ namespace Shesha.Authorization.Users
         }
 
         public new const string AdminUserName = "admin";
-        public const string DevUserName = "dev";
-        public const string ConfigUserName = "config";
 
         public static User CreateTenantAdminUser(int tenantId, string emailAddress)
         {
