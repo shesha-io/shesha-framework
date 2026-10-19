@@ -1,4 +1,5 @@
 ﻿using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
 {
@@ -7,6 +8,7 @@ namespace Shesha.Domain
     /// </summary>
     [DiscriminatorValue("SheshaConfigPackageImportResult")]
     [SnakeCaseNaming]
+    [Entity(CrudActions = CrudActions.Read, IsConfigurable = false)]
     public class ConfigurationPackageImportResult: ImportResult
     {
         /// <summary>

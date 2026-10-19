@@ -3,7 +3,6 @@ using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
 using Abp.Extensions;
 using Abp.PlugIns;
-using Boxfusion.SheshaFunctionalTests.Hangfire;
 using Castle.Facilities.Logging;
 using ElmahCore.Mvc;
 using GraphQL;
@@ -22,6 +21,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Shesha;
+using Shesha.Authentication;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
@@ -210,17 +210,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				options.IndexStream = () => Assembly.GetExecutingAssembly()
 					.GetManifestResourceStream("Boxfusion.SheshaFunctionalTests.Web.Host.wwwroot.swagger.ui.index.html");
 			}); // URL: /swagger​
-			
-            app.UseHangfireDashboard("/hangfire",
-				new DashboardOptions
-				{
-					Authorization = new[] { new HangfireAuthorizationFilter() }
-				});
-			app.UseMiddleware<GraphQLMiddleware>();
-			if (!_hostEnvironment.IsProduction())
-			{
-				app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
-			}
+
+            app.UseSheshaHangfireDashboard();
 		}
 
 		private void AddApiVersioning(IServiceCollection services)

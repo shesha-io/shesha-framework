@@ -40,5 +40,10 @@ namespace Shesha.DynamicEntities.Distribution.Dto
         public PermissionedObjectDto PermissionCreate { get; set; }
         public PermissionedObjectDto PermissionUpdate { get; set; }
         public PermissionedObjectDto PermissionDelete { get; set; }
+
+        /// <summary>
+        /// Indicates that the entity is configurable
+        /// </summary>
+        public bool IsConfigurable { get; set; }
     }
 }

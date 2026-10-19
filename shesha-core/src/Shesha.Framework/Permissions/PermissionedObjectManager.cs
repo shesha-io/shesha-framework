@@ -40,6 +40,19 @@ namespace Shesha.Permissions
                 { "UpdateGql", "Update" },
                 { "Delete", "Delete" },
             };
+
+        public static string CrudAction2Method(CrudAction action)
+        {
+            return action switch
+            {
+                CrudAction.Create => "Create",
+                CrudAction.Update => "Update",
+                CrudAction.Delete => "Delete",
+                CrudAction.Read => "Get",
+                _ => ""
+            };
+        }
+
         public static string? GetCrudMethod(string method, string? defaultValue = null) =>
             CrudMethods.ContainsKey(method.RemovePostfix("Async")) ? CrudMethods[method.RemovePostfix("Async")] : defaultValue;
 
@@ -74,7 +87,7 @@ namespace Shesha.Permissions
 
         private string GetCacheKey(string? objectName, string? objectType)
         {
-            return $"{objectName}"; // TODO: AS review using Permissioned objects types _{objectType}";
+            return $"{objectName}_{objectType}";
         }
 
         public virtual string? GetObjectType(Type type)
@@ -92,7 +105,7 @@ namespace Shesha.Permissions
 
         private async Task SetCacheAsync(PermissionedObjectDto dto, CacheItemWrapper<PermissionedObjectDto>? item = null)
         {
-            var parentKey = GetCacheKey(dto.Parent, dto.Type);
+            var parentKey = dto.Parent ?? "";
             var childKey = GetCacheKey(dto.Object, dto.Type);
             await _permissionedObjectsCache.SetAsync(childKey, item ?? new CacheItemWrapper<PermissionedObjectDto>(dto, dto));
             var cache = await _relationsCache.TryGetValueAsync(parentKey);
@@ -234,14 +247,12 @@ namespace Shesha.Permissions
                     }
                 }
             }
-            var dtoObj = new PermissionedObjectDto()
+            var dtoObj = new PermissionedObjectDto(module)
             {
                 Object = objectName,
                 Name = objectName,
                 Parent = inh ?? string.Empty,
                 Access = RefListPermissionedAccess.Inherited,
-                Module = module?.Name,
-                ModuleId = module?.Id,
                 Type = objectType
             };
 
@@ -257,9 +268,11 @@ namespace Shesha.Permissions
             if (!useHidden && (dtoObj.Hidden ?? false))
                 return null;
 
-            var parent = !string.IsNullOrEmpty(dtoObj.Parent)
-                ? await GetOrDefaultAsync(dtoObj.Parent, "")
-                : null;
+            var parentType = GetParentType(dtoObj.Type);
+            var parent = !string.IsNullOrEmpty(dtoObj.Parent) && !string.IsNullOrWhiteSpace(parentType)
+                    ? await GetOrDefaultAsync(dtoObj.Parent, parentType)
+                    : null;
+            
             dtoObj.InheritedAccess = RefListPermissionedAccess.Inherited;
 
             // check parent
@@ -433,28 +446,38 @@ namespace Shesha.Permissions
 
         public async Task<bool> IsActionDescriptorEnabledAsync(ActionDescriptor actionDescriptor)
         {
-            if (actionDescriptor is ControllerActionDescriptor descriptor)
+            var po = await GetPermissionedObjectAsync(actionDescriptor);
+            return po == null || po.ActualAccess != RefListPermissionedAccess.Disable;
+        }
+
+        private async Task<PermissionedObjectDto?> GetPermissionedObjectAsync(ActionDescriptor actionDescriptor)
+        {
+            if (actionDescriptor is not ControllerActionDescriptor descriptor)
+                return null;
+
+            var methodName = descriptor.MethodInfo.Name.RemovePostfix("Async");
+
+            if (AppServiceHelper.IsDynamicAppService(descriptor.ControllerTypeInfo))
             {
-                var methodName = descriptor.MethodInfo.Name.RemovePostfix("Async");
-                // remove disabled endpoints
-                var method = GetCrudMethod(methodName);
+                // Dynamic app service                
+                // convert to known method name
+                var method = CrudMethods.ContainsKey(methodName)
+                    ? CrudMethods[methodName]
+                    : null;
+                if (string.IsNullOrWhiteSpace(method))
+                    return null;
 
-                var obj = "";
-                if (descriptor.ControllerTypeInfo.ImplementsGenericInterface(typeof(IEntityAppService<,>)) && !string.IsNullOrWhiteSpace(method))
-                {
-                    // entity service
-                    var genericInterface = descriptor.ControllerTypeInfo.GetGenericInterfaces(typeof(IEntityAppService<,>)).First();
-                    var entityType = genericInterface.GenericTypeArguments.First();
-                    obj = $"{entityType.FullName}@{method}";
-                }
-                else
-                    // api service
-                    obj = $"{descriptor.ControllerTypeInfo.FullName}@{methodName}";
 
-                var permission = await GetOrDefaultAsync(obj, ShaPermissionedObjectsTypes.WebApiAction);
-                return permission == null || permission.ActualAccess != RefListPermissionedAccess.Disable;
+                var entityType = AppServiceHelper.GetEntityTypeFromDynamicAppService(descriptor.ControllerTypeInfo);
+                var obj = $"{entityType.FullName}@{method}";
+                return await GetOrDefaultAsync(obj, ShaPermissionedObjectsTypes.EntityAction);
             }
-            return true;
+            else
+            {
+                // all other APIs
+                var obj = $"{descriptor.ControllerTypeInfo.FullName}@{methodName}";
+                return await GetOrDefaultAsync(obj, ShaPermissionedObjectsTypes.WebApiAction);
+            }
         }
 
         private void RemoveCache(string key)
@@ -515,6 +538,19 @@ namespace Shesha.Permissions
                 .Where(x => x.ActualAccess == access)
                 .ToList();
             return forms;
+        }
+
+        private string? GetParentType(string objectType)
+        {
+            switch (objectType)
+            {
+                case ShaPermissionedObjectsTypes.EntityAction:
+                    return ShaPermissionedObjectsTypes.Entity;
+                case ShaPermissionedObjectsTypes.WebApiAction:
+                    return ShaPermissionedObjectsTypes.WebApi;
+                default:
+                    return null;
+            }
         }
     }
 }

@@ -1,14 +1,14 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Framework.PermissionedObject", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Framework.PermissionedObject", CrudActions = CrudActions.None, IsConfigurable = false)]
     [SnakeCaseNaming]
     [Table("permissioned_objects", Schema = "frwk")]
     public class PermissionedObject : FullAuditedEntity<Guid>

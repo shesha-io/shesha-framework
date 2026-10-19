@@ -43,7 +43,6 @@
     <PackageReference Include="ElmahCore" />
     <PackageReference Include="GraphQL.NewtonsoftJson" />
     <PackageReference Include="GraphQL.Server.All" />
-    <PackageReference Include="GraphQL.Server.Ui.Playground" />
     <PackageReference Include="Hangfire.Core" />
     <PackageReference Include="Hangfire.PostgreSql" />
     <PackageReference Include="Hangfire.SqlServer" />

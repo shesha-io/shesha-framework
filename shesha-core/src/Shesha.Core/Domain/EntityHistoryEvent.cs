@@ -1,10 +1,13 @@
 ﻿using Abp.Domain.Entities;
 using Abp.EntityHistory;
+using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
+    [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
     public class EntityHistoryEvent : Entity<Guid>
     {
         public virtual EntityChangeSet EntityChangeSet { get; set; }

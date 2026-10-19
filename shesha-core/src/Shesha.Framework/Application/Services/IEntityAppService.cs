@@ -1,7 +1,5 @@
 ﻿using Abp.Domain.Entities;
-using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
-using System;
 using System.Threading.Tasks;
 
 namespace Shesha.Application.Services

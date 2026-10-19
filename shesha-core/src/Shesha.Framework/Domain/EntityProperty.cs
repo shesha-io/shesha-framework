@@ -15,7 +15,7 @@ namespace Shesha.Domain
     /// <summary>
     /// Configuration of the entity property
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Framework.EntityProperty", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(TypeShortAlias = "Shesha.Framework.EntityProperty", CrudActions = CrudActions.None, IsConfigurable = false)]
     [SnakeCaseNaming]
     [Table("entity_properties", Schema = "frwk")]
     public class EntityProperty: FullAuditedEntity<Guid>

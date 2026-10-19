@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
+using Shesha.Domain;
 using Shesha.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,12 @@ namespace Shesha.Permissions
             Hidden = false;
             AdditionalParameters = new Dictionary<string, string>();
             Hardcoded = false;
+        }
+
+        public PermissionedObjectDto(Module? module) : this()
+        {
+            ModuleId = module?.Id;
+            Module = module?.Name;
         }
 
         public virtual bool? Hardcoded { get; set; }

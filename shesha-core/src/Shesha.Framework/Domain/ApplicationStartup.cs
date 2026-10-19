@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities;
+using Shesha.Authorization;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System;
@@ -13,6 +14,7 @@ namespace Shesha.Domain
     /// </summary>
     [SnakeCaseNaming]
     [Table("application_startups", Schema = "frwk")]
+    [Entity(CrudActions = CrudActions.Read, CrudActionsPermissions = [PermissionNames.Application_Administer], IsConfigurable = false)]
     public class ApplicationStartup: Entity<Guid>
     {
         [MaxLength(100)]

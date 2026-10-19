@@ -174,7 +174,11 @@ namespace Shesha
         public virtual async Task<GraphQLDataResult<TEntity>> QueryAsync(GetDynamicEntityInput<TPrimaryKey> input)
         {
             CheckGetAllPermission();
+            return await InternalQueryAsync(input);
+        }
 
+        protected virtual async Task<GraphQLDataResult<TEntity>> InternalQueryAsync(GetDynamicEntityInput<TPrimaryKey> input)
+        {
             var schemaName = StringHelper.ToCamelCase(typeof(TEntity).Name);
 
             var schema = await SchemaContainer.GetOrDefaultAsync(schemaName);

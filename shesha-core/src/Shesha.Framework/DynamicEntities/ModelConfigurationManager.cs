@@ -857,7 +857,7 @@ namespace Shesha.DynamicEntities
             var dto = new ModelConfigurationDto()
             {
                 AllowConfigureAppService = entityConfig.Source == MetadataSourceType.ApplicationCode
-                    && (entityAttr == null || entityAttr.GenerateApplicationService == GenerateApplicationServiceState.UseConfiguration),
+                    && (entityAttr == null || entityAttr.IsConfigurable),
                 ClassName = entityConfig.ClassName,
                 CreatedInDb = entityConfig.CreatedInDb,
                 InitMessage = entityConfig.InitMessage,

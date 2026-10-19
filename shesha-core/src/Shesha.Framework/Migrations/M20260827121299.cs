@@ -1,5 +1,4 @@
 using FluentMigrator;
-using Shesha.Authorization;
 using Shesha.Domain.Enums;
 using Shesha.FluentMigrator;
 
@@ -17,8 +16,8 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-            UpdateServiceAccess("Shesha.Permissions.PermissionedObjectAppService", ShaPermissionNames.Pages_Maintenance);
-            UpdateServiceAccess("Shesha.Permissions.PermissionAppService", ShaPermissionNames.Application_Configurator);
+            UpdateServiceAccess("Shesha.Permissions.PermissionedObjectAppService", "pages:maintenance");
+            UpdateServiceAccess("Shesha.Permissions.PermissionAppService", "app:Configurator");
         }
 
         private void UpdateServiceAccess(string serviceName, string permission)

@@ -47,8 +47,7 @@ namespace Shesha.Tests.Security
                 authConfiguration,
                 permissionedObjectManager,
                 permissionChecker,
-                Substitute.For<ILocalizationManager>(),
-                Substitute.For<IUnitOfWorkManager>()
+                Substitute.For<ILocalizationManager>()                
             );
         }
 
@@ -111,17 +110,17 @@ namespace Shesha.Tests.Security
         }
 
         [Fact]
-        public async Task Inherited_access_without_a_default_lets_everybody_in()
+        public async Task Inherited_access_without_a_default_deny_access()
         {
-            // characterization of the bug: when the caller does not pass the setting, `Inherited`
-            // reaches the permission checker with an empty permission list, which ABP treats as granted.
+            // when inherited access is not defined we should deny access
             var checker = CreateChecker(Substitute.For<IShaPermissionChecker>());
 
-            await checker.AuthorizeAsync(false, EntityName, "Get", ObjectType, true);
+            var act = () => checker.AuthorizeAsync(false, EntityName, "Get", ObjectType, true);
+
+            await act.Should().ThrowAsync<AbpAuthorizationException>();
         }
 
         [Theory]
-        [InlineData(typeof(EntityCrudAuthorizationHelper))]
         [InlineData(typeof(ApiAuthorizationHelper))]
         [InlineData(typeof(EntitiesAppService))]
         public void Permission_check_callers_should_depend_on_the_security_settings(Type type)

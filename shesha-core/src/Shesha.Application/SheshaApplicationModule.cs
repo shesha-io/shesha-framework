@@ -29,7 +29,6 @@ using Shesha.Session;
 using Shesha.Settings.Ioc;
 using Shesha.Sms;
 using Shesha.Sms.Configuration;
-using Shesha.Startup;
 using Shesha.UserManagements.Configurations;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -56,8 +55,6 @@ namespace Shesha
 
             // disable API audit by default
             Configuration.Auditing.IsEnabled = false;
-
-            IocManager.Register<IShaApplicationModuleConfiguration, ShaApplicationModuleConfiguration>();
 
             Configuration.Authorization.Providers.Add<SheshaAuthorizationProvider>();
             Configuration.Authorization.Providers.Add<DbAuthorizationProvider>();
@@ -140,7 +137,6 @@ namespace Shesha
             });
 
             IocManager.Register<ISheshaAuthorizationHelper, ApiAuthorizationHelper>(DependencyLifeStyle.Transient);
-            IocManager.Register<ISheshaAuthorizationHelper, EntityCrudAuthorizationHelper>(DependencyLifeStyle.Transient);
 
             IocManager
                 .RegisterConfigurableItemManager<NotificationTypeConfig, INotificationManager, NotificationManager>()

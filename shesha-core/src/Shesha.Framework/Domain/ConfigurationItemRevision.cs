@@ -13,7 +13,7 @@ namespace Shesha.Domain
     /// </summary>
     [SnakeCaseNaming]
     [Table("configuration_item_revisions", Schema = "frwk")]
-    [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(CrudActions = CrudActions.Read, IsConfigurable = false)]
     public class ConfigurationItemRevision : FullAuditedEntity<Guid, User>
     {
         /// <summary>

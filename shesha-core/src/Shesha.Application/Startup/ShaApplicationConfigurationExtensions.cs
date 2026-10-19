@@ -11,14 +11,6 @@ namespace Shesha.Startup
     public static class ShaApplicationConfigurationExtensions
     {
         /// <summary>
-        /// Used to configure ABP NHibernate module.
-        /// </summary>
-        public static IShaApplicationModuleConfiguration ShaApplication(this IModuleConfigurations configurations)
-        {
-            return configurations.AbpConfiguration.Get<IShaApplicationModuleConfiguration>();
-        }
-
-        /// <summary>
         /// Allows to dynamically update the Web Api when changing dynamic Entity configurations. 
         /// !!! Should be before AddMvcCore !!!
         /// </summary>

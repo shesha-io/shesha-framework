@@ -15,7 +15,8 @@ namespace Shesha.Domain
     [Entity(
         FriendlyName = "Entity",
         TypeShortAlias = "Shesha.Framework.EntityConfig", 
-        GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService
+        CrudActions = Enums.CrudActions.None, 
+        IsConfigurable = false
     )]
     [JoinedProperty("entity_configs", Schema = "frwk")]
     [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-entity-create")]
@@ -89,6 +90,11 @@ namespace Shesha.Domain
         /// </summary>
         [MaxLength(200)]
         public virtual string? Accessor { get; set; }
+
+        /// <summary>
+        /// Indicates that the entity is configurable
+        /// </summary>
+        public virtual bool IsConfigurable { get; set; }
 
         public override string ToString()
         {

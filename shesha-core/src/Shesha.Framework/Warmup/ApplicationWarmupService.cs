@@ -5,10 +5,7 @@ using Abp.Events.Bus.Handlers;
 using Castle.Core.Logging;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
-using Shesha.Reflection;
-using Shesha.Swagger;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Shesha.Warmup

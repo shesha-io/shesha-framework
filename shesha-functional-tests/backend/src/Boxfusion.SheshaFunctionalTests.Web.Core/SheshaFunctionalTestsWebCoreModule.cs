@@ -2,16 +2,13 @@ using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Boxfusion.SheshaFunctionalTest.DisabledModule;
 using Boxfusion.SheshaFunctionalTests.Common;
-using Boxfusion.SheshaFunctionalTests.Common.Authorization;
 using Boxfusion.SheshaFunctionalTests.ModuleA;
 using Boxfusion.SheshaFunctionalTests.ModuleB;
-using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Shesha;
 using Shesha.Authentication.JwtBearer;
-using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.Configuration.Startup;
 using Shesha.Elmah;
@@ -95,9 +92,6 @@ namespace Boxfusion.SheshaFunctionalTests
         public override void Initialize()
         {
             IocManager.RegisterAssemblyByConvention(typeof(SheshaFunctionalTestsWebCoreModule).GetAssembly());
-
-            IocManager.IocContainer.Register(
-            Component.For<ICustomPermissionChecker>().Forward<ISheshaFunctionalTestsPermissionChecker>().Forward<SheshaFunctionalTestsPermissionChecker>().ImplementedBy<SheshaFunctionalTestsPermissionChecker>().LifestyleTransient()                );
         }
     }
 }

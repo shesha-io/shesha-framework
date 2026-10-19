@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Abp.Authorization.Roles;
+﻿using Abp.Authorization.Roles;
 using Shesha.Authorization.Users;
+using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Authorization.Roles
 {
+    [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
     public class Role : AbpRole<User>
     {
         public const int MaxDescriptionLength = 5000;

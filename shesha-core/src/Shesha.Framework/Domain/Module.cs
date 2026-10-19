@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using FluentValidation;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -15,7 +16,7 @@ namespace Shesha.Domain
     /// <summary>
     /// Module
     /// </summary>
-    [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Entity(CrudActions = CrudActions.Read, IsConfigurable = false)]
     [Table("modules", Schema = "frwk")]
     [SnakeCaseNaming]
     public class Module: FullAuditedEntity<Guid>

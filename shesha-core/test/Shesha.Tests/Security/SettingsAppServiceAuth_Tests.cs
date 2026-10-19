@@ -34,7 +34,7 @@ namespace Shesha.Tests.Security
                 .NotNull("GetConfigurationsAsync should have [SheshaAuthorize]");
 
             attr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
-            attr.Permissions.Should().Contain("pages:maintenance");
+            attr.Permissions.Should().Contain(PermissionNames.Application_Maintenance);
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace Shesha.Tests.Security
                 .NotNull("UpdateValueAsync should have [SheshaAuthorize]");
 
             attr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
-            attr.Permissions.Should().Contain("pages:maintenance");
+            attr.Permissions.Should().Contain(PermissionNames.Application_Maintenance);
         }
 
         [Fact]

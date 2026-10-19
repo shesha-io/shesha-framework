@@ -1,4 +1,5 @@
 ﻿using Abp.Auditing;
+using Shesha.Authorization;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
@@ -8,10 +9,16 @@ namespace Shesha.Domain
     /// <summary>
     /// Settings Configuration
     /// </summary>
+    [Entity(
+        FriendlyName = "Setting",
+        CrudActions = CrudActions.Read,
+        IsConfigurable = false,
+        CrudActionsAccess = CrudActionsAccess.RequiresPermissions,
+        CrudActionsPermissions = [PermissionNames.Application_Configure]
+    )]
     [JoinedProperty("setting_configurations", Schema = "frwk")]
     [SnakeCaseNaming]
     [DiscriminatorValue(ItemTypeName)]
-    [Entity(FriendlyName = "Setting")]
     public class SettingConfiguration: ConfigurationItem
     {
         public const string ItemTypeName = "setting-configuration";

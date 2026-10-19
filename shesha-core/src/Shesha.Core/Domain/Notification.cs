@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Shesha.Authorization;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.EntityReferences;
@@ -7,7 +8,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Core.Notification")]
+    [Entity(TypeShortAlias = "Shesha.Core.Notification",
+        CrudActions = CrudActions.All,
+        IsConfigurable = false,
+        CrudActionsAccess = CrudActionsAccess.RequiresPermissions,
+        CrudActionsPermissions = [PermissionNames.Application_Configure, PermissionNames.Application_Administer]
+    )]
     public class Notification : FullAuditedEntity<Guid>
     {
         /// <summary>
