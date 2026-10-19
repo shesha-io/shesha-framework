@@ -1,5 +1,5 @@
 import React, { forwardRef, ReactNode } from 'react';
-import { Button, Divider, Space, Typography } from 'antd';
+import { Button, Divider, Typography } from 'antd';
 import {
   PushpinOutlined,
   PushpinFilled,
@@ -74,7 +74,7 @@ export const PinnablePanel = forwardRef<HTMLDivElement, PinnablePanelProps>(
         {/* Expanded content */}
         <div className={cx(styles.expandedContent, "expanded-content")}>
           <div className={styles.header}>
-            <Space>
+            <div className={styles.headerTitle}>
               <Button
                 type="text"
                 icon={direction === 'horizontal'
@@ -84,9 +84,9 @@ export const PinnablePanel = forwardRef<HTMLDivElement, PinnablePanelProps>(
                 onClick={onExpandedToggle}
                 title={expanded ? 'Collapse' : 'Expand'}
               />
-              {renderTitle((str) => <Text strong>{str}</Text>)}
-            </Space>
-            <div>
+              {renderTitle((str) => <Text strong ellipsis={{ tooltip: str }}>{str}</Text>)}
+            </div>
+            <div className={styles.headerActions}>
               {isDefined(extra) && <>{extra}<Divider orientation="vertical" /></>}
               <Button
                 type="text"

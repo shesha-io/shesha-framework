@@ -97,6 +97,22 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
             }
     `);
 
+  /* The JS toggle and permissions lock are 24px buttons absolutely positioned over the right end of a
+     vertical settings label (see jsSwitch; the lock sits 22px further left). The label otherwise spans
+     the full row, so cap it to stop before the buttons it actually has; its text ellipsises there. */
+  const labelBeforeActions = (reservedWidth: string): string => cx(css`
+    > .${prefixCls}-form-item-row > .${prefixCls}-form-item-label > label {
+      max-width: calc(100% - ${reservedWidth});
+      width: 100%;
+       ::after {
+        margin: 0px;
+        
+       }
+    }
+  `);
+  const labelWithOneAction = labelBeforeActions('24px');
+  const labelWithTwoActions = labelBeforeActions('48px');
+
   const valueHighlightSelectors = `
     textarea,
     textarea:hover,
@@ -171,5 +187,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     inheritedValue,
     overriddenValue,
     actionCollapse,
+    labelWithOneAction,
+    labelWithTwoActions,
   };
 });

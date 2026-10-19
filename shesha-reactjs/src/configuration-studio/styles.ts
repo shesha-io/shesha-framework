@@ -216,15 +216,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             flex-grow: 1 !important;
             .${csDocTabs}{
                 height: 100%;
-                /* Reduced tab height and a darker tab-bar rule (issue #4783). */
-                >.ant-tabs-nav {
+                >div>.ant-tabs-nav {
                     margin-bottom: 0;
                     &::before {
                         border-bottom-color: ${token.colorBorder};
                     }
+                    .ant-tabs-tab, .ant-tabs-nav-operations {
+                        height: 30px;
+                    }
                     .ant-tabs-tab {
-                        padding-top: 6px;
-                        padding-bottom: 6px;
+                        --ant-tabs-card-padding-sm: 0 8px;
                     }
                 }
                 >.ant-tabs-body-holder {

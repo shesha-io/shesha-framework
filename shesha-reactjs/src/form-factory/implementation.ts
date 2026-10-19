@@ -281,14 +281,14 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
   stdPrefixSuffixInputs = (visibleJs?: string): FormBuilder => {
     this.addSettingsInputRow({
       inputs: [
-        { type: 'textField', propertyName: 'prefix', label: 'Prefix', jsSetting: true },
+        { type: 'textField', propertyName: 'prefix', label: 'Prefix', jsSetting: true, width: 100 },
         { type: 'iconPicker', propertyName: 'prefixIcon', label: 'Prefix Icon', jsSetting: true },
       ],
       visibleJs: visibleJs,
     });
     this.addSettingsInputRow({
       inputs: [
-        { type: 'textField', propertyName: 'suffix', label: 'Suffix', jsSetting: true },
+        { type: 'textField', propertyName: 'suffix', label: 'Suffix', jsSetting: true, width: 100 },
         { type: 'iconPicker', propertyName: 'suffixIcon', label: 'Suffix Icon', jsSetting: true },
       ],
       visibleJs: visibleJs,

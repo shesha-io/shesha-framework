@@ -154,6 +154,14 @@ export interface ISectionSeparatorSettingsInputProps extends ISettingsInputBase 
   lineType?: string | undefined;
 }
 
+// Slider
+export interface ISliderSettingsInputProps extends ISettingsInputBase<number | undefined> {
+  type: 'slider';
+  min?: number | undefined;
+  max?: number | undefined;
+  step?: number | undefined;
+}
+
 // Number Field
 export interface INumberFieldSettingsInputProps extends ISettingsInputBase<number | string | undefined> {
   type: 'numberField';
@@ -513,6 +521,7 @@ export type BaseInputProps =
   IRadioSettingsInputProps |
   ISwitchSettingsInputProps |
   INumberFieldSettingsInputProps |
+  ISliderSettingsInputProps |
   ITextFieldSettingsInputProps |
   ITextAreaSettingsInputProps |
   ICodeEditorSettingsInputProps |
