@@ -13,6 +13,11 @@ import {
 import KanbanColumn from './components/renderColumn';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 import { addPx } from '../keyInformationBar/utils';
+import { isEntityMetadata } from '@/interfaces';
+import { isDefined } from '@/utils/nullables';
+
+const hasGroupingValue = (record: unknown, groupingProperty: string): record is Record<string, unknown> =>
+  typeof record === 'object' && record !== null && isDefined((record as Record<string, unknown>)[groupingProperty]);
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
@@ -36,8 +41,8 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
 
   useEffect(() => {
     if (!isInDesigner && modelType) {
-      getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp: any) => {
-        const endpoints = resp?.apiEndpoints;
+      getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp) => {
+        const endpoints = isDefined(resp) && isEntityMetadata(resp) ? resp.apiEndpoints : undefined;
         setUrls({ updateUrl: endpoints?.update?.url, deleteUrl: endpoints?.delete?.url, postUrl: endpoints?.create?.url });
       });
     }
@@ -46,7 +51,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   // records come from the data table context so its filters, quick search and refresh apply
   useEffect(() => {
     if (!isInDesigner && groupingProperty) {
-      setTasks((tableData ?? []).filter((x: any) => x?.[groupingProperty] !== null && x?.[groupingProperty] !== undefined));
+      setTasks((tableData ?? []).filter((record) => hasGroupingValue(record, groupingProperty)));
     }
   }, [isInDesigner, groupingProperty, tableData]);
 
