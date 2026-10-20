@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Shesha.Application.Services;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
@@ -212,10 +212,11 @@ namespace Shesha.Swagger
             options.IgnoreObsoleteActions();
             options.AddXmlDocuments();
 
+            options.SchemaFilter<JsonIgnoreSchemaFilter>();
             options.SchemaFilter<GraphQLSchemaFilter>();
             options.SchemaFilter<DynamicDtoSchemaFilter>();
-            options.OperationFilter<SwaggerOperationFilter>();
-            options.DocumentFilter<SwaggerDocumentFilter>();
+            options.OperationAsyncFilter<SwaggerOperationFilter>();
+            options.DocumentAsyncFilter<SwaggerDocumentFilter>();
 
             options.CustomSchemaIds(type => GetSchemaId(type));
             options.CustomOperationIds(desc => desc.ActionDescriptor is ControllerActionDescriptor d

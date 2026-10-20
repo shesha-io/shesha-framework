@@ -1,6 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Runtime.Caching;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Shesha.Cache;
 
 namespace Shesha.Swagger

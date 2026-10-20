@@ -7,8 +7,9 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Shesha.Application.Services;
+using Shesha.Extensions;
 using Shesha.Reflection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
@@ -16,11 +17,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Shesha.Swagger
 {
-    public class SwaggerOperationFilter : IOperationFilter
+    public class SwaggerOperationFilter : IOperationAsyncFilter
     {
         private readonly IAbpAspNetCoreConfiguration _configuration;
         private readonly IIocManager _iocManager;
@@ -31,7 +33,7 @@ namespace Shesha.Swagger
             _iocManager = iocManager;
         }
 
-        public void Apply(OpenApiOperation operation, OperationFilterContext context)
+        public Task ApplyAsync(OpenApiOperation operation, OperationFilterContext context, CancellationToken cancellationToken)
         {
             if (context.ApiDescription.ActionDescriptor is ControllerActionDescriptor descriptor)
             {
@@ -52,6 +54,8 @@ namespace Shesha.Swagger
 
             // Decorate operation parameters
             DecorateOperaionParameters(operation, context);
+
+            return Task.CompletedTask;
         }
 
         private void AddPropertiesToCrudCreateUpdate(OpenApiOperation operation, OperationFilterContext context)
@@ -62,13 +66,16 @@ namespace Shesha.Swagger
             if (context.ApiDescription.RelativePath.ToLower().EndsWith("crud/create")
                 || context.ApiDescription.RelativePath.ToLower().EndsWith("crud/update"))
             {
+                if (operation.Parameters == null)
+                    operation.Parameters = [];
+
                 // Add as the first parameter
                 operation.Parameters.Insert(0, new OpenApiParameter()
                 {
                     Name = "properties",
                     In = ParameterLocation.Query,
                     Description = "List of properties to fetch in GraphQL-like syntax. Supports nested properties",
-                    Schema = new OpenApiSchema() { Type = "string" },
+                    Schema = new OpenApiSchema() { Type = JsonSchemaType.String },
                 });
             }
         }
@@ -89,6 +96,9 @@ namespace Shesha.Swagger
                 : context.MethodInfo.ReturnType.IsSubtypeOfGeneric(typeof(Task<>))
                     ? context.MethodInfo.ReturnType.GenericTypeArguments.First()
                     : context.MethodInfo.ReturnType;
+
+            if (operation.Responses == null)
+                operation.Responses = [];
 
             var okResponse = ((int)HttpStatusCode.OK).ToString();
             if (wrapResultAttribute.WrapOnSuccess &&  // auto-wrapping of success response is enable
@@ -182,7 +192,7 @@ namespace Shesha.Swagger
                 {
                     parameter.Description ??= description?.ModelMetadata?.Description;
 
-                    parameter.Required |= description != null && description.IsRequired;
+                    parameter.SetRequired(description != null && description.IsRequired);
                 }
             }
         }

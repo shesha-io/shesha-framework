@@ -1,14 +1,13 @@
 ﻿using Abp.Dependency;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Shesha.Permissions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Threading;
 using System.Threading.Tasks;
-using AsyncHelper = Abp.Threading.AsyncHelper;
 
 namespace Shesha.Swagger
 {
-    public class SwaggerDocumentFilter : IDocumentFilter
+    public class SwaggerDocumentFilter : IDocumentAsyncFilter
     {
         private readonly IIocManager _iocManager;
         public SwaggerDocumentFilter(IIocManager iocManager)
@@ -16,13 +15,7 @@ namespace Shesha.Swagger
             _iocManager = iocManager;
         }
 
-        public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
-        {
-            // TODO: migrate to IDocumentAsyncFilter after update of swashbuckle and remove AsyncHelper usage
-            AsyncHelper.RunSync(() => ApplyAsync(swaggerDoc, context, CancellationToken.None));
-        }
-
-        private async Task ApplyAsync(OpenApiDocument swaggerDoc, DocumentFilterContext context, CancellationToken cancellationToken) 
+        public async Task ApplyAsync(OpenApiDocument swaggerDoc, DocumentFilterContext context, CancellationToken cancellationToken)
         {
             var pmo = _iocManager.Resolve<IPermissionedObjectManager>();
 
@@ -30,7 +23,7 @@ namespace Shesha.Swagger
             {
                 var toBeRemoved = EntityApiCrudHelper.IsRelatedToObsoleteEntity(apiDescription);
                 toBeRemoved = toBeRemoved || EntityApiCrudHelper.IsApiTotallyDisabled(apiDescription);
-                toBeRemoved = toBeRemoved || await EntityApiCrudHelper.IsApiDisabledByConfigAsync(apiDescription);                
+                toBeRemoved = toBeRemoved || await EntityApiCrudHelper.IsApiDisabledByConfigAsync(apiDescription);
                 toBeRemoved = toBeRemoved || !await pmo.IsActionDescriptorEnabledAsync(apiDescription.ActionDescriptor);
 
                 if (toBeRemoved)

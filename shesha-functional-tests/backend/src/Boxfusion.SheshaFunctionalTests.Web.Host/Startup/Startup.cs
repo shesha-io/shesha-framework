@@ -17,9 +17,8 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Shesha;
 using Shesha.Authentication;
 using Shesha.Authorization;
@@ -30,7 +29,6 @@ using Shesha.Elmah;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.GraphQL;
-using Shesha.GraphQL.Middleware;
 using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
 using Shesha.Notifications;
@@ -224,22 +222,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			//Swagger - Enable this line and the related lines in Configure method to enable swagger UI
 			services.AddSwaggerGen(options =>
 			{
-				options.DescribeAllParametersInCamelCase();
-				options.IgnoreObsoleteActions();
-				options.AddXmlDocuments();
-
-                options.SchemaFilter<JsonIgnoreSchemaFilter>();
-                options.SchemaFilter<GraphQLSchemaFilter>();
-                options.SchemaFilter<DynamicDtoSchemaFilter>();
-                options.OperationFilter<SwaggerOperationFilter>();
-				options.DocumentFilter<SwaggerDocumentFilter>();
-
-				options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
-
-				options.CustomOperationIds(desc => desc.ActionDescriptor is ControllerActionDescriptor d
-					? d.ControllerName.ToCamelCase() + d.ActionName.ToPascalCase()
-					: null);
-
+                options.UseSheshaDefaults();
+				
 				options.AddDocumentsPerService();
 
 				// Define the BearerAuth scheme that's in use
