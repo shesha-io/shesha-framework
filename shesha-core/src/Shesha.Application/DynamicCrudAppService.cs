@@ -47,7 +47,8 @@ namespace Shesha
             if (SkipEnabledCheck)
                 return;
             var disabled = EntityCrudHelper.IsCrudActionDisabledByCode(typeof(TEntity), crudAction);
-            if (disabled)
+            var isConfigurable = EntityCrudHelper.IsCrudActionsConfigurable(typeof(TEntity));
+            if (disabled && !isConfigurable)
                 throw new EntityNotFoundException(L("NotFound") ?? "Not found");
         }
 

@@ -42,6 +42,12 @@ namespace Shesha.Utilities
             return disabled;
         }
 
+        public static bool IsCrudActionsConfigurable(Type entityType) 
+        {
+            var config = GetHardcodedEntityCrudConfig(entityType);
+            return config.IsConfigurable;
+        }
+
         public static ICrudActionConfig GetCodebasedCrudActionConfig(Type entityType, CrudAction crudAction)
         {
             var config = GetHardcodedEntityCrudConfig(entityType);
