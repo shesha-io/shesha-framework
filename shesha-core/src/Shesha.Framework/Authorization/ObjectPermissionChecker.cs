@@ -58,10 +58,9 @@ namespace Shesha.Authorization
             if (permission == null)
                 return;
 
-            var actualAccess = defaultAccess != null && permission.ActualAccess == RefListPermissionedAccess.Inherited
-                ? defaultAccess
-                : permission.ActualAccess;
-            var actualPermissions = defaultPermissions != null && defaultAccess == RefListPermissionedAccess.RequiresPermissions
+            var useDefaults = defaultAccess != null && permission.ActualAccess == RefListPermissionedAccess.Inherited;
+            var actualAccess = useDefaults ? defaultAccess : permission.ActualAccess;
+            var actualPermissions = useDefaults && defaultAccess == RefListPermissionedAccess.RequiresPermissions
                 ? defaultPermissions
                 : permission.ActualPermissions;
 
