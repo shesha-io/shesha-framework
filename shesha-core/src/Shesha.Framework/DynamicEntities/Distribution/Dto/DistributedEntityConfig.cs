@@ -33,6 +33,14 @@ namespace Shesha.DynamicEntities.Distribution.Dto
 
         public List<DistributedEntityConfigProperty> Properties { get; set; } = new List<DistributedEntityConfigProperty>();
 
+        /// <summary>
+        /// Format of <see cref="Properties"/>: <see cref="TreePropertiesFormat"/> when only root properties are listed and every other
+        /// property is nested inside its parent. Null in packages exported before that, which list every property at the top level as well
+        /// </summary>
+        public string PropertiesFormat { get; set; }
+
+        public const string TreePropertiesFormat = "tree";
+
         public PermissionedObjectDto Permission { get; set; }
         public PermissionedObjectDto PermissionGet { get; set; }
         public PermissionedObjectDto PermissionCreate { get; set; }

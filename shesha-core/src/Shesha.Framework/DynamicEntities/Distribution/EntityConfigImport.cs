@@ -88,7 +88,7 @@ namespace Shesha.DynamicEntities.Distribution
 
                 await _entityConfigRepo.UpdateAsync(dbItem);
 
-                await MapPropertiesAsync(dbItem, item.Properties);
+                await MapPropertiesAsync(dbItem, GetRootProperties(item));
 
                 await _modelConfigsCache.RemoveAsync($"{dbItem.Namespace}|{dbItem.ClassName}");
 
@@ -111,7 +111,7 @@ namespace Shesha.DynamicEntities.Distribution
 
                 await _entityConfigRepo.InsertAsync(newItem);
 
-                await MapPropertiesAsync(newItem, item.Properties);
+                await MapPropertiesAsync(newItem, GetRootProperties(item));
 
                 return newItem;
             }
@@ -173,12 +173,16 @@ namespace Shesha.DynamicEntities.Distribution
             List<DistributedEntityConfigProperty> Properties
         )
         {
+            // all rows of the entity config are matched in memory and new rows are added as they are created:
+            // a repository lookup misses rows that are not flushed yet and inserts a second row for the same path
+            var existingProperties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfig == item);
+            var dbProperties = existingProperties.ToList();
+
             var importedIds = new HashSet<Guid>();
-            await MapPropertiesAsync(item, Properties, null, importedIds);
+            await MapPropertiesAsync(item, Properties ?? new List<DistributedEntityConfigProperty>(), null, dbProperties, importedIds);
 
             // delete properties absent from the imported package, mirroring
             // ModelConfigurationManager.cs's deletion semantics
-            var existingProperties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfig == item);
             var toDelete = existingProperties.Where(p => !p.Name.IsSpecialProperty() && !importedIds.Contains(p.Id)).ToList();
             foreach (var prop in toDelete)
             {
@@ -190,35 +194,102 @@ namespace Shesha.DynamicEntities.Distribution
             EntityConfig item,
             List<DistributedEntityConfigProperty> properties,
             EntityProperty parentProperty,
+            List<EntityProperty> dbProperties,
             HashSet<Guid> importedIds
         )
         {
             foreach (var src in properties)
             {
-                var dbItem = await MapPropertyAsync(item, src, parentProperty);
+                var existing = FindProperty(dbProperties, parentProperty, src.Name);
+
+                // the items type row of an array is also a child of the array. Older packages repeat it among the
+                // array's Properties, but it is imported once - from ItemsType
+                if (existing != null && existing.Id == parentProperty?.ItemsType?.Id)
+                    continue;
+
+                var dbItem = await MapPropertyAsync(item, src, parentProperty, existing, dbProperties);
                 importedIds.Add(dbItem.Id);
                 if (dbItem.ItemsType != null)
                     importedIds.Add(dbItem.ItemsType.Id);
 
                 if (src.Properties != null && src.Properties.Any())
-                    await MapPropertiesAsync(item, src.Properties, dbItem, importedIds);
+                    await MapPropertiesAsync(item, src.Properties, dbItem, dbProperties, importedIds);
+
+                if (src.ItemsType?.Properties != null && src.ItemsType.Properties.Any())
+                    await MapPropertiesAsync(item, src.ItemsType.Properties, dbItem.ItemsType, dbProperties, importedIds);
             }
+        }
+
+        private static EntityProperty FindProperty(List<EntityProperty> dbProperties, EntityProperty parentProperty, string name)
+        {
+            return dbProperties.FirstOrDefault(p => p.ParentProperty?.Id == parentProperty?.Id && string.Equals(p.Name, name, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        /// <summary>
+        /// Returns the root properties of the imported package. A package in the tree format lists them as they are.
+        /// Packages exported before it list every property row of the entity config at the top level, so a nested row
+        /// (a child property or an array items type) also appears as a root entry identical to its nested copy, and
+        /// importing those copies turns nested rows into root properties and overwrites an array with its own items
+        /// type, which shares its name. Every row is listed once, so each direct child of a root entry has exactly one
+        /// identical root entry that is its copy, and those are skipped. A root property identical to a nested one is
+        /// listed too, so one identical entry remains for it.
+        /// </summary>
+        private static List<DistributedEntityConfigProperty> GetRootProperties(DistributedEntityConfig item)
+        {
+            var properties = item.Properties ?? new List<DistributedEntityConfigProperty>();
+            if (item.PropertiesFormat == DistributedEntityConfig.TreePropertiesFormat)
+                return properties;
+
+            var roots = properties.Select(p => new { Property = p, Content = GetContent(p) }).ToList();
+            var copies = new HashSet<DistributedEntityConfigProperty>();
+            foreach (var child in properties.SelectMany(GetChildRows))
+            {
+                var childContent = GetContent(child);
+                var copy = roots.FirstOrDefault(r => !copies.Contains(r.Property) && r.Content == childContent);
+                if (copy != null)
+                    copies.Add(copy.Property);
+            }
+
+            return properties.Where(p => !copies.Contains(p)).ToList();
+        }
+
+        /// <summary>
+        /// Child rows of a property: its items type and its child properties. The items type row is also a child of the array,
+        /// and these packages repeat it among the array's Properties - it is the same row
+        /// </summary>
+        private static IEnumerable<DistributedEntityConfigProperty> GetChildRows(DistributedEntityConfigProperty property)
+        {
+            if (property.ItemsType != null)
+                yield return property.ItemsType;
+
+            foreach (var child in property.Properties ?? new List<DistributedEntityConfigProperty>())
+            {
+                if (property.ItemsType == null || !string.Equals(child.Name, property.ItemsType.Name, StringComparison.InvariantCultureIgnoreCase))
+                    yield return child;
+            }
+        }
+
+        /// <summary>
+        /// The property with all of its descendants, for comparing two entries of the same row
+        /// </summary>
+        private static string GetContent(DistributedEntityConfigProperty property)
+        {
+            return JsonConvert.SerializeObject(property, Formatting.None);
         }
 
         private async Task<EntityProperty> MapPropertyAsync(
             EntityConfig item,
             DistributedEntityConfigProperty src,
-            EntityProperty parentProperty
+            EntityProperty parentProperty,
+            EntityProperty existing,
+            List<EntityProperty> dbProperties
         )
         {
-            var existing = parentProperty != null
-                ? await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.ParentProperty == parentProperty)
-                : await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfig == item && x.ParentProperty == null);
+            var dbItem = await MapPropertyFieldsAsync(item, src, parentProperty, existing, dbProperties);
 
-            var dbItem = await MapPropertyFieldsAsync(item, src, parentProperty, existing);
-
+            // the items type is a child of its array, so a row without the ItemsType link is matched by its path
             dbItem.ItemsType = src.ItemsType != null
-                ? await MapPropertyFieldsAsync(item, src.ItemsType, dbItem, dbItem.ItemsType)
+                ? await MapPropertyFieldsAsync(item, src.ItemsType, dbItem, dbItem.ItemsType ?? FindProperty(dbProperties, dbItem, src.ItemsType.Name), dbProperties)
                 : null;
 
             await _propertyConfigRepo.InsertOrUpdateAsync(dbItem);
@@ -230,7 +301,8 @@ namespace Shesha.DynamicEntities.Distribution
             EntityConfig item,
             DistributedEntityConfigProperty src,
             EntityProperty parentProperty,
-            EntityProperty existing
+            EntityProperty existing,
+            List<EntityProperty> dbProperties
         )
         {
             var dbItem = existing ?? new EntityProperty();
@@ -265,6 +337,8 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
 
             await _propertyConfigRepo.InsertOrUpdateAsync(dbItem);
+            if (!dbProperties.Contains(dbItem))
+                dbProperties.Add(dbItem);
 
             return dbItem;
         }

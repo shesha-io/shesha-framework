@@ -81,6 +81,7 @@ namespace Shesha.DynamicEntities.Distribution
                
                 ViewConfigurations = MapViewConfigurations(entityConfig),
                 Properties = await MapPropertiesAsync(entityConfig),
+                PropertiesFormat = DistributedEntityConfig.TreePropertiesFormat,
 
                 Permission = await _permissionedObjectManager.GetOrDefaultAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}", ShaPermissionedObjectsTypes.Entity),
                 PermissionGet = await _permissionedObjectManager.GetOrDefaultAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Get", ShaPermissionedObjectsTypes.EntityAction),
@@ -95,8 +96,14 @@ namespace Shesha.DynamicEntities.Distribution
         private async Task<List<DistributedEntityConfigProperty>> MapPropertiesAsync(EntityConfig entityConfig)
         {
             var dbProperties = await _entityPropertyRepo.GetAll().Where(p => p.EntityConfig == entityConfig).ToListAsync();
+
+            // properties are a tree: only the roots are listed here, every other row is exported inside its parent
+            // (Properties/ItemsType). An items type belongs to its array even when its ParentProperty is not set
+            var itemsTypeIds = dbProperties.Where(p => p.ItemsType != null).Select(p => p.ItemsType.Id).ToHashSet();
+            var roots = dbProperties.Where(p => p.ParentProperty == null && !itemsTypeIds.Contains(p.Id));
+
             var properties = new List<DistributedEntityConfigProperty>();
-            foreach (var dbProp in dbProperties)
+            foreach (var dbProp in roots)
             {
                 properties.Add(await MapPropertyAsync(dbProp));
             }
@@ -137,7 +144,8 @@ namespace Shesha.DynamicEntities.Distribution
             property.CascadeUpdate = src.CascadeUpdate;
             property.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
 
-            foreach (var childProp in src.Properties) 
+            // the items type row of an array is also a child of the array - it is exported once, as ItemsType
+            foreach (var childProp in src.Properties.Where(p => p.Id != src.ItemsType?.Id))
             {
                 property.Properties.Add(await MapPropertyAsync(childProp));
             }

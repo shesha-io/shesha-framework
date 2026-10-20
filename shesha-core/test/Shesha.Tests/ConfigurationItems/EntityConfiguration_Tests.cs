@@ -444,7 +444,432 @@ namespace Shesha.Tests.ConfigurationItems
             imported.Label.ShouldBe("src-label", "fields should be updated from the imported package");
         }
 
+        [Fact]
+        public async Task When_Export_ChildAndItemsTypeRows_ShouldOnlyBeExportedNested_TestAsync()
+        {
+            // rows are shaped the way EntityConfigsBootstrapper stores them: nested properties and
+            // array items types belong to the same entity config and point at their parent property
+            var src = PrepareImportContext();
+            var module = await src.GetOrCreateModuleAsync("test-module");
+
+            var entityConfig = await src.AddEntityConfigAsync(c =>
+            {
+                c.Name = "test-entity";
+                c.ClassName = Cls;
+                c.Namespace = Ns;
+                c.Module = module;
+                return Task.CompletedTask;
+            });
+
+            var complexProp = await src.AddPropertyAsync(entityConfig, p =>
+            {
+                p.Name = "ComplexProp";
+                p.DataType = "object";
+            });
+            await src.AddPropertyAsync(entityConfig, p =>
+            {
+                p.Name = "ChildProp";
+                p.DataType = "string";
+                p.ParentProperty = complexProp;
+            });
+
+            var listProp = await src.AddPropertyAsync(entityConfig, p =>
+            {
+                p.Name = "ListProp";
+                p.DataType = "array";
+            });
+            listProp.ItemsType = await src.AddPropertyAsync(entityConfig, p =>
+            {
+                p.Name = "ListProp";
+                p.DataType = "entity";
+                p.ParentProperty = listProp;
+            });
+
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var export = new EntityConfigExport(src.EntityConfigRepo, src.EntityPropertyRepo, permissionedObjectManager);
+            var exported = await export.ExportItemAsync(entityConfig.Id) as DistributedEntityConfig;
+
+            exported.ShouldNotBeNull();
+            exported.PropertiesFormat.ShouldBe(DistributedEntityConfig.TreePropertiesFormat);
+            exported.Properties.Select(p => p.Name).ShouldBe(new[] { "ComplexProp", "ListProp" }, ignoreOrder: true, "only top-level properties should be exported at the top level");
+
+            var exportedList = exported.Properties.Single(p => p.Name == "ListProp");
+            exportedList.DataType.ShouldBe("array");
+            exportedList.ItemsType.ShouldNotBeNull("the items type should travel nested inside its array property");
+            exportedList.Properties.ShouldBeEmpty("the items type row is also a child of the array, but it is exported once - as ItemsType");
+
+            var exportedComplex = exported.Properties.Single(p => p.Name == "ComplexProp");
+            exportedComplex.Properties.Select(p => p.Name).ShouldBe(new[] { "ChildProp" }, ignoreOrder: true, "nested properties should travel inside their parent");
+        }
+
+        [Fact]
+        public async Task When_Import_LegacyPackageWithLeakedItemsType_ShouldKeepArrayAndItemsType_TestAsync()
+        {
+            // packages exported before the exporter fix list the items type row of an array a second time at
+            // the top level, with the array's name (seen in the wild for Case.ChildCases). Importing that entry
+            // overwrote the array property and then added a second items type row, which violates
+            // uq_Frwk_EntityProperties_Path on SQL Server
+            var leakedItemsType = new DistributedEntityConfigProperty
+            {
+                Name = "ChildCases",
+                DataType = "entity",
+                EntityType = "SM.Case",
+                Source = MetadataSourceType.ApplicationCode,
+                SortOrder = 0,
+                Suppress = true,
+            };
+            var arrayProp = new DistributedEntityConfigProperty
+            {
+                Name = "ChildCases",
+                Label = "Child Cases",
+                DataType = "array",
+                DataFormat = "entity",
+                EntityType = "SM.Case",
+                Source = MetadataSourceType.ApplicationCode,
+                SortOrder = 13,
+                ItemsType = new DistributedEntityConfigProperty
+                {
+                    Name = "ChildCases",
+                    DataType = "entity",
+                    EntityType = "SM.Case",
+                    Source = MetadataSourceType.ApplicationCode,
+                    SortOrder = 0,
+                    Suppress = true,
+                },
+            };
+            var legacyPackage = new DistributedEntityConfig
+            {
+                Name = "test-entity",
+                ClassName = Cls,
+                Namespace = Ns,
+                ModuleName = "test-module",
+                // leaked entry first, as in the exported Case.json
+                Properties = new List<DistributedEntityConfigProperty> { leakedItemsType, arrayProp },
+            };
+
+            // destination already bootstrapped: the array and its items type row exist
+            var dst = PrepareImportContext();
+            var dstModule = await dst.GetOrCreateModuleAsync("test-module");
+            var dstEntityConfig = await dst.AddEntityConfigAsync(c =>
+            {
+                c.Name = "test-entity";
+                c.ClassName = Cls;
+                c.Namespace = Ns;
+                c.Module = dstModule;
+                c.SetIsLast(true);
+                return Task.CompletedTask;
+            });
+            var dstArray = await dst.AddPropertyAsync(dstEntityConfig, p =>
+            {
+                p.Name = "ChildCases";
+                p.DataType = "array";
+            });
+            var dstItemsType = await dst.AddPropertyAsync(dstEntityConfig, p =>
+            {
+                p.Name = "ChildCases";
+                p.DataType = "entity";
+                p.ParentProperty = dstArray;
+            });
+            dstArray.ItemsType = dstItemsType;
+
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var uowManager = Resolve<IUnitOfWorkManager>();
+            var modelConfigsCacheHolder = Resolve<IModelConfigsCacheHolder>();
+            var importer = new EntityConfigImport(dst.ModuleRepo, dst.FrontEndAppRepo, dst.EntityConfigRepo, dst.EntityPropertyRepo, permissionedObjectManager, null, uowManager, modelConfigsCacheHolder)
+            {
+                UnitOfWorkManager = uowManager,
+            };
+            var importContext = new PackageImportContext { CreateModules = true };
+
+            using (var uow = uowManager.Begin())
+            {
+                await importer.ImportItemAsync(legacyPackage, importContext);
+                await uow.CompleteAsync();
+            }
+
+            var childCasesRows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == dstEntityConfig && p.Name == "ChildCases").ToList();
+            childCasesRows.Count(p => p.ParentProperty == null).ShouldBe(1, "exactly one top-level ChildCases property");
+            childCasesRows.Count(p => p.ParentProperty == dstArray).ShouldBe(1, "exactly one ChildCases items type row");
+
+            var importedArray = childCasesRows.Single(p => p.ParentProperty == null);
+            importedArray.Id.ShouldBe(dstArray.Id);
+            importedArray.DataType.ShouldBe("array", "the leaked items type entry must not overwrite the array property");
+            importedArray.ItemsType.ShouldNotBeNull();
+            importedArray.ItemsType.Id.ShouldBe(dstItemsType.Id, "the existing items type row should be updated, not replaced by a new one");
+        }
+
+        [Fact]
+        public async Task When_Import_LegacyPackageWithItemsTypeLeakedAsChild_ShouldKeepSingleItemsType_TestAsync()
+        {
+            // some packages exported before the exporter fix also list the items type row inside the array's own
+            // Properties, as a child with the array's name (seen in the wild for Case.ChildCases and
+            // Case.SlaPolicyConditionLogs). The importer maps the items type from ItemsType and then maps that child
+            // under the same parent, so a second items type row is added and uq_Frwk_EntityProperties_Path is violated
+            var arrayProp = new DistributedEntityConfigProperty
+            {
+                Name = "ChildCases",
+                Label = "Child Cases",
+                DataType = "array",
+                DataFormat = "entity",
+                EntityType = "SM.Case",
+                Source = MetadataSourceType.ApplicationCode,
+                SortOrder = 13,
+                ItemsType = new DistributedEntityConfigProperty
+                {
+                    Name = "ChildCases",
+                    Label = "Child Case",
+                    DataType = "entity",
+                    EntityType = "SM.Case",
+                    Source = MetadataSourceType.ApplicationCode,
+                    SortOrder = 0,
+                    Suppress = false,
+                },
+                // the leaked copy is stale, so it differs from ItemsType - it must not be applied to the items type row
+                Properties = new List<DistributedEntityConfigProperty>
+                {
+                    new DistributedEntityConfigProperty
+                    {
+                        Name = "ChildCases",
+                        Label = "leaked",
+                        DataType = "entity",
+                        EntityType = "SM.Case",
+                        Source = MetadataSourceType.ApplicationCode,
+                        SortOrder = 0,
+                        Suppress = true,
+                    },
+                },
+            };
+            var legacyPackage = new DistributedEntityConfig
+            {
+                Name = "test-entity",
+                ClassName = Cls,
+                Namespace = Ns,
+                ModuleName = "test-module",
+                Properties = new List<DistributedEntityConfigProperty> { arrayProp },
+            };
+
+            // fresh destination (blank database). Under NHibernate the items type row created from ItemsType is not
+            // flushed yet when the nested child is looked up, so the child becomes a second row; the in-memory
+            // repository does find it, so there the leaked child overwrites the items type instead
+            var dst = PrepareImportContext();
+
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var uowManager = Resolve<IUnitOfWorkManager>();
+            var modelConfigsCacheHolder = Resolve<IModelConfigsCacheHolder>();
+            var importer = new EntityConfigImport(dst.ModuleRepo, dst.FrontEndAppRepo, dst.EntityConfigRepo, dst.EntityPropertyRepo, permissionedObjectManager, null, uowManager, modelConfigsCacheHolder)
+            {
+                UnitOfWorkManager = uowManager,
+            };
+            var importContext = new PackageImportContext { CreateModules = true };
+
+            EntityConfig imported;
+            using (var uow = uowManager.Begin())
+            {
+                imported = await importer.ImportItemAsync(legacyPackage, importContext) as EntityConfig;
+                await uow.CompleteAsync();
+            }
+            imported.ShouldNotBeNull();
+
+            var childCasesRows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported && p.Name == "ChildCases").ToList();
+            var importedArray = childCasesRows.Where(p => p.ParentProperty == null).ShouldHaveSingleItem("exactly one top-level ChildCases property");
+            importedArray.DataType.ShouldBe("array");
+            importedArray.ItemsType.ShouldNotBeNull("the items type should be imported from ItemsType");
+            importedArray.ItemsType.Label.ShouldBe("Child Case", "the items type must come from ItemsType, not from the leaked child");
+            importedArray.ItemsType.Suppress.ShouldBeFalse("the items type must come from ItemsType, not from the leaked child");
+
+            childCasesRows.Where(p => p.ParentProperty == importedArray && p != importedArray.ItemsType)
+                .ShouldBeEmpty("the items type repeated as a child of the array must not add a second items type row");
+        }
+
+        [Fact]
+        public async Task When_ExportAndImport_PropertyTree_ShouldRecreateEveryRowOnce_TestAsync()
+        {
+            // rows are shaped the way EntityConfigsBootstrapper stores them: every row belongs to the entity config,
+            // and an array's items type is also a child of the array
+            var src = PrepareImportContext();
+            var module = await src.GetOrCreateModuleAsync("test-module");
+            var entityConfig = await src.AddEntityConfigAsync(c =>
+            {
+                c.Name = "test-entity";
+                c.ClassName = Cls;
+                c.Namespace = Ns;
+                c.Module = module;
+                return Task.CompletedTask;
+            });
+
+            await src.AddPropertyAsync(entityConfig, p => { p.Name = "Name"; p.DataType = "string"; });
+
+            var address = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Address"; p.DataType = "object"; });
+            await src.AddPropertyAsync(entityConfig, p => { p.Name = "City"; p.DataType = "string"; p.ParentProperty = address; });
+            var tags = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Tags"; p.DataType = "array"; p.ParentProperty = address; });
+            tags.ItemsType = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Tags"; p.DataType = "string"; p.ParentProperty = tags; });
+
+            var items = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Items"; p.DataType = "array"; });
+            items.ItemsType = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Items"; p.DataType = "entity"; p.ParentProperty = items; });
+
+            // array of objects: the items type has child properties of its own
+            var lines = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Lines"; p.DataType = "array"; });
+            lines.ItemsType = await src.AddPropertyAsync(entityConfig, p => { p.Name = "Lines"; p.DataType = "object"; p.ParentProperty = lines; });
+            await src.AddPropertyAsync(entityConfig, p => { p.Name = "Amount"; p.DataType = "number"; p.ParentProperty = lines.ItemsType; });
+
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var export = new EntityConfigExport(src.EntityConfigRepo, src.EntityPropertyRepo, permissionedObjectManager);
+            var exported = await export.ExportItemAsync(entityConfig.Id) as DistributedEntityConfig;
+
+            var expectedPaths = new[] { "Name", "Address", "Address/City", "Address/Tags", "Address/Tags/Tags", "Items", "Items/Items", "Lines", "Lines/Lines", "Lines/Lines/Amount" };
+
+            // blank destination
+            var dst = PrepareImportContext();
+            var imported = await ImportAsync(dst, exported);
+
+            var rows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported).ToList();
+            rows.Select(GetPath).ShouldBe(expectedPaths, ignoreOrder: true, "every row of the tree should be imported exactly once, under its own parent");
+            GetPath(rows.Single(p => GetPath(p) == "Items").ItemsType).ShouldBe("Items/Items");
+            GetPath(rows.Single(p => GetPath(p) == "Address/Tags").ItemsType).ShouldBe("Address/Tags/Tags");
+            GetPath(rows.Single(p => GetPath(p) == "Lines").ItemsType).ShouldBe("Lines/Lines");
+
+            // importing the same package again updates the same rows. IsLast is maintained by the database, not by
+            // the in-memory repository, so it is set here for the importer to find the existing config
+            imported.SetIsLast(true);
+            var reimported = await ImportAsync(dst, exported);
+            reimported.Id.ShouldBe(imported.Id, "re-import should update the existing entity config");
+
+            var reimportedRows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported).ToList();
+            reimportedRows.Select(GetPath).ShouldBe(expectedPaths, ignoreOrder: true, "re-import should not add or remove rows");
+            reimportedRows.Select(p => p.Id).ShouldBe(rows.Select(p => p.Id), ignoreOrder: true, "re-import should update the existing rows in place");
+        }
+
+        [Fact]
+        public async Task When_Import_LegacyPackageWithFlattenedChild_ShouldKeepChildNested_TestAsync()
+        {
+            // packages exported before the exporter walked the tree list every row at the top level, so a nested
+            // property also appears as an identical root entry. Importing it made the child a root property. The root
+            // names are unique here - the package is recognised by having no PropertiesFormat
+            var flattenedChild = new DistributedEntityConfigProperty { Name = "ChildProp", DataType = "string", Source = MetadataSourceType.UserDefined };
+            var complexProp = new DistributedEntityConfigProperty
+            {
+                Name = "ComplexProp",
+                DataType = "object",
+                Source = MetadataSourceType.UserDefined,
+                Properties = new List<DistributedEntityConfigProperty>
+                {
+                    new DistributedEntityConfigProperty { Name = "ChildProp", DataType = "string", Source = MetadataSourceType.UserDefined },
+                },
+            };
+            var legacyPackage = new DistributedEntityConfig
+            {
+                Name = "test-entity",
+                ClassName = Cls,
+                Namespace = Ns,
+                ModuleName = "test-module",
+                Properties = new List<DistributedEntityConfigProperty> { complexProp, flattenedChild },
+            };
+
+            var dst = PrepareImportContext();
+            var imported = await ImportAsync(dst, legacyPackage);
+
+            var rows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported).ToList();
+            rows.Select(GetPath).ShouldBe(new[] { "ComplexProp", "ComplexProp/ChildProp" }, ignoreOrder: true, "the flattened copy of a nested property must not become a root property");
+        }
+
+        [Fact]
+        public async Task When_Import_LegacyPackageWithDeepTree_ShouldSkipEachCopyOnce_TestAsync()
+        {
+            // the old exporter listed every row once at the top level: Address, its child Contact, Contact's child Name,
+            // and a root Name property that is identical to the nested one. Contact's copy repeats Name inside it,
+            // which must not be counted as a second nested Name - otherwise the root Name property would be skipped too
+            DistributedEntityConfigProperty NewName() => new DistributedEntityConfigProperty { Name = "Name", DataType = "string", Source = MetadataSourceType.UserDefined };
+            DistributedEntityConfigProperty NewContact() => new DistributedEntityConfigProperty
+            {
+                Name = "Contact",
+                DataType = "object",
+                Source = MetadataSourceType.UserDefined,
+                Properties = new List<DistributedEntityConfigProperty> { NewName() },
+            };
+            var address = new DistributedEntityConfigProperty
+            {
+                Name = "Address",
+                DataType = "object",
+                Source = MetadataSourceType.UserDefined,
+                Properties = new List<DistributedEntityConfigProperty> { NewContact() },
+            };
+            var legacyPackage = new DistributedEntityConfig
+            {
+                Name = "test-entity",
+                ClassName = Cls,
+                Namespace = Ns,
+                ModuleName = "test-module",
+                // root Name, Address, then the copies of Address.Contact and Address.Contact.Name
+                Properties = new List<DistributedEntityConfigProperty> { NewName(), address, NewContact(), NewName() },
+            };
+
+            var dst = PrepareImportContext();
+            var imported = await ImportAsync(dst, legacyPackage);
+
+            var rows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported).ToList();
+            rows.Select(GetPath).ShouldBe(new[] { "Name", "Address", "Address/Contact", "Address/Contact/Name" }, ignoreOrder: true);
+        }
+
+        [Fact]
+        public async Task When_Import_RootPropertyMatchingNestedProperty_ShouldImportBoth_TestAsync()
+        {
+            // a root property may legitimately look like a nested one. Here the only nested row has an identical root
+            // entry, but the package is in the tree format, so nothing is skipped
+            var legacyLookingRoot = new DistributedEntityConfigProperty { Name = "Name", DataType = "string", Source = MetadataSourceType.UserDefined };
+            var address = new DistributedEntityConfigProperty
+            {
+                Name = "Address",
+                DataType = "object",
+                Source = MetadataSourceType.UserDefined,
+                Properties = new List<DistributedEntityConfigProperty>
+                {
+                    new DistributedEntityConfigProperty { Name = "Name", DataType = "string", Source = MetadataSourceType.UserDefined },
+                },
+            };
+            var package = new DistributedEntityConfig
+            {
+                Name = "test-entity",
+                ClassName = Cls,
+                Namespace = Ns,
+                ModuleName = "test-module",
+                Properties = new List<DistributedEntityConfigProperty> { legacyLookingRoot, address },
+                PropertiesFormat = DistributedEntityConfig.TreePropertiesFormat,
+            };
+
+            var dst = PrepareImportContext();
+            var imported = await ImportAsync(dst, package);
+
+            var rows = dst.EntityPropertyRepo.GetAll().Where(p => p.EntityConfig == imported).ToList();
+            rows.Select(GetPath).ShouldBe(new[] { "Name", "Address", "Address/Name" }, ignoreOrder: true, "a root property that looks like a nested one must be kept");
+        }
+
         #region private declarations
+
+        private async Task<EntityConfig> ImportAsync(TestImportContext dst, DistributedEntityConfig package)
+        {
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var uowManager = Resolve<IUnitOfWorkManager>();
+            var modelConfigsCacheHolder = Resolve<IModelConfigsCacheHolder>();
+            var importer = new EntityConfigImport(dst.ModuleRepo, dst.FrontEndAppRepo, dst.EntityConfigRepo, dst.EntityPropertyRepo, permissionedObjectManager, null, uowManager, modelConfigsCacheHolder)
+            {
+                UnitOfWorkManager = uowManager,
+            };
+            var importContext = new PackageImportContext { CreateModules = true };
+
+            EntityConfig imported;
+            using (var uow = uowManager.Begin())
+            {
+                imported = await importer.ImportItemAsync(package, importContext) as EntityConfig;
+                await uow.CompleteAsync();
+            }
+            imported.ShouldNotBeNull();
+            return imported;
+        }
+
+        private static string GetPath(EntityProperty property)
+        {
+            return property.ParentProperty == null ? property.Name : $"{GetPath(property.ParentProperty)}/{property.Name}";
+        }
 
         private TestImportContext PrepareImportContext()
         {
