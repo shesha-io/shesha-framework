@@ -22,7 +22,7 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
         <Alert
           showIcon
           message="Kanban not configured properly"
-          description="Please make sure that you've specified 'entityType' property."
+          description="Kanban must be placed inside a Data Table Context."
           type="warning"
         />
       );
