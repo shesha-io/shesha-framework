@@ -7,6 +7,7 @@ using Abp.Localization;
 using Shesha.Domain.Enums;
 using Shesha.Permissions;
 using Shesha.Utilities;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -42,7 +43,8 @@ namespace Shesha.Authorization
             string method,
             string objectType,
             bool isAuthenticated,
-            RefListPermissionedAccess? replaceInherited = null)
+            RefListPermissionedAccess? defaultAccess = null,
+            List<string> defaultPermissions = null)
         {
             if (!_authConfiguration.IsEnabled)
                 return;
@@ -56,9 +58,11 @@ namespace Shesha.Authorization
             if (permission == null)
                 return;
 
-            var actualAccess = replaceInherited != null && permission.ActualAccess == RefListPermissionedAccess.Inherited
-                ? replaceInherited
-                : permission.ActualAccess;
+            var useDefaults = defaultAccess != null && permission.ActualAccess == RefListPermissionedAccess.Inherited;
+            var actualAccess = useDefaults ? defaultAccess : permission.ActualAccess;
+            var actualPermissions = useDefaults && defaultAccess == RefListPermissionedAccess.RequiresPermissions
+                ? defaultPermissions
+                : permission.ActualPermissions;
 
             switch (actualAccess) 
             {
@@ -75,11 +79,11 @@ namespace Shesha.Authorization
                 case RefListPermissionedAccess.RequiresPermissions: 
                 {
                     EnsureAuthenticated(isAuthenticated);
-                    if (permission.ActualPermissions == null || !permission.ActualPermissions.Any())
+                    if (actualPermissions == null || !actualPermissions.Any())
                         ThrowAccessDenied();
 
                     // Note: requireAll is intentionally false — multiple permissions are OR'd (any single permission grants access)
-                    await _permissionChecker.AuthorizeAsync(false, permission.ActualPermissions.ToArray());
+                    await _permissionChecker.AuthorizeAsync(false, actualPermissions.ToArray());
                     return;
                 }
                 default:

@@ -51,7 +51,33 @@ namespace Shesha.DynamicEntities
 
         protected async Task CheckPermissionAsync(EntityConfiguration entityConfig, string method)
         {
-            await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.FullName, method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);
+            var (access, permissions) = GetInheritedAccess(entityConfig, method);
+
+            await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.FullName, method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null,
+                access, permissions);
+        }
+
+        private (RefListPermissionedAccess? access, List<string> permissions) GetInheritedAccess(EntityConfiguration entityConfig, string method)
+        {
+            var crudAction = PermissionedObjectManager.Method2CrudAction(method);
+            var codeConfig = crudAction != null
+                ? EntityCrudHelper.GetCodebasedCrudActionConfig(entityConfig.EntityType, crudAction.Value)
+                : null;
+            if (codeConfig == null || crudAction == null)
+                return (access: null, permissions: null);
+
+            switch (codeConfig.CrudActionsAccess) {
+                case CrudActionsAccess.Inherited:
+                    return (access: RefListPermissionedAccess.Inherited, permissions: null);
+                case CrudActionsAccess.AllowAnonymous:
+                    return (access: RefListPermissionedAccess.AllowAnonymous, permissions: null);
+                case CrudActionsAccess.AnyAuthenticated:
+                    return (access: RefListPermissionedAccess.AnyAuthenticated, permissions: null);
+                case CrudActionsAccess.RequiresPermissions:
+                    return (access: RefListPermissionedAccess.RequiresPermissions, permissions: codeConfig.CrudActionsPermissions?.ToList());
+                default:
+                    return (access: null, permissions: null);
+            }
         }
 
         [HttpGet]
