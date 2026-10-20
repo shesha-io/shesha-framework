@@ -13,6 +13,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Configuration.Security;
 using Shesha.Domain.Enums;
+using Shesha.Domain.Models;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Excel;
 using Shesha.Extensions;
@@ -60,6 +61,10 @@ namespace Shesha.DynamicEntities
             var crudMethod = PermissionedObjectManager.GetCrudMethod(method, method);
             var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
 
+            var entityAccess = EntityCrudHelper.GetEntityAccessParams(entityConfig, method);
+            var defaultAccess = new AccessParams(securitySettings?.DefaultEndpointAccess ?? RefListPermissionedAccess.AnyAuthenticated, securitySettings?.DefaultEndpointPermissions);
+            var currentAccess = EntityCrudHelper.GetInherited(entityAccess, defaultAccess);
+
             // the `DefaultEndpointAccess` setting is passed as fallback for the `Inherited` access
             await _objectPermissionChecker.AuthorizeAsync(
                 false,
@@ -67,8 +72,8 @@ namespace Shesha.DynamicEntities
                 crudMethod.NotNull(),
                 ShaPermissionedObjectsTypes.EntityAction,
                 AbpSession.UserId != null,
-                securitySettings?.DefaultEndpointAccess ?? RefListPermissionedAccess.AnyAuthenticated,
-                securitySettings?.DefaultEndpointPermissions
+                currentAccess.Access,
+                currentAccess.Permissions
             );
         }
 
