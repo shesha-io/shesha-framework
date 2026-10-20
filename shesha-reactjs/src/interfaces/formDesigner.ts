@@ -127,37 +127,6 @@ export type StyleGroups = 'common' | 'inputs' | 'common-containers' | 'buttons';
  */
 export type ThemeComponentGroup = 'input' | 'inline' | 'standard' | 'layout';
 
-/**
- * Fallback for components without a `themeGroup`: the theme tab implied by their existing `styleGroup`.
- * `styleGroup` selects the script style API, so it is not set just for theming - use `themeGroup`.
- * 'standard' is the catch-all for components with neither.
- */
-const THEME_GROUP_STYLE_GROUPS: Record<ThemeComponentGroup, ReadonlyArray<StyleGroups>> = {
-  input: ['inputs'],
-  inline: ['common'],
-  layout: ['common-containers'],
-  standard: ['buttons'],
-};
-
-/** The `ThemeComponentGroup` tab a component's `styleGroup` inherits its group-tier styles from. */
-export const getThemeGroupForStyleGroup = (styleGroup: StyleGroups | undefined): ThemeComponentGroup => {
-  if (styleGroup === undefined) return 'standard';
-  const match = (Object.keys(THEME_GROUP_STYLE_GROUPS) as ThemeComponentGroup[])
-    .find((group) => THEME_GROUP_STYLE_GROUPS[group].includes(styleGroup));
-  return match ?? 'standard';
-};
-
-/**
- * The `ThemeComponentGroup` tab a component inherits its group-tier styles from: its `themeGroup`
- * when set, otherwise the tab implied by its `styleGroup` (see THEME_GROUP_STYLE_GROUPS).
- *
- * @deprecated This function is deprecated and should not be used for applying theme group styles.
- * Components should only inherit theme group styles if they have an explicit `themeGroup` property set.
- * Use `component?.themeGroup` directly to check if a component should inherit theme group styles.
- */
-export const getThemeGroupForComponent = (component: Pick<IToolboxComponentBase, 'styleGroup' | 'themeGroup'> | undefined): ThemeComponentGroup =>
-  component?.themeGroup ?? getThemeGroupForStyleGroup(component?.styleGroup);
-
 export type IToolboxComponentBase = {
   /** Show the component in the theme editor (true by default) */
   showInThemeEditor?: boolean | undefined;
