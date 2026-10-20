@@ -23,6 +23,7 @@ import { AddNewItem } from "./configurableActions";
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
   isInput: true,
+  themeGroup: 'standard',
   name: 'DataList',
   icon: <UnorderedListOutlined />,
   initModel: (model) => ({ ...model, visible: model.visible ?? true }),

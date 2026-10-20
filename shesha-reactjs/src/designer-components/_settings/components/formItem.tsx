@@ -74,6 +74,15 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
 
   const permissionPropertyName = name + 'Permissions';
 
+  // Reserve room at the end of a vertical label for the JS toggle / permissions lock this item shows
+  // (both hidden when read-only), so the label uses the rest of the row and ellipsises before them.
+  const labelActionCount = readOnly || layout === 'horizontal'
+    ? 0
+    : (Boolean(jsSetting) ? 1 : 0) + (permissionSettings === true ? 1 : 0);
+  const labelActionsClass = labelActionCount === 2
+    ? styles.labelWithTwoActions
+    : labelActionCount === 1 ? styles.labelWithOneAction : '';
+
   return (
     <ConfigurableFormItem
       model={{
@@ -89,16 +98,16 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
         layout,
         size: 'small',
       }}
-      className={`sha-js-label ${className}`}
+      className={`sha-js-label ${className} ${labelActionsClass}`}
     >
       {(value, onChange) => {
         const localValue = valueInfo?.state === 'usedDefault' ? defaultValue : value;
         return !Boolean(jsSetting) ? (
-          <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly}>
+          <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly} jsSetting={false}>
             {childFunc(localValue, onChange, name)}
           </PermissionsControl>
         ) : (
-          <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly}>
+          <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly} jsSetting>
             <SettingsControl
               propertyName={name}
               mode="value"

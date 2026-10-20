@@ -30,6 +30,7 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const RefListStatusComponent: RefListStatusComponentDefinition = {
   styleGroup: 'inputs',
+  themeGroup: 'input',
   allowInherit: true,
   type: 'refListStatus',
   isInput: true,

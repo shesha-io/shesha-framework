@@ -251,6 +251,7 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & {
 
 const PhoneNumberComponent: PhoneNumberComponentDefinition = {
   styleGroup: 'inputs',
+  themeGroup: 'input',
   allowInherit: true,
   type: 'phoneNumberInput',
   isInput: true,

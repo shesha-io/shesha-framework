@@ -12,6 +12,7 @@ export interface IPermissionsControlProps {
   propertyName: string;
   readOnly?: boolean;
   readonly children: ReactElement;
+  jsSetting?: boolean;
 }
 
 interface IPermissionModalProps {
@@ -78,7 +79,7 @@ const PermissionsControlInner = (props: IPermissionsControlProps): ReactElement 
             <Button
               hidden={props.readOnly}
               className={`${styles.jsSwitch} inlineJS`}
-              style={{ marginRight: '22px' }}
+              style={props.jsSetting ? { marginRight: '22px' } : undefined}
               type="text"
               danger={valueExists}
               size="small"

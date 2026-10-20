@@ -31,6 +31,7 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const DropdownComponent: DropdownComponentDefinition = {
   styleGroup: 'inputs',
+  themeGroup: 'input',
   allowInherit: true,
   type: 'dropdown',
   isInput: true,

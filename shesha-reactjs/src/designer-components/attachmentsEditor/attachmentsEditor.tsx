@@ -182,6 +182,7 @@ const removeLegacyProperties = (result: Record<string, unknown>): void => {
 
 const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
   styleGroup: 'inputs',
+  themeGroup: 'input',
   allowInherit: true,
   type: 'attachmentsEditor',
   isInput: true,

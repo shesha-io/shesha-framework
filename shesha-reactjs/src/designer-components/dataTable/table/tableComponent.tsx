@@ -85,6 +85,7 @@ export const ROW_EVENT_ACTION_PROPERTIES = [
 
 const TableComponent: TableComponentDefinition = {
   type: 'datatable',
+  themeGroup: 'standard',
   isInput: true,
   isOutput: true,
   name: 'Data Table',

@@ -11,6 +11,7 @@ import { CustomLayoutComponentDefinition } from './interfaces';
 const CustomLayoutComponent: CustomLayoutComponentDefinition = {
   showInThemeEditor: false,
   styleGroup: 'common-containers',
+  themeGroup: 'layout',
   allowInherit: true,
   type: 'customLayout',
   isInput: false,

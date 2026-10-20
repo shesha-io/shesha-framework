@@ -19,7 +19,7 @@ import { SearchBox } from '@/components/formDesigner/toolboxSearchBox';
 import { ComponentDefaultsPreview } from './preview';
 import { ComponentDefaultsSettings } from './settings';
 import DefaultModelProvider from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
-import { getThemeGroupForComponent, IToolboxComponent } from '../../../../interfaces/formDesigner';
+import { IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useFormBuilderFactory } from '../../../..';
 /** Markup node that wraps designer settings tabs (e.g. Appearance). */
@@ -112,7 +112,10 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
   const defaultStyles = useMemo(() => {
     const hardcodedDefaults = typeof componentDef?.getDefaultStyles === 'function' ? componentDef.getDefaultStyles() : {};
-    const groupStyle = theme?.componentGroups?.[getThemeGroupForComponent(componentDef)] ?? {};
+    // Only apply theme group styles if the component has an explicit themeGroup property
+    const groupStyle = componentDef?.themeGroup !== undefined
+      ? theme?.componentGroups?.[componentDef.themeGroup] ?? {}
+      : {};
     return deepMergeValues(deepCopyViaJson(hardcodedDefaults) as object, groupStyle, deepMergeSkipUndefinedFunc);
   }, [componentDef, theme?.componentGroups]);
 

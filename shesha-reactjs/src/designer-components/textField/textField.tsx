@@ -32,6 +32,7 @@ const DATA_FORMAT_TO_TEXT_TYPE: Partial<Record<string, TextType>> = {
 
 const TextFieldComponent: TextFieldComponentDefinition = {
   styleGroup: 'inputs',
+  themeGroup: 'input',
   allowInherit: true,
   type: 'textField',
   isInput: true,

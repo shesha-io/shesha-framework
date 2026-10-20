@@ -29,6 +29,7 @@ import { useComponentApi } from '@/providers/componentApi/hooks';
 
 const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   styleGroup: 'common-containers',
+  themeGroup: 'layout',
   allowInherit: true,
   type: 'collapsiblePanel',
   isInput: false,

@@ -4,7 +4,6 @@ import { executeScriptSync } from '@/providers/form/utils';
 import { IPropertySetting } from '..';
 import { getStyleBoxValue } from "@/designer-components/styleBox/utils";
 import { IConfigurableFormComponent, IStyleValue, IToolboxComponent } from "@/interfaces";
-import { getThemeGroupForComponent } from "@/interfaces/formDesigner";
 import { IConfigurableTheme } from "@/providers";
 import { DeviceTypes } from "@/providers/canvas/contexts";
 import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from "@/utils/object";
@@ -18,7 +17,10 @@ export const getEffectiveStyle = (model: IConfigurableFormComponent, effectiveDe
   // deepMergeValues only shallow-copies its target, so merge into a deep copy: some components
   // (e.g. tabs) return nested objects shared with module-level constants from getDefaultStyles.
   const defStyle = deepCopyViaJson(toolboxComponent?.getDefaultStyles?.() ?? { styleCss: {} }) as IStyleValue;
-  const groupStyle = theme?.componentGroups?.[getThemeGroupForComponent(toolboxComponent)];
+  // Only apply theme group styles if the component has an explicit themeGroup property
+  const groupStyle = toolboxComponent?.themeGroup !== undefined
+    ? theme?.componentGroups?.[toolboxComponent.themeGroup]
+    : undefined;
   const groupDefStyle: IStyleValue = isDefined(groupStyle)
     ? deepMergeValues(defStyle, groupStyle, deepMergeSkipUndefinedFunc)
     : defStyle;

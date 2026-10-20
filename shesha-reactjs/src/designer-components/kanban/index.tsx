@@ -22,6 +22,7 @@ import { useEnsureFetchColumns } from '../dataTable/table/useEnsureFetchColumns'
 const EMPTY_ITEMS: IKanbanButton[] = [];
 const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   type: 'kanban',
+  themeGroup: 'standard',
   isInput: false,
   name: 'Kanban',
   icon: <FormOutlined />,

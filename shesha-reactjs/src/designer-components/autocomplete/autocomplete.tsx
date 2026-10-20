@@ -38,6 +38,7 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const AutocompleteComponent: AutocompleteComponentDefinition = {
   styleGroup: 'inputs',
+  themeGroup: 'input',
   allowInherit: true,
   type: 'autocomplete',
   isInput: true,

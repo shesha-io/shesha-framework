@@ -55,6 +55,7 @@ type TextAreaValueType = string | object | undefined;
 
 const TextAreaComponent: TextAreaComponentDefinition = {
   styleGroup: 'inputs',
+  themeGroup: 'input',
   allowInherit: true,
   type: 'textArea',
   name: 'Text Area',

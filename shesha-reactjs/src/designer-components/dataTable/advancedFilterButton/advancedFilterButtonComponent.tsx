@@ -18,6 +18,7 @@ const outsideContextValidationError = validationError('Table Filter');
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComponentProps> = {
   styleGroup: 'common',
+  themeGroup: 'inline',
   allowInherit: true,
   type: 'datatable.filter',
   isInput: false,

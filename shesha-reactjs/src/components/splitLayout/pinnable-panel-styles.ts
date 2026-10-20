@@ -2,7 +2,7 @@ import { sheshaStyles } from '@/styles';
 import { createStyles } from 'antd-style';
 
 export const usePinnablePanelStyles = createStyles(
-  ({ token, css }, { $expanded }: { $expanded: boolean }) => ({
+  ({ token, css, prefixCls }, { $expanded }: { $expanded: boolean }) => ({
     panelContainer: css`
       display: flex;
       flex-direction: column;
@@ -20,6 +20,29 @@ export const usePinnablePanelStyles = createStyles(
       border-bottom: 1px solid ${token.colorBorderSecondary};
       flex-shrink: 0;
       min-height: 36px;
+      gap: 8px;
+    `,
+
+    /* Toggle + title. Shrinks before the actions so a long title ellipsises (see Text ellipsis)
+       instead of wrapping onto a second line. */
+    headerTitle: css`
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1 1 auto;
+      min-width: 0;
+
+      > .${prefixCls}-typography {
+        min-width: 0;
+      }
+    `,
+
+    /* Component buttons and the pin: always one row, never squeezed. */
+    headerActions: css`
+      display: flex;
+      align-items: center;
+      flex: none;
+      white-space: nowrap;
     `,
 
     content: css`

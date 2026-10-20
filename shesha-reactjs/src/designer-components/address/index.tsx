@@ -27,6 +27,7 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const AddressCompoment: AddressComponentDefinition = {
   styleGroup: 'inputs',
+  themeGroup: 'input',
   allowInherit: true,
   type: 'address',
   name: 'Address',

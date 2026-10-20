@@ -135,6 +135,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         height: 100%;
         .${designerClassNames.mainArea}{
             height: 100%;
+            border-top: none;
         }
         .${shaHelpIcon} {
             cursor: help;

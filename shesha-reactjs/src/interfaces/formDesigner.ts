@@ -127,33 +127,6 @@ export type StyleGroups = 'common' | 'inputs' | 'common-containers' | 'buttons';
  */
 export type ThemeComponentGroup = 'input' | 'inline' | 'standard' | 'layout';
 
-/**
- * Fallback for components without a `themeGroup`: the theme tab implied by their existing `styleGroup`.
- * `styleGroup` selects the script style API, so it is not set just for theming - use `themeGroup`.
- * 'standard' is the catch-all for components with neither.
- */
-const THEME_GROUP_STYLE_GROUPS: Record<ThemeComponentGroup, ReadonlyArray<StyleGroups>> = {
-  input: ['inputs'],
-  inline: ['common'],
-  layout: ['common-containers'],
-  standard: ['buttons'],
-};
-
-/** The `ThemeComponentGroup` tab a component's `styleGroup` inherits its group-tier styles from. */
-export const getThemeGroupForStyleGroup = (styleGroup: StyleGroups | undefined): ThemeComponentGroup => {
-  if (styleGroup === undefined) return 'standard';
-  const match = (Object.keys(THEME_GROUP_STYLE_GROUPS) as ThemeComponentGroup[])
-    .find((group) => THEME_GROUP_STYLE_GROUPS[group].includes(styleGroup));
-  return match ?? 'standard';
-};
-
-/**
- * The `ThemeComponentGroup` tab a component inherits its group-tier styles from: its `themeGroup`
- * when set, otherwise the tab implied by its `styleGroup` (see THEME_GROUP_STYLE_GROUPS).
- */
-export const getThemeGroupForComponent = (component: Pick<IToolboxComponentBase, 'styleGroup' | 'themeGroup'> | undefined): ThemeComponentGroup =>
-  component?.themeGroup ?? getThemeGroupForStyleGroup(component?.styleGroup);
-
 export type IToolboxComponentBase = {
   /** Show the component in the theme editor (true by default) */
   showInThemeEditor?: boolean | undefined;
@@ -164,7 +137,10 @@ export type IToolboxComponentBase = {
   /**
    * Theme tab (Input/Inline/Standard/Layout Components) whose group styles this component inherits.
    * Use this - not `styleGroup`, which also selects the script style API - to place a component in a
-   * theme tab. Falls back to the tab implied by an existing `styleGroup`, else 'standard'.
+   * theme tab and enable theme group styling for the component.
+   *
+   * IMPORTANT: Only components with an explicit `themeGroup` property will inherit theme group styles.
+   * Components with only `styleGroup` (without `themeGroup`) will NOT be affected by theme group styles.
    */
   themeGroup?: ThemeComponentGroup | undefined;
 

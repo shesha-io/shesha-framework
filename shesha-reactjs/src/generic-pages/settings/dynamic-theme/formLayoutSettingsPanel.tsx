@@ -44,10 +44,11 @@ export const FormLayoutSettingsPanel: FC<IFormLayoutSettingsPanelProps> = ({ val
       .addSettingsInput({
         propertyName: 'labelSpan',
         label: 'Label Span',
-        inputType: 'numberField',
+        inputType: 'slider',
         jsSetting: false,
         min: 0,
         max: GRID_COLUMNS,
+        step: 1,
         tooltip: `Grid columns (out of ${GRID_COLUMNS}) taken by the label; the control takes the rest.`,
         hidden: hiddenUnlessHorizontal,
       })
