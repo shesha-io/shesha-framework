@@ -53,6 +53,26 @@ namespace Shesha.Permissions
             };
         }
 
+        public static CrudAction? Method2CrudAction(string method)
+        {
+            var methodName = CrudMethods.ContainsKey(method)
+                ? CrudMethods[method]
+                : method;
+            switch (methodName)
+            {
+                case "Create":
+                    return CrudAction.Create;
+                case "Update":
+                    return CrudAction.Update;
+                case "Delete":
+                    return CrudAction.Delete;
+                case "Get":
+                    return CrudAction.Read;
+                default:
+                    return null;
+            }
+        }
+
         public static string? GetCrudMethod(string method, string? defaultValue = null) =>
             CrudMethods.ContainsKey(method.RemovePostfix("Async")) ? CrudMethods[method.RemovePostfix("Async")] : defaultValue;
 
