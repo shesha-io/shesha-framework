@@ -27,6 +27,18 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
         />
       );
     }
+
+    const kanbanEntityType = model.entityType?.id;
+    if (kanbanEntityType && store.modelType && kanbanEntityType !== store.modelType) {
+      return (
+        <Alert
+          showIcon
+          message="Kanban not configured properly"
+          description={`Kanban entity type '${kanbanEntityType}' does not match the Data Table Context entity type '${store.modelType}'.`}
+          type="warning"
+        />
+      );
+    }
     return (
       <div>
         <ConfigurableFormItem model={model}>
