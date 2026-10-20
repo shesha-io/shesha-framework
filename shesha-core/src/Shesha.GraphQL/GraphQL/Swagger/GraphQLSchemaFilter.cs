@@ -1,6 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Threading;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
@@ -25,7 +25,7 @@ namespace Shesha.GraphQL.Swagger
             _dynamicDtoTypeBuilder = dynamicDtoTypeBuilder;
         }
 
-        public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+        public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
         {
             // Type is already registered under some schema id
             if (context.SchemaRepository.TryLookupByType(context.Type, out var existing))
@@ -80,7 +80,7 @@ namespace Shesha.GraphQL.Swagger
             return dtoType;
         }
 
-        private void FillEntitySchema(OpenApiSchema schema, SchemaFilterContext context, Type entityType) 
+        private void FillEntitySchema(IOpenApiSchema schema, SchemaFilterContext context, Type entityType) 
         {
             var dtoType = GetDtoType(entityType);
 
@@ -98,7 +98,7 @@ namespace Shesha.GraphQL.Swagger
                 var propertySchema = context.SchemaGenerator.GenerateSchema(property.PropertyType, context.SchemaRepository, memberInfo: property);
 
                 // note: Nullable is not processed by GenerateSchema
-                propertySchema.Nullable = property.PropertyType.IsNullableType();
+                propertySchema.SetNullable(property.PropertyType.IsNullableType());
 
                 schema.Properties.Add(property.Name.ToCamelCase(), propertySchema);
             }

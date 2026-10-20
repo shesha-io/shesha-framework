@@ -9,7 +9,7 @@ set "OUTPUT_DIR=%~dp0..\artifacts\packages"
 set "LOCAL_FEED=%~dp0..\artifacts\local-feed"
 
 REM Optional: bump version here, or read from a file, or pass as %1
-set "VERSION=0.46.5"
+set "VERSION=0.47.0"
 
 REM Paths to the projects to pack (space-separated)
 rem add Shesha.Redis after merge

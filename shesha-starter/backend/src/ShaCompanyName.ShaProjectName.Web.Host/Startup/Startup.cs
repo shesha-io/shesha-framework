@@ -13,18 +13,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Shesha;
 using Shesha.Authentication;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
-using Shesha.DynamicEntities.Swagger;
 using Shesha.Elmah;
 using Shesha.Exceptions;
 using Shesha.Extensions;
@@ -231,23 +229,9 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			//Swagger - Enable this line and the related lines in Configure method to enable swagger UI
 			services.AddSwaggerGen(options =>
 			{
-				options.DescribeAllParametersInCamelCase();
-				options.IgnoreObsoleteActions();
-				options.AddXmlDocuments();
+                options.UseSheshaDefaults();
 
-                options.SchemaFilter<DynamicDtoSchemaFilter>();
-                options.OperationFilter<SwaggerOperationFilter>();
-                // The line below will need to be uncommented when SwaggerUiDocumentFilter
-                // becomes available in Shesha
-                //options.DocumentFilter<SwaggerUiDocumentFilter>();
-
-				options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
-
-				options.CustomOperationIds(desc => desc.ActionDescriptor is ControllerActionDescriptor d
-					? d.ControllerName.ToCamelCase() + d.ActionName.ToPascalCase()
-					: null);
-
-				options.AddDocumentsPerService();
+                options.AddDocumentsPerService();
 
 				// Define the BearerAuth scheme that's in use
 				options.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme()
@@ -257,7 +241,6 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 					In = ParameterLocation.Header,
 					Type = SecuritySchemeType.ApiKey
 				});
-				//options.SchemaFilter<DynamicDtoSchemaFilter>();
 			});
 			services.Replace(ServiceDescriptor.Transient<ISwaggerProvider, CachingSwaggerProvider>());
 

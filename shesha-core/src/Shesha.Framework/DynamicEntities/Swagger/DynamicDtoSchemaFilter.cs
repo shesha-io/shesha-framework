@@ -1,6 +1,6 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using Abp.Threading;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
@@ -28,13 +28,16 @@ namespace Shesha.DynamicEntities.Swagger
             _entityConfigCache = entityConfigCache;
         }
 
-        public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+        public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
         {
             // Type is already registered under some schema id
             if (context.SchemaRepository.TryLookupByType(context.Type, out var existing))
                 return;
 
-            var isProxy = typeof(IDynamicDtoProxy).IsAssignableFrom(context.Type);
+            if (schema is not OpenApiSchema openApiSchema)
+                return;
+
+                var isProxy = typeof(IDynamicDtoProxy).IsAssignableFrom(context.Type);
             var isGeneric = context.Type.IsGenericType;
 
             if (!context.Type.IsDynamicDto() || isProxy)
@@ -62,8 +65,10 @@ namespace Shesha.DynamicEntities.Swagger
             };
             var dtoType = AsyncHelper.RunSync(async () => await dtoBuilder.BuildDtoFullProxyTypeAsync(builderContext.ModelType, builderContext));
 
+            var schemaProperties = openApiSchema.Properties ?? (openApiSchema.Properties = new Dictionary<string, IOpenApiSchema>());
+
             // build list of properties for case-insensitive search
-            var propNames = schema.Properties.Select(p => p.Key.ToLower()).ToList();
+            var propNames = schemaProperties.Select(p => p.Key.ToLower()).ToList();
 
             context.SchemaGenerator.GenerateSchema(dtoType, context.SchemaRepository);
 
@@ -96,27 +101,27 @@ namespace Shesha.DynamicEntities.Swagger
 
                 if (entityReferenceProperties?.Contains(property.Name) ?? false)
                 {
-                    var anyOf = new List<OpenApiSchema>()
-                    {
-                        propertySchema,
-                        context.SchemaGenerator.GenerateSchema(typeof(GenericEntityReference), context.SchemaRepository, memberInfo: property)
-                    };
-                    propertySchema = new OpenApiSchema();
-                    propertySchema.AnyOf = anyOf;
+                    propertySchema = new OpenApiSchema() { 
+                        AnyOf = new List<IOpenApiSchema>()
+                        {
+                            propertySchema,
+                            context.SchemaGenerator.GenerateSchema(typeof(GenericEntityReference), context.SchemaRepository, memberInfo: property)
+                        }
+                    };                    
                 }
 
                 // note: Nullable is not processed by GenerateSchema
-                propertySchema.Nullable = property.PropertyType.IsNullableType();
+                propertySchema.SetNullable(property.PropertyType.IsNullableType());
               
-                if(!schema.Properties.Keys.Contains(property.Name.ToCamelCase()))
-                    schema.Properties.Add(property.Name.ToCamelCase(), propertySchema);
+                if(!schemaProperties.Keys.Contains(property.Name.ToCamelCase()))
+                    schemaProperties.Add(property.Name.ToCamelCase(), propertySchema);
     
             }
 
-            if (schema.Properties.ContainsKey(nameof(IHasJObjectField._jObject).ToCamelCase()))
+            if (schemaProperties.ContainsKey(nameof(IHasJObjectField._jObject).ToCamelCase()))
             {
                 // Hide JObject field for DynamicDto
-                schema.Properties.Remove(nameof(IHasJObjectField._jObject).ToCamelCase());
+                schemaProperties.Remove(nameof(IHasJObjectField._jObject).ToCamelCase());
             }
 
             // add `_formFields` with comment
@@ -124,7 +129,7 @@ namespace Shesha.DynamicEntities.Swagger
             if (!propNames.Contains(formFieldsProp.Name.ToLower()))
             {
                 var formFieldsSchema = context.SchemaGenerator.GenerateSchema(formFieldsProp.PropertyType, context.SchemaRepository, memberInfo: formFieldsProp);
-                schema.Properties.Add(formFieldsProp.Name, formFieldsSchema);
+                schemaProperties.Add(formFieldsProp.Name, formFieldsSchema);
             }
         }
     }

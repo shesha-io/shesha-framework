@@ -3,7 +3,7 @@ using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Shesha.Domain;
 using Shesha.Permissions;
 using Swashbuckle.AspNetCore.Swagger;
@@ -35,12 +35,12 @@ namespace Shesha.Swagger
             _cacheHolder = cacheHolder;
         }
 
-        public OpenApiDocument GetSwagger(string documentName, string? host = null, string? basePath = null)
+        public OpenApiDocument GetSwagger(string documentName, string host, string basePath)
         {
             var cacheKey = GetCacheKey(documentName, host, basePath);
             return _cacheHolder.Cache.Get(cacheKey, (_) => _swaggerGenerator.GetSwagger(documentName, host, basePath));
         }
-        public Task<OpenApiDocument> GetSwaggerAsync(string documentName, string? host = null, string? basePath = null)
+        public Task<OpenApiDocument> GetSwaggerAsync(string documentName, string host, string basePath)
         {
             var cacheKey = GetCacheKey(documentName, host, basePath);
             return _cacheHolder.Cache.GetAsync(cacheKey, (_) => _swaggerGenerator.GetSwaggerAsync(documentName, host, basePath));
