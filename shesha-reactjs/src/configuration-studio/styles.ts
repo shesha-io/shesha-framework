@@ -216,7 +216,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             flex-grow: 1 !important;
             .${csDocTabs}{
                 height: 100%;
-                > div> .${prefixCls}-tabs-nav {
+                > .${prefixCls}-tabs-nav {
                     &::before {
                         border-bottom-color: ${token.colorBorder};
                     }

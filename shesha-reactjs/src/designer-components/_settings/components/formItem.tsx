@@ -103,11 +103,11 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
       {(value, onChange) => {
         const localValue = valueInfo?.state === 'usedDefault' ? defaultValue : value;
         return !Boolean(jsSetting) ? (
-          <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly}>
+          <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly} jsSetting={false}>
             {childFunc(localValue, onChange, name)}
           </PermissionsControl>
         ) : (
-          <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly}>
+          <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly} jsSetting>
             <SettingsControl
               propertyName={name}
               mode="value"
