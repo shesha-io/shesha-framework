@@ -6,8 +6,8 @@ import KanbanPlaceholder from './components/kanbanPlaceholder';
 import {
   ConfigurableForm,
   DataTypes,
+  useDataTableStore,
   useFormState,
-  useGet,
   useMetadataDispatcher,
 } from '@/index';
 import KanbanColumn from './components/renderColumn';
@@ -15,13 +15,13 @@ import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 import { addPx } from '../keyInformationBar/utils';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const { gap, groupingProperty, entityType, createFormId, items, componentName, editFormId, maxResultCount } = props;
+  const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
 
+  const { tableData, modelType } = useDataTableStore();
   const { message } = App.useApp();
   const [columns, setColumns] = useState([]);
   const [urls, setUrls] = useState({ updateUrl: '', deleteUrl: '', postUrl: '' });
   const [tasks, setTasks] = useState([]);
-  const { refetch } = useGet({ path: '', lazy: true });
   const { formMode } = useFormState();
   const isInDesigner = formMode === 'designer';
   const { updateKanban, deleteKanban, createKanbanItem, fetchColumnState } = useKanbanActions();
@@ -35,18 +35,20 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { getMetadata } = useMetadataDispatcher();
 
   useEffect(() => {
-    if (!isInDesigner && entityType.id && groupingProperty) {
-      getMetadata({ modelType: entityType.id, dataType: DataTypes.entityReference }).then((resp: any) => {
+    if (!isInDesigner && modelType) {
+      getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp: any) => {
         const endpoints = resp?.apiEndpoints;
-        setUrls({ updateUrl: endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url });
-        refetch({ path: `${resp?.apiEndpoints.list.url}?maxResultCount=${maxResultCount || 100}` })
-          .then((resp) => {
-            setTasks(resp.result.items.filter((x: any) => x[`${groupingProperty}`] !== null));
-          })
-          .catch((err) => console.error('Error fetching tasks:', err));
+        setUrls({ updateUrl: endpoints?.update?.url, deleteUrl: endpoints?.delete?.url, postUrl: endpoints?.create?.url });
       });
     }
-  }, [groupingProperty, entityType.id]);
+  }, [isInDesigner, modelType]);
+
+  // records come from the data table context so its filters, quick search and refresh apply
+  useEffect(() => {
+    if (!isInDesigner && groupingProperty) {
+      setTasks((tableData ?? []).filter((x: any) => x?.[groupingProperty] !== null && x?.[groupingProperty] !== undefined));
+    }
+  }, [isInDesigner, groupingProperty, tableData]);
 
   useEffect(() => {
     setColumns(items);

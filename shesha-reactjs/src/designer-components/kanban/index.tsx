@@ -1,7 +1,7 @@
 import { FormOutlined } from '@ant-design/icons';
 import React from 'react';
 import { ConfigurableFormItem } from '@/components';
-import { IToolboxComponent, useForm } from '@/index';
+import { IToolboxComponent, useDataTableStore } from '@/index';
 import { Alert } from 'antd';
 import KanbanReactComponent from '@/components/kanban';
 import { IKanbanProps } from '@/components/kanban/model';
@@ -15,9 +15,9 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   icon: <FormOutlined />,
 
   Factory: ({ model }) => {
-    const form = useForm();
+    const store = useDataTableStore(false);
 
-    if (form.formMode === 'designer' && !model.entityType) {
+    if (!store) {
       return (
         <Alert
           showIcon
