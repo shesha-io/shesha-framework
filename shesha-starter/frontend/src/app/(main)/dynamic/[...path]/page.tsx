@@ -1,21 +1,22 @@
 "use client";
 
-import React, { FC } from 'react';
+import React, { FC, use } from 'react';
 import { FormIdentifier, DynamicPage } from '@shesha-io/reactjs';
 import { notFound } from 'next/navigation';
 
-interface PageProps {
-  params: { path: string[] };
-  searchParams: NodeJS.Dict<string | string[]>;
+interface AsyncPageProps {
+  params: Promise<{ path: string[] }>;
+  searchParams: Promise<NodeJS.Dict<string | string[]>>;
 }
 
-const DynamicPageInternal: FC<PageProps> = (props) => {
-  const { params, searchParams } = props;
+const DynamicPageInternal: FC<AsyncPageProps> = (props) => {
+  const params = use(props.params);
+  const searchParams = use(props.searchParams);
 
   // possible values of path:
   // 1. array with one element: [formName]
   // 2. array with two elements: [moduleName, formName]
-  const fullPath = params.path && Array.isArray(params.path)
+  const fullPath = Array.isArray(params.path)
     ? params.path.length === 1
       ? [null, params.path[0]]
       : params.path.length === 2
@@ -29,11 +30,11 @@ const DynamicPageInternal: FC<PageProps> = (props) => {
     return notFound();
 
   const formId: FormIdentifier = {
-    module: moduleName, 
-    name: formName
+    module: moduleName,
+    name: formName,
   };
 
-  return <DynamicPage {...searchParams} formId={ formId }/>;
+  return <DynamicPage {...searchParams} formId={formId} />;
 };
 
 export default DynamicPageInternal;

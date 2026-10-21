@@ -1,17 +1,14 @@
 "use client";
 
-import React from "react";
 import {
   ConfigurableForm,
   PageWithLayout,
 } from "@shesha-io/reactjs";
 import { ACTIVE_LOGIN } from "@/app-constants/layout";
 
-interface IProps {}
-
-const Login: PageWithLayout<IProps> = () => (
+const Login: PageWithLayout = () => (
   <ConfigurableForm
-    mode={"edit"}
+    mode="edit"
     formId={ACTIVE_LOGIN}
   />
 );

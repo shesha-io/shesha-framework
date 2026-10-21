@@ -1,37 +1,37 @@
 "use client";
 
-import React, { FC, PropsWithChildren } from "react";
+import { FC, PropsWithChildren } from 'react';
 import {
   GlobalStateProvider,
   ShaApplicationProvider,
-  StoredFilesProvider,
   useNextRouter,
-} from "@shesha-io/reactjs";
-import { AppProgressBar } from "next-nprogress-bar";
-import { useTheme } from "antd-style";
+  MonacoLoaderSettings,
+  IHttpHeadersDictionary,
+} from '@shesha-io/reactjs';
 
 export interface IAppProviderProps {
   backendUrl: string;
 }
 
-export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({
-  children,
-  backendUrl,
-}) => {
-  const nextRouter = useNextRouter();
-  const theme = useTheme();
+const monacoSettings: MonacoLoaderSettings = { localPath: "/monaco/vs" };
 
+export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children, backendUrl }) => {
+  const nextRouter = useNextRouter();
+  const buildHttpHeaders = (): IHttpHeadersDictionary => {
+    return {
+      'Organisation-Id': 'Testing',
+    };
+  };
   return (
     <GlobalStateProvider>
-      <AppProgressBar height="4px" color={theme.colorPrimary} shallowRouting />
       <ShaApplicationProvider
         backendUrl={backendUrl}
         router={nextRouter}
-        noAuth={nextRouter.path?.includes('/no-auth')}
+        noAuth={nextRouter.path.includes('/no-auth')}
+        buildHttpRequestHeaders={buildHttpHeaders}
+        monaco={monacoSettings}
       >
-        <StoredFilesProvider baseUrl={backendUrl} ownerId={""} ownerType={""}>
-          {children}
-        </StoredFilesProvider>
+        {children}
       </ShaApplicationProvider>
     </GlobalStateProvider>
   );
