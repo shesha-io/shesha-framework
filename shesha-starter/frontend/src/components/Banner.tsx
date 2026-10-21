@@ -8,7 +8,7 @@ interface IProps {
 export const Banner: React.FC<IProps> = ({ url, image }) => {
   const [showImage, setShowImage] = useState(true);
 
-  const handleClick = () => {
+  const handleClick = (): void => {
     setShowImage(false);
   };
 
@@ -30,10 +30,9 @@ export const Banner: React.FC<IProps> = ({ url, image }) => {
           height="500"
           frameBorder="0"
           allowFullScreen
-        ></iframe>
+        >
+        </iframe>
       )}
     </div>
   );
 };
-
-export default Banner;

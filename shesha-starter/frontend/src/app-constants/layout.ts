@@ -38,6 +38,6 @@ export const ACTIVE_HEADER: FormFullName = HEADER_CONFIGURATION;
 export const ACTIVE_LOGIN: FormFullName = LOGIN_CONFIGURATION;
 
 /** The footer form to display in the layout */
-export const ACTIVE_FOOTER: FormFullName = null; // No footer form is set
+export const ACTIVE_FOOTER: FormFullName | undefined = undefined; // No footer form is set
 //#endregion
 
