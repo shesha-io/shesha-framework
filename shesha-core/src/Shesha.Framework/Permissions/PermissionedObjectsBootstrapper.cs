@@ -71,7 +71,7 @@ namespace Shesha.Permission
                     }
 
                     // Update items
-                    var toUpdate = dbItems.Where(dbi => items.Any(i => dbi.Object == i.Object && dbi.Md5 != i.Md5)).ToList();
+                    var toUpdate = dbItems.Where(dbi => items.Any(i => dbi.Object == i.Object && (dbi.Md5 != i.Md5 || i.Hardcoded == true && dbi.Hardcoded != i.Hardcoded))).ToList();
                     foreach (var dbItem in toUpdate)
                     {
                         var item = items.FirstOrDefault(x => x.Object == dbItem.Object);
