@@ -73,6 +73,11 @@ namespace Shesha.Permissions
             }
         }
 
+#nullable enable
+        public static string? GetCrudMethod(string method, string? defaultValue = null) =>
+            CrudMethods.ContainsKey(method.RemovePostfix("Async")) ? CrudMethods[method.RemovePostfix("Async")] : defaultValue;
+#nullable restore
+
         private readonly IRepository<PermissionedObject, Guid> _permissionedObjectRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IObjectMapper _objectMapper;

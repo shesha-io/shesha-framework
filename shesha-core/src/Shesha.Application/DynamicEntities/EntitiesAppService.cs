@@ -10,7 +10,9 @@ using Shesha.Application.Services.Dto;
 using Shesha.Authorization;
 using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
+using Shesha.Configuration.Security;
 using Shesha.Domain.Enums;
+using Shesha.Domain.Models;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Excel;
 using Shesha.Metadata.Dtos;
@@ -33,6 +35,7 @@ namespace Shesha.DynamicEntities
         private readonly IExcelUtility _excelUtility;
         private readonly IObjectPermissionChecker _objectPermissionChecker;
         private readonly ISpecificationsFinder _specificationsFinder;
+        private readonly ISecuritySettings _securitySettings;
 
         public IObjectMapper AutoMapper { get; set; }
 
@@ -40,44 +43,34 @@ namespace Shesha.DynamicEntities
             IEntityConfigurationStore entityConfigStore,
             IExcelUtility excelUtility,
             IObjectPermissionChecker objectPermissionChecker,
-            ISpecificationsFinder specificationsFinder
+            ISpecificationsFinder specificationsFinder,
+            ISecuritySettings securitySettings
             )
         {
             _entityConfigStore = entityConfigStore;
             _excelUtility = excelUtility;
             _objectPermissionChecker = objectPermissionChecker;
             _specificationsFinder = specificationsFinder;
+            _securitySettings = securitySettings;
         }
 
         protected async Task CheckPermissionAsync(EntityConfiguration entityConfig, string method)
         {
-            var (access, permissions) = GetInheritedAccess(entityConfig, method);
+            var crudMethod = PermissionedObjectManager.GetCrudMethod(method, method);
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
 
-            await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.FullName, method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null,
-                access, permissions);
-        }
+            var entityAccess = EntityCrudHelper.GetEntityAccessParams(entityConfig.EntityType, method);
+            var defaultAccess = new AccessParams(securitySettings?.DefaultEndpointAccess ?? RefListPermissionedAccess.AnyAuthenticated, null);
+            var currentAccess = EntityCrudHelper.GetInherited(entityAccess, defaultAccess);
 
-        private (RefListPermissionedAccess? access, List<string> permissions) GetInheritedAccess(EntityConfiguration entityConfig, string method)
-        {
-            var crudAction = PermissionedObjectManager.Method2CrudAction(method);
-            var codeConfig = crudAction != null
-                ? EntityCrudHelper.GetCodebasedCrudActionConfig(entityConfig.EntityType, crudAction.Value)
-                : null;
-            if (codeConfig == null || crudAction == null)
-                return (access: null, permissions: null);
-
-            switch (codeConfig.CrudActionsAccess) {
-                case CrudActionsAccess.Inherited:
-                    return (access: RefListPermissionedAccess.Inherited, permissions: null);
-                case CrudActionsAccess.AllowAnonymous:
-                    return (access: RefListPermissionedAccess.AllowAnonymous, permissions: null);
-                case CrudActionsAccess.AnyAuthenticated:
-                    return (access: RefListPermissionedAccess.AnyAuthenticated, permissions: null);
-                case CrudActionsAccess.RequiresPermissions:
-                    return (access: RefListPermissionedAccess.RequiresPermissions, permissions: codeConfig.CrudActionsPermissions?.ToList());
-                default:
-                    return (access: null, permissions: null);
-            }
+            await _objectPermissionChecker.AuthorizeAsync(
+                false, 
+                entityConfig.EntityType.FullName, 
+                method, 
+                ShaPermissionedObjectsTypes.EntityAction, 
+                AbpSession.UserId != null,
+                currentAccess.Access,
+                currentAccess.Permissions);
         }
 
         [HttpGet]

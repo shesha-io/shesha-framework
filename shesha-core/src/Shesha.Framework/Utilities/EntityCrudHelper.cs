@@ -1,14 +1,19 @@
-﻿using Shesha.Domain;
+﻿using Shesha.Configuration.Runtime;
+using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.Domain.Interfaces;
+using Shesha.Domain.Models;
+using Shesha.Permissions;
 using Shesha.Reflection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace Shesha.Utilities
 {
+#nullable enable
     public static class EntityCrudHelper
     {
         public static IEntityCrudConfig GetHardcodedEntityCrudConfig(Type entityType)
@@ -76,5 +81,42 @@ namespace Shesha.Utilities
             var config = GetHardcodedEntityCrudConfig(entityType);
             return !config.IsConfigurable && config.CrudActions == CrudActions.None;
         }
+
+        public static AccessParams? GetEntityAccessParams(Type entityType, string method) 
+        {
+            var crudAction = PermissionedObjectManager.Method2CrudAction(method);
+            return GetEntityAccessParams(entityType, crudAction);
+        }        
+
+        public static AccessParams? GetEntityAccessParams(Type entityType, CrudAction? crudAction)
+        {
+            var codeConfig = crudAction != null
+                ? GetCodebasedCrudActionConfig(entityType, crudAction.Value)
+                : null;
+            if (codeConfig == null || crudAction == null)
+                return null;
+
+            switch (codeConfig.CrudActionsAccess)
+            {
+                case CrudActionsAccess.Inherited:
+                    return new AccessParams(RefListPermissionedAccess.Inherited);
+                case CrudActionsAccess.AllowAnonymous:
+                    return new AccessParams(RefListPermissionedAccess.AllowAnonymous);
+                case CrudActionsAccess.AnyAuthenticated:
+                    return new AccessParams(RefListPermissionedAccess.AnyAuthenticated);
+                case CrudActionsAccess.RequiresPermissions:
+                    return new AccessParams(codeConfig.CrudActionsPermissions?.ToList() ?? new List<string>());
+                default:
+                    return null;
+            }
+        }
+
+        public static AccessParams GetInherited(AccessParams? current, AccessParams fallback)
+        {
+            return current == null || current.Access == RefListPermissionedAccess.Inherited
+                ? fallback
+                : current;
+        }
     }
+#nullable restore
 }
