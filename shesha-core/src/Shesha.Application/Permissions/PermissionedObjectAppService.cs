@@ -3,6 +3,7 @@ using Abp.Domain.Repositories;
 using Shesha.Authorization;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -108,7 +109,8 @@ namespace Shesha.Permissions
         /// <returns></returns>
         public override async Task<PermissionedObjectDto> UpdateAsync(PermissionedObjectDto input)
         {
-            return await _permissionedObjectManager.SetAsync(input);
+            var dto = await _permissionedObjectManager.SetAsync(input);
+            return dto.NotNull("Failed to update permissioned object");
         }
 
         /// <summary>
