@@ -435,40 +435,36 @@ namespace Shesha.Permissions
         [UnitOfWork]
         public virtual async Task<PermissionedObjectDto> SetAsync(PermissionedObjectDto permissionedObject)
         {
-            // ToDo: AS - check if permission names exist
-            var obj = 
-                await _permissionedObjectRepository.GetAll()
-                    .Where(x => x.Object == permissionedObject.Object && x.Type == permissionedObject.Type).FirstOrDefaultAsync()
-                ??
-                new PermissionedObject()
-                {
-                    Object = permissionedObject.Object,
-                    Type = permissionedObject.Type,
-                    Module = permissionedObject.Module != null
-                    ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == permissionedObject.ModuleId)
-                    : !permissionedObject.Module.IsNullOrEmpty()
-                        ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Name == permissionedObject.Module)
-                        : null,
-                    Parent = permissionedObject.Parent,
-                    Name = permissionedObject.Name ?? permissionedObject.Object,
-                };
+            var obj = await _permissionedObjectRepository.GetAll()
+                    .Where(x => x.Object == permissionedObject.Object && x.Type == permissionedObject.Type).FirstOrDefaultAsync();
+            var canUpdate = obj == null || obj.Hardcoded != true;
 
-            obj.Category = permissionedObject.Category;
-            obj.Description = permissionedObject.Description;
-            obj.Permissions = string.Join(",", permissionedObject.Permissions ?? new List<string>());
-            obj.Hidden = permissionedObject.Hidden;
-            obj.Access = permissionedObject.Access ?? RefListPermissionedAccess.Inherited;
+            if (canUpdate) {
+                // ToDo: AS - check if permission names exist
+                if (obj == null)
+                    obj = new PermissionedObject()
+                    {
+                        Object = permissionedObject.Object,
+                        Type = permissionedObject.Type,
+                        Module = permissionedObject.Module != null
+                            ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == permissionedObject.ModuleId)
+                            : !permissionedObject.Module.IsNullOrEmpty()
+                                ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Name == permissionedObject.Module)
+                                : null,
+                        Parent = permissionedObject.Parent,
+                        Name = permissionedObject.Name ?? permissionedObject.Object,
+                    };
 
-            // Marks the row as explicitly configured (e.g. via an admin/import action) rather than
-            // code-owned, so PermissionedObjectsBootstrapper stops treating a later code-attribute
-            // change on this object as authoritative -- otherwise the next deployment that bumps the
-            // object's Md5 would silently revert this value back to the code default.
-            obj.Hardcoded = false;
+                obj.Category = permissionedObject.Category;
+                obj.Description = permissionedObject.Description;
+                obj.Permissions = string.Join(",", permissionedObject.Permissions ?? new List<string>());
+                obj.Hidden = permissionedObject.Hidden;
+                obj.Access = permissionedObject.Access ?? RefListPermissionedAccess.Inherited;
 
-            var newObj = await _permissionedObjectRepository.InsertOrUpdateAsync(obj);
+                await _permissionedObjectRepository.InsertOrUpdateAsync(obj);
+            }            
 
-            var dto = await GetDtoAsync(newObj);
-            return dto;
+            return await GetDtoAsync(obj);
         }
 
         [UnitOfWork]
