@@ -652,7 +652,7 @@ namespace Shesha.Users
             
             if (!await PermissionChecker.IsGrantedAsync(PermissionNames.User_ResetPassword))
             {
-                throw new UserFriendlyException("You are not authorized to reset passwords.");
+                throw new AbpAuthorizationException("You are not authorized to reset passwords.");
             }
             
             var user = await _userManager.GetUserByIdAsync(input.UserId);
