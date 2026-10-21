@@ -61,7 +61,7 @@ namespace Shesha.DynamicEntities
             var crudMethod = PermissionedObjectManager.GetCrudMethod(method, method);
             var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
 
-            var entityAccess = EntityCrudHelper.GetEntityAccessParams(entityConfig, method);
+            var entityAccess = EntityCrudHelper.GetEntityAccessParams(entityConfig.EntityType, method);
             var defaultAccess = new AccessParams(securitySettings?.DefaultEndpointAccess ?? RefListPermissionedAccess.AnyAuthenticated, securitySettings?.DefaultEndpointPermissions);
             var currentAccess = EntityCrudHelper.GetInherited(entityAccess, defaultAccess);
 

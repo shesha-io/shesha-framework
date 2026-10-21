@@ -22,6 +22,7 @@ using System.Reflection;
 
 namespace Shesha.GraphQL.Provider.GraphTypes
 {
+#nullable enable
     /// <summary>
     /// https://github.com/fenomeno83/graphql-dotnet-auto-types
     /// </summary>
@@ -82,15 +83,6 @@ namespace Shesha.GraphQL.Provider.GraphTypes
             {
                 var displayNameProperty = typeof(TModel).GetEntityConfiguration()?.DisplayNamePropertyInfo;
 
-                    // add displayName
-                    //FieldAsync(GraphTypeMapper.GetGraphType(typeof(string), isInput: false), EntityConstants.DisplayNameField, "Entity display name",
-                    //    resolve: context => {
-                    //        var value = displayNameProperty != null
-                    //            ? displayNameProperty.GetValue(context.Source)
-                    //            : "";
-                    //        return Task.FromResult(value);
-                    //    }
-                    //);
                     Field(EntityConstants.DisplayNameField, GraphTypeMapper.GetGraphType(typeof(string), isInput: false))
                         .Description("Entity display name")
                         .Resolve(context => {
@@ -100,16 +92,6 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                             return value;
                         });
 
-                    // add className
-                    //    FieldAsync(GraphTypeMapper.GetGraphType(typeof(string), isInput: false), EntityConstants.ClassNameField, "Entity class name",
-                    //    resolve: context => {
-                    //        var type = context.Source != null
-                    //            ? context.Source.GetType().StripCastleProxyType()
-                    //            : typeof(TModel);
-
-                    //        return Task.FromResult(type.FullName as object);
-                    //    }
-                    //);
                     Field(EntityConstants.ClassNameField, GraphTypeMapper.GetGraphType(typeof(string), isInput: false))
                         .Description("Entity class name")
                         .Resolve(context => {
@@ -120,35 +102,36 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                             return type.FullName;
                         });
 
-                    AsyncHelper.RunSync(async () => {
-                    using (var uow = _unitOfWorkManager.Begin())
-                    {
-                        var properties = await _entityConfigCache.GetEntityPropertiesAsync(typeof(TModel));
-                        var dynamicProps = properties.Where(p => p.Source == Domain.Enums.MetadataSourceType.UserDefined).ToList();
-                        foreach (var dynamicProp in dynamicProps)
-                        {
-                            var alreadyDeclared = properties.Any(p => p.Name.Equals(dynamicProp.Name, StringComparison.InvariantCultureIgnoreCase));
-                            if (!alreadyDeclared) 
-                            {
-                                var propType = await _dynamicDtoTypeBuilder.GetDtoPropertyTypeAsync(dynamicProp, new DynamicDtoTypeBuildingContext());
 
-                                    //FieldAsync(GraphTypeMapper.GetGraphType(propType, isInput: false), dynamicProp.Name, dynamicProp.Description,
-                                    //    resolve: async context => {
-                                    //        var value = await _dynamicPropertyManager.GetPropertyAsync(context.Source, dynamicProp.Name);
-                                    //        return value;
-                                    //    }
-                                    //);
-                                    Field(dynamicProp.Name, GraphTypeMapper.GetGraphType(propType, isInput: false))
-                                        .Description(dynamicProp.Description)
-                                        .ResolveAsync(async context => {
-                                            var value = await _dynamicPropertyManager.GetPropertyAsync(context.Source, dynamicProp.Name);
-                                            return value;
-                                        });
-                                }                            
+                    AsyncHelper.RunSync(async () => {
+                        using (var uow = _unitOfWorkManager.Begin())
+                        {
+                            var properties = await _entityConfigCache.GetEntityPropertiesAsync(typeof(TModel));
+                            if (properties != null) 
+                            {
+                                var dynamicProps = properties.Where(p => p.Source == Domain.Enums.MetadataSourceType.UserDefined).ToList();
+                                foreach (var dynamicProp in dynamicProps)
+                                {
+                                    var alreadyDeclared = properties.Any(p => p.Name.Equals(dynamicProp.Name, StringComparison.InvariantCultureIgnoreCase));
+                                    if (!alreadyDeclared)
+                                    {
+                                        var propType = await _dynamicDtoTypeBuilder.GetDtoPropertyTypeAsync(dynamicProp, new DynamicDtoTypeBuildingContext());
+                                        if (propType != null) 
+                                        {
+                                            Field(dynamicProp.Name, GraphTypeMapper.GetGraphType(propType, isInput: false))
+                                                .Description(dynamicProp.Description)
+                                                .ResolveAsync(async context => {
+                                                    var value = await _dynamicPropertyManager.GetPropertyAsync(context.Source, dynamicProp.Name);
+                                                    return value;
+                                                });
+                                        }                                        
+                                    }
+                                }
+                            }
+                        
+                            await uow.CompleteAsync();
                         }
-                        await uow.CompleteAsync();
-                    }
-                });
+                    });
             }
         }
 
@@ -241,7 +224,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                     Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false)).Resolve(context => Convert.ToInt32(propertyInfo.GetValue(context.Source)));
                 else
                 {
-                    var gqlType = Assembly.GetAssembly(typeof(ISchema)).GetTypes().FirstOrDefault(t => t.Name == $"{typeName}Type" && t.IsAssignableTo(typeof(IGraphType)));
+                    var gqlType = Assembly.GetAssembly(typeof(ISchema))?.GetTypes().FirstOrDefault(t => t.Name == $"{typeName}Type" && t.IsAssignableTo(typeof(IGraphType)));
                     
                     gqlType ??= isDictionary
                         ? MakeDictionaryType(propertyInfo)
@@ -269,7 +252,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
 
                     case "Nullable`1":
                         {
-                            var underlyingType = Nullable.GetUnderlyingType(propertyInfo.PropertyType);
+                            var underlyingType = Nullable.GetUnderlyingType(propertyInfo.PropertyType).NotNull($"Type {propertyInfo.PropertyType.Name} is not nullable");
                             if (underlyingType.IsEnum)
                             {
                                 Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
@@ -420,4 +403,5 @@ namespace Shesha.GraphQL.Provider.GraphTypes
             return typeof(DictionaryGraphType<,>).MakeGenericType(args[0], args[1]);
         }
     }
+#nullable restore
 }

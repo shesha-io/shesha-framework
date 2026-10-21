@@ -81,11 +81,16 @@ namespace Shesha.Utilities
             return !config.IsConfigurable && config.CrudActions == CrudActions.None;
         }
 
-        public static AccessParams? GetEntityAccessParams(EntityTypeConfiguration entityConfig, string method)
+        public static AccessParams? GetEntityAccessParams(Type entityType, string method)
         {
             var crudAction = PermissionedObjectManager.Method2CrudAction(method);
+            return GetEntityAccessParams(entityType, crudAction);
+        }
+
+        public static AccessParams? GetEntityAccessParams(Type entityType, CrudAction? crudAction)
+        {
             var codeConfig = crudAction != null
-                ? GetCodebasedCrudActionConfig(entityConfig.EntityType, crudAction.Value)
+                ? GetCodebasedCrudActionConfig(entityType, crudAction.Value)
                 : null;
             if (codeConfig == null || crudAction == null)
                 return null;
