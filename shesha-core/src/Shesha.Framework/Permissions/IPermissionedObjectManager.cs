@@ -76,7 +76,7 @@ namespace Shesha.Permissions
         /// </summary>
         /// <param name="permissionedObject">Protected Object data</param>
         /// <returns></returns>
-        Task<PermissionedObjectDto> SetAsync(PermissionedObjectDto permissionedObject);
+        Task<PermissionedObjectDto?> SetAsync(PermissionedObjectDto permissionedObject);
 
         /// <summary>
         /// Set permission data for Protected Object by object name

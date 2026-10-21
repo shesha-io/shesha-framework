@@ -402,36 +402,43 @@ namespace Shesha.Permissions
         }
 
         [UnitOfWork]
-        public virtual async Task<PermissionedObjectDto> SetAsync(PermissionedObjectDto permissionedObject)
+        public virtual async Task<PermissionedObjectDto?> SetAsync(PermissionedObjectDto permissionedObject)
         {
+            var obj = await _permissionedObjectRepository.FirstOrDefaultAsync(x => x.Object == permissionedObject.Object && x.Type == permissionedObject.Type);
+            var canUpdate = obj == null || obj.Hardcoded != true;
+
             // ToDo: AS - check if permission names exist
-            var obj =
-                await _permissionedObjectRepository.FirstOrDefaultAsync(x => x.Object == permissionedObject.Object && x.Type == permissionedObject.Type)
-                ??
-                new PermissionedObject()
-                {
-                    Object = permissionedObject.Object,
-                    Type = permissionedObject.Type,
-                    Module = permissionedObject.Module != null
-                        ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == permissionedObject.ModuleId)
-                        : !string.IsNullOrWhiteSpace(permissionedObject.Module)
-                            ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Name == permissionedObject.Module)
-                            : null,
-                    Parent = permissionedObject.Parent ?? string.Empty,
-                    Name = permissionedObject.Name ?? permissionedObject.Object,
-                };
+            if (canUpdate)
+            {
+                if (obj == null)
+                    obj = new PermissionedObject()
+                    {
+                        Object = permissionedObject.Object,
+                        Type = permissionedObject.Type,
+                        Module = permissionedObject.Module != null
+                            ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == permissionedObject.ModuleId)
+                            : !string.IsNullOrWhiteSpace(permissionedObject.Module)
+                                ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Name == permissionedObject.Module)
+                                : null,
+                        Parent = permissionedObject.Parent ?? string.Empty,
+                        Name = permissionedObject.Name ?? permissionedObject.Object,
+                    };
 
-            obj.Category = permissionedObject.Category;
-            obj.Description = permissionedObject.Description;
-            obj.Permissions = string.Join(",", permissionedObject.Permissions ?? new List<string>());
-            obj.Hidden = permissionedObject.Hidden ?? false;
-            obj.Access = permissionedObject.Access ?? RefListPermissionedAccess.Inherited;
+                obj.Category = permissionedObject.Category;
+                obj.Description = permissionedObject.Description;
+                obj.Permissions = string.Join(",", permissionedObject.Permissions ?? new List<string>());
+                obj.Hidden = permissionedObject.Hidden ?? false;
+                obj.Access = permissionedObject.Access ?? RefListPermissionedAccess.Inherited;
 
-            var newObj = await _permissionedObjectRepository.InsertOrUpdateAsync(obj);
+                await _permissionedObjectRepository.InsertOrUpdateAsync(obj);
+            }            
 
-            var dto = await GetDtoOrNullAsync(newObj, true, true);
+            var dto = obj != null
+                ? await GetDtoOrNullAsync(obj, true, true)
+                : null;
             await SetCacheAsync(permissionedObject, new CacheItemWrapper<PermissionedObjectDto>(permissionedObject, dto));
-            return dto.NotNull();
+
+            return dto;
         }
 
         [UnitOfWork]
