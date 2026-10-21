@@ -8,6 +8,7 @@ using Shesha.Attributes;
 using Shesha.Authorization;
 using Shesha.Configuration.Security;
 using Shesha.Domain.Enums;
+using Shesha.Domain.Models;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
@@ -54,11 +55,22 @@ namespace Shesha
 
         private async Task CheckCrudActionPermissionsAsync(CrudAction crudAction)
         {
-            var securitySettings = await SecuritySettings.SecuritySettings.GetValueAsync();
-            var defaultAccess = securitySettings?.DefaultEndpointAccess;
+            var securitySettings = await SecuritySettings.SecuritySettings.GetValueOrNullAsync();
+
+            var entityAccess = EntityCrudHelper.GetEntityAccessParams(typeof(TEntity), crudAction);
+            var defaultAccess = new AccessParams(securitySettings?.DefaultEndpointAccess ?? RefListPermissionedAccess.AnyAuthenticated, null);
+            var currentAccess = EntityCrudHelper.GetInherited(entityAccess, defaultAccess);
 
             var method = PermissionedObjectManager.CrudAction2Method(crudAction);
-            await ObjectPermissionChecker.AuthorizeAsync(false, typeof(TEntity).GetRequiredFullName(), method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId.HasValue, defaultAccess);
+            await ObjectPermissionChecker.AuthorizeAsync(
+                false, 
+                typeof(TEntity).GetRequiredFullName(), 
+                method, 
+                ShaPermissionedObjectsTypes.EntityAction, 
+                AbpSession.UserId.HasValue,
+                currentAccess.Access,
+                currentAccess.Permissions
+            );
         }
 
         /// <summary>
