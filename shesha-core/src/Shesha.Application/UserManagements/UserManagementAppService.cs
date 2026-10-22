@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
 using Abp.Runtime.Validation;
+using Shesha.Authorization;
 using Shesha.Authorization.Users;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
@@ -19,6 +20,7 @@ namespace Shesha.UserManagements
     /// <summary>
     /// User Management Application Service
     /// </summary>
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.User_Manage, IsConfigurable = false)]
     public class UserManagementAppService: SheshaAppServiceBase
     {
         private readonly UserManager _userManager;

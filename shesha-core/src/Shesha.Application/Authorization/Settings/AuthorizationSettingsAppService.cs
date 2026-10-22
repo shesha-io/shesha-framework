@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Shesha.Authorization.Settings
 {
     [Obsolete("To be removed, is used for backward compatibility only")]
-    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure)]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, IsConfigurable = false)]
     public class AuthorizationSettingsAppService: ApplicationService
     {
         private readonly IPasswordComplexitySettings _passwordComplexitySettings;
