@@ -29,6 +29,7 @@ using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.GraphQL;
 using Shesha.Identity;
+using Shesha.RateLimiting;
 using Shesha.Scheduler.Extensions;
 using Shesha.Swagger;
 using Shesha.Web;
@@ -66,6 +67,8 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 				//options.CheckPermissionAction = context => context.User.Identity.IsAuthenticated; //note: looks like we have to use cookies for it
 				options.Filters.Add(new ElmahFilter());
 			});
+
+			services.AddSheshaRateLimiting(opts => _appConfiguration.GetSection("RateLimiting").Bind(opts));
 
 			services.AddMvcCore(options =>
 			{
@@ -179,6 +182,8 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			app.UseAbpRequestLocalization();
 
 			app.UseRouting();
+
+			app.UseRateLimiter();
 
             app.UseAuthentication();
 

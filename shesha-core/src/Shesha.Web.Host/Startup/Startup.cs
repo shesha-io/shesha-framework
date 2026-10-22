@@ -29,6 +29,7 @@ using Shesha.GraphQL;
 using Shesha.Identity;
 using Shesha.Notifications;
 using Shesha.Notifications.SMS;
+using Shesha.RateLimiting;
 using Shesha.Scheduler.Extensions;
 using Shesha.Specifications;
 using Shesha.Swagger;
@@ -66,6 +67,8 @@ namespace Shesha.Web.Host.Startup
             });
 
             services.AddSheshaElmah(_appConfiguration);
+
+            services.AddSheshaRateLimiting(opts => _appConfiguration.GetSection("RateLimiting").Bind(opts));
 
             services.AddMvcCore(options =>
                 {
@@ -174,6 +177,7 @@ namespace Shesha.Web.Host.Startup
             app.UseStaticFiles();
             app.UseAbpRequestLocalization();
             app.UseRouting();
+            app.UseRateLimiter();
             app.UseAuthentication();
             app.UseAuthorization();
 
