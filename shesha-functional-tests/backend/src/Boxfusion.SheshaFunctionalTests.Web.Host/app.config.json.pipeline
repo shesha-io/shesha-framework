@@ -28,8 +28,6 @@
     "HomeUrl": "/"
   },
   "RateLimiting": {
-    "GlobalPermitLimit": 100,
-    "GlobalWindowSeconds": 60,
     "AuthPermitLimit": 10,
     "AuthWindowSeconds": 60,
     "OtpPermitLimit": 5,
