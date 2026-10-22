@@ -486,7 +486,7 @@ namespace Shesha.Users
             if (user.SecurityQuestionLockoutEnd.HasValue && user.SecurityQuestionLockoutEnd.Value > DateTime.UtcNow)
                 throw new UserFriendlyException("Account is temporarily locked due to too many failed attempts.");
 
-            var configuredQuestions = await (await _questionRepository.GetAllAsync())
+            var configuredQuestions = await _questionRepository.GetAllIncluding(q => q.User, q => q.SelectedQuestion)
                 .Where(q => q.User == user)
                 .ToListAsync();
 

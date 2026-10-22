@@ -9,7 +9,7 @@ namespace Shesha.RateLimiting
 {
     public static class RateLimitingServiceCollectionExtensions
     {
-        public static IServiceCollection AddSheshaRateLimiting(this IServiceCollection services, Action<SheshaRateLimitingOptions>? configure = null)
+        public static IServiceCollection AddSheshaRateLimiting(this IServiceCollection services, Action<SheshaRateLimitingOptions> configure = null)
         {
             var settings = new SheshaRateLimitingOptions();
             configure?.Invoke(settings);
