@@ -633,52 +633,31 @@ namespace Shesha.Users
             return true;
         }
 
-        public async Task<bool> ResetPasswordAsync(ResetPasswordDto input)
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.User_Manage, PermissionNames.User_ResetPassword)]        
+        public async Task ResetPasswordAsync(ResetPasswordDto input)
         {
-
-            if (!_abpSession.UserId.HasValue)
-            {
-                throw new UserFriendlyException("You are not logged in.");
-            }
-            
-            var currentUserId = _abpSession.UserId.Value;
-            
-            var currentUser = await _userManager.GetUserByIdAsync(currentUserId);
-            
-            if (currentUser.IsDeleted || !currentUser.IsActive)
-            {
-                return false;
-            }
-            
-            if (!await PermissionChecker.IsGrantedAsync(PermissionNames.User_ResetPassword))
-            {
-                throw new AbpAuthorizationException("You are not authorized to reset passwords.");
-            }
-            
             var user = await _userManager.GetUserByIdAsync(input.UserId);
-            if (user != null)
+            if (user == null)
+                throw new UserFriendlyException("User not found");
+
+            // validate password against configured policy
+            await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
+            foreach (var validator in _userManager.PasswordValidators)
             {
-                // validate password against configured policy
-                await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
-                foreach (var validator in _userManager.PasswordValidators)
-                {
-                    CheckErrors(await validator.ValidateAsync(_userManager, user, input.NewPassword));
-                }
-
-                user.AddHistoryEvent("Password reset", "Password reset");
-                var person = await _personRepository.FirstOrDefaultAsync(x => x.User == user);
-                person?.AddHistoryEvent("Password reset", "Password reset");
-
-                user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
-                user.RequireChangePassword = input.RequireChangePassword;
-                user.IsActive = true;
-                if (user.LockoutEndDateUtc.HasValue && user.LockoutEndDateUtc > DateTime.Now)
-                    user.LockoutEndDateUtc = DateTime.Now;
-                await _userManager.UpdateAsync(user);
-                await CurrentUnitOfWork.SaveChangesAsync();
+                CheckErrors(await validator.ValidateAsync(_userManager, user, input.NewPassword));
             }
 
-            return true;
+            user.AddHistoryEvent("Password reset", "Password reset");
+            var person = await _personRepository.FirstOrDefaultAsync(x => x.User == user);
+            person?.AddHistoryEvent("Password reset", "Password reset");
+
+            user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
+            user.RequireChangePassword = input.RequireChangePassword;
+            user.IsActive = true;
+            if (user.LockoutEndDateUtc.HasValue && user.LockoutEndDateUtc > DateTime.Now)
+                user.LockoutEndDateUtc = DateTime.Now;
+            await _userManager.UpdateAsync(user);
+            await CurrentUnitOfWork.SaveChangesAsync();
         }
     }
 }
