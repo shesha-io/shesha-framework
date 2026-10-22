@@ -190,6 +190,7 @@ namespace Shesha.Swagger
 
             if (!modelType.IsConstructedGenericType)
                 return modelType.Name
+                    .Replace("+", ".")
                     .Replace("[]", "Array")
                     .RemovePreFix("System.");
 

@@ -1,9 +1,5 @@
 ﻿using Shesha.Domain.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.Authorization
 {
@@ -15,6 +11,8 @@ namespace Shesha.Authorization
         /// A list of permissions to authorize. 
         /// </summary>
         public string[] Permissions { get; }
+
+        public bool IsConfigurable { get; set; }
 
         public RefListPermissionedAccess Access { get; set; }
 

@@ -20,19 +20,16 @@
 
         public const string Role_Manage = Prefix + "Role-Manage"; // Pages.Roles
 
-        public const string Account_Select = Prefix + "Account-Select";
         public const string Account_View = Prefix + "Account-View";
         public const string Account_Create = Prefix + "Account-Create";
         public const string Account_Update = Prefix + "Account-Update";
         public const string Account_Delete = Prefix + "Account-Delete";
 
-        public const string Person_Select = Prefix + "Person-Select";
         public const string Person_View = Prefix + "Person-View";
         public const string Person_Create = Prefix + "Person-Create";
         public const string Person_Update = Prefix + "Person-Update";
         public const string Person_Delete = Prefix + "Person-Delete";
 
-        public const string Organisation_Select = Prefix + "Organisation-Select";
         public const string Organisation_View = Prefix + "Organisation-View";
         public const string Organisation_Create = Prefix + "Organisation-Create";
         public const string Organisation_Update = Prefix + "Organisation-Update";

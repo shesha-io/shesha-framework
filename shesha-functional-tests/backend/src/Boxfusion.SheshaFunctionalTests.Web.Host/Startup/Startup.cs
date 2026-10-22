@@ -223,8 +223,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			services.AddSwaggerGen(options =>
 			{
                 options.UseSheshaDefaults();
-				
-				options.AddDocumentsPerService();
+
+                options.AddDocumentsPerService();
 
 				// Define the BearerAuth scheme that's in use
 				options.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme()

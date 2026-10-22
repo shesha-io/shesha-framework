@@ -1,22 +1,28 @@
 ﻿using Abp.AspNetCore.Configuration;
 using Abp.AspNetCore.Mvc.ExceptionHandling;
 using Abp.AspNetCore.Mvc.Results;
+using Abp.Authorization;
 using Abp.Dependency;
 using Abp.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.OpenApi;
 using Shesha.Application.Services;
+using Shesha.Authorization;
+using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.Reflection;
+using Shesha.Utilities;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -55,7 +61,88 @@ namespace Shesha.Swagger
             // Decorate operation parameters
             DecorateOperaionParameters(operation, context);
 
+            // Decorate operation with security requirements
+            AddSecurityRequirements(operation, context);
+
             return Task.CompletedTask;
+        }
+
+        private T? GetOperationAttribute<T>(OpenApiOperation operation, OperationFilterContext context) where T : Attribute
+        {
+            if (context.MethodInfo.HasAttribute<T>())
+                return context.MethodInfo.GetAttribute<T>();
+            if (context.MethodInfo.DeclaringType != null && context.MethodInfo.DeclaringType.HasAttribute<T>())
+                return context.MethodInfo.DeclaringType.GetAttribute<T>();
+            return null;
+        }
+
+        private void AddSecurityRequirements(OpenApiOperation operation, OperationFilterContext context)
+        {
+            var shashaAuthorizeAttribute = GetOperationAttribute<SheshaAuthorizeAttribute>(operation, context);
+
+            var sb = new StringBuilder();
+            void addRow(string label, string value) => sb.AppendLine($"<div><label>{label}:</label> {value}</div>");
+
+            var allowAnonymousAttribute = GetOperationAttribute<AllowAnonymousAttribute>(operation, context);
+            bool? isAnonymous = allowAnonymousAttribute != null ? true : null;
+            var permissions = new List<string>();
+            if (allowAnonymousAttribute != null)
+            {
+                addRow("AllowAnonymousAttribute", "yes");
+            }
+            else
+            {
+                if (shashaAuthorizeAttribute != null)
+                {
+                    addRow("SheshaAuthorize", "yes");
+                    addRow("IsConfigurable", shashaAuthorizeAttribute.IsConfigurable ? "yes" : "no");
+                    addRow("Access", shashaAuthorizeAttribute.Access.ToString());
+                    if (shashaAuthorizeAttribute.Permissions != null && shashaAuthorizeAttribute.Permissions.Any())
+                    {
+                        addRow("Permissions", shashaAuthorizeAttribute.Permissions.Delimited(","));
+                        permissions.AddRange(shashaAuthorizeAttribute.Permissions);
+                    }
+
+                    if (isAnonymous == null)
+                        isAnonymous = shashaAuthorizeAttribute.Access == RefListPermissionedAccess.AllowAnonymous;
+                }
+
+                var abpAuthorizeAttribute = GetOperationAttribute<AbpAuthorizeAttribute>(operation, context);
+                if (abpAuthorizeAttribute != null)
+                {
+                    addRow("AbpAuthorize", "yes");
+                    addRow("Permissions", abpAuthorizeAttribute.Permissions.Delimited(","));
+                    if (abpAuthorizeAttribute.Permissions != null)
+                        permissions.AddRange(abpAuthorizeAttribute.Permissions);
+                    addRow("RequireAllPermissions", abpAuthorizeAttribute.RequireAllPermissions ? "yes" : "no");
+                    isAnonymous = false;
+                }
+                var authorizeAttribute = GetOperationAttribute<AuthorizeAttribute>(operation, context);
+                if (authorizeAttribute != null)
+                {
+                    addRow("AuthorizeAttribute", "yes");
+                    addRow("Policy", authorizeAttribute.Policy ?? "");
+                    addRow("Roles", authorizeAttribute.Roles ?? "");
+                    isAnonymous = false;
+                }
+            }
+            var securityDescription = sb.ToString();
+
+            if (!string.IsNullOrWhiteSpace(securityDescription))
+                operation.Description += securityDescription;
+
+            if (isAnonymous == false)
+            {
+                var scheme = new OpenApiSecuritySchemeReference("bearerAuth", context.Document);
+
+                operation.Security = new List<OpenApiSecurityRequirement>
+                {
+                    new OpenApiSecurityRequirement
+                    {
+                        [scheme] = permissions.Distinct().ToList() // scopes; empty for Bearer/API Key
+                    }
+                };
+            }
         }
 
         private void AddPropertiesToCrudCreateUpdate(OpenApiOperation operation, OperationFilterContext context)
