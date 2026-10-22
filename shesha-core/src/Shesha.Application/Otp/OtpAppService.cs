@@ -51,7 +51,7 @@ namespace Shesha.Otp
 
         /// inheritDoc
         [HttpPost]
-        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance, PermissionNames.Application_Settings)]
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance, PermissionNames.Application_Settings, IsConfigurable = false)]
         public async Task<bool> UpdateSettingsAsync(OtpSettingsDto input)
         {
             await _otpSettings.OneTimePins.SetValueAsync(new OtpSettings
@@ -71,7 +71,7 @@ namespace Shesha.Otp
 
         /// inheritDoc
         [HttpGet]
-        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance, PermissionNames.Application_Settings)]
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance, PermissionNames.Application_Settings, IsConfigurable = false)]
         public async Task<OtpSettingsDto> GetSettingsAsync()
         {
             var emailSettings = await _otpSettings.OneTimePins.GetValueAsync();
