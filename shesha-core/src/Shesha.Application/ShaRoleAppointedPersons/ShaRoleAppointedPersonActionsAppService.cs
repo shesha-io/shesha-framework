@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.ShaRoleAppointedPersons
 {
-    [SheshaAuthorize(Shesha.Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Role_Manage)]
+    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Role_Manage, IsConfigurable = false)]
     public class ShaRoleAppointedPersonActionsAppService : SheshaCrudServiceBase<ShaRoleAppointedPerson, ShaRoleAppointedPersonDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateShaRoleAppointedPersonDto, ShaRoleAppointedPersonDto>, IShaRoleAppointedPersonAppService
     {
         private readonly IRepository<ShaRole, Guid> _roleRepository;

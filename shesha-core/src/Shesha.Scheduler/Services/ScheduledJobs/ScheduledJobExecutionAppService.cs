@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Scheduler.Services.ScheduledJobs
 {
-    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Administer)]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Administer, IsConfigurable = false)]
     public class ScheduledJobExecutionAppService : SheshaAppServiceBase, ITransientDependency
     {
         private readonly IRepository<ScheduledJobExecution, Guid> _repository;

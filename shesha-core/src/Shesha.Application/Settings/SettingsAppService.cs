@@ -96,14 +96,14 @@ namespace Shesha.Settings
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
-        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, PermissionNames.Application_Maintenance)]
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, PermissionNames.Application_Settings, PermissionNames.Application_Maintenance, IsConfigurable = false)]
         public async Task UpdateValueAsync(UpdateSettingValueInput input)
         {
             await _settingProvider.SetAsync(input.Module, input.Name, input.Value, GetContext(input.AppKey));
         }
 
         [HttpGet]
-        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, PermissionNames.Application_Maintenance)]
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, PermissionNames.Application_Settings, PermissionNames.Application_Maintenance, IsConfigurable = false)]
         public Task<List<SettingConfigurationDto>> GetConfigurationsAsync()
         {
             var settings = _settingDefinitionManager.GetAll();
