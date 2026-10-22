@@ -1,6 +1,6 @@
 ﻿using Abp.Application.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Authorization;
 using Shesha.Notifications.Dto;
 using Shesha.Sms.Dtos;
 using System.Collections.Generic;
@@ -33,7 +33,7 @@ namespace Shesha.Sms
                 .ToList();
         }
 
-        [Authorize]
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
         [HttpPost]
         [Route("api/Sms/Test")]
         public async Task<SendStatus> TestSmsAsync(string mobileNumber, string body)

@@ -224,23 +224,9 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			//Swagger - Enable this line and the related lines in Configure method to enable swagger UI
 			services.AddSwaggerGen(options =>
 			{
-				options.DescribeAllParametersInCamelCase();
-				options.IgnoreObsoleteActions();
-				options.AddXmlDocuments();
+                options.UseSheshaDefaults();
 
-                options.SchemaFilter<JsonIgnoreSchemaFilter>();
-                options.SchemaFilter<GraphQLSchemaFilter>();
-                options.SchemaFilter<DynamicDtoSchemaFilter>();
-                options.OperationFilter<SwaggerOperationFilter>();
-				options.DocumentFilter<SwaggerDocumentFilter>();
-
-				options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
-
-				options.CustomOperationIds(desc => desc.ActionDescriptor is ControllerActionDescriptor d
-					? d.ControllerName.ToCamelCase() + d.ActionName.ToPascalCase()
-					: null);
-
-				options.AddDocumentsPerService();
+                options.AddDocumentsPerService();
 
 				// Define the BearerAuth scheme that's in use
 				options.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme()
