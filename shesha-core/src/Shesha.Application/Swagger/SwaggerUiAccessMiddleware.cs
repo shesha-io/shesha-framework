@@ -1,9 +1,10 @@
+using Abp.Dependency;
+using Castle.Core.Logging;
 using Microsoft.AspNetCore.Http;
+using Shesha.Authorization;
 using Shesha.Configuration.Security;
 using System;
 using System.Threading.Tasks;
-using Abp.Dependency;
-using Castle.Core.Logging;
 
 namespace Shesha.Swagger
 {
@@ -36,6 +37,22 @@ namespace Shesha.Swagger
                         context.Response.StatusCode = StatusCodes.Status403Forbidden;
                         return;                                                               
                     }
+
+                    /*
+                    if (path.ToString().ToLower().EndsWith("swagger.json")) 
+                    {
+                        var hasAccess = context.User.Identity.IsAuthenticated &&
+                            await context.AnyPermissionGrantedAsync(PermissionNames.Application_Maintenance, PermissionNames.Application_Administer);
+
+                        if (!hasAccess) 
+                        {
+                            var json = System.Text.Json.JsonSerializer.Serialize(FallbackSpec);
+                            context.Response.ContentType = "application/json; charset=utf-8";
+                            await context.Response.WriteAsync(json);
+                            return;
+                        }                        
+                    } 
+                    */
                 }
                 catch (Exception e)
                 {
@@ -47,5 +64,24 @@ namespace Shesha.Swagger
 
             await next(context);
         }
+
+        private static readonly object FallbackSpec = new
+        {
+            openapi = "3.0.1",
+            info = new { title = "API", version = "v1" },
+            paths = new { }, // empty paths object
+            components = new
+            {
+                securitySchemes = new
+                {
+                    Bearer = new
+                    {
+                        type = "http",
+                        scheme = "bearer",
+                        bearerFormat = "JWT"
+                    }
+                }
+            }
+        };
     }
 }

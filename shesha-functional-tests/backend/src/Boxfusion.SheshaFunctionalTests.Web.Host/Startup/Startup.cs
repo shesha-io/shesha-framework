@@ -197,8 +197,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			// Enable middleware to serve generated Swagger as a JSON endpoint
 			app.UseSwagger();
 
-			// Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
-			app.UseSwaggerUI(options =>
+            // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
+            app.UseSwaggerUI(options =>
 			{
 				options.AddEndpointsPerService();
 				//options.SwaggerEndpoint("swagger/v1/swagger.json", "Shesha API V1");​
@@ -221,21 +221,9 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			//Swagger - Enable this line and the related lines in Configure method to enable swagger UI
 			services.AddSwaggerGen(options =>
 			{
-				options.DescribeAllParametersInCamelCase();
-				options.IgnoreObsoleteActions();
-				options.AddXmlDocuments();
+                options.UseSheshaDefaults();
 
-                options.SchemaFilter<DynamicDtoSchemaFilter>();
-                options.OperationFilter<SwaggerOperationFilter>();
-				options.DocumentFilter<SwaggerDocumentFilter>();
-				
-				options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
-
-				options.CustomOperationIds(desc => desc.ActionDescriptor is ControllerActionDescriptor d
-					? d.ControllerName.ToCamelCase() + d.ActionName.ToPascalCase()
-					: null);
-
-				options.AddDocumentsPerService();
+                options.AddDocumentsPerService();
 
 				// Define the BearerAuth scheme that's in use
 				options.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme()
