@@ -44,19 +44,16 @@ namespace Shesha.Authorization
 
             CreatePermission(PermissionNames.Role_Manage, L("Role: Manage"));
 
-            CreatePermission(PermissionNames.Account_Select, L("Account: Select"));
             CreatePermission(PermissionNames.Account_View, L("Account: View"));
             CreatePermission(PermissionNames.Account_Create, L("Account: Create"));
             CreatePermission(PermissionNames.Account_Update, L("Account: Update"));
             CreatePermission(PermissionNames.Account_Delete, L("Account: Delete"));
 
-            CreatePermission(PermissionNames.Person_Select, L("Person: Select"));
             CreatePermission(PermissionNames.Person_View, L("Person: View"));
             CreatePermission(PermissionNames.Person_Create, L("Person: Create"));
             CreatePermission(PermissionNames.Person_Update, L("Person: Update"));
             CreatePermission(PermissionNames.Person_Delete, L("Person: Delete"));
 
-            CreatePermission(PermissionNames.Organisation_Select, L("Organisation: Select"));
             CreatePermission(PermissionNames.Organisation_View, L("Organisation: View"));
             CreatePermission(PermissionNames.Organisation_Create, L("Organisation: Create"));
             CreatePermission(PermissionNames.Organisation_Update, L("Organisation: Update"));

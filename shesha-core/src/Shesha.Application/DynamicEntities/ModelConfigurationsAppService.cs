@@ -23,7 +23,7 @@ namespace Shesha.DynamicEntities
     /// Model Configurations application service
     /// </summary>
     [Route("api/ModelConfigurations")]
-    [Authorization.SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure)]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, IsConfigurable = false)]
     public class ModelConfigurationsAppService : SheshaAppServiceBase, IApplicationService
     {
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;

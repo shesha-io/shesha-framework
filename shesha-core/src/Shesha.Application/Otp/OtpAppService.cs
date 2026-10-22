@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Shesha.Otp
 {
-    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance)]
     public class OtpAppService : SheshaAppServiceBase, IOtpAppService, ITransientDependency
     {
         private readonly IOtpSettings _otpSettings;
@@ -52,6 +51,7 @@ namespace Shesha.Otp
 
         /// inheritDoc
         [HttpPost]
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance, PermissionNames.Application_Settings)]
         public async Task<bool> UpdateSettingsAsync(OtpSettingsDto input)
         {
             await _otpSettings.OneTimePins.SetValueAsync(new OtpSettings
@@ -71,6 +71,7 @@ namespace Shesha.Otp
 
         /// inheritDoc
         [HttpGet]
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance, PermissionNames.Application_Settings)]
         public async Task<OtpSettingsDto> GetSettingsAsync()
         {
             var emailSettings = await _otpSettings.OneTimePins.GetValueAsync();

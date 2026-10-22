@@ -16,7 +16,7 @@ using Shesha.Utilities;
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
     [Route("api/[controller]")]
-    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance)]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance, IsConfigurable = false)]
     public class AccessMatrixAppService : SheshaAppServiceBase
     {
         private readonly IAssemblyFinder _assembleFinder;
