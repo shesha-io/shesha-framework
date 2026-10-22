@@ -6,22 +6,27 @@ import KanbanPlaceholder from './components/kanbanPlaceholder';
 import {
   ConfigurableForm,
   DataTypes,
+  useDataTableStore,
   useFormState,
-  useGet,
   useMetadataDispatcher,
 } from '@/index';
 import KanbanColumn from './components/renderColumn';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 import { addPx } from '../keyInformationBar/utils';
+import { isEntityMetadata } from '@/interfaces';
+import { isDefined } from '@/utils/nullables';
+
+const hasGroupingValue = (record: unknown, groupingProperty: string): record is Record<string, unknown> =>
+  typeof record === 'object' && record !== null && isDefined((record as Record<string, unknown>)[groupingProperty]);
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const { gap, groupingProperty, entityType, createFormId, items, componentName, editFormId, maxResultCount } = props;
+  const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
 
+  const { tableData, modelType } = useDataTableStore();
   const { message } = App.useApp();
   const [columns, setColumns] = useState([]);
   const [urls, setUrls] = useState({ updateUrl: '', deleteUrl: '', postUrl: '' });
   const [tasks, setTasks] = useState([]);
-  const { refetch } = useGet({ path: '', lazy: true });
   const { formMode } = useFormState();
   const isInDesigner = formMode === 'designer';
   const { updateKanban, deleteKanban, createKanbanItem, fetchColumnState } = useKanbanActions();
@@ -35,18 +40,20 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { getMetadata } = useMetadataDispatcher();
 
   useEffect(() => {
-    if (!isInDesigner && entityType.id && groupingProperty) {
-      getMetadata({ modelType: entityType.id, dataType: DataTypes.entityReference }).then((resp: any) => {
-        const endpoints = resp?.apiEndpoints;
-        setUrls({ updateUrl: endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url });
-        refetch({ path: `${resp?.apiEndpoints.list.url}?maxResultCount=${maxResultCount || 100}` })
-          .then((resp) => {
-            setTasks(resp.result.items.filter((x: any) => x[`${groupingProperty}`] !== null));
-          })
-          .catch((err) => console.error('Error fetching tasks:', err));
+    if (!isInDesigner && modelType) {
+      getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp) => {
+        const endpoints = isDefined(resp) && isEntityMetadata(resp) ? resp.apiEndpoints : undefined;
+        setUrls({ updateUrl: endpoints?.update?.url, deleteUrl: endpoints?.delete?.url, postUrl: endpoints?.create?.url });
       });
     }
-  }, [groupingProperty, entityType.id]);
+  }, [isInDesigner, modelType]);
+
+  // records come from the data table context so its filters, quick search and refresh apply
+  useEffect(() => {
+    if (!isInDesigner && groupingProperty) {
+      setTasks((tableData ?? []).filter((record) => hasGroupingValue(record, groupingProperty)));
+    }
+  }, [isInDesigner, groupingProperty, tableData]);
 
   useEffect(() => {
     setColumns(items);
