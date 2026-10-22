@@ -538,7 +538,11 @@ namespace Shesha.Users
                     user.SecurityQuestionLockoutEnd = DateTime.UtcNow.AddSeconds(lockoutSeconds);
                     user.SecurityQuestionFailedAttempts = 0;
                     await _userManager.UpdateAsync(user);
-                    throw new UserFriendlyException("Account is temporarily locked due to too many failed attempts.");
+
+                    // return instead of throwing: an exception rolls back the unit of work and the lockout would never be saved
+                    var lockedResponse = new ResetPasswordVerifyOtpResponse();
+                    ObjectMapper.Map(VerifyPinResponse.Failed("Account is temporarily locked due to too many failed attempts."), lockedResponse);
+                    return lockedResponse;
                 }
 
                 await _userManager.UpdateAsync(user);
