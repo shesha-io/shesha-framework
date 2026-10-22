@@ -2,6 +2,7 @@
 using Abp.Domain.Entities;
 using Shesha.DynamicEntities;
 using Shesha.Extensions;
+using System.Text.Json.Serialization;
 
 namespace Shesha.AutoMapper.Dto
 {
@@ -37,11 +38,13 @@ namespace Shesha.AutoMapper.Dto
         /// <summary>
         /// Entity display name
         /// </summary>
-        public string _displayName { get; internal set; }
+        [JsonPropertyName("_displayName")]
+        public string _displayName { get; set; }
 
         /// <summary>
         /// Entity class name
         /// </summary>
-        public string _className { get; internal set; }
+        [JsonPropertyName("_className")]
+        public string _className { get; set; }
     }
 }

@@ -1,144 +1,86 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
-using Abp.Runtime.Validation;
-using Shesha.Application.Services.Dto;
+using Abp.UI;
 using Shesha.Authorization;
+using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
-using Shesha.Extensions;
+using Shesha.EntityReferences;
+using Shesha.Roles;
 using Shesha.ShaRoleAppointedPersons.Dto;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.ShaRoleAppointedPersons
 {
     [SheshaAuthorize(Shesha.Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Role_Manage, IsConfigurable = false)]
-    public class ShaRoleAppointedPersonActionsAppService : SheshaCrudServiceBase<ShaRoleAppointedPerson, ShaRoleAppointedPersonDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateShaRoleAppointedPersonDto, ShaRoleAppointedPersonDto>, IShaRoleAppointedPersonAppService
+    public class ShaRoleAppointedPersonActionsAppService : SheshaAppServiceBase
     {
         private readonly IRepository<ShaRole, Guid> _roleRepository;
-        private readonly IRepository<ShaRoleAppointmentEntity, Guid> _appEntityRepository;
         private readonly IRepository<Person, Guid> _personRepository;
-        private readonly IRepository<Area, Guid> _areaRepository;
-        private readonly IShaPermissionChecker _shaPermissionChecker;
+        private readonly IRepository<ShaRoleAppointedPerson, Guid> _appointmentRepository;
+        private readonly IShaRoleManager _shaRoleManager;
 
-        public ShaRoleAppointedPersonActionsAppService(IRepository<ShaRoleAppointedPerson, Guid> repository, IRepository<ShaRole, Guid> roleRepository, IRepository<ShaRoleAppointmentEntity, Guid> appEntityRepository, IRepository<Person, Guid> personRepository, IRepository<Area, Guid> areaRepository, IShaPermissionChecker shaPermissionChecker) : base(repository)
+        public ShaRoleAppointedPersonActionsAppService(
+            IRepository<ShaRole, Guid> roleRepository,
+            IRepository<Person, Guid> personRepository,
+            IRepository<ShaRoleAppointedPerson, Guid> appointmentRepository,
+            IShaRoleManager shaRoleManager,
+            IShaPermissionChecker shaPermissionChecker
+        )
         {
             _roleRepository = roleRepository;
-            _appEntityRepository = appEntityRepository;
+            _appointmentRepository = appointmentRepository;
             _personRepository = personRepository;
-            _areaRepository = areaRepository;
-            _shaPermissionChecker = shaPermissionChecker;
+            _shaRoleManager = shaRoleManager;
         }
 
         /// <summary>
-        /// Creates new appointment
+        /// Creates new appointment (Add person to role)
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public override async Task<ShaRoleAppointedPersonDto> CreateAsync(CreateShaRoleAppointedPersonDto input)
+        public async Task<ShaRoleAppointedPersonDto> AddToRoleAsync(CreateShaRoleAppointedPersonDto input)
         {
-            CheckCreatePermission();
+            var role = input.RoleId != Guid.Empty ? await _roleRepository.GetAsync(input.RoleId) : null;
+            var person = input.PersonId != Guid.Empty ? await _personRepository.GetAsync(input.PersonId) : null;
 
-            var appointment = await BindAndValidateAsync(input);
+            if (role == null) throw new UserFriendlyException("Role not found");
+            if (person == null) throw new UserFriendlyException("Person not found");
+            if (input.PermissionedEntities?.Count() > 3) throw new UserFriendlyException("You can add up to 3 permissioned entities");
 
-            await CurrentUnitOfWork.SaveChangesAsync();
+            ShaRoleAppointmentData data = null;
 
-            if (appointment?.Person?.User != null)
-                await _shaPermissionChecker.ClearPermissionsCacheForUserAsync(appointment.Person.User.Id, appointment.Person.User.TenantId);
+            if (input.PermissionedEntities != null)
+            {
+                data = new ShaRoleAppointmentData();
+                foreach (var entity in input.PermissionedEntities)
+                    data.PermissionedEntities.Add(new GenericEntityReference(entity.Id.ToString(), entity._className, entity._displayName));
+            }
 
-            var dto = MapToEntityDto(appointment);
+            var result = await _shaRoleManager.AddToRoleAsync(person, role, data);
+
+            if (!result.Succeeded)
+                throw new UserFriendlyException(String.Join("; ", result.Errors));
+
+            var dto = ObjectMapper.Map<ShaRoleAppointedPersonDto>(result.ShaRoleAppointment);
             return dto;
         }
 
-        private async Task<ShaRoleAppointedPerson> BindAndValidateAsync(IShaRoleAppointedPersonDto input)
+        public async Task DeleteAsync(EntityDto<Guid> input)
         {
-            var entity = input is EntityDto<Guid> withId && withId.Id != Guid.Empty
-                ? await Repository.GetAsync(withId.Id)
-                : new ShaRoleAppointedPerson();
-
-            entity.Role = input.RoleId != Guid.Empty
-                ? await _roleRepository.GetAsync(input.RoleId)
-                : null;
-            entity.Person = (input.Person?.Id ?? Guid.Empty) != Guid.Empty
-                ? await _personRepository.GetAsync(input.Person.Id.Value)
-                : null;
-
-            var regionIds = input.Regions.Select(r => r.Id).ToList();
-            var regions = input.Regions.Any()
-                ? await _areaRepository.GetAll().Where(a => regionIds.Contains(a.Id)).ToListAsync()
-                : new List<Area>();
-
-            var validationResults = new List<ValidationResult>();
-            if (entity.Role == null)
-                validationResults.Add(new ValidationResult("Role is mandatory"));
-            if (entity.Person == null)
-                validationResults.Add(new ValidationResult("Person is mandatory"));
-
-            if (entity.Role != null && entity.Person != null &&
-                await Repository.GetAll().AnyAsync(a => a.Role == entity.Role && a.Person == entity.Person && a.Id != entity.Id))
-                validationResults.Add(new ValidationResult("Selected person already in the list"));
-
-            // todo: validate regions only for roles with region parameter
-
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
-
-            await Repository.InsertOrUpdateAsync(entity);
-
-            var regionTypeShortAlias = typeof(Area).GetEntityConfiguration().TypeShortAlias;
-            var linkedRegions = await _appEntityRepository.GetAll().Where(e => e.Appointment == entity && e.EntityTypeAlias == regionTypeShortAlias).ToListAsync();
-            
-            // delete removed ones
-            var linkedRegionsToDelete = linkedRegions.Where(e => e.EntityTypeAlias == regionTypeShortAlias && !regions.Any(r => r.Id.ToString() == e.EntityId)).ToList();
-            foreach (var linkedRegion in linkedRegionsToDelete)
-            {
-                await _appEntityRepository.DeleteAsync(linkedRegion);
-            }
-
-            // add new ones
-            var toAdd = regions.Where(r => !linkedRegions.Any(e => e.EntityTypeAlias == regionTypeShortAlias && e.EntityId == r.Id.ToString())).ToList();
-            foreach (var region in toAdd)
-            {
-                await _appEntityRepository.InsertAsync(new ShaRoleAppointmentEntity
-                {
-                    Appointment = entity,
-                    EntityId = region.Id.ToString(),
-                    EntityTypeAlias = regionTypeShortAlias
-                });
-            }
-
-            return entity;
+            var appointment = await _appointmentRepository.GetAsync(input.Id);
+            await _shaRoleManager.DeleteAppointmentAsync(appointment);
         }
 
-        public override async Task<ShaRoleAppointedPersonDto> UpdateAsync(ShaRoleAppointedPersonDto input)
+        private ShaRoleAppointedPersonDto Map(ShaRoleAppointedPerson entity)
         {
-            CheckCreatePermission();
-
-            var appointment = await BindAndValidateAsync(input);
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            if (appointment?.Person?.User != null)
-                await _shaPermissionChecker.ClearPermissionsCacheForUserAsync(appointment.Person.User.Id, appointment.Person.User.TenantId);
-
-            var dto = MapToEntityDto(appointment);
-            return dto;
-        }
-
-        public override async Task DeleteAsync(EntityDto<Guid> input)
-        {
-            CheckDeletePermission();
-
-            var appointment = await Repository.GetAsync(input.Id);
-
-            await Repository.DeleteAsync(appointment);
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            if (appointment?.Person?.User != null)
-                await _shaPermissionChecker.ClearPermissionsCacheForUserAsync(appointment.Person.User.Id, appointment.Person.User.TenantId);
+            return new ShaRoleAppointedPersonDto()
+            {
+                RoleId = entity.Role?.Id ?? Guid.Empty,
+                PersonId = entity.Person?.Id ?? Guid.Empty,
+                PermissionedEntities = entity.PermissionedEntities?.Select(e => new EntityReferenceDto<string>(e.Id, e._displayName, e._className)).ToList()
+            };
         }
     }
 }
