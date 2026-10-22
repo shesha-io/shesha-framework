@@ -9,5 +9,5 @@ export const QueryBuilderWrapper: FC<PropsWithChildren<{}>> = ({ children }) => 
         {children}
       </QueryBuilderProvider>
     )
-    : null;
+    : <>{children}</>;
 };
