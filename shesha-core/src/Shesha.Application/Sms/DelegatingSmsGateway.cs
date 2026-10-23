@@ -10,7 +10,9 @@ namespace Shesha.Sms
     /// <remarks>
     /// Constructing this type does no I/O and does not call <see cref="ISmsGatewayFactory"/>.
     /// Each operation awaits <see cref="ISmsGatewayFactory.GetSmsGatewayAsync"/>, remembers that
-    /// gateway's <see cref="ISmsGateway.SettingsType"/> on this instance, and then releases the gateway.
+    /// gateway's <see cref="ISmsGateway.SettingsType"/> on this instance, and then releases the instance
+    /// the factory returned. A null result or another <see cref="DelegatingSmsGateway"/> is not used;
+    /// the operation runs on <see cref="NullSmsGateway.Instance"/> instead.
     /// A settings change applies on this instance's next call. Inject <see cref="ISmsGatewayFactory"/> in new code.
     /// </remarks>
     [Obsolete("Do not inject ISmsGateway. Inject ISmsGatewayFactory and call GetSmsGatewayAsync so gateway resolution stays asynchronous. DelegatingSmsGateway keeps existing constructor injection working without blocking a thread when the gateway is resolved.")]
@@ -76,25 +78,34 @@ namespace Shesha.Sms
         public Type SettingsType => _settingsTypeUsed;
 
         /// <summary>
-        /// Resolves the current gateway, records its settings type on this instance, runs <paramref name="action"/>, and releases the gateway.
+        /// Resolves the current gateway, records its settings type on this instance, runs <paramref name="action"/>, and releases the factory's instance.
         /// </summary>
         /// <typeparam name="T">Result of <paramref name="action"/>.</typeparam>
-        /// <param name="action">Work to run against the resolved gateway.</param>
+        /// <param name="action">Work to run against the gateway selected for this operation.</param>
         /// <returns>The result of <paramref name="action"/>.</returns>
+        /// <remarks>
+        /// <see cref="ISmsGateway.SettingsType"/> is read inside the try. If that getter throws, the exception
+        /// propagates, this instance's <see cref="SettingsType"/> is left unchanged, <paramref name="action"/> does not run,
+        /// and <see cref="ISmsGatewayFactory.ReleaseGateway"/> still receives the instance the factory returned.
+        /// When the factory returns null or another <see cref="DelegatingSmsGateway"/>, <paramref name="action"/> runs on
+        /// <see cref="NullSmsGateway.Instance"/> and release is still called with the original factory result.
+        /// <see cref="ISmsGatewayFactory.ReleaseGateway"/> ignores null and <see cref="NullSmsGateway.Instance"/>.
+        /// </remarks>
         private async Task<T> ExecuteAsync<T>(Func<ISmsGateway, Task<T>> action)
         {
-            var gateway = await _smsGatewayFactory.GetSmsGatewayAsync();
-            if (gateway == null || gateway is DelegatingSmsGateway)
-                gateway = NullSmsGateway.Instance;
+            var resolved = await _smsGatewayFactory.GetSmsGatewayAsync();
+            var gateway = resolved == null || resolved is DelegatingSmsGateway
+                ? NullSmsGateway.Instance
+                : resolved;
 
-            _settingsTypeUsed = gateway.SettingsType;
             try
             {
+                _settingsTypeUsed = gateway.SettingsType;
                 return await action(gateway);
             }
             finally
             {
-                _smsGatewayFactory.ReleaseGateway(gateway);
+                _smsGatewayFactory.ReleaseGateway(resolved);
             }
         }
     }

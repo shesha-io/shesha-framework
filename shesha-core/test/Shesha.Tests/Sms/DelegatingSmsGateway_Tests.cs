@@ -279,6 +279,41 @@ namespace Shesha.Tests.Sms
             setup.Resolver.Verify(r => r.Release(null), Times.Never);
         }
 
+        [Fact]
+        public async Task Send_ReleasesGateway_WhenSettingsTypeThrows_TestAsync()
+        {
+            var throwing = new ThrowingSettingsTypeGateway();
+            var factory = new Mock<ISmsGatewayFactory>();
+            factory.Setup(f => f.GetSmsGatewayAsync()).ReturnsAsync(throwing);
+
+            var delegating = new DelegatingSmsGateway(factory.Object);
+            var exception = await Should.ThrowAsync<InvalidOperationException>(() => delegating.SendSmsAsync("0820000000", "hello"));
+
+            exception.Message.ShouldBe("settings type failed");
+            throwing.SendCount.ShouldBe(0);
+            delegating.SettingsType.ShouldBeNull();
+            factory.Verify(f => f.ReleaseGateway(throwing), Times.Once);
+        }
+
+        [Fact]
+        public async Task Send_UsesNullGateway_AndReleasesReturnedDelegatingInstance_TestAsync()
+        {
+            var nestedFactory = new Mock<ISmsGatewayFactory>(MockBehavior.Strict);
+            var nested = new DelegatingSmsGateway(nestedFactory.Object);
+            var factory = new Mock<ISmsGatewayFactory>();
+            factory.Setup(f => f.GetSmsGatewayAsync()).ReturnsAsync(nested);
+
+            var delegating = new DelegatingSmsGateway(factory.Object);
+            var status = await delegating.SendSmsAsync("0820000000", "hello");
+
+            status.IsSuccess.ShouldBeTrue();
+            status.Message.ShouldBe("Message Sent from Null Gateway");
+            delegating.SettingsType.ShouldBeNull();
+            factory.Verify(f => f.ReleaseGateway(nested), Times.Once);
+            factory.Verify(f => f.ReleaseGateway(NullSmsGateway.Instance), Times.Never);
+            factory.Verify(f => f.ReleaseGateway(It.IsAny<ISmsGateway>()), Times.Once);
+        }
+
         private static WindsorContainer CreateContainer(ISmsGatewayFactory factory)
         {
             var container = new WindsorContainer();
@@ -434,6 +469,26 @@ namespace Shesha.Tests.Sms
             public override Task<GatewayASettings> GetTypedSettingsAsync() => Task.FromResult(new GatewayASettings());
 
             public override Task SetTypedSettingsAsync(GatewayASettings settings) => Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Gateway whose <see cref="SettingsType"/> getter fails. Used to prove the resolved instance is still released.
+        /// </summary>
+        private sealed class ThrowingSettingsTypeGateway : ISmsGateway
+        {
+            public int SendCount { get; private set; }
+
+            public Type SettingsType => throw new InvalidOperationException("settings type failed");
+
+            public Task<SendStatus> SendSmsAsync(string mobileNumber, string body)
+            {
+                SendCount++;
+                return Task.FromResult(SendStatus.Success("should-not-send"));
+            }
+
+            public Task<object> GetSettingsAsync() => Task.FromResult<object>(null);
+
+            public Task SetSettingsAsync(object settings) => Task.CompletedTask;
         }
 
         private sealed class NoUidGateway : ISmsGateway
