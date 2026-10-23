@@ -202,10 +202,81 @@ namespace Shesha.Tests.Sms
             again.Single().Uid.ShouldBe(GatewayA.Uid);
             setup.Scans.ShouldBe(1);
 
-            var status = await second.GetSmsGatewayAsync();
-            status.ShouldBeSameAs(gatewayA);
+            var resolved = await second.GetSmsGatewayAsync();
+            resolved.ShouldBeSameAs(gatewayA);
+            second.ReleaseGateway(resolved);
+            second.ReleaseGateway(NullSmsGateway.Instance);
             setup.Scans.ShouldBe(1);
             setup.SettingsReads.ShouldBe(1);
+            setup.Resolver.Verify(r => r.Release(gatewayA), Times.Once);
+            setup.Resolver.Verify(r => r.Release(NullSmsGateway.Instance), Times.Never);
+        }
+
+        [Fact]
+        public async Task SettingsType_IsPerInstance_AndCurrentInfoFollowsSelection_TestAsync()
+        {
+            var gatewayA = new GatewayA();
+            var gatewayB = new GatewayB();
+            var settingsForA = new SmsSettings { SmsGateway = GatewayA.Uid };
+            var settingsForB = new SmsSettings { SmsGateway = GatewayB.Uid };
+            using var setupA = new FactorySetup(() => Task.FromResult(settingsForA), gatewayA, gatewayB);
+            using var setupB = new FactorySetup(() => Task.FromResult(settingsForB), gatewayA, gatewayB);
+            var first = new DelegatingSmsGateway(setupA.Factory);
+            var second = new DelegatingSmsGateway(setupB.Factory);
+
+            first.SettingsType.ShouldBeNull();
+            second.SettingsType.ShouldBeNull();
+
+            var infoA = await setupA.Factory.GetCurrentGatewayInfoAsync();
+            infoA.ShouldNotBeNull();
+            infoA.Uid.ShouldBe(GatewayA.Uid);
+            infoA.SettingsType.ShouldBe(typeof(GatewayASettings));
+            setupA.Resolver.Verify(r => r.Resolve(It.IsAny<Type>()), Times.Never);
+            first.SettingsType.ShouldBeNull();
+            second.SettingsType.ShouldBeNull();
+
+            await first.SendSmsAsync("0820000000", "from-a");
+            await second.SendSmsAsync("0820000000", "from-b");
+
+            first.SettingsType.ShouldBe(typeof(GatewayASettings));
+            second.SettingsType.ShouldBe(typeof(GatewayBSettings));
+
+            settingsForB.SmsGateway = GatewayA.Uid;
+            var infoAfterSwitch = await setupB.Factory.GetCurrentGatewayInfoAsync();
+            infoAfterSwitch.ShouldNotBeNull();
+            infoAfterSwitch.Uid.ShouldBe(GatewayA.Uid);
+            infoAfterSwitch.SettingsType.ShouldBe(typeof(GatewayASettings));
+            second.SettingsType.ShouldBe(typeof(GatewayBSettings));
+            first.SettingsType.ShouldBe(typeof(GatewayASettings));
+
+            await second.SendSmsAsync("0820000000", "from-b-now-a");
+            second.SettingsType.ShouldBe(typeof(GatewayASettings));
+            first.SettingsType.ShouldBe(typeof(GatewayASettings));
+            gatewayA.Sent.ToArray().ShouldBe(new[] { "from-a", "from-b-now-a" });
+            gatewayB.Sent.ToArray().ShouldBe(new[] { "from-b" });
+
+            setupA.Resolver.Verify(r => r.Release(gatewayA), Times.Once);
+            setupA.Resolver.Verify(r => r.Release(gatewayB), Times.Never);
+            setupB.Resolver.Verify(r => r.Release(gatewayB), Times.Once);
+            setupB.Resolver.Verify(r => r.Release(gatewayA), Times.Once);
+        }
+
+        [Fact]
+        public async Task ReleaseGateway_ReleasesResolvedInstance_AndIgnoresSharedNullInstance_TestAsync()
+        {
+            var gatewayA = new GatewayA();
+            using var setup = new FactorySetup(() => Task.FromResult(new SmsSettings { SmsGateway = GatewayA.Uid }), gatewayA);
+
+            var resolved = await setup.Factory.GetSmsGatewayAsync();
+            resolved.ShouldBeSameAs(gatewayA);
+
+            setup.Factory.ReleaseGateway(resolved);
+            setup.Factory.ReleaseGateway(null);
+            setup.Factory.ReleaseGateway(NullSmsGateway.Instance);
+
+            setup.Resolver.Verify(r => r.Release(gatewayA), Times.Once);
+            setup.Resolver.Verify(r => r.Release(NullSmsGateway.Instance), Times.Never);
+            setup.Resolver.Verify(r => r.Release(null), Times.Never);
         }
 
         private static WindsorContainer CreateContainer(ISmsGatewayFactory factory)

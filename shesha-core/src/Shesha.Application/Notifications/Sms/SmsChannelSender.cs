@@ -44,6 +44,14 @@ namespace Shesha.Notifications.SMS
             return await _smsSettings.SmsSettings.GetValueAsync();
         }
 
+        /// <summary>
+        /// Sends an SMS through the gateway currently selected in settings, then releases that gateway.
+        /// </summary>
+        /// <param name="sender">Message sender. Unused by this channel.</param>
+        /// <param name="reciever">Recipient whose address is the destination mobile number.</param>
+        /// <param name="message">Notification body.</param>
+        /// <param name="attachments">Unused by this channel.</param>
+        /// <returns>The send result, or a failure when SMS is disabled or the mobile number is empty.</returns>
         public async Task<SendStatus> SendAsync(IMessageSender? sender, IMessageReceiver reciever, NotificationMessage message, List<EmailAttachment>? attachments = null)
         {
             var settings = await GetSettingsAsync();
@@ -62,7 +70,14 @@ namespace Shesha.Notifications.SMS
                 return SendStatus.Failed("Recipient mobileNo is empty");
 
             var smsGateway = await _smsGatewayFactory.GetSmsGatewayAsync();
-            return await smsGateway.SendSmsAsync(mobileNo, message.Message);
+            try
+            {
+                return await smsGateway.SendSmsAsync(mobileNo, message.Message);
+            }
+            finally
+            {
+                _smsGatewayFactory.ReleaseGateway(smsGateway);
+            }
         }
 
         public Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment>? attachments = null)

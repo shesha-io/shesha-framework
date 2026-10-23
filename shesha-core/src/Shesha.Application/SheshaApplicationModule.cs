@@ -92,8 +92,8 @@ namespace Shesha
             IocManager.Register<NullSmsGateway, NullSmsGateway>(DependencyLifeStyle.Transient);
 
             // Backward-compatible registration. Resolving ISmsGateway only constructs DelegatingSmsGateway.
-            // It does not read settings or call ISmsGatewayFactory until a member is awaited, so a settings
-            // change applies on the next call. New code should inject ISmsGatewayFactory and call GetSmsGatewayAsync.
+            // It does not read settings or call ISmsGatewayFactory until a member is awaited.
+            // Each operation then releases the gateway it resolved. New code should inject ISmsGatewayFactory.
             IocManager.IocContainer.Register(
                 Component.For<ISmsGateway>().ImplementedBy<DelegatingSmsGateway>().LifestyleTransient()
             );

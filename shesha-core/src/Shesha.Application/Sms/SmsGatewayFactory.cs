@@ -17,19 +17,24 @@ namespace Shesha.Sms
     /// <remarks>
     /// Gateway type discovery is cached for the process the first time it is needed.
     /// The cache is shared by every instance and is safe for concurrent callers.
-    /// The selected gateway is not cached: <see cref="GetSmsGatewayAsync"/> reads settings on every call.
+    /// The selected gateway is not cached: <see cref="GetSmsGatewayAsync"/> and
+    /// <see cref="GetCurrentGatewayInfoAsync"/> read settings on every call.
     /// </remarks>
     public class SmsGatewayFactory : ISmsGatewayFactory, ITransientDependency
     {
         private static readonly object GatewayTypesLock = new object();
-        private static readonly object ObservedGatewayLock = new object();
         private static List<AvailableSmsGatewayInfo> _gatewayTypes;
-        private static string _observedGatewayUid;
 
         private readonly ISmsSettings _smsSettings;
         private readonly IIocResolver _iocResolver;
         private readonly ITypeFinder _typeFinder;
 
+        /// <summary>
+        /// Creates the factory.
+        /// </summary>
+        /// <param name="smsSettings">SMS settings. Read asynchronously on each lookup.</param>
+        /// <param name="typeFinder">Type scanner. Invoked once per process to discover gateways.</param>
+        /// <param name="iocResolver">Resolves concrete gateways and releases them.</param>
         public SmsGatewayFactory(ISmsSettings smsSettings, ITypeFinder typeFinder, IIocResolver iocResolver)
         {
             _smsSettings = smsSettings;
@@ -38,67 +43,80 @@ namespace Shesha.Sms
         }
 
         /// <summary>
-        /// Releases a gateway resolved by <see cref="GetSmsGatewayAsync"/>.
+        /// Releases a gateway returned by <see cref="GetSmsGatewayAsync"/> back to Windsor.
         /// </summary>
-        internal void ReleaseGateway(ISmsGateway gateway)
+        /// <param name="gateway">
+        /// Instance previously returned by <see cref="GetSmsGatewayAsync"/>.
+        /// Null and <see cref="NullSmsGateway.Instance"/> are ignored because they are not container-owned.
+        /// A transient gateway resolved for a configured uid is released, including a container-created <see cref="NullSmsGateway"/>.
+        /// </param>
+        public void ReleaseGateway(ISmsGateway gateway)
         {
-            if (gateway != null && !ReferenceEquals(gateway, NullSmsGateway.Instance))
-                _iocResolver.Release(gateway);
+            if (gateway == null || ReferenceEquals(gateway, NullSmsGateway.Instance))
+                return;
+
+            _iocResolver.Release(gateway);
         }
 
         /// <summary>
-        /// Drops the process-wide gateway catalogue and the last observed gateway uid.
+        /// Drops the process-wide gateway type catalogue so the next lookup scans again.
         /// </summary>
         internal static void ClearGatewayTypeCache()
         {
             lock (GatewayTypesLock)
                 _gatewayTypes = null;
-
-            lock (ObservedGatewayLock)
-                _observedGatewayUid = null;
         }
 
         /// <summary>
-        /// Settings type of the gateway uid last observed by <see cref="GetSmsGatewayAsync"/>,
-        /// looked up in the cached catalogue. Returns null when settings have not been read yet,
-        /// when no gateway is configured, or when the uid is unknown. Does not read settings or block.
+        /// Gets the gateway currently selected in SMS settings.
         /// </summary>
-        internal Type GetCachedSettingsType()
+        /// <returns>
+        /// The resolved gateway, or <see cref="NullSmsGateway.Instance"/> when none is configured.
+        /// The caller must pass the result to <see cref="ReleaseGateway"/>.
+        /// </returns>
+        public async Task<ISmsGateway> GetSmsGatewayAsync()
         {
-            string uid;
-            lock (ObservedGatewayLock)
-                uid = _observedGatewayUid;
+            var info = await GetCurrentGatewayInfoAsync();
+            if (info?.Type == null)
+                return NullSmsGateway.Instance;
 
-            if (string.IsNullOrWhiteSpace(uid))
-                return null;
+            var resolved = _iocResolver.Resolve(info.Type);
+            if (resolved is ISmsGateway gateway)
+                return gateway;
 
-            return GetCachedGatewayTypes().FirstOrDefault(g => g.Uid == uid)?.SettingsType;
+            _iocResolver.Release(resolved);
+            return NullSmsGateway.Instance;
         }
 
-        public async Task<ISmsGateway> GetSmsGatewayAsync()
+        /// <summary>
+        /// Gets the catalogue entry for the gateway currently selected in SMS settings.
+        /// </summary>
+        /// <returns>
+        /// The catalogue entry, or null when settings are missing, the uid is blank, or the uid is unknown.
+        /// Does not resolve a gateway.
+        /// </returns>
+        public async Task<AvailableSmsGatewayInfo> GetCurrentGatewayInfoAsync()
         {
             var settings = await _smsSettings.SmsSettings.GetValueOrNullAsync();
             if (settings == null || string.IsNullOrWhiteSpace(settings.SmsGateway))
-            {
-                ObserveGatewayUid(null);
-                return NullSmsGateway.Instance;
-            }
+                return null;
 
-            var info = GetCachedGatewayTypes().FirstOrDefault(e => e.Uid == settings.SmsGateway);
-            ObserveGatewayUid(info == null ? null : settings.SmsGateway);
-
-            var gateway = info?.Type != null
-                ? _iocResolver.Resolve(info.Type) as ISmsGateway
-                : null;
-
-            return gateway ?? NullSmsGateway.Instance;
+            return GetCachedGatewayTypes().FirstOrDefault(e => e.Uid == settings.SmsGateway);
         }
 
+        /// <summary>
+        /// Gets a copy of the cached gateway catalogue.
+        /// </summary>
+        /// <returns>Registered gateways. The list is a copy; the items are the cached entries.</returns>
         public List<AvailableSmsGatewayInfo> GetSmsGatewayTypes()
         {
             return GetCachedGatewayTypes().ToList();
         }
 
+        /// <summary>
+        /// Returns the process-wide catalogue, scanning types once.
+        /// </summary>
+        /// <returns>The cached catalogue. Callers must not mutate the list.</returns>
         private List<AvailableSmsGatewayInfo> GetCachedGatewayTypes()
         {
             lock (GatewayTypesLock)
@@ -110,12 +128,10 @@ namespace Shesha.Sms
             }
         }
 
-        private static void ObserveGatewayUid(string gatewayUid)
-        {
-            lock (ObservedGatewayLock)
-                _observedGatewayUid = gatewayUid;
-        }
-
+        /// <summary>
+        /// Scans registered <see cref="ISmsGateway"/> implementations that have a <see cref="ClassUidAttribute"/>.
+        /// </summary>
+        /// <returns>The discovered catalogue.</returns>
         private List<AvailableSmsGatewayInfo> DiscoverGatewayTypes()
         {
             var result = new List<AvailableSmsGatewayInfo>();
@@ -150,6 +166,8 @@ namespace Shesha.Sms
         /// Reads the settings CLR type from <see cref="ConfigurableSmsGateway{TSettings}"/> or
         /// <see cref="IConfigurableSmsGateway{TSettings}"/> without creating an instance.
         /// </summary>
+        /// <param name="gatewayType">Gateway class to inspect.</param>
+        /// <returns>The settings type, or null when the class does not declare one.</returns>
         private static Type GetSettingsType(Type gatewayType)
         {
             for (var current = gatewayType; current != null && current != typeof(object); current = current.BaseType)
