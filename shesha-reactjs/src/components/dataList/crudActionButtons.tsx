@@ -4,10 +4,10 @@ import { App } from 'antd';
 import * as React from 'react';
 import { extractErrorInfo } from '@/utils/errors';
 import ActionButton, { IActionButtonProps } from '../actionButton/index';
-import ValidationErrors from '../validationErrors';
+import { ValidationErrors } from '../validationErrors';
 import { useStyles } from './styles/styles';
 
-export const CrudActionButtons = (): React.JSX.Element => {
+const CrudActionButtons = (): React.JSX.Element => {
   const {
     mode,
     switchMode,

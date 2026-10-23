@@ -8,7 +8,7 @@ import { unsafeGetValueByPropertyName, setValueByPropertyName } from '@/utils/ob
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface IAddressInputControlProps {
+interface IAddressInputControlProps {
   value?: unknown | undefined;
   onChange?: ((value: string) => void) | undefined;
   placeholder?: string | undefined;

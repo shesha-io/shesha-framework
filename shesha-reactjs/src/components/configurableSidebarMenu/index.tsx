@@ -5,7 +5,7 @@ import { SidebarMenu } from '@/components/sidebarMenu';
 import { ComponentSettingsModal } from './settingsModal';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { EditOutlined } from '@ant-design/icons';
-import ConfigurableComponentRenderer from '../configurableComponentRenderer';
+import { ConfigurableComponentRenderer } from '../configurableComponentRenderer';
 import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
 import { useMainMenu } from '@/providers/mainMenu';
 import { ISidebarMenuItem } from '@/interfaces/sidebar';
@@ -19,7 +19,7 @@ const EmptySidebarProps: ISideBarMenuProps = {
   items: [],
 };
 
-export interface IConfigurableSidebarMenuProps {
+interface IConfigurableSidebarMenuProps {
   theme?: MenuTheme | undefined;
   defaultSettings?: ISideBarMenuProps | undefined;
   name: string;
@@ -82,5 +82,3 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = (props
     </ConfigurableComponentRenderer>
   );
 };
-
-export default ConfigurableSidebarMenu;

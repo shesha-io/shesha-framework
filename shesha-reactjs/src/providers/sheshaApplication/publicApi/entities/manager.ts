@@ -8,7 +8,7 @@ import qs from "qs";
 import { IEntityEndpoints } from "./entityTypeAccessor";
 import { throwError } from "@/utils/errors";
 
-export const ENTITIES_URLS = {
+const ENTITIES_URLS = {
   GET_CONFIGURATIONS: '/api/services/app/EntityConfig/GetClientApiConfigurations',
 };
 

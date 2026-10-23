@@ -35,7 +35,6 @@ export type AutocompleteDataSourceType = StringSubtype<typeof AUTOCOMPLETE_DATA_
 /** Ref of the antd `Select` the autocomplete renders. */
 export type AutocompleteSelectRef = GetRef<typeof Select>;
 
-export type QueryParamFunc = (searchText: string, selected: unknown[]) => object;
 export type FilterSelectedFunc = (value: unknown | unknown[] | undefined) => JsonLogicFilter | undefined;
 export type KayValueFunc = (value: unknown, args?: object) => string | undefined;
 export type DisplayValueFunc = (value: unknown, args?: object) => string;
@@ -64,7 +63,7 @@ interface IQueryParamProp {
   value?: Key;
 }
 
-export type EntityAutocompleteProps = {
+type EntityAutocompleteProps = {
   /** Type of entity */
   entityType?: string | IEntityTypeIdentifier | undefined;
   /** Sorting */
@@ -73,7 +72,7 @@ export type EntityAutocompleteProps = {
   grouping?: GroupingItem | undefined;
 };
 
-export type UrlAutocompleteProps = {
+type UrlAutocompleteProps = {
   /** Data source URL (required for dataSourceType === 'url', alternative for dataSourceType === 'entitiesList') */
   dataSourceUrl?: string | undefined;
   /** Query params, applicable only for dataSourceType === 'url' */
@@ -131,7 +130,7 @@ type AutocompleteDisplayProps = {
 };
 
 /** The subset of antd `Select` props used to relay the standard component events. */
-export type SelectEventHandlers = Pick<
+type SelectEventHandlers = Pick<
   SelectProps,
   'onBlur' | 'onClick' | 'onFocus' | 'onKeyDown' | 'onKeyUp' | 'onMouseEnter' | 'onMouseLeave'
 >;

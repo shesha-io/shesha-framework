@@ -1,4 +1,4 @@
-import { CSSProperties, FC, Key } from 'react';
+import { CSSProperties, FC } from 'react';
 import { Radio, RadioChangeEvent, RadioGroupProps } from 'antd';
 import { nanoid } from '@/utils/uuid';
 import { ReferenceListItemDto } from '@/apis/referenceList';
@@ -8,12 +8,6 @@ import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { useStyles } from './styles/styles';
 
 const RadioButton = Radio.Button;
-
-export interface IRefListDropDownOption {
-  children?: string;
-  key: string;
-  value?: Key;
-}
 
 export interface IRefListRadioButtonsProps extends Omit<RadioGroupProps, "orientation"> {
   /** Reference list name */

@@ -26,4 +26,4 @@ export const IdleTimerWrapper: FC<PropsWithChildren> = ({ children }) => {
   return <IdleTimerRenderer securitySettings={securitySettings}>{children}</IdleTimerRenderer>;
 };
 
-export default IdleTimerWrapper;
+

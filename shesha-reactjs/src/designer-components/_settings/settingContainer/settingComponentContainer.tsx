@@ -10,7 +10,7 @@ export interface ISettingContainerProps extends PropsWithChildren<IComponentsCon
   propertyName?: string | undefined;
 }
 
-export const SettingComponentContainerInner: FC<ISettingContainerProps> = (props) => {
+const SettingComponentContainerInner: FC<ISettingContainerProps> = (props) => {
   const isDrawing = useIsDrawingForm();
 
   const model = useMemo(() => {

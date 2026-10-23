@@ -7,23 +7,23 @@ import { ComponentSettingsModal } from './componentSettingsModal';
 import { useStyles } from './styles/styles';
 import { isDefined } from '@/utils/nullables';
 
-export interface IComponentStateProps<TSettings extends object = object> {
+interface IComponentStateProps<TSettings extends object = object> {
   isSelected: boolean;
   isEditMode: boolean;
   wrapperClassName: string;
   settings: TSettings | undefined;
 }
 
-export interface IOverlayProps {
+interface IOverlayProps {
   children?: React.ReactElement;
 }
 
-export type ConfigurableComponentChildrenFn<TSettings extends object = object> = (
+type ConfigurableComponentChildrenFn<TSettings extends object = object> = (
   componentState: IComponentStateProps<TSettings>,
   BlockOverlay: (props: IOverlayProps) => React.ReactElement,
 ) => React.ReactNode | null;
 
-export interface IConfigurableComponentRendererProps<TSettings extends object = object> {
+interface IConfigurableComponentRendererProps<TSettings extends object = object> {
   canConfigure?: boolean;
   children: ConfigurableComponentChildrenFn<TSettings>;
   onStartEdit?: () => void;
@@ -31,7 +31,7 @@ export interface IConfigurableComponentRendererProps<TSettings extends object = 
   settingsEditor?: ISettingsEditor<TSettings>;
 }
 
-export interface IBlockOverlayProps {
+interface IBlockOverlayProps {
   visible: boolean;
   onClick?: () => void;
 }
@@ -129,5 +129,3 @@ export const ConfigurableComponentRenderer = <TSettings extends object>({
     </>
   );
 };
-
-export default ConfigurableComponentRenderer;

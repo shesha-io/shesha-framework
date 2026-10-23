@@ -2,7 +2,7 @@ import { FC } from 'react';
 import classNames from 'classnames';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { useStyles } from './styles/styles';
-import { ACTIVE_HEADER } from './constant';
+import { HEADER_CONFIGURATION } from './constant';
 import { FormFullName } from '@/providers';
 
 interface ILayoutHeaderProps {
@@ -13,7 +13,7 @@ interface ILayoutHeaderProps {
 const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, headerFormId }) => {
   const { styles } = useStyles();
 
-  const localHeaderFormId = headerFormId ?? ACTIVE_HEADER;
+  const localHeaderFormId = headerFormId ?? HEADER_CONFIGURATION;
   return (
     <div className={classNames(styles.layoutHeader, { collapsed })}>
       <div className={styles.headerWrapper}>

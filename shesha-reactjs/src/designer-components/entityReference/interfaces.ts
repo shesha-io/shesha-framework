@@ -2,8 +2,6 @@ import { IEntityReferenceProps } from '@/components/entityReference';
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IStyleValue } from '@/providers/form/models';
 
-export type IActionParameters = [{ key: string; value: string }];
-
 /**
  * Entity reference component properties.
  *

@@ -1,4 +1,4 @@
-export interface EntityApiItem {
+interface EntityApiItem {
   name: string;
   description?: string;
   accessor: string;

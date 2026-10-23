@@ -17,5 +17,3 @@ export const Show: FC<PropsWithChildren<IShowProps>> = ({ children, when = false
 
   return memoizedWhen ? <Fragment>{children}</Fragment> : null;
 };
-
-export default Show;

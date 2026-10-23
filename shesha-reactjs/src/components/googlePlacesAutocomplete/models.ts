@@ -10,18 +10,18 @@ export interface IOpenCageResponse {
   total_results: number;
 }
 
-export interface LicensesEntity {
+interface LicensesEntity {
   name: string;
   url: string;
 }
 
-export interface Rate {
+interface Rate {
   limit: number;
   remaining: number;
   reset: number;
 }
 
-export interface ResultsEntity {
+interface ResultsEntity {
   annotations: Annotations;
   bounds: Bounds;
   components: Components;
@@ -30,7 +30,7 @@ export interface ResultsEntity {
   geometry: NortheastOrSouthwestOrGeometry;
 }
 
-export interface Annotations {
+interface Annotations {
   DMS: DMS;
   MGRS: string;
   Maidenhead: string;
@@ -48,28 +48,28 @@ export interface Annotations {
   what3words: What3words;
 }
 
-export interface DMS {
+interface DMS {
   lat: string;
   lng: string;
 }
 
-export interface Mercator {
+interface Mercator {
   x: number;
   y: number;
 }
 
-export interface OSM {
+interface OSM {
   edit_url: string;
   note_url: string;
   url: string;
 }
 
-export interface UNM49 {
+interface UNM49 {
   regions: Regions;
   statistical_groupings?: string[] | null;
 }
 
-export interface Regions {
+interface Regions {
   "AFRICA": string;
   "SOUTHERN_AFRICA": string;
   'SUB-SAHARAN_AFRICA': string;
@@ -77,7 +77,7 @@ export interface Regions {
   "ZA": string;
 }
 
-export interface Currency {
+interface Currency {
   alternate_symbols?: null[] | null;
   decimal_mark: string;
   html_entity: string;
@@ -92,26 +92,26 @@ export interface Currency {
   thousands_separator: string;
 }
 
-export interface Roadinfo {
+interface Roadinfo {
   drive_on: string;
   road: string;
   road_type: string;
   speed_in: string;
 }
 
-export interface Sun {
+interface Sun {
   rise: RiseOrSet;
   set: RiseOrSet;
 }
 
-export interface RiseOrSet {
+interface RiseOrSet {
   apparent: number;
   astronomical: number;
   civil: number;
   nautical: number;
 }
 
-export interface Timezone {
+interface Timezone {
   name: string;
   now_in_dst: number;
   offset_sec: number;
@@ -119,21 +119,21 @@ export interface Timezone {
   short_name: string;
 }
 
-export interface What3words {
+interface What3words {
   words: string;
 }
 
-export interface Bounds {
+interface Bounds {
   northeast: NortheastOrSouthwestOrGeometry;
   southwest: NortheastOrSouthwestOrGeometry;
 }
 
-export interface NortheastOrSouthwestOrGeometry {
+interface NortheastOrSouthwestOrGeometry {
   lat: number;
   lng: number;
 }
 
-export interface Components {
+interface Components {
   'ISO_3166-1_alpha-2'?: string;
   'ISO_3166-1_alpha-3'?: string;
   "_category"?: string;
@@ -151,17 +151,17 @@ export interface Components {
   "suburb"?: string;
 }
 
-export interface Status {
+interface Status {
   code: number;
   message: string;
 }
 
-export interface StayInformed {
+interface StayInformed {
   blog: string;
   twitter: string;
 }
 
-export interface Timestamp {
+interface Timestamp {
   created_http: string;
   created_unix: number;
 }

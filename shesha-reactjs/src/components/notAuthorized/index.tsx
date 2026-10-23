@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Result, Button } from 'antd';
 import { useShaRouting } from '@/providers/shaRouting';
 
-export const NotAuthorized: FC = () => {
+const NotAuthorized: FC = () => {
   const { router } = useShaRouting();
 
   return (

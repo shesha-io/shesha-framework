@@ -9,7 +9,7 @@ export interface IFormDataSubmittersContext {
   getFormDataSubmitter: (type: string) => IFormDataSubmitter | undefined;
 }
 
-export const FormDataSubmittersContext = createNamedContext<IFormDataSubmittersContext | undefined>(undefined, "FormDataSubmittersContext");
+const FormDataSubmittersContext = createNamedContext<IFormDataSubmittersContext | undefined>(undefined, "FormDataSubmittersContext");
 
 export const FormDataSubmittersProvider: FC<PropsWithChildren> = ({ children }) => {
   const gqlSubmitter = useGqlSubmitter();

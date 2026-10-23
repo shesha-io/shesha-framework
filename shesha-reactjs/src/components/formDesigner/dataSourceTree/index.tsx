@@ -10,7 +10,7 @@ import { getIconByPropertyMetadata } from '@/utils/metadata';
 import { useStyles } from '../styles/styles';
 import { isDefined } from '@/utils/nullables';
 
-export interface IProps {
+interface IProps {
   items: IPropertyMetadata[];
   defaultExpandAll: boolean;
   searchText?: string;

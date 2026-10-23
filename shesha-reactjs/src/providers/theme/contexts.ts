@@ -20,9 +20,6 @@ export type ResolvedTheme = 'dark' | 'light';
  */
 export type ColorScheme = ResolvedTheme | 'system';
 
-/** @deprecated use {@link ColorScheme}. Kept as an alias because `sidebar` used to be sidebar-only. */
-export type SidebarTheme = ColorScheme;
-
 const COLOR_SCHEMES: readonly ColorScheme[] = ['light', 'dark', 'system'];
 
 /**

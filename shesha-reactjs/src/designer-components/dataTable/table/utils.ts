@@ -177,7 +177,7 @@ export const getTableSettingsDefaults = (): {
 };
 
 // Auditing columns to exclude from default column generation
-export const AUDITING_COLUMNS = Object.freeze([
+const AUDITING_COLUMNS = Object.freeze([
   'id',
   // 'isDeleted',
   // 'deleterUserId',
@@ -190,7 +190,7 @@ export const AUDITING_COLUMNS = Object.freeze([
 ]);
 
 // Supported data types for table columns
-export const SUPPORTED_COLUMN_DATA_TYPES = [
+const SUPPORTED_COLUMN_DATA_TYPES = [
   'string',
   'number',
   'boolean',
@@ -219,7 +219,7 @@ export const MAX_NUMBER_OF_FETCH_COLS = 100;
  * @param properties - Array of property metadata
  * @returns Filtered array of properties suitable for table columns
  */
-export const filterPropertiesForTable = (properties: IPropertyMetadata[]): IPropertyMetadata[] => {
+const filterPropertiesForTable = (properties: IPropertyMetadata[]): IPropertyMetadata[] => {
   return properties.filter((prop: IPropertyMetadata) => {
     const columnName = prop.path || prop.columnName || '';
     const isAuditing = AUDITING_COLUMNS.includes(columnName.toLowerCase());
@@ -249,7 +249,7 @@ export const filterPropertiesBySupportedTypes = (
  * @param index - Column index for sorting
  * @returns DataTable column configuration
  */
-export const propertyToDataColumn = (property: IPropertyMetadata, index: number): IDataColumnsProps => {
+const propertyToDataColumn = (property: IPropertyMetadata, index: number): IDataColumnsProps => {
   // Guard against undefined or empty property.path
   const rawPath = property.path;
   const fallbackId = `col_${index}`;

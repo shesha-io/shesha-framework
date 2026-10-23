@@ -52,7 +52,7 @@ import { INotificationApi } from "./notificationApi";
 import { MutableApi } from "./utils";
 import { IConfigurationStudioEnvironment } from "../cs-environment/interfaces";
 
-export const SPECIAL_NODES: { HOME: SpecialTreeNode; SETTINGS: SpecialTreeNode } = {
+const SPECIAL_NODES: { HOME: SpecialTreeNode; SETTINGS: SpecialTreeNode } = {
   HOME: {
     id: 'home',
     key: 'home',

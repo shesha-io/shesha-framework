@@ -43,7 +43,7 @@ export const getComponentComplexValidationRules = (model: IConfigurableFormCompo
     : undefined;
 };
 
-export const useFormValidator = (): IFormValidator => {
+const useFormValidator = (): IFormValidator => {
   const toolboxComponents = useFormDesignerComponents();
   const settingsComponents = useSettingsComponents();
   const { getConfigurableActionOrNull } = useConfigurableActionDispatcher();

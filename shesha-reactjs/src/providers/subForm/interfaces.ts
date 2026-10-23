@@ -42,9 +42,3 @@ export interface ISubFormProviderProps<TValue extends object = object> extends I
 
   readOnly?: boolean | undefined;
 }
-
-export interface IProperty {
-  label: string;
-  propertyName: string;
-  dataType: string;
-}

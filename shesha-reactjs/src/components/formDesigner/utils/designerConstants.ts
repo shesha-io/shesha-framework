@@ -237,14 +237,8 @@ export const designerConstants = {
 
 // Re-export individual items for backward compatibility and tree-shaking
 export const {
-  DEFAULT_FORM_ITEM_MARGINS,
+
   DEFAULT_MARGINS,
-  DESIGNER_DIMENSIONS,
-  WRAPPER_FILL_STYLE,
-  STYLING_BOX_PADDING_PROPERTIES,
-  STYLING_BOX_MARGIN_PROPERTIES,
-  calculateDesignerHeight,
-  calculateAdjustedDimension,
-  extractPaddingFromStyleBox,
-  extractMarginsFromStyleBox,
+
+
 } = designerConstants;

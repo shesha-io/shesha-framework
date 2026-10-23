@@ -3,12 +3,12 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { ComponentDefinition, EditMode, IConfigurableFormComponent, IInputStyles, IStyleValue } from '@/interfaces';
 import { CSSProperties } from 'react';
 
-export interface ICardProps {
+interface ICardProps {
   card?: (IInputStyles & { activeStyle?: string | undefined }) | undefined;
 }
 
 /** @deprecated migrate to ITabPaneProps */
-export interface ITabPanePropsV0 extends IStyleValue, Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled' | 'destroyInactiveTabPane'> {
+interface ITabPanePropsV0 extends IStyleValue, Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled' | 'destroyInactiveTabPane'> {
   id: string;
   type?: string | undefined;
   icon?: string | undefined;

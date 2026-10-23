@@ -1,7 +1,7 @@
 import { nanoid } from "@/utils/uuid";
 import { ButtonGroupItemProps, IButtonGroupItem, IStyleValue } from "../..";
 
-export const initialValues = (): IStyleValue => {
+const initialValues = (): IStyleValue => {
   return {
     background: {
       type: 'color',

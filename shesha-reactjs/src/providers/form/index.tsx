@@ -165,7 +165,7 @@ export {
 };
 
 export {
-  ValidationErrorsProvider,
+  FormComponentValidationProvider,
   useValidationErrorsOrDefault,
   useValidationErrorsStateOrDefault,
   useValidationErrorsActionsOrDefault,

@@ -17,7 +17,7 @@ export const getMutatedMenuItem = (
   title: item.title ?? "",
 });
 
-export const OverflowedIndicator: FC<IProps> = ({ className }) => (
+const OverflowedIndicator: FC<IProps> = ({ className }) => (
   <span className={className}>
     <MenuOutlined /> Menu
   </span>

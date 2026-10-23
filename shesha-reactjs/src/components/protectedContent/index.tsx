@@ -6,7 +6,7 @@ export interface IProtectedContentProps {
   children?: ReactNode;
 }
 
-export const ProtectedContent: FC<IProtectedContentProps> = ({ permissionName, children }) => {
+const ProtectedContent: FC<IProtectedContentProps> = ({ permissionName, children }) => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
 
   const hasRights = !permissionName || anyOfPermissionsGranted([permissionName]);

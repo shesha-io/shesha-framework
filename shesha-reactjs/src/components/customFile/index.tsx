@@ -7,7 +7,7 @@ import { FormIdentifier } from '@/providers/form/models';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 
 // TODO V1: review all properties and remove unused ones
-export interface ICustomFileProps extends IInputStyles {
+interface ICustomFileProps extends IInputStyles {
   id?: string | undefined;
   ownerId?: string | undefined;
   maxCount?: number | undefined;
@@ -55,7 +55,7 @@ export interface ICustomFileProps extends IInputStyles {
   classNames?: IStoredFilesClassNames | undefined;
 }
 
-export const CustomFile: FC<ICustomFileProps> = (props) => {
+const CustomFile: FC<ICustomFileProps> = (props) => {
   const {
     deleteFile,
     uploadFile,

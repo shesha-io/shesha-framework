@@ -4,12 +4,12 @@ import { useStyles } from '@/components/refListSelectorDisplay/options/styles/st
 import { useRefListItemGroupConfigurator } from '@/components/refListSelectorDisplay/provider';
 import RefListItemProperties from '@/components/refListSelectorDisplay/options/properties';
 
-export interface IRefListItemGroupConfiguratorProps {
+interface IRefListItemGroupConfiguratorProps {
   render?: ReactNode | (() => ReactNode);
   heading?: ReactNode | (() => ReactNode);
 }
 
-export const RefListItemGroupConfigurator: FC<IRefListItemGroupConfiguratorProps> = () => {
+const RefListItemGroupConfigurator: FC<IRefListItemGroupConfiguratorProps> = () => {
   const { styles } = useStyles();
   const { readOnly } = useRefListItemGroupConfigurator();
 

@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { useDataTableStore } from '@/providers';
 import ColumnsFilterSelectBase from '@/components/columnsFilterSelectBase';
 
-export const ColumnsFilterSelect: FC = () => {
+const ColumnsFilterSelect: FC = () => {
   const { columns, toggleColumnFilter, getCurrentFilter, removeColumnFilter } = useDataTableStore();
 
   const appliedFiltersColumnIds = getCurrentFilter().map((f) => f.columnId);

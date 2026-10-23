@@ -206,7 +206,7 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
   }
 }
 
-export type ShaFormSubscription<Values extends object = object> = (cs: IShaFormInstance<Values>) => void;
+type ShaFormSubscription<Values extends object = object> = (cs: IShaFormInstance<Values>) => void;
 export type ShaFormSubscriptionType = 'data-modified';
 
 
@@ -1000,4 +1000,4 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
   return [formInstance];
 };
 
-export { ShaFormInstance, useShaForm };
+export { useShaForm };

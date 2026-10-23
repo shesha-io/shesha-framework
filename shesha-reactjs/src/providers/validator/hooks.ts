@@ -5,9 +5,9 @@ import { throwError } from "@/utils/errors";
 import { FieldValidationError } from "../..";
 import { isNonEmptyArray } from "@/utils/array";
 
-export const useValidationCollectorOrUndefined = (): IValidationCollector | undefined => useContext(ValidationCollectorContext);
+const useValidationCollectorOrUndefined = (): IValidationCollector | undefined => useContext(ValidationCollectorContext);
 
-export const useValidationCollector = (): IValidationCollector => useValidationCollectorOrUndefined() ?? throwError("useValidationCollector must be used within a ValidationCollectorProvider");
+const useValidationCollector = (): IValidationCollector => useValidationCollectorOrUndefined() ?? throwError("useValidationCollector must be used within a ValidationCollectorProvider");
 
 // const getValidationResults = (collector: IValidationCollector, componentId: string): FieldValidationError[] => collector.validationResults.filter((x) => x.itemType === "component" && x.itemId === componentId);
 const getValidationResults = (collector: IValidationCollector, componentId: string): FieldValidationError[] => collector.validationResults.filter((x) => isNonEmptyArray(x.path) && x.path[0].kind === "component" && x.path[0].id === componentId);

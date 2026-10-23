@@ -1,4 +1,4 @@
-import { default as ConfigurableComponentRenderer } from "@/components/configurableComponentRenderer";
+import { ConfigurableComponentRenderer } from "@/components/configurableComponentRenderer";
 import LayoutMenu from "@/components/menu";
 import { ILayoutColor } from "@/components/menu/model";
 import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces/formDesigner";
@@ -42,7 +42,7 @@ const resolveMenuOverflow = (
   return "dropdown";
 };
 
-export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
+const MenuListComponent: IToolboxComponent<IMenuListProps> = {
   type: "menuList",
   name: "Menu List",
   isInput: false,

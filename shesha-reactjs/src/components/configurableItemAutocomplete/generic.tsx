@@ -1,11 +1,10 @@
 import { Empty, Select, SelectProps, Spin, Typography } from 'antd';
 import { ReactNode, useEffect, useMemo, useRef, useState, FC } from 'react';
-import * as React from 'react';
 import { useGet } from '@/hooks';
 import { useDebouncedCallback } from 'use-debounce';
 import { GENERIC_ENTITIES_ENDPOINT, LEGACY_ITEMS_MODULE_NAME } from '@/shesha-constants';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
-import HelpTextPopover from '@/components/helpTextPopover';
+import { HelpTextPopover } from '@/components/helpTextPopover';
 import { ConfigurableItemFullName, isEntityMetadata } from '@/interfaces';
 import { MetadataProvider, useMetadata } from '@/providers';
 import { StandardEntityActions } from '@/interfaces/metadata';
@@ -76,11 +75,6 @@ const getFilter = (term: string, staticFilter?: object): string => {
 };
 
 const ITEM_CONFIG_PROPERTIES = 'id name module { id name } label description';
-
-export const itemIdsEqual = (left: ConfigurableItemFullName | undefined, right: ConfigurableItemFullName | undefined): boolean => {
-  return (!isDefined(left) && !isDefined(right)) ||
-    (isDefined(left) && isDefined(right) && left.module === right.module && left.name === right.name);
-};
 
 const getListFetcherQueryParams = (entityType: string, term: string, maxResultCount?: number, staticFilter?: object): IGenericGetAllPayload => {
   return {
@@ -154,7 +148,7 @@ const getDisplayText = (item: IResponseItem | undefined): string | null => {
     : item.name;
 };
 
-export const GenericConfigurableItemAutocompleteInternal = <TValue extends ConfigurableItemFullName = ConfigurableItemFullName>(props: ConfigurableItemAutocompleteRuntimeProps<TValue>): React.JSX.Element => {
+const GenericConfigurableItemAutocompleteInternal = <TValue extends ConfigurableItemFullName = ConfigurableItemFullName>(props: ConfigurableItemAutocompleteRuntimeProps<TValue>): React.JSX.Element => {
   const selectedValue = useRef<ConfigurableItemFullName>(null);
   const [autocompleteText, setAutocompleteText] = useState<string>("");
   const {

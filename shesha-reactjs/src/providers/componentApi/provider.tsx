@@ -3,13 +3,13 @@ import { ComponentApiInstance } from "./instance";
 import { IComponentApi, useComponentApiFunc } from "./model";
 import { useEffectOnce } from "@/hooks/useEffectOnce";
 
-export interface IComponentApiUpdateState {
+interface IComponentApiUpdateState {
   state: unknown;
   instance: IComponentApi | undefined;
 }
 
-export const ComponentApiContext = createContext<IComponentApi | undefined>(undefined);
-export const ComponentApiUpdateContext = createContext<IComponentApiUpdateState | undefined>({ state: {}, instance: undefined });
+const ComponentApiContext = createContext<IComponentApi | undefined>(undefined);
+const ComponentApiUpdateContext = createContext<IComponentApiUpdateState | undefined>({ state: {}, instance: undefined });
 
 export const useComponentApiProvider: useComponentApiFunc = () => useContext(ComponentApiContext);
 
@@ -17,7 +17,7 @@ export const useComponentApiUpdate = (): IComponentApi | undefined => {
   return useContext(ComponentApiUpdateContext)?.instance;
 };
 
-export interface IComponentApiProviderProps {
+interface IComponentApiProviderProps {
   id?: string;
 }
 

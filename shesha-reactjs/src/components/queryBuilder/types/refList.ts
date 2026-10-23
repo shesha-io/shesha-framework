@@ -1,6 +1,6 @@
 import { Type } from '@react-awesome-query-builder/antd';
 
-export const RefListType: Type = {
+const RefListType: Type = {
   valueSources: ['value', 'field', 'func'],
   defaultOperator: 'equal',
   widgets: {

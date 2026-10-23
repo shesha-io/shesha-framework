@@ -10,7 +10,7 @@ import { useStyles } from './styles/styles';
 import classNames from 'classnames';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
-export interface FormInfoProps {
+interface FormInfoProps {
   /**
    * Persisted form props
    */
@@ -26,7 +26,7 @@ export interface FormInfoProps {
   children?: React.ReactNode;
 }
 
-export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, children }) => {
+const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, children }) => {
   const { toggleShowInfoBlock, formInfoBlockVisible, softInfoBlock } = useAppConfigurator();
   const { styles } = useStyles();
 

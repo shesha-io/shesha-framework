@@ -6,7 +6,7 @@ import { addPx } from '@/utils/style';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
 import { isNullOrWhiteSpace } from '@/utils';
 
-export const KeyInformationBar: FC<IKeyInformationBarComponentProps> = (props) => {
+const KeyInformationBar: FC<IKeyInformationBarComponentProps> = (props) => {
   const { styles } = useStyles(props);
   const { columns, hidden, orientation, gap, alignItems, styleCss, wrapperStyleCss, isDynamic } = props;
 

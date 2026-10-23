@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { IUpdateChildItemsPayload, IUpdateItemSettingsPayload } from './contexts';
 
-export enum LayerGroupActionEnums {
+enum LayerGroupActionEnums {
   AddLayer = 'ADD_LAYER',
   DeleteLayer = 'DELETE_LAYER',
   UpdateItem = 'UPDATE_ITEM',

@@ -5,7 +5,7 @@ import Icon from '../icon/Icon';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 
-export interface IEditModeSelectorProps {
+interface IEditModeSelectorProps {
   value?: boolean | EditMode | undefined;
   readOnly?: boolean | undefined;
   onChange?: ((value: EditMode) => void) | undefined;

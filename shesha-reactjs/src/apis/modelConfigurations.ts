@@ -1,18 +1,15 @@
 import { IReferenceListIdentifier } from '@/interfaces';
-import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
-import * as RestfulShesha from '@/utils/fetchers';
 
-export type RefListPermissionedAccess = 1 | 2 | 3 | 4 | 5;
+type RefListPermissionedAccess = 1 | 2 | 3 | 4 | 5;
 
 /**
  * Indicate the source of the entity/property metadata
  */
 export type MetadataSourceType = 1 | 2;
-export const MetadataSourceTypeApplication = 1 as MetadataSourceType;
 export const MetadataSourceTypeUseDefined = 2 as MetadataSourceType;
 
-export interface PermissionedObjectDto {
+interface PermissionedObjectDto {
   id?: string;
   object?: string | null;
   category?: string | null;
@@ -35,20 +32,20 @@ export interface PermissionedObjectDto {
   } | null;
 }
 
-export interface IHasDefaultEditor {
+interface IHasDefaultEditor {
   defaultEditor?: string | null;
 }
 
-export interface IHasFilter {
+interface IHasFilter {
   filter: object;
 }
 
-export interface INumberFormatting {
+interface INumberFormatting {
   thousandsSeparator?: string;
   customFormat?: string | null;
 }
 
-export interface IAdditionalInfoFormatting {
+interface IAdditionalInfoFormatting {
   placeholder?: string;
   prefix?: string;
   suffix?: string;
@@ -56,12 +53,12 @@ export interface IAdditionalInfoFormatting {
   prefixIcon?: string;
 }
 
-export interface IDecimalFormatting extends INumberFormatting {
+interface IDecimalFormatting extends INumberFormatting {
   numDecimalPlaces?: number | null;
   showAsPercentage?: boolean;
 }
 
-export interface IEntityPropertyListDbMapping
+interface IEntityPropertyListDbMapping
 {
     manyToManyTableName?: string | null;
     manyToManyKeyColumnName?: string | null;
@@ -69,7 +66,7 @@ export interface IEntityPropertyListDbMapping
     manyToManyInversePropertyName?: string | null;
 }
 
-export type EntityPropertyListMappingType = "many-to-many" | "many-to-one";
+type EntityPropertyListMappingType = "many-to-many" | "many-to-one";
 
 export enum EntityInitFlags {
   None = 0,
@@ -80,7 +77,7 @@ export enum EntityInitFlags {
   InitializationFailed = 64,
 }
 
-export interface IEntityPropertyListConfiguration{
+interface IEntityPropertyListConfiguration{
   mappingType?: EntityPropertyListMappingType;
   foreignProperty?: string | null;
   dbMapping?: IEntityPropertyListDbMapping;
@@ -236,9 +233,9 @@ export interface ModelPropertyDto {
 /**
  * Indicate the type of the entity metadata
  */
-export type EntityConfigTypes = 1 | 2;
+type EntityConfigTypes = 1 | 2;
 
-export interface FormIdFullNameDto {
+interface FormIdFullNameDto {
   name?: string | null;
   module?: string | null;
 }
@@ -279,125 +276,3 @@ export interface ModelConfigurationDto {
   initStatus: EntityInitFlags | null;
   initMessage?: string;
 }
-
-interface EmptyQueryParams {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string;
-}
-export interface ModelConfigurationsGetByIdPathParams {
-  id: string;
-}
-
-type ModelConfigurationDtoAjaxResponse = IAjaxResponse<ModelConfigurationDto>;
-
-export type modelConfigurationsGetByIdProps = Omit<
-  RestfulShesha.GetProps<
-    ModelConfigurationDtoAjaxResponse,
-    IAjaxResponseBase,
-    EmptyQueryParams,
-    ModelConfigurationsGetByIdPathParams
-  > & { id: string },
-  'queryParams'
->;
-export const modelConfigurationsGetById = (
-  queryParams: EmptyQueryParams,
-  { id, ...props }: modelConfigurationsGetByIdProps
-) =>
-  RestfulShesha.get<
-    ModelConfigurationDtoAjaxResponse,
-    IAjaxResponseBase,
-    EmptyQueryParams,
-    ModelConfigurationsGetByIdPathParams
-  >(`/api/ModelConfigurations/${id}`, queryParams, props);
-
-export type modelConfigurationsUpdateProps = Omit<
-  RestfulShesha.MutateProps<
-    ModelConfigurationDtoAjaxResponse,
-    IAjaxResponseBase,
-    EmptyQueryParams,
-    ModelConfigurationDto,
-    void
-  >,
-  'data'
->;
-export const modelConfigurationsUpdate = (data: ModelConfigurationDto, props: modelConfigurationsUpdateProps) =>
-  RestfulShesha.mutate<
-    ModelConfigurationDtoAjaxResponse,
-    IAjaxResponseBase,
-    EmptyQueryParams,
-    ModelConfigurationDto,
-    void
-  >('PUT', `/api/ModelConfigurations`, data, props);
-
-export type modelConfigurationsCreateProps = Omit<
-  RestfulShesha.MutateProps<
-    ModelConfigurationDtoAjaxResponse,
-    IAjaxResponseBase,
-    EmptyQueryParams,
-    ModelConfigurationDto,
-    void
-  >,
-  'data'
->;
-export const modelConfigurationsCreate = (data: ModelConfigurationDto, props: modelConfigurationsCreateProps) =>
-  RestfulShesha.mutate<
-    ModelConfigurationDtoAjaxResponse,
-    IAjaxResponseBase,
-    EmptyQueryParams,
-    ModelConfigurationDto,
-    void
-  >('POST', `/api/ModelConfigurations`, data, props);
-
-export interface EntityConfigDeleteQueryParams {
-  id?: string;
-  /**
-   * The requested API version
-   */
-  'api-version'?: string;
-}
-
-export type entityConfigDeleteProps = Omit<
-  RestfulShesha.MutateProps<void, unknown, EntityConfigDeleteQueryParams, void, void>,
-  'data'
->;
-export const entityConfigDelete = (props: entityConfigDeleteProps) =>
-  RestfulShesha.mutate<void, unknown, EntityConfigDeleteQueryParams, void, void>(
-    'DELETE',
-    `/api/services/app/EntityConfig/Delete`,
-    undefined,
-    props
-  );
-
-export interface MergeConfigurationDto {
-  sourceId?: string | null;
-  destinationId?: string | null;
-  deleteAfterMerge?: boolean;
-}
-
-export interface ModelConfigurationsMergeQueryParams {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string;
-}
-
-export type modelConfigurationsMergeProps = Omit<
-  RestfulShesha.MutateProps<
-    ModelConfigurationDtoAjaxResponse,
-    IAjaxResponseBase,
-    ModelConfigurationsMergeQueryParams,
-    MergeConfigurationDto,
-    void
-  >,
-  'data'
->;
-export const modelConfigurationsMerge = (data: MergeConfigurationDto, props: modelConfigurationsMergeProps) =>
-  RestfulShesha.mutate<
-    ModelConfigurationDtoAjaxResponse,
-    IAjaxResponseBase,
-    ModelConfigurationsMergeQueryParams,
-    MergeConfigurationDto,
-    void
-  >('POST', `/api/ModelConfigurations/merge`, data, props);

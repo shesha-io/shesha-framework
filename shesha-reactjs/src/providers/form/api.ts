@@ -56,7 +56,7 @@ export interface FormConfigurationDto {
   generationLogicTypeName?: string | null;
 }
 
-export interface IFormFetcherProps {
+interface IFormFetcherProps {
   lazy: boolean;
 }
 export type UseFormConfigurationArgs = {

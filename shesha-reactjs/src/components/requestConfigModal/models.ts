@@ -1,5 +1,3 @@
-export type RequestValue = string;
-
 export interface IRequestParam {
   key: string;
   value: string;

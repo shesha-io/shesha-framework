@@ -5,13 +5,13 @@ import { useStyles } from './styles/styles';
 import { isDefined } from '@/utils/nullables';
 import { JsonLogicFilter } from '@/interfaces/jsonLogic';
 
-export interface IQueryBuilderPlainProps {
+interface IQueryBuilderPlainProps {
   value?: object | undefined;
   onChange?: ((value: JsonLogicFilter | null) => void) | undefined;
   readOnly?: boolean | undefined;
 }
 
-export const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({ value, onChange, readOnly = false }) => {
+const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({ value, onChange, readOnly = false }) => {
   const { styles } = useStyles();
   const handleChange = (jsonLogicResult: JsonLogicResult): void => {
     if (readOnly) return;

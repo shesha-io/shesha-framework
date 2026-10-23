@@ -3,7 +3,7 @@ import { CustomFieldSettings } from '@/providers/queryBuilder/models';
 import { RefListSimpleDropdown } from './simpleDropdown';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 
-export type RefListDropdownWidgetType = NumberWidget & SelectFieldSettings;
+type RefListDropdownWidgetType = NumberWidget & SelectFieldSettings;
 const RefListDropdownWidget: RefListDropdownWidgetType = {
   ...BasicConfig.widgets.select,
   jsType: 'number',

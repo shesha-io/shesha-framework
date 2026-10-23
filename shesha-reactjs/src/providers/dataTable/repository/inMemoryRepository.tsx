@@ -10,7 +10,7 @@ import { IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./inter
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import hash from 'object-hash';
 
-export interface IWithInMemoryRepositoryArgs {
+interface IWithInMemoryRepositoryArgs {
   valueAccessor: () => ITableRowData[];
   onChange: (value: ITableRowData[]) => void;
   metadata?: IModelMetadata | undefined;
@@ -181,13 +181,7 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
   return repository;
 };
 
-export const useInMemoryRepository = (args: IWithInMemoryRepositoryArgs): IRepository => useMemo<IRepository>(() => createRepository(args), [args]);
-
-export interface IWithFormFieldRepositoryArgs {
-  propertyName: string;
-  getFieldValue?: (propertyName: string) => object[];
-  onChange?: (...args: unknown[]) => void;
-}
+const useInMemoryRepository = (args: IWithInMemoryRepositoryArgs): IRepository => useMemo<IRepository>(() => createRepository(args), [args]);
 
 export const FormDataSourceTable: FC<IHasFormDataSourceConfig & PropsWithChildren<Omit<IDataTableProviderWithRepositoryProps, 'repository'>>> = (props) => {
   const { propertyName, getFieldValue, onChange, metadata, ...restProps } = props;

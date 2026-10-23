@@ -1,5 +1,4 @@
-import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
-import * as RestfulShesha from '@/utils/fetchers';
+import { IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { IEntityReferenceDto } from '..';
 
 export interface GrantedPermissionDto {
@@ -30,7 +29,7 @@ export interface UserLoginInfoDto {
   grantedPermissions?: GrantedPermissionDto[] | null;
   requireChangePassword?: boolean;
 }
-export interface ApplicationInfoDto {
+interface ApplicationInfoDto {
   version?: string | null;
   releaseDate?: string;
   features?: {
@@ -38,7 +37,7 @@ export interface ApplicationInfoDto {
   } | null;
 }
 
-export interface TenantLoginInfoDto {
+interface TenantLoginInfoDto {
   id?: number;
   tenancyName?: string | null;
   name?: string | null;
@@ -51,15 +50,3 @@ export interface GetCurrentLoginInfoOutput {
 }
 
 export type GetCurrentLoginInfoOutputAjaxResponse = IAjaxResponse<GetCurrentLoginInfoOutput>;
-
-export type sessionGetCurrentLoginInfoProps = Omit<
-  RestfulShesha.GetProps<GetCurrentLoginInfoOutputAjaxResponse, IAjaxResponseBase, void, void>,
-  'queryParams'
->;
-
-export const sessionGetCurrentLoginInfo = (props: sessionGetCurrentLoginInfoProps) =>
-  RestfulShesha.get<GetCurrentLoginInfoOutputAjaxResponse, IAjaxResponseBase, void, void>(
-    `/api/services/app/Session/GetCurrentLoginInfo`,
-    undefined,
-    props
-  );

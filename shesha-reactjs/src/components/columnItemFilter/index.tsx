@@ -517,5 +517,3 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     </div>
   );
 };
-
-export default ColumnItemFilter;

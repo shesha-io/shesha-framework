@@ -10,7 +10,7 @@ import { ProductOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
 
-export interface IRevisionHistoryDrawerInnerProps {
+interface IRevisionHistoryDrawerInnerProps {
   doc: IDocumentInstance;
 }
 

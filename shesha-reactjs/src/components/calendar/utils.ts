@@ -12,7 +12,7 @@ import { getDatePropertyOrUndefined } from "@/utils/object";
 import { getIdOrUndefined } from "@/utils/entity";
 import { buildUrl } from "@/utils";
 
-export const getLayerEventItems = (
+const getLayerEventItems = (
   item: ICalendarLayersProps,
   layerDataItem: IAnyObject[] | IAnyObject,
 ): ICalendarLayersProps => {
@@ -77,7 +77,7 @@ export const getLayerOptions = (layers: ICalendarLayersProps[] | undefined): Arr
       disabled: !i.allowChangeVisibility,
     }));
 
-export const getQueryProperties = ({ startTime, endTime, propertyList, title }: ICalendarLayersProps): string => {
+const getQueryProperties = ({ startTime, endTime, propertyList, title }: ICalendarLayersProps): string => {
   const properties = new Set<string>(['id']);
   if (startTime?.trim()) {
     properties.add(startTime);
@@ -167,7 +167,7 @@ export const getLayerEvents = (
     .reduce((prev, curr) => [...prev, ...curr], []);
 };
 
-export const evaluateFilterAsync = async (args: UseEvaluatedFilterArgs): Promise<string> => {
+const evaluateFilterAsync = async (args: UseEvaluatedFilterArgs): Promise<string> => {
   const { filter, mappings, metadataAccessor } = args;
 
   if (!filter) return '';

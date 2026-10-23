@@ -20,7 +20,7 @@ export interface IAttachmentsEditorActions {
   subscribe: SubscribeFunc<AttachmentsEditorEvents, IAttachmentsEditorActions>;
 }
 
-export interface IAttachmentsEditorState {
+interface IAttachmentsEditorState {
   readonly fileList: StoredFileModel[];
   /** Whether the last fetch that mattered failed, so the list can say so instead of reading empty. */
   readonly fetchFilesError: boolean;

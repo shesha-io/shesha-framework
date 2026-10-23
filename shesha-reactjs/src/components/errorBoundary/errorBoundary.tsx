@@ -5,7 +5,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export const ErrorBoundary = Catch(function ErrorBoundaryFunc(props: Props, error?: Error) {
+const ErrorBoundary = Catch(function ErrorBoundaryFunc(props: Props, error?: Error) {
   if (error) {
     return (
       <div className="error-screen">

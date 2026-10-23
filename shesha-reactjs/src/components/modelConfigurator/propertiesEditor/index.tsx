@@ -14,7 +14,7 @@ export interface IPropertiesEditorProps {
 
 const EMPTY_VALUE: IModelItem[] = [];
 
-export const PropertiesEditor: FC<IPropertiesEditorProps> = (props) => {
+const PropertiesEditor: FC<IPropertiesEditorProps> = (props) => {
   return (
     <PropertiesEditorProvider items={props.value ?? EMPTY_VALUE} onChange={props.onChange}>
       <PropertiesEditorRenderer allowAdd={props.allowAdd} />

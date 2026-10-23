@@ -3,9 +3,9 @@ import { IDataCellProps } from '../interfaces';
 import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
 import { isDefined } from '@/utils/nullables';
 
-export type IEntityCellProps<D extends object = object, V = unknown> = IDataCellProps<D, V>;
+type IEntityCellProps<D extends object = object, V = unknown> = IDataCellProps<D, V>;
 
-export const EntityCell = <D extends object = object, V = unknown>(props: IEntityCellProps<D, V>): ReactNode => {
+const EntityCell = <D extends object = object, V = unknown>(props: IEntityCellProps<D, V>): ReactNode => {
   const { value } = props;
   if (!isDefined(value)) return null;
 

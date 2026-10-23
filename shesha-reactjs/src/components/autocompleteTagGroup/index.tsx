@@ -3,10 +3,10 @@ import { InputProps, Tag } from 'antd';
 import { FC, useState } from 'react';
 import * as React from 'react';
 import { Autocomplete } from '@/components/autocomplete';
-import Show from '@/components/show';
+import { Show } from '@/components/show';
 import { isDefined } from '@/utils/nullables';
 
-export interface IAutocompleteTagGroupProps extends Omit<InputProps, 'value' | 'onChange'> {
+interface IAutocompleteTagGroupProps extends Omit<InputProps, 'value' | 'onChange'> {
   value?: string[] | undefined | null;
   defaultValue?: string;
   autocompleteUrl: string;
@@ -18,7 +18,7 @@ interface IAutocompleteTagGroupState {
   inputValue: string;
 }
 
-export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
+const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
   ({ value: nullableValue, onChange, defaultValue, autocompleteUrl, ...rest }) => {
     const value = nullableValue ?? [];
     const [state, setState] = useState<IAutocompleteTagGroupState>({ inputVisible: false, inputValue: '' });

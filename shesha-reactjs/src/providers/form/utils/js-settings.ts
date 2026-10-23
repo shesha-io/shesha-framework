@@ -14,7 +14,7 @@ import { evaluateString } from '@/providers/form/utils';
 
 export type UnwrapFunc = (model: unknown, propertyName: string, value: unknown, allData: object) => UnwrapCodeEvaluators<unknown> | unknown | undefined;
 
-export const getSettingValue = <TValue = unknown>(
+const getSettingValue = <TValue = unknown>(
   propertyName: string,
   value: TValue,
   allData: object,
@@ -91,15 +91,6 @@ const calcValue = <TValue>(setting: IPropertySetting, allData: object): TValue |
     console.error("calcValue failed", error);
     return undefined;
   }
-};
-
-export const getReadOnlyBool = (editMode: EditMode | undefined, parentReadOnly: boolean): boolean => {
-  return (
-    editMode === false || // check exact condition
-    editMode === 'readOnly' ||
-    ((editMode === 'inherited' || editMode === undefined || editMode === true) && // check exact condition
-      parentReadOnly)
-  );
 };
 
 type HasEditMode = {

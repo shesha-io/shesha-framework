@@ -3,7 +3,7 @@ import { ConfigurableForm } from '@/components/configurableForm';
 import { FormMarkup } from '@/providers/form/models';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
-export interface IProps<TModel extends object = object> {
+interface IProps<TModel extends object = object> {
   model: TModel;
   markup: FormMarkup;
   onSave: (model: TModel) => void;

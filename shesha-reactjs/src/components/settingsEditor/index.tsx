@@ -37,5 +37,3 @@ export const SettingsEditor: FC = () => {
     </SettingsEditorProvider>
   );
 };
-
-export default SettingsEditor;

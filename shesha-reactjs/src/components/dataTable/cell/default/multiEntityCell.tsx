@@ -4,9 +4,9 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useStyles } from '../../styles/styles';
 import { getDisplayNameOrUndefined } from '@/utils/object';
 
-export type IMultiEntityCellProps<D extends object = object, V = unknown> = IDataCellProps<D, V>;
+type IMultiEntityCellProps<D extends object = object, V = unknown> = IDataCellProps<D, V>;
 
-export const MultiEntityCell = <D extends object = object, V = unknown>(props: IMultiEntityCellProps<D, V>): ReactNode => {
+const MultiEntityCell = <D extends object = object, V = unknown>(props: IMultiEntityCellProps<D, V>): ReactNode => {
   const { styles } = useStyles();
   const { value } = props;
   if (!props.value) return null;

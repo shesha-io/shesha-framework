@@ -10,11 +10,11 @@ import { ConfigurableForm } from '../configurableForm';
 import { LayerGroupItemProps } from '@/providers/layersProvider/models';
 import { OnFormValuesChangeHandler } from '../configurableForm/models';
 
-export interface ILayerPropertiesProps {
+interface ILayerPropertiesProps {
   settings: FormMarkup;
 }
 
-export const LayerProperties: FC<ILayerPropertiesProps> = ({ settings }) => {
+const LayerProperties: FC<ILayerPropertiesProps> = ({ settings }) => {
   const { selectedItemId, getItem, updateItem, readOnly } = useLayerGroupConfigurator();
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const [editor, setEditor] = useState<ReactNode>(<></>);

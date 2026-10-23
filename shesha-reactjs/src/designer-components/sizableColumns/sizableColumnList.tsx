@@ -3,7 +3,7 @@ import { FC, Fragment, useState } from 'react';
 import { ISizableColumnProps } from './interfaces';
 import { ColumnsEditor } from './columnsEditor';
 
-export interface IProps {
+interface IProps {
   readOnly: boolean;
   value?: ISizableColumnProps[] | null | undefined;
   onChange?: ((newValue: ISizableColumnProps[]) => void) | undefined;
@@ -11,7 +11,7 @@ export interface IProps {
 
 const EMPTY_VALUE: ISizableColumnProps[] = [];
 
-export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
+const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
   const [showDialog, setShowDialog] = useState(false);
 
   const toggleModal = (): void => setShowDialog((prevVisible) => !prevVisible);

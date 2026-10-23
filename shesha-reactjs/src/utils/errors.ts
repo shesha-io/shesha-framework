@@ -5,7 +5,7 @@ import { isAxiosResponse } from "@/interfaces/ajaxResponse";
 
 export type ISheshaErrorTypes = 'info' | 'warning' | 'error';
 
-export interface IModelError {
+interface IModelError {
   propertyName?: string | undefined;
   error: string;
 }

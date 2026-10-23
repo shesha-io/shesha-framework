@@ -3,7 +3,7 @@ import { FormComponentValidationProvider } from '@/providers/validationErrors';
 import { FC, PropsWithChildren } from 'react';
 import { CustomErrorBoundary } from '../..';
 
-export interface IFormComponentErrorWrapperProps {
+interface IFormComponentErrorWrapperProps {
   componentModel: IConfigurableFormComponent;
 }
 

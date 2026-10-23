@@ -9,7 +9,7 @@ import { useStyles } from './styles';
 import DOMPurify from 'dompurify';
 import { isDefined } from '@/utils/nullables';
 
-export interface IDynamicModalWithContentProps extends IModalWithContentProps {
+interface IDynamicModalWithContentProps extends IModalWithContentProps {
   isVisible: boolean;
   isSubmitted?: boolean | undefined;
   onCancel?: (() => void) | undefined;
@@ -23,7 +23,7 @@ const renderContent = (content: ReactNode): ReactNode => {
     : content;
 };
 
-export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
+const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
   const { id, title, isVisible, width, isSubmitted = false, onCancel, onOk, content, footer, onClose, showCloseIcon, wrapClassName } = props;
 
   const { removeModal } = useDynamicModals();
@@ -61,10 +61,10 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
   );
 };
 
-export interface IDynamicModalWithFormProps<Values extends object = object> extends Omit<IModalWithConfigurableFormProps<Values>, 'fetchUrl'> {
+interface IDynamicModalWithFormProps<Values extends object = object> extends Omit<IModalWithConfigurableFormProps<Values>, 'fetchUrl'> {
   isVisible: boolean;
 }
-export const DynamicModalWithForm = <Values extends object = object>(props: IDynamicModalWithFormProps<Values>): ReactNode => {
+const DynamicModalWithForm = <Values extends object = object>(props: IDynamicModalWithFormProps<Values>): ReactNode => {
   const {
     id,
     title,
@@ -177,4 +177,4 @@ export const DynamicModal: FC<DynamicModalProps> = (props) => {
   return <DynamicModalWithContent {...withContentProps} />;
 };
 
-export default DynamicModal;
+

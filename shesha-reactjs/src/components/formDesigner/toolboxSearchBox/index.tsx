@@ -40,5 +40,3 @@ export const SearchBox: FC<ISearchBoxProps> = (props) => {
     />
   );
 };
-
-export default SearchBox;

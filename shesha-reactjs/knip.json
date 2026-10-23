@@ -3,5 +3,11 @@
   "tags": [
     "-lintignore"
   ],
+  "entry": [
+    "src/{index,cli,main}.{js,cjs,mjs,jsx,ts,cts,mts,tsx}",
+    "**/publicJsApis/**/*.ts",
+    "**/publicJsApi/**/*.ts",
+    "**/src/componentsApi/*.ts"    
+  ],  
   "ignoreDependencies": ["@fontsource-variable/inter"]
 }

@@ -31,7 +31,7 @@ export interface IShaApplicationArgs {
   buildHttpRequestHeaders?: (() => IHttpHeadersDictionary) | undefined;
 }
 
-export type InitializationAction = (application: ISheshaApplicationInstance) => Promise<void>;
+type InitializationAction = (application: ISheshaApplicationInstance) => Promise<void>;
 
 export interface ISheshaApplicationInstance {
   isDebugMode: boolean;
@@ -65,14 +65,14 @@ export interface ISheshaApplicationInstance {
 
 type RerenderTrigger = () => void;
 
-export type AppInitializationStatus = 'waiting' | 'inprogress' | 'ready' | 'failed';
-export interface ApplicationInitializationState {
+type AppInitializationStatus = 'waiting' | 'inprogress' | 'ready' | 'failed';
+interface ApplicationInitializationState {
   status: AppInitializationStatus;
   hint?: string | undefined;
   error?: IErrorInfo | undefined;
 }
 
-export class SheshaApplicationInstance implements ISheshaApplicationInstance {
+class SheshaApplicationInstance implements ISheshaApplicationInstance {
   #settingsComponentRegistrations: IDictionary<ISettingsComponentGroup[]>;
 
   #settingsComponentGroups: ISettingsComponentGroup[];

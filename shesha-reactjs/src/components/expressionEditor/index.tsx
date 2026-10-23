@@ -14,9 +14,9 @@ import { toCamelCase } from '@/utils/string';
 
 export type { ExpressionContext, ExpressionContextValue };
 
-export type ExpressionFunctionCategory = string;
+type ExpressionFunctionCategory = string;
 
-export interface ExpressionFunctionArg {
+interface ExpressionFunctionArg {
   name: string;
   description: string;
   optional?: boolean;
@@ -67,7 +67,7 @@ export interface BuildExpressionContextFromPathsOptions {
  * so colors cycle for nesting deeper than the palette. Each open bracket and its matching
  * close share the same depth → same color. Applied to `( )`, `[ ]`, and `{{ }}`.
  */
-export const BRACKET_PALETTE_SIZE = 5;
+const BRACKET_PALETTE_SIZE = 5;
 
 const isExpressionContext = (value: unknown): value is ExpressionContext =>
   value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -265,7 +265,7 @@ const bracketClass = (depth: number): string => `hl-bracket-${depth % BRACKET_PA
  * receives the same depth class as its matching opener. Applies to `(` `)` and `[` `]`.
  * Cycles through `BRACKET_PALETTE_SIZE` colors so deeper levels reuse colors.
  */
-export const tokenizeExpression = (
+const tokenizeExpression = (
   expression: string,
   knownFunctions: Set<string>,
   startDepth = 0,
@@ -388,7 +388,7 @@ export const tokenizeExpression = (
  * Inner expression brackets start at depth 1 so nested `((x))` inside a mustache block
  * goes through three distinct colors total (mustache, outer paren, inner paren).
  */
-export const highlightText = (text: string, knownFunctions: Set<string>): HighlightToken[] => {
+const highlightText = (text: string, knownFunctions: Set<string>): HighlightToken[] => {
   if (!text) return [{ text: '', className: '' }];
 
   if (!text.includes('{{')) {

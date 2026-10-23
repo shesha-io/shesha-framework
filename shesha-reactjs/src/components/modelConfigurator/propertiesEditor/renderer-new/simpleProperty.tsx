@@ -35,4 +35,4 @@ export const SimpleProperty: FC<IProps> = (props) => {
   );
 };
 
-export default SimpleProperty;
+

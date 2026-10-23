@@ -10,7 +10,7 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { CreateChildAction, CreateRootAction, DeleteItemAction, UpdateItemAction } from '@/components/permissionsTree/configurableActions';
 
-export interface IPermissionsTreeComponentProps extends IConfigurableFormComponent {
+interface IPermissionsTreeComponentProps extends IConfigurableFormComponent {
   /**
    * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
    */

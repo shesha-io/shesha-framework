@@ -35,5 +35,3 @@ export const DateDisplay: FC<IDateDisplayProps> = ({
 
   return getDate();
 };
-
-export default DateDisplay;

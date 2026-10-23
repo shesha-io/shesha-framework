@@ -131,21 +131,6 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
   };
 };
 
-export const useEntityDisplayText = (props: IUseEntityDisplayTextProps): string | null => {
-  const { propertyName } = props;
-  const selection = useEntitySelectionData(props);
-  const rows = selection.rows;
-
-  const result = useMemo<string | null>(() => {
-    if (!rows || !propertyName) return null;
-
-    const result = rows.map((ent) => ent[normalizePropertyName(propertyName)] ?? 'unknown').join(',');
-    return result;
-  }, [propertyName, rows]);
-
-  return result;
-};
-
 /**
  * Returns the value of the 'id' property if the given value is an object with an 'id' property of type string.
  * Otherwise, returns undefined.

@@ -9,7 +9,7 @@ import { OnFormValuesChangeHandler } from '@/components/configurableForm/models'
 import { RefListGroupItemProps } from '../provider/models';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 
-export const RefListItemProperties: FC = () => {
+const RefListItemProperties: FC = () => {
   const { selectedItemId, getItem, updateItem, readOnly } = useRefListItemGroupConfigurator();
   const markup = useFormViaFactory(getSettings);
 

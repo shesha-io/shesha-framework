@@ -89,7 +89,7 @@ export const fetchFlatTreeAsync = async (httpClient: HttpClientApi): Promise<Fla
   return extractAjaxResponse(response.data, "Failed to load tree");
 };
 
-export const fetchFrontEndAppsAsync = async (httpClient: HttpClientApi): Promise<FrontEndAppDto[]> => {
+const fetchFrontEndAppsAsync = async (httpClient: HttpClientApi): Promise<FrontEndAppDto[]> => {
   const url = buildUrl<IGetAllPayload>(CS_URLS.GET_FRONT_END_APPS, {
     skipCount: 0,
     maxResultCount: -1,

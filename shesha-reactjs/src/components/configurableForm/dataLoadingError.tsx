@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { DataLoadingErrorRenderProps } from './models';
 import { Result } from 'antd';
-import ValidationErrors from '../validationErrors';
+import { ValidationErrors } from '../validationErrors';
 export const DataLoadingError: FC<DataLoadingErrorRenderProps> = ({ dataLoadingState }) => {
   if (!dataLoadingState.error)
     return null;

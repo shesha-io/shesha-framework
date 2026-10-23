@@ -1,21 +1,7 @@
 import {
-  ContentDisplay,
-  FONT_SIZES,
-  FontSizeProps,
   ITextComponentPropsV0,
-  PADDING_SIZES,
-  PaddingProps,
-  TypographyFontSize,
-  TypographyPaddingSize,
 } from './models';
 import { IStyleValue } from '@/interfaces';
-
-export const getFontSizeStyle = (key: TypographyFontSize): FontSizeProps | undefined => FONT_SIZES[key];
-export const getPaddingSizeStyle = (key: TypographyPaddingSize): PaddingProps | undefined => PADDING_SIZES[key];
-
-export const DEFAULT_CONTENT_TYPE = '';
-export const DEFAULT_CONTENT_DISPLAY: ContentDisplay = 'content';
-export const DEFAULT_PADDING_SIZE: TypographyPaddingSize = 'none';
 
 export const defaultStyles = (model?: ITextComponentPropsV0 | undefined): IStyleValue & { level: number } => {
   return {

@@ -4,27 +4,6 @@ import { IWizardSequence, IWizardStepProps } from './models';
 import { IStyleValue } from "@/providers/form/models";
 import { CSSProperties } from 'react';
 
-export const EXPOSED_VARIABLES = [
-  { id: nanoid(), name: 'data', description: 'The form data', type: 'object' },
-  { id: nanoid(), name: 'formMode', description: 'The form mode', type: "'readonly' | 'edit' | 'designer'" },
-  { id: nanoid(), name: 'globalState', description: 'The global state of the application', type: 'object' },
-  { id: nanoid(), name: 'http', description: 'axios instance used to make http requests', type: 'object' },
-  {
-    id: nanoid(),
-    name: 'message',
-    description:
-      'This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'setGlobalState',
-    description: 'Setting the global state of the application',
-    type: '(payload: { key: string, data: any } ) => void',
-  },
-  { id: nanoid(), name: 'moment', description: 'The moment.js object', type: 'object' },
-];
-
 type StepDescriptionGetter = (description: string, index: number) => string;
 export const getStepDescritpion =
   (show: boolean, sequence: IWizardSequence | undefined, currentIndex: number): StepDescriptionGetter => (description: string, index: number): string => {

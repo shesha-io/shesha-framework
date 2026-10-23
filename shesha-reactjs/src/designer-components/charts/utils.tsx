@@ -1,5 +1,4 @@
 import { CSSProperties } from "react";
-import * as React from "react";
 import { IChartData, IChartsProps, TAggregationMethod, TDataMode, TOrderDirection, TTimeSeriesFormat } from "./model";
 import LineChart from "./components/line";
 import BarChart from "./components/bar";
@@ -15,7 +14,7 @@ import { getDatePropertyOrUndefined } from "@/utils/object";
 import { isNonEmptyArray } from "@/utils/array";
 import { getNestedPropertyValue } from "@/utils/dotnotation";
 
-export const MAX_TITLE_LINE_LENGTH = 12;
+const MAX_TITLE_LINE_LENGTH = 12;
 
 export const defaultStyles = (): IStyleValue => {
   return {
@@ -392,17 +391,6 @@ export function getPropertyValue(obj: IAnyObject, path: string): string | number
 }
 
 /**
- * A function that splits a string that is separated by a dot and returns the last part of the string
- * @param property the property to get the last part of
- * @returns the last part of the property
- */
-export function getLastPartOfProperty(property: string): string {
-  // if there is no dot in the string, return the string
-  const parts = property.split('.');
-  return parts.length === 1 ? property : parts.pop() ?? "";
-}
-
-/**
  * Function to check if a value is an ISO string
  * - An ISO string is a string that matches the ISO 8601 format
  * - Example: '2021-08-25T12:00:00.000Z'
@@ -468,66 +456,6 @@ export function formatDate(data: EntityData[], timeUnit: TTimeSeriesFormat | und
     return modifiedItem;
   });
 }
-
-/**
- * Function to group and aggregate data
- * @param data - The data to be aggregated
- * @param xProperty - The property to group by on the x-axis
- * @param yProperty - The property to aggregate on the y-axis
- * @param aggregationMethod - The aggregation method to use (sum, average, count, min, max)
- * @returns Aggregated data
- * */
-export const aggregateData = (data: IAnyObject[], xProperty: string, yProperty: string, aggregationMethod: string): object => {
-  const groupedData = data.reduce((acc: Record<string, number[]>, item) => {
-    const xValue = getPropertyValue(item, xProperty); // Use getPropertyValue to support nested properties
-    let yValue = getPropertyValue(item, yProperty) ?? 0; // Use getPropertyValue for y-axis value
-
-    // Convert string numbers to actual numbers for aggregation
-    if (typeof yValue === 'string') {
-      const numValue = parseFloat(yValue);
-      yValue = isNaN(numValue) ? 0 : numValue;
-    }
-    // Ensure we have a number
-    if (typeof yValue !== 'number') {
-      yValue = 0;
-    }
-
-    if (typeof (xValue) === "string") {
-      const arr = acc[xValue] && Array.isArray(acc[xValue])
-        ? acc[xValue]
-        : (acc[xValue] = []);
-
-      arr.push(yValue);
-    }
-
-    return acc;
-  }, {} as Record<string, number[]>);
-
-  // Apply aggregation (sum, average, count, min, max)
-  const aggregatedData = Object.entries(groupedData).map(([key, values]) => {
-    let aggregatedValue;
-    switch (aggregationMethod) {
-      case 'sum':
-        aggregatedValue = values.reduce((acc: number, val: number) => acc + val, 0);
-        break;
-      case 'average':
-        aggregatedValue = values.length > 0 ? values.reduce((acc: number, val: number) => acc + val, 0) / values.length : 0;
-        break;
-      case 'min':
-        aggregatedValue = values.length > 0 ? Math.min(...values) : 0;
-        break;
-      case 'max':
-        aggregatedValue = values.length > 0 ? Math.max(...values) : 0;
-        break;
-      case 'count': // Count the number of items, also used as the default case
-      default:
-        aggregatedValue = values.length;
-    }
-    return { x: key, y: aggregatedValue };
-  });
-
-  return aggregatedData;
-};
 
 /**
  * Function to get a predictable color based on a string or number

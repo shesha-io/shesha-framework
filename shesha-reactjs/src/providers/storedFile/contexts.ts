@@ -5,10 +5,6 @@ import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/m
 import { SubscribeFunc } from '../../utils/subscriptions/subscriptionManager';
 import { FileUploadEvents } from './instance';
 
-export interface IStoredFileStateContext {
-  fileInfo: StoredFileModel | undefined;
-}
-
 export type FileUploadInitArgs = {
   ownerId?: string | undefined;
   ownerType?: string | IEntityTypeIdentifier | undefined;

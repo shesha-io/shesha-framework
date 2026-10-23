@@ -1,7 +1,7 @@
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { BaseOptionType, LabeledValue, SelectProps } from 'antd/lib/select';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
-import { CSSProperties, Key, Ref } from 'react';
+import { CSSProperties, Ref } from 'react';
 import { DropdownSelectRef, SelectEventHandlers, TagVariant } from '@/components/dropdown/model';
 import { IStyleValue } from '@/providers/form/models';
 import { ReferenceListItemDto } from '@/apis/referenceList';
@@ -29,7 +29,7 @@ export interface IGenericRefListDropDownProps<TValue = unknown> extends IRefList
 
 type LimitedSelectProps<TValue = unknown> = Pick<SelectProps<TValue>, 'mode' | 'disabled' | 'allowClear' | 'filterOption' | 'placeholder' | 'variant' | 'className'>;
 
-export interface IRefListDropDownProps<TValue = unknown> extends LimitedSelectProps<TValue>, IReadOnly {
+interface IRefListDropDownProps<TValue = unknown> extends LimitedSelectProps<TValue>, IReadOnly {
   /**
    * Emotion class for the option list, which antd portals outside the select so it cannot be reached
    * from `className`. Built by the caller, like `className`.
@@ -59,12 +59,6 @@ export interface IRefListDropDownProps<TValue = unknown> extends LimitedSelectPr
   events?: SelectEventHandlers | undefined;
   /** Appearance style model, used only by the read-only renderer. See `IDropdownProps.styleValue`. */
   styleValue?: IStyleValue | undefined;
-}
-
-export interface IRefListDropDownOption {
-  children?: string;
-  key: string;
-  value?: Key;
 }
 
 export interface ISelectOption<TValue = unknown> extends BaseOptionType {

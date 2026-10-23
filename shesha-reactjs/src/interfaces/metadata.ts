@@ -17,7 +17,7 @@ export interface IEntityTypeIdentifierQueryParams {
 
 export type IMemberType = IPublicMemberType;
 
-export const isIMemberType = (value: object): value is IMemberType => {
+const isIMemberType = (value: object): value is IMemberType => {
   return isDefined(value) && "dataType" in value && typeof value.dataType === 'string' && isDefined(value.dataType);
 };
 
@@ -66,7 +66,7 @@ export interface ITypeDefinitionLoadingContext {
 }
 
 export type TypeDefinitionLoader = (context: ITypeDefinitionLoadingContext) => Promise<TypeDefinition>;
-export interface IMayHaveTypeDefinition {
+interface IMayHaveTypeDefinition {
   typeDefinitionLoader: TypeDefinitionLoader | undefined;
 }
 export interface IHasTypeDefinition {
@@ -85,7 +85,7 @@ export interface IMemberMetadata extends IPublicMemberMetadata, Partial<IMayHave
 
 }
 
-export const isIMemberMetadata = (value: object): value is IMemberMetadata => isDefined(value) && isIMemberType(value) && "path" in value && typeof (value.path) === 'string';
+const isIMemberMetadata = (value: object): value is IMemberMetadata => isDefined(value) && isIMemberType(value) && "path" in value && typeof (value.path) === 'string';
 export const isPublicIMemberMetadata = (value: object): value is IPublicMemberMetadata => isIMemberMetadata(value);
 
 export interface IHasItemsType {
@@ -94,7 +94,7 @@ export interface IHasItemsType {
 
 export const isIHasItemsType = (value: object): value is IHasItemsType => isDefined(value) && "itemsType" in value && typeof (value.itemsType) === 'object' && isDefined(value.itemsType) && isIMemberType(value.itemsType);
 
-export interface IHasChildPropertiesMetadata {
+interface IHasChildPropertiesMetadata {
   properties: IPropertyMetadata[];
 }
 
@@ -126,15 +126,11 @@ export interface IHasFullEntityType {
   moduleAccessor: string | null;
 }
 
-export interface IHasInheritedFromEntityType {
+interface IHasInheritedFromEntityType {
   inheritedFromFullClassName?: string | null | undefined;
   inheritedFromEntityType?: string | null | undefined;
   inheritedFromEntityModule?: string | null | undefined;
 }
-
-export const isIHasInheritedFromEntityType = (value: unknown): value is IHasInheritedFromEntityType => {
-  return isDefined(value) && "inheritedFromEntityType" in value && typeof value.inheritedFromEntityType === 'string';
-};
 
 export interface IObjectProperty extends IPropertyMetadata, IMayHaveTypeDefinition {
 }
@@ -179,7 +175,7 @@ export const isRefListPropertyMetadata = (propMeta: IMemberMetadata): propMeta i
   return isDefined(propMeta) && propMeta.dataType === DataTypes.referenceListItem;
 };
 
-export interface IFunctionMetadata extends IMemberMetadata {
+interface IFunctionMetadata extends IMemberMetadata {
   arguments?: IMemberMetadata[];
   resultType: IMemberType;
 }
@@ -188,12 +184,6 @@ export type PropertiesPromise = Promise<IPropertyMetadata[]>;
 export type PropertiesLoader = () => PropertiesPromise;
 
 export type NestedProperties = IPropertyMetadata[] | PropertiesLoader | null;
-
-// Formatting interfaces
-
-export interface IHasDefaultEditor {
-  defaultEditor?: string | null;
-}
 
 export interface IHasFilter {
   filter: object;
@@ -239,9 +229,6 @@ export const asPropertiesArray = (value: NestedProperties | undefined, fallback:
   return isPropertiesArray(value) ? value : fallback;
 };
 
-export const isFunctionMetadata = (value: IMemberMetadata): value is IFunctionMetadata => {
-  return isDefined(value) && value.dataType === DataTypes.function;
-};
 export const isDataPropertyMetadata = (value: IMemberMetadata): value is IPropertyMetadata => {
   return isDefined(value) && value.dataType !== DataTypes.function;
 };
@@ -265,11 +252,6 @@ export enum MetadataSourceType {
   UserDefined = 2,
 }
 
-export enum EntityConfigType {
-  Class = 1,
-  Interface = 2,
-}
-
 export enum StandardEntityActions {
   create = 'create',
   read = 'read',
@@ -282,7 +264,7 @@ export interface IContainerWithNestedProperties {
   properties: NestedProperties;
 }
 
-export interface VariableDef {
+interface VariableDef {
   name: string;
   dataType: DataTypeInfo;
 }
@@ -334,7 +316,7 @@ export const isObjectMetadata = (value: IMetadata | IModelMetadata | undefined):
   // If module doesn't exist then it's object
   return isDefined(value) && value.dataType === DataTypes.object && !("module" in value && typeof value.module === 'string' && !isNullOrWhiteSpace(value.module));
 };
-export const isContextMetadata = (value: IModelMetadata): value is IContextMetadata => {
+const isContextMetadata = (value: IModelMetadata): value is IContextMetadata => {
   return Boolean(value) && value.dataType === DataTypes.context;
 };
 

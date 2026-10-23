@@ -508,5 +508,3 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     </div>
   );
 };
-
-export default IdleTimerRenderer;

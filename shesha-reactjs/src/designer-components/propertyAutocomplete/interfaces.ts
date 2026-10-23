@@ -11,7 +11,7 @@ export interface IPropertyAutocompleteComponentProps extends IConfigurableFormCo
   propertyModelType?: string | IEntityTypeIdentifier;
 }
 
-export type PropertyAutocompleteCalculatedProps = {
+type PropertyAutocompleteCalculatedProps = {
   modelType: string | IEntityTypeIdentifier | undefined;
   dropdownStyle: CSSProperties | undefined;
 };

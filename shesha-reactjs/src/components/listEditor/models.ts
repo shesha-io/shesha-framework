@@ -2,8 +2,6 @@ import { ItemInterface } from "react-sortablejs";
 import { IGenericListEditorProps } from "./interfaces";
 import { ReactNode } from "react";
 
-export type ListMode = 'create' | 'read' | 'update';
-
 export interface ListItem {
   id?: string;
 }
@@ -19,7 +17,7 @@ export interface SortableItem<ListItemType> extends ItemInterface {
 
 export type ListItemFactory<TItem = unknown> = (items: TItem[]) => TItem;
 
-export interface IListEditorState<TItem = unknown> {
+interface IListEditorState<TItem = unknown> {
   value: TItem[];
 }
 
@@ -28,7 +26,7 @@ export interface IListEditorStateContext<TItem = unknown> extends IListEditorSta
   selectedItem?: TItem | undefined;
 }
 
-export interface IListEditorActions<TItem = unknown> {
+interface IListEditorActions<TItem = unknown> {
   deleteItem: (index: number) => void;
   addItem: (factory?: ListItemFactory<TItem>) => void;
   insertItem: (index: number) => void;
@@ -53,10 +51,6 @@ export interface ListEditorSectionRenderingArgs<TItem = unknown> {
 }
 
 export type ListEditorSectionRenderingFn<TItem = unknown> = (props: ListEditorSectionRenderingArgs<TItem>) => ReactNode;
-
-export interface IListStateProps<TItem = unknown> {
-  value: TItem[];
-}
 
 export interface NestedItemsRenderingArgs<TItem = unknown> {
   items: TItem[];

@@ -12,7 +12,7 @@ export interface IStoredFilesRendererProps {
   listType?: 'text' | 'thumbnail' | undefined;
 }
 
-export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
+const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
   isDragger,
   uploadBtnProps,
   disabled,

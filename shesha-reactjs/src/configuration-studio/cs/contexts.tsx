@@ -6,9 +6,7 @@ import {
   FC,
   PropsWithChildren,
   useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
+  useEffect, useRef,
 } from "react";
 import { useHttpClient, useShaRouting } from "@/providers";
 import { asyncStorage } from "../storage";
@@ -17,9 +15,6 @@ import { useNotificationApi } from "./notificationApi";
 import { isDefined } from "../../utils/nullables";
 import { useSearchParams } from "next/navigation";
 import { useConfigurationStudioEnvironment } from "../cs-environment/contexts";
-
-export const useIsomorphicLayoutEffect =
-  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const useConfigurationStudioSingletone = (): [IConfigurationStudio] => {
   const [, forceUpdate] = useState({});
@@ -65,7 +60,7 @@ const useConfigurationStudioSingletone = (): [IConfigurationStudio] => {
   return [configurationStudio];
 };
 
-export const ConfigurationStudioContext = createNamedContext<IConfigurationStudio | undefined>(undefined, "ConfigurationStudioContext");
+const ConfigurationStudioContext = createNamedContext<IConfigurationStudio | undefined>(undefined, "ConfigurationStudioContext");
 
 export const ConfigurationStudioProvider: FC<PropsWithChildren> = ({ children }) => {
   const [cs] = useConfigurationStudioSingletone();

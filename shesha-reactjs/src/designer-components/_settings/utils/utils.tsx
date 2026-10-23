@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from '@/interfaces';
 import { useStyles } from '../styles/styles';
 import { getNestedPropertyValue } from '@/utils/dotnotation';
@@ -40,12 +39,6 @@ export const updateSettingsFromValues = <T extends object = object>(model: T, va
 export const getValueFromPropertySettings = <T = unknown>(value: IPropertySetting<T> | T): T | undefined => {
   if (isPropertySettings<T>(value)) return value._value;
   else return value;
-};
-
-export const getCodeFromPropertySettings = <T = unknown>(value: IPropertySetting<T> | T): string | undefined => {
-  return isPropertySettings<T>(value)
-    ? value._code ?? undefined
-    : undefined;
 };
 
 export const getValuesFromSettings = <T extends object = object>(model: T): T => {

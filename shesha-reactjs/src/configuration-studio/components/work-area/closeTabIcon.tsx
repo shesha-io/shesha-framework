@@ -3,7 +3,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { createStyles } from '@/styles';
 import { CircleFilled } from './circle-icon';
 
-export const useStyles = createStyles(({ css, cx, iconPrefixCls }) => {
+const useStyles = createStyles(({ css, cx, iconPrefixCls }) => {
   const defaultIcon = "default-icon";
   const hoverIcon = "hover-icon";
   const iconContainer = cx("hover-icon-container", css`

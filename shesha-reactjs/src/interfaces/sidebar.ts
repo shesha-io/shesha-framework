@@ -3,7 +3,7 @@ import { isDefined } from '@/utils/nullables';
 import { ReactNode } from 'react';
 
 export type SidebarItemType = 'button' | 'item' | 'divider' | 'group';
-export type ButtonActionType = 'navigate' | 'dialogue' | 'executeScript' | 'executeFormAction';
+type ButtonActionType = 'navigate' | 'dialogue' | 'executeScript' | 'executeFormAction';
 
 export interface ISidebarMenuItemV0 {
   id: string;
@@ -48,8 +48,4 @@ export const isSidebarGroup = (item: ISidebarMenuItem | undefined): item is ISid
 
 export const isSidebarButton = (item: ISidebarMenuItem | undefined): item is ISidebarButton => {
   return isDefined(item) && item.itemType === 'button';
-};
-
-export const isSidebarDivider = (item: ISidebarMenuItem | undefined): item is ISidebarButton => {
-  return isDefined(item) && item.itemType === 'divider';
 };

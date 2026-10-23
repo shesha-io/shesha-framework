@@ -51,7 +51,7 @@ export type ConfigItemTreeNode = TreeNode & {
   applicationName: string | undefined;
 };
 
-export type NodeWithChilds = {
+type NodeWithChilds = {
   children: TreeNode[];
 };
 
@@ -201,10 +201,10 @@ export const isCustomDocument = (doc?: StoredDocumentInfo): doc is CustomDocumen
 export type ItemEditorProps<TDoc extends IDocumentInstance = IDocumentInstance> = {
   doc: TDoc;
 };
-export type ItemEditorRenderer<TDoc extends IDocumentInstance> = (props: ItemEditorProps<TDoc>) => ReactNode;
+type ItemEditorRenderer<TDoc extends IDocumentInstance> = (props: ItemEditorProps<TDoc>) => ReactNode;
 
 export type ProviderRendererProps<TDoc extends IDocumentInstance = IDocumentInstance> = PropsWithChildren<ItemEditorProps<TDoc>>;
-export type ProviderRenderer<TDoc extends IDocumentInstance> = (props: ProviderRendererProps<TDoc>) => ReactNode;
+type ProviderRenderer<TDoc extends IDocumentInstance> = (props: ProviderRendererProps<TDoc>) => ReactNode;
 
 export type DocumentLoader = () => Promise<void>;
 export type DocumentSaver = () => Promise<void>;
@@ -227,8 +227,8 @@ export type DocumentInstanceFactoryArgs = {
   applicationName: string | undefined;
   flags?: DocumentFlags;
 };
-export type DocumentInstanceFactory = (args: DocumentInstanceFactoryArgs) => IDocumentInstance;
-export type ContextMenuBuilder = (menuItems: MenuItemType[], configurationStudio: IConfigurationStudio) => MenuItemType[];
+type DocumentInstanceFactory = (args: DocumentInstanceFactoryArgs) => IDocumentInstance;
+type ContextMenuBuilder = (menuItems: MenuItemType[], configurationStudio: IConfigurationStudio) => MenuItemType[];
 
 export type DocumentDefinition<TDoc extends IDocumentInstance = IDocumentInstance> = {
   documentType: string;

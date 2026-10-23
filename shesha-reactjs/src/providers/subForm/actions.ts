@@ -2,7 +2,7 @@ import { FormMarkupWithSettings, IFlatComponentsStructure } from '../form/models
 import { IFetchDataErrorPayload, IFetchDataSuccessPayload, IPersistedFormPayload } from './contexts';
 import { createAction } from '@reduxjs/toolkit';
 
-export enum SubFormActionEnums {
+enum SubFormActionEnums {
   SetMarkupWithSettings = 'SET_MARKUP_WITH_SETTINGS',
   FetchDataRequest = 'FETCH_DATA_REQUEST',
   FetchDataSuccess = 'FETCH_DATA_SUCCESS',

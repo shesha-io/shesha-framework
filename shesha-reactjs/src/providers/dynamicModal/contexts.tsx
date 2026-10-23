@@ -33,7 +33,7 @@ export interface IDynamicModalInstanceContext {
   close: () => void;
 }
 
-export const DYNAMIC_MODAL_INSTANCE_CONTEXT_INITIAL_STATE: IDynamicModalInstanceContext = {
+const DYNAMIC_MODAL_INSTANCE_CONTEXT_INITIAL_STATE: IDynamicModalInstanceContext = {
   instance: undefined,
   close: () => {
     /* nop*/
@@ -52,15 +52,6 @@ export const DynamicModalInstanceContext = createNamedContext<IDynamicModalInsta
 export interface IDynamicModalRendererContext {
   registerChildren: (id: string) => void;
   unregisterChildren: (id: string) => void;
-};
-
-export const DYNAMIC_MODAL_RENDERER_CONTEXT_INITIAL_STATE: IDynamicModalRendererContext = {
-  registerChildren: () => {
-    /* nop*/
-  },
-  unregisterChildren: () => {
-    /* nop*/
-  },
 };
 
 export const DynamicModalRendererContext = createNamedContext<IDynamicModalRendererContext | undefined>(

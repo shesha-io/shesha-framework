@@ -4,7 +4,7 @@ import { Directory, FileItemProps, FileTreeNode } from "./models";
 import { useDisposableSubscriptions } from "../hooks";
 import { useEffect, useMemo, useState } from "react";
 
-export const useSourcesTree = (monaco: Monaco): Directory => {
+const useSourcesTree = (monaco: Monaco): Directory => {
   const subscriptions = useDisposableSubscriptions();
   const [state, setState] = useState(() => getSourcesTree(monaco));
 
@@ -57,7 +57,7 @@ const mapFileItemToNode = (item: FileItemProps, onAdd: (node: FileTreeNode) => v
   throw new Error(`Invalid type of source tree item: '${item.type}'`);
 };
 
-export interface TreeNodeMap {
+interface TreeNodeMap {
   [key: string]: FileTreeNode;
 };
 export interface UseTreeNodesResponse {

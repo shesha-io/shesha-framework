@@ -8,7 +8,7 @@ import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { memo, FC, useMemo } from 'react';
 import AttributeDecorator from '../../attributeDecorator';
-import ErrorIconPopover from '../../componentErrors/errorIconPopover';
+import { ErrorIconPopover } from '../../componentErrors/errorIconPopover';
 import { isValidGuid } from '../components/utils';
 import { useShaComponentStyles } from '../styles/shaComponentStyles';
 import { isNonEmptyArray } from '@/utils/array';

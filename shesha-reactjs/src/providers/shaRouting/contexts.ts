@@ -1,11 +1,11 @@
 import { FormIdentifier, INavigateActoinArguments, IRouter } from '@/providers';
 import { createNamedContext } from '@/utils/react';
 
-export interface IShaRoutingStateContext {
+interface IShaRoutingStateContext {
   readonly router: IRouter;
 }
 
-export interface IShaRoutingActionsContext {
+interface IShaRoutingActionsContext {
   /**
    * Navigate to the specified route
    */

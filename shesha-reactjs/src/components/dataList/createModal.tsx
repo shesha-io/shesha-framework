@@ -9,7 +9,7 @@ import { NewItemInitializer } from './models';
 import { ItemContainerForm } from './itemContainerForm';
 import { Modal, Skeleton } from 'antd';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
-import ValidationErrors from '../validationErrors';
+import { ValidationErrors } from '../validationErrors';
 import { isDefined } from '@/utils/nullables';
 
 interface ICreateModalProps {
@@ -75,7 +75,7 @@ const CreateModal: FC<ICreateModalProps> = ({
   );
 };
 
-export interface IDataListItemCreateModalProps<TValue extends object = object> {
+interface IDataListItemCreateModalProps<TValue extends object = object> {
   formInfo?: IPersistedFormProps | undefined;
   creater?: DataProcessor<TValue> | undefined;
   data: TValue | NewItemInitializer<TValue> | undefined;

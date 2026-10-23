@@ -1,7 +1,7 @@
 import { useContext, FC, PropsWithChildren, useMemo, useId, useRef, useEffect } from "react";
 import { createNamedContext } from "@/utils/react";
 
-export interface IValidator {
+interface IValidator {
   id: string;
   validate: () => Promise<void>;
 }
@@ -14,7 +14,7 @@ export interface IValidateProviderStateContext {
   validate: () => Promise<void>;
 }
 
-export const ValidateProviderStateContext = createNamedContext<IValidateProviderStateContext | undefined>(
+const ValidateProviderStateContext = createNamedContext<IValidateProviderStateContext | undefined>(
   {
     id: '',
     registerChild: () => {

@@ -44,13 +44,13 @@ interface IOption {
   label: string | React.ReactNode;
 }
 
-export interface VerbSelectorProps {
+interface VerbSelectorProps {
   verbs: IHttpVerb[];
   value: string;
   onChange: (newValue: string) => void;
   size?: SizeType;
 }
-export const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange, size }) => {
+const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange, size }) => {
   const { styles } = useStyles();
   const options: DefaultOptionType[] = useMemo(() => {
     return verbs.map<DefaultOptionType>((verb) => ({

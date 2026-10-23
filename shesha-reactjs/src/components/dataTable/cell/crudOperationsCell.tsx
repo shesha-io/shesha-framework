@@ -3,7 +3,7 @@ import { FC } from 'react';
 import { useCrud } from '@/providers/crudContext';
 import ActionButton, { IActionButtonProps } from '@/components/actionButton/index';
 
-export const CrudOperationsCell: FC = () => {
+const CrudOperationsCell: FC = () => {
   const {
     mode,
     switchMode,

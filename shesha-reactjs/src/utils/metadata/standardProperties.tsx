@@ -1,8 +1,6 @@
 import { TypeDefinition } from '@/interfaces/metadata';
-import { messageApiDefinition } from "@/providers/sourceFileManager/api-utils/message";
-import { modalApiDefinition } from "@/providers/sourceFileManager/api-utils/modal";
 import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
-import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE, fileSaverCode, globalStateCode, queryStringCode, pageCode, formCode, storageCode } from '@/publicJsApis/apis';
+import { metadataSourceCode, metadataBuilderSourceCode, CODE, queryStringCode, pageCode, storageCode } from '@/publicJsApis/apis';
 
 export const SheshaConstants = {
   user: "shesha:user",
@@ -30,110 +28,6 @@ export const SheshaConstants = {
   webStorage: "shesha:webStorage",
 };
 
-export const registerHttpAction: MetadataBuilderAction = (builder, name = "http") => {
-  builder.addCustom(name, "axios instance used to make http requests", () => {
-    const definition: TypeDefinition = {
-      typeName: 'HttpClientApi',
-      files: [{ content: httpClientSourceCode, fileName: 'apis/http.ts' }],
-    };
-    return Promise.resolve(definition);
-  });
-};
-
-export const registerMessageAction: MetadataBuilderAction = (builder, name = "message") => {
-  builder.addCustom(name, "API for displaying toast messages", () => {
-    const definition: TypeDefinition = {
-      typeName: 'MessageApi',
-      files: [{ content: messageApiDefinition, fileName: 'apis/message.ts' }],
-    };
-    return Promise.resolve(definition);
-  });
-};
-
-export const registerModalAction: MetadataBuilderAction = (builder, name = "modal") => {
-  builder.addCustom(name, "API for displaying modal dialogs and forms", () => {
-    const definition: TypeDefinition = {
-      typeName: 'ModalApi',
-      files: [{ content: modalApiDefinition, fileName: 'apis/modal.ts' }],
-    };
-    return Promise.resolve(definition);
-  });
-};
-
-export const registerFileSaverAction: MetadataBuilderAction = (builder, name = "fileSaver") => {
-  builder.addCustom(name, "API for saving files", () => {
-    const definition: TypeDefinition = {
-      typeName: 'FileSaverApi',
-      files: [{ content: fileSaverCode, fileName: 'apis/fileSaver.ts' }],
-    };
-    return Promise.resolve(definition);
-  });
-};
-
-export const registerMomentAction: MetadataBuilderAction = (builder, name = "moment") => {
-  builder.addCustom(name, "The moment.js object", () => {
-    return fetch("https://unpkg.com/moment@2.25.3/ts3.1-typings/moment.d.ts", { mode: 'no-cors' })
-      .then((response) => {
-        return response.text();
-      })
-      .then((response) => {
-        const momentWrapper = `import moment from 'apis/moment';\r\ntype MomentApi = typeof moment;\r\nexport { MomentApi };`;
-        const definition: TypeDefinition = {
-          typeName: 'MomentApi',
-          files: [
-            { content: momentWrapper, fileName: 'apis/momentApi.ts' },
-            { content: response, fileName: 'apis/moment.d.ts' },
-          ],
-        };
-        return definition;
-      })
-      .catch((error) => {
-        console.error("Failed to fetch moment.d.ts", error);
-        throw error;
-      });
-  });
-};
-
-export const registerGlobalStateAction: MetadataBuilderAction = (builder, name = "globalState") => {
-  builder.addCustom(name, "The global state of the application @deprecated use (application.context, page.context or form.context) instead. This item is outdated and will be removed in further versions.", () => {
-    const definition: TypeDefinition = {
-      typeName: 'GlobalStateType',
-      files: [{ content: globalStateCode, fileName: 'apis/globalState.ts' }],
-    };
-    return Promise.resolve(definition);
-  });
-};
-
-export const registerSetGlobalStateAction: MetadataBuilderAction = (builder, name = "setGlobalState") => {
-  builder.addCustom(name, "Setting the global state of the application @deprecated use (application.context, page.context or form.context) instead. This item is outdated and will be removed in further versions.", () => {
-    const definition: TypeDefinition = {
-      typeName: 'SetGlobalStateType',
-      files: [{ content: globalStateCode, fileName: 'apis/globalState.ts' }],
-    };
-    return Promise.resolve(definition);
-  });
-};
-
-export const registerSelectedRowAction: MetadataBuilderAction = (builder, name = "selectedRow") => {
-  builder.addCustom(name, "Selected row of nearest table (null if not available)", () => {
-    const definition: TypeDefinition = {
-      typeName: 'unknown',
-      files: [],
-    };
-    return Promise.resolve(definition);
-  });
-};
-
-export const registerPageContextAction: MetadataBuilderAction = (builder, name = "pageContext") => {
-  builder.addCustom(name, "Contexts data of current page @deprecated use page.context instead. This item is outdated and will be removed in further versions.", () => {
-    const definition: TypeDefinition = {
-      typeName: 'PageContext',
-      files: [{ content: 'export interface PageContext { [key: string]: unknown }', fileName: 'apis/pageContext.ts' }],
-    };
-    return Promise.resolve(definition);
-  });
-};
-
 export const registerPageAction: MetadataBuilderAction = (builder, name = "page") => {
   builder.addCustom(name, "Api of current page", () => {
     const definition: TypeDefinition = {
@@ -149,16 +43,6 @@ export const registerWebStorageAction: MetadataBuilderAction = (builder, name = 
     const definition: TypeDefinition = {
       typeName: 'Storage',
       files: [{ content: storageCode, fileName: 'apis/storageApi.ts' }],
-    };
-    return Promise.resolve(definition);
-  });
-};
-
-export const registerFormAction: MetadataBuilderAction = (builder, name = "form") => {
-  builder.addCustom(name, "Form instance API", () => {
-    const definition: TypeDefinition = {
-      typeName: 'FormApi',
-      files: [{ content: formCode, fileName: 'apis/form.ts' }],
     };
     return Promise.resolve(definition);
   });

@@ -25,8 +25,6 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { ButtonApi } from '@/componentsApi/componentApi';
 import { getComponentEvents } from '../_common/events';
 
-export type IActionParameters = [{ key: string; value: string }];
-
 const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   styleGroup: 'common',
   themeGroup: 'inline',

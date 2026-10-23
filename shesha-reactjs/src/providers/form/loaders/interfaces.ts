@@ -29,15 +29,15 @@ export interface GetFormFieldsPayload {
 
 export type GetGqlFieldsPayload = GetFormFieldsPayload;
 
-export type LoadingState = 'waiting' | 'loading' | 'ready' | 'failed';
-export interface LoadingCallbackState {
+type LoadingState = 'waiting' | 'loading' | 'ready' | 'failed';
+interface LoadingCallbackState {
   loaderHint?: string | undefined;
   loadingState: LoadingState;
   error?: IErrorInfo | undefined;
 }
-export type LoadingCallback = (loadingState: LoadingCallbackState) => void;
+type LoadingCallback = (loadingState: LoadingCallbackState) => void;
 
-export type LoaderEndpointType = 'default' | 'static' | 'dynamic';
+type LoaderEndpointType = 'default' | 'static' | 'dynamic';
 export interface GqlLoaderSettings {
   fieldsToFetch?: string[] | undefined;
   endpointType: LoaderEndpointType;

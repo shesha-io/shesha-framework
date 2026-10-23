@@ -11,12 +11,12 @@ import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { EntityInitFlags } from '@/apis/modelConfigurations';
 import { useModelConfigurator } from '@/providers/modelConfigurator';
 
-export interface IProps extends IModelItem {
+interface IProps extends IModelItem {
   index: number[];
   parent?: IModelItem | undefined;
 }
 
-export const PropertyWrapper: FC<PropsWithChildren<IProps>> = (props) => {
+const PropertyWrapper: FC<PropsWithChildren<IProps>> = (props) => {
   const { deleteItem, selectedItemId, selectedItemRef } = usePropertiesEditor();
   const { errors } = useModelConfigurator();
   const { styles } = useStyles();

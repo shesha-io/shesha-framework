@@ -23,7 +23,6 @@ export type IndexColumnFilterOption =
 
 export type DatatableColumnType = 'data' | 'action' | 'calculated' | 'crud-operations' | 'form' | 'renderer';
 
-export type SortDirection = 0 /* asc*/ | 1;
 export type ColumnSorting = 'asc' | 'desc';
 
 export type DataFetchingMode = 'paging' | 'fetchAll';
@@ -62,7 +61,7 @@ export interface IAnchoredColumnProps {
   shift?: number;
   shadowPosition?: number;
 }
-export interface CellStyleFuncArgs {
+interface CellStyleFuncArgs {
   /**
    * Row values
    */
@@ -73,7 +72,6 @@ export interface CellStyleFuncArgs {
   value: unknown;
 }
 export type CellStyleFunc = (args: CellStyleFuncArgs) => CSSProperties;
-export type CellStyleAccessor = CSSProperties | CellStyleFunc | undefined;
 
 export interface ITableDataFetchColumn extends ITableColumn {
   propertiesToFetch?: string | string[] | undefined;
@@ -132,12 +130,6 @@ export interface ITableRendererColumn extends ITableColumn {
   renderCell: (row: object) => ReactNode | string;
 }
 
-export interface ICustomFilterOptions {
-  readonly id: string;
-  readonly name: string;
-  readonly isApplied?: boolean;
-}
-
 export interface IFilterItem {
   readonly columnId: string;
   readonly filterOption: IndexColumnFilterOption;
@@ -184,12 +176,6 @@ export interface ITableFilter {
   readonly columnId: string;
   readonly filterOption: IndexColumnFilterOption | undefined;
   readonly filter: ColumnFilter | undefined;
-}
-
-export interface IQuickFilter {
-  readonly id: string;
-  readonly name: string;
-  readonly selected?: boolean;
 }
 
 export type JsonLogicFilter = { [key: string]: unknown };
@@ -240,8 +226,6 @@ export interface IPublicDataTableActions {
 
 export type IDataTableInstance = IPublicDataTableActions;
 
-export type ListSortDirection = 0 | 1;
-
 export interface DataTableColumnDto {
   propertyName?: string | null;
   name?: string | null;
@@ -287,7 +271,7 @@ export type GroupingItem = ISortingItem;
 
 export type SortMode = 'standard' | 'strict';
 
-export type DataFetchDependencyState = 'waiting' | 'ready';
+type DataFetchDependencyState = 'waiting' | 'ready';
 export interface DataFetchDependency {
   state: DataFetchDependencyState;
 }

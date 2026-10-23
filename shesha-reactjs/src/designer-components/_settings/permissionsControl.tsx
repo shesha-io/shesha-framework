@@ -2,12 +2,12 @@ import { ReactElement, useState } from 'react';
 import { useStyles } from './styles/styles';
 import { Button, Modal } from 'antd';
 import { LockFilled, LockOutlined } from '@ant-design/icons';
-import SettingsControl from './settingsControl';
+import { SettingsControl } from './settingsControl';
 import { PermissionAutocomplete } from '../../components/permissionAutocomplete/index';
 import { ConfigurableFormItem } from '../../components/formDesigner/components/formItem';
 import { IPropertySetting } from '../../providers/form/models';
 
-export interface IPermissionsControlProps {
+interface IPermissionsControlProps {
   enabled?: boolean;
   propertyName: string;
   readOnly?: boolean;
@@ -95,7 +95,7 @@ const PermissionsControlInner = (props: IPermissionsControlProps): ReactElement 
   );
 };
 
-export const PermissionsControl = (props: IPermissionsControlProps): ReactElement => {
+const PermissionsControl = (props: IPermissionsControlProps): ReactElement => {
   return Boolean(props.enabled) ? <PermissionsControlInner {...props} /> : props.children;
 };
 

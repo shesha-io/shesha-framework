@@ -1,5 +1,5 @@
 import { IFlatComponentsStructure, IFormActions, IFormSections, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
-import { memo, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { FormProvider } from '@/providers/form';
 import FormInfo from './formInfo';
 import { ConfigurableFormRenderer } from './configurableFormRenderer';
@@ -63,5 +63,3 @@ export const FormWithFlatMarkup = <TValues extends object = object>(props: IForm
     </FormInfo>
   );
 };
-
-export const FormWithFlatMarkupMemo = memo(FormWithFlatMarkup);

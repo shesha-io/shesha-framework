@@ -4,11 +4,11 @@ import { Statistic, StatisticProps } from 'antd';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
 
-export interface IShaStatisticProps extends StatisticProps {
+interface IShaStatisticProps extends StatisticProps {
   onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 }
 
-export const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => {
+const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => {
   const fontSize = (rest.styles as { content?: React.CSSProperties } | undefined)?.content?.fontSize;
   const { styles } = useStyles({
     token: {

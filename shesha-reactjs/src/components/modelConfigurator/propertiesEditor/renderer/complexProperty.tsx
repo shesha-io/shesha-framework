@@ -11,7 +11,7 @@ import { ItemChangeDetails } from '@/components/listEditor';
 import PropertyWrapper from './propertyWrapper';
 import { ContainerRenderer } from './itemsContainer';
 
-export interface IProps {
+interface IProps {
   index: number[];
   data: IModelItem;
   parent?: IModelItem | undefined;
@@ -19,7 +19,7 @@ export interface IProps {
   onChange?: ((newValue: IModelItem, changeDetails?: ItemChangeDetails) => void) | undefined;
 }
 
-export const ComplexProperty: FC<IProps> = (props) => {
+const ComplexProperty: FC<IProps> = (props) => {
   const { addItem } = usePropertiesEditor();
   const { styles } = useStyles();
 

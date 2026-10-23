@@ -30,7 +30,7 @@ export const isFileReferenceValid = (fileReference: FileReference): boolean => {
   }
 };
 
-export const fileListRefToString = (ref: FileListReference): string => `${ref.ownerId.toLowerCase()}_${ownerTypeToString(ref.ownerType)}_${ref.ownerName}_${ref.filesCategory?.toLowerCase()}`;
+const fileListRefToString = (ref: FileListReference): string => `${ref.ownerId.toLowerCase()}_${ownerTypeToString(ref.ownerType)}_${ref.ownerName}_${ref.filesCategory?.toLowerCase()}`;
 
 export const fileListReferenceEqual = (ref1: FileListReference, ref2: FileListReference): boolean => {
   return fileListRefToString(ref1) === fileListRefToString(ref2);

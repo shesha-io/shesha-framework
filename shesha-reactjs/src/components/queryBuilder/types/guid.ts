@@ -2,11 +2,11 @@ import { Type, AntdConfig } from '@react-awesome-query-builder/antd';
 
 const standardTypes = AntdConfig.types;
 
-export type CustomType = Type & {
+type CustomType = Type & {
   operators?: string[];
 };
 
-export const GuidType: CustomType = {
+const GuidType: CustomType = {
   ...standardTypes.text,
   valueSources: ['value', 'field', 'func'],
   defaultOperator: 'equal',

@@ -4,7 +4,7 @@ import { DEFAULT_CONTEXT_METADATA } from '../dataContextManager/models';
 import { Path, PathValue } from '@/utils/dotnotation';
 import { IModelMetadata } from '@/interfaces/metadata';
 
-export interface IDataContextFullInstance extends IDataContextProviderStateContext, IDataContextProviderActionsContext { }
+interface IDataContextFullInstance extends IDataContextProviderStateContext, IDataContextProviderActionsContext { }
 
 export interface IDataContextProviderStateContext {
   id: string;
@@ -36,7 +36,7 @@ export interface IDataContextProviderActionsContext<TData extends object = objec
 export type IDataContextProviderActionsContextOverride = Partial<IDataContextProviderActionsContext>;
 
 /** initial state */
-export const DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE: IDataContextProviderStateContext = {
+const DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE: IDataContextProviderStateContext = {
   id: '',
   uid: '',
   name: '',
@@ -66,12 +66,3 @@ export const useDataContextOrUndefined = (): IDataContextProviderStateContext & 
     ? { ...actionsContext, ...stateContext } as IDataContextFullInstance
     : undefined;
 };
-
-export function useDataContext(): IDataContextProviderStateContext & IDataContextProviderActionsContext {
-  const context = useDataContextOrUndefined();
-
-  if (context === undefined) {
-    throw new Error('useDataContext must be used within a DataContextProvider');
-  }
-  return context;
-}

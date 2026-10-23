@@ -32,20 +32,20 @@ export type ConfigurationItemRevision = {
   creatorUserName: string | null;
 };
 
-export type GetItemRevisionsResponse = {
+type GetItemRevisionsResponse = {
   revisions: ConfigurationItemRevision[];
 };
 
-export type ItemRevision = ConfigurationItemRevision & {
+type ItemRevision = ConfigurationItemRevision & {
   itemType: 'revision';
 };
 
-export type ItemRevisionsSubheading = {
+type ItemRevisionsSubheading = {
   itemType: 'subheading';
   label: string;
 };
 
-export type ItemRevisionOrSubheading = ItemRevision | ItemRevisionsSubheading;
+type ItemRevisionOrSubheading = ItemRevision | ItemRevisionsSubheading;
 
 export type ItemRevisionsWithSubheadings = {
   items: ItemRevisionOrSubheading[];

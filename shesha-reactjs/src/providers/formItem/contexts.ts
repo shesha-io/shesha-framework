@@ -7,6 +7,6 @@ export interface IFormItemStateContext {
   namePrefix?: string | undefined;
 }
 
-export const FORM_ITEM_CONTEXT_INITIAL_STATE: IFormItemStateContext = {};
+const FORM_ITEM_CONTEXT_INITIAL_STATE: IFormItemStateContext = {};
 
 export const FormItemStateContext = createNamedContext<IFormItemStateContext>(FORM_ITEM_CONTEXT_INITIAL_STATE, "FormItemStateContext");

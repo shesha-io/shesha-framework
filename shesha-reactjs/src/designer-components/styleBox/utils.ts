@@ -2,7 +2,7 @@ import { isDefined } from "@/utils/nullables";
 import { StyleBoxValue } from "../../providers/form/models";
 import { jsonSafeParse } from "@/utils/object";
 
-export const isStyleBoxValue = (value: object | undefined): value is StyleBoxValue => {
+const isStyleBoxValue = (value: object | undefined): value is StyleBoxValue => {
   return isDefined(value) && typeof value === 'object' && !Array.isArray(value) &&
     (('_type' in value && value._type === 'styleBox') ||
       'marginTop' in value || 'marginBottom' in value || 'marginLeft' in value || 'marginRight' in value ||

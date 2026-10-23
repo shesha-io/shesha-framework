@@ -5,7 +5,7 @@ import data from '../../public/meta.json';
 import { FC } from 'react';
 import { useLayoutSelection } from '@/hooks';
 import { LAYOUT_MODE } from '@/components/mainLayout/constant';
-import CollapsiblePanel from '@/components/panel';
+import { CollapsiblePanel } from '@/components/panel';
 
 /**
  * There was an error

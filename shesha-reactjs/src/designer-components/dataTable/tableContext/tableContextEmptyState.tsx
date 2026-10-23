@@ -6,7 +6,7 @@ import { useTheme } from '@/providers/theme';
 import { useStyles } from './styles';
 import { isNullOrWhiteSpace } from '@/utils';
 
-export interface ITableContextEmptyStateProps {
+interface ITableContextEmptyStateProps {
   containerId: string;
   componentId: string;
   className?: string | undefined;
@@ -14,7 +14,7 @@ export interface ITableContextEmptyStateProps {
   readOnly?: boolean | undefined;
 }
 
-export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
+const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
   containerId,
   componentId,
   className,

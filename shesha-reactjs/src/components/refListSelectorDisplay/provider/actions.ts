@@ -3,7 +3,7 @@ import { ISettingsUpdatePayload, IUpdateChildItemsPayload, IUpdateItemSettingsPa
 import { IReferenceListItem } from '@/interfaces/referenceList';
 import { RefListGroupItemProps } from './models';
 
-export enum RefListItemGroupActionEnums {
+enum RefListItemGroupActionEnums {
   UpdateItem = 'UPDATE_ITEM',
   SelectItem = 'SELECT_ITEM',
   UpdateChildItems = 'UPDATE_CHILD_ITEMS',

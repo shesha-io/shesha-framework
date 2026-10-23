@@ -1,7 +1,7 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
 import ConditionalWrap from '@/components/conditionalWrapper';
-import ShaSpin from '@/components/shaSpin';
-import Show from '@/components/show';
+import { ShaSpin } from '@/components/shaSpin';
+import { Show } from '@/components/show';
 import { ValueRenderer } from '@/components/valueRenderer/index';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';

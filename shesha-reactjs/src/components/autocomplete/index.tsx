@@ -106,7 +106,7 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
 /**
  * @deprecated The method should not be used
  */
-export const EntityDtoAutocomplete = (props: IAutocompleteProps): React.JSX.Element => {
+const EntityDtoAutocomplete = (props: IAutocompleteProps): React.JSX.Element => {
   return (
     <Autocomplete {...props} />
   );
@@ -115,7 +115,7 @@ export const EntityDtoAutocomplete = (props: IAutocompleteProps): React.JSX.Elem
 /**
  * @deprecated The method should not be used
  */
-export const RawAutocomplete = (props: IAutocompleteProps<string>): React.JSX.Element => {
+const RawAutocomplete = (props: IAutocompleteProps<string>): React.JSX.Element => {
   return (
     <Autocomplete<string>
       {...props}

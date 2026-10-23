@@ -1,6 +1,4 @@
-import { useGet, UseGetProps } from '@/hooks/useGet';
-import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
-import * as RestfulShesha from '@/utils/fetchers';
+import { IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { IDictionary } from '..';
 import { ConfigurationDto } from '@/providers/configurationItemsLoader/models';
 import { IApiEndpoint, IEntityTypeIdentifierQueryParams, ISpecification } from '@/interfaces/metadata';
@@ -8,7 +6,7 @@ import { IApiEndpoint, IEntityTypeIdentifierQueryParams, ISpecification } from '
 /**
  * Indicate the source of the entity/property metadata
  */
-export type MetadataSourceType = 1 | 2;
+type MetadataSourceType = 1 | 2;
 
 export interface PropertyMetadataDto {
   cascadeCreate?: boolean;
@@ -113,21 +111,3 @@ export interface MetadataGetQueryParams extends IEntityTypeIdentifierQueryParams
    */
   'api-version'?: string;
 }
-
-export type metadataGetProps = Omit<
-  RestfulShesha.GetProps<MetadataDtoAjaxResponse, IAjaxResponseBase, MetadataGetQueryParams, void>,
-  'queryParams'
->;
-export const metadataGet = (queryParams: MetadataGetQueryParams, props: metadataGetProps) =>
-  RestfulShesha.get<MetadataDtoAjaxResponse, IAjaxResponseBase, MetadataGetQueryParams, void>(
-    `/api/services/app/Metadata/Get`,
-    queryParams,
-    props
-  );
-
-export type UseMetadataGetProps = Omit<UseGetProps<MetadataDtoAjaxResponse, MetadataGetQueryParams, void>, 'path'>;
-export const useMetadataGet = (props: UseMetadataGetProps) =>
-  useGet<MetadataDtoAjaxResponse, IAjaxResponseBase, MetadataGetQueryParams, void>(
-    `/api/services/app/Metadata/Get`,
-    props
-  );

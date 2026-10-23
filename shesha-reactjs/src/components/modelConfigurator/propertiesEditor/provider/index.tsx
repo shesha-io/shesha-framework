@@ -24,7 +24,7 @@ import { throwError } from '@/utils/errors';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { useDeepCompareMemo } from '@/hooks';
 
-export interface IPropertiesEditorProviderProps {
+interface IPropertiesEditorProviderProps {
   id?: string;
   items: IModelItem[];
   onChange?: ((items: IModelItem[]) => void) | undefined;

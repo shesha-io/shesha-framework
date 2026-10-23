@@ -1,4 +1,4 @@
-import { ConfigurableItemIdentifier, FormMarkupWithSettings, IFormDto, IReferenceListIdentifier, isConfigurableItemFullName, isConfigurableItemRawId } from '@/interfaces';
+import { ConfigurableItemIdentifier, FormMarkupWithSettings, IFormDto, isConfigurableItemFullName, isConfigurableItemRawId } from '@/interfaces';
 import { getFormFullName } from '@/utils/form';
 import { FormIdentifier } from '../form/models';
 import { FormConfigurationDto } from './models';
@@ -12,9 +12,8 @@ export const getConfigurationNotFoundMessage = (configurationType: string, confi
 };
 
 export const getFormNotFoundMessage = (formId: FormIdentifier | undefined): string => getConfigurationNotFoundMessage("Form", formId);
-export const getReferenceListNotFoundMessage = (refListId: IReferenceListIdentifier): string => getConfigurationNotFoundMessage("Reference list", refListId);
 
-export const getConfigurationForbiddenMessage = (configurationType: string, configurationId: ConfigurableItemIdentifier | undefined): string => {
+const getConfigurationForbiddenMessage = (configurationType: string, configurationId: ConfigurableItemIdentifier | undefined): string => {
   if (isConfigurableItemRawId(configurationId)) return `You are not authorized to access the ${configurationType} with id='${configurationId}'`;
 
   if (isConfigurableItemFullName(configurationId)) return `You are not authorized to access the ${configurationType} '${getFormFullName(configurationId.module, configurationId.name)}'`;

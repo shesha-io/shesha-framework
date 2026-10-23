@@ -7,7 +7,7 @@ import { CSSProperties, Ref } from 'react';
 /** Resolves to BaseSelectRef — the imperative handle exposing `focus()`/`blur()`. */
 export type DropdownSelectRef = GetRef<typeof Select>;
 
-export type DataSourceType = 'values' | 'referenceList' | 'url';
+type DataSourceType = 'values' | 'referenceList' | 'url';
 
 export interface ILabelValue<TValue = unknown> {
   id: string;
@@ -23,10 +23,10 @@ export interface ILabelValue<TValue = unknown> {
  * and `custom` delegated to user JS. Superseded by `DropdownBindingFormat`, but still read at runtime
  * so forms saved before the rename keep resolving their values.
  */
-export type DropdownValueFormat = 'simple' | 'listItem' | 'custom';
+type DropdownValueFormat = 'simple' | 'listItem' | 'custom';
 
 /** What gets written to the bound property: the selected item value, or its display text. */
-export type DropdownBindingFormat = 'itemValue' | 'itemLabel';
+type DropdownBindingFormat = 'itemValue' | 'itemLabel';
 
 /**
  * How a tag is filled. Mirrors the antd `Tag` variant prop:

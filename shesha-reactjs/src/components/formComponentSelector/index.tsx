@@ -176,4 +176,4 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   );
 };
 
-export default FormComponentSelector;
+

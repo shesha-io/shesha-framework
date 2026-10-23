@@ -12,7 +12,7 @@ import { isDefined } from '@/utils/nullables';
 
 const JSON_PANEL = "json";
 
-export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
+const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const { styles } = useStyles();
   const [modalVisible, setModalVisible] = useState(false);
   const [jsonLogicResult, setJsonLogicResult] = useState<JsonLogicResult | undefined>(undefined);

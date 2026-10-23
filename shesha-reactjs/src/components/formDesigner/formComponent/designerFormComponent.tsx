@@ -6,7 +6,7 @@ import { isDefined } from "@/utils/nullables";
 import { isPropertySettings } from "@/designer-components/_settings/utils/utils";
 import classNames from "classnames";
 import { isNonEmptyArray } from "@/utils/array";
-import Show from "@/components/show";
+import { Show } from "@/components/show";
 import { ConfigProvider, Tooltip, theme as antdTheme } from "antd";
 import { EyeInvisibleOutlined, FunctionOutlined, LockOutlined } from "@ant-design/icons";
 import DragWrapper from "../configurableFormComponent/dragWrapper";
@@ -24,7 +24,7 @@ import { createPortal } from "react-dom";
 import { ComponentProperties } from "../componentPropertiesPanel/componentProperties";
 import { useComponentValidationResults } from "@/providers/validator/hooks";
 import { getDesignerIndicators } from "./designerIndicators";
-export interface IDesignerFormComponentProps {
+interface IDesignerFormComponentProps {
   componentModel: UnwrapCodeEvaluators<IComponentModelProps>;
   sourceComponentModel: IComponentModelProps;
   toolboxComponent: IToolboxComponent;

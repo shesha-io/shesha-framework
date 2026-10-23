@@ -102,5 +102,3 @@ export const CollapsiblePanel: FC<PropsWithChildren<Omit<ICollapsiblePanelProps,
     />
   );
 };
-
-export default CollapsiblePanel;

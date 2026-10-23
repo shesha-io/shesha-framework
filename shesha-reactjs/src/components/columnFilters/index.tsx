@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { useDataTableStore } from '@/providers';
 import ColumnFiltersBase from '@/components/columnFiltersBase';
 
-export const ColumnFilters: FC = () => {
+const ColumnFilters: FC = () => {
   const {
     columns,
     tableFilterDirty,

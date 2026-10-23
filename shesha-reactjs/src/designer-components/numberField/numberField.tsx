@@ -28,10 +28,10 @@ import { useComponentApi } from '@/providers/componentApi/hooks';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
-export interface InputFocusOptions extends FocusOptions {
+interface InputFocusOptions extends FocusOptions {
   cursor?: 'start' | 'end' | 'all';
 }
-export interface InputNumberRef extends HTMLInputElement {
+interface InputNumberRef extends HTMLInputElement {
   focus: (options?: InputFocusOptions) => void;
   blur: () => void;
   nativeElement: HTMLElement;

@@ -11,7 +11,7 @@ export interface IIconRadioGroupValueDefinition {
   style?: React.CSSProperties | undefined;
 }
 
-export interface IIconRadioGroupProps {
+interface IIconRadioGroupProps {
   value?: unknown | undefined;
   readOnly?: boolean | undefined;
   onChange?: ((value: boolean | undefined) => void) | undefined;

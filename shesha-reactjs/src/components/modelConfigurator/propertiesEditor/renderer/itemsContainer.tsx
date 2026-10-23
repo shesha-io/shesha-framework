@@ -9,7 +9,7 @@ import { ItemChangeDetails } from '@/components/listEditor';
 import { useDeepCompareMemo } from '@/hooks';
 import { isEqual } from 'lodash';
 
-export interface IContainerRenderArgs {
+interface IContainerRenderArgs {
   index?: number[];
   items: IModelItem[];
   parent?: IModelItem | undefined;
@@ -19,14 +19,14 @@ export interface IContainerRenderArgs {
 
 export type ContainerRenderer = (args: IContainerRenderArgs) => React.ReactNode;
 
-export interface IItemsContainerProps {
+interface IItemsContainerProps {
   index?: number[];
   items: IModelItem[];
   parent?: IModelItem | undefined;
   disableDrag?: boolean;
 }
 
-export const ItemsContainer: FC<IItemsContainerProps> = (props) => {
+const ItemsContainer: FC<IItemsContainerProps> = (props) => {
   const { updateChildItems, selectItem } = usePropertiesEditor();
   const { styles } = useStyles();
 

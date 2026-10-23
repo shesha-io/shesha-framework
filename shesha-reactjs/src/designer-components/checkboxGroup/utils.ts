@@ -1,9 +1,5 @@
-import { SpaceProps } from 'antd';
 import { IInputStyles, INestedStyleValue, IStyleValue } from '@/providers/form/models';
 import { isNullOrWhiteSpace } from '@/utils';
-
-export const getSpan = (direction: SpaceProps['direction'], size: number): number =>
-  direction === 'vertical' ? 24 : size < 4 ? 24 / size : 6;
 
 // Default Appearance styles: the wrapper's own values, plus the nested `checkbox` set describing a
 // checkbox in the group. Mirrors the standalone Checkbox component so both look consistent out of

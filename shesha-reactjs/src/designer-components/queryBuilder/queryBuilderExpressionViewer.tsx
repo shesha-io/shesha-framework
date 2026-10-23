@@ -5,11 +5,11 @@ import { FC } from 'react';
 type JsonPrimitive = string | number | boolean | null;
 export type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
 
-export interface IQueryBuilderExpressionViewerProps {
+interface IQueryBuilderExpressionViewerProps {
   value?: JsonValue | undefined;
 }
 
-export const QueryBuilderExpressionViewer: FC<IQueryBuilderExpressionViewerProps> = (props) => {
+const QueryBuilderExpressionViewer: FC<IQueryBuilderExpressionViewerProps> = (props) => {
   const availableConstants = useAvailableStandardConstantsMetadata();
 
   return (

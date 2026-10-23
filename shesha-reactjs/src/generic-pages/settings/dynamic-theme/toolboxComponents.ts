@@ -6,7 +6,6 @@
 
 import * as React from 'react';
 import { getToolboxComponents } from "@/providers/form/defaults/toolboxComponents";
-import { isNullOrWhiteSpace } from '@/utils';
 
 export interface IMenuItem {
   key: string;
@@ -58,21 +57,4 @@ export const findComponentNode = (key: string, items?: IMenuItem[]): IMenuItem |
     }
   }
   return null;
-};
-
-/**
- * Get all component types (individual components, not categories)
- */
-export const getAllComponentTypes = (items?: IMenuItem[]): IMenuItem[] => {
-  const searchItems = items ?? getMenuItems();
-  const result: IMenuItem[] = [];
-  for (const node of searchItems) {
-    if (!isNullOrWhiteSpace(node.type)) {
-      result.push(node);
-    }
-    if (node.children) {
-      result.push(...getAllComponentTypes(node.children));
-    }
-  }
-  return result;
 };

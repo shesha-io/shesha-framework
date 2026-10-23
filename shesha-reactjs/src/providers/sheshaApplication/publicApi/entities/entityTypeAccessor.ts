@@ -13,7 +13,7 @@ export interface IEntityEndpoints extends Record<string, IApiEndpoint> {
 /**
  * Entities accessor. It allows to manipulate entities.
  */
-export interface IEntityTypeAccessor<TId, TEntity extends IEntity<TId>> {
+interface IEntityTypeAccessor<TId, TEntity extends IEntity<TId>> {
   createAsync: (value: TEntity) => Promise<TEntity>;
   getAsync: (id: TId) => Promise<TEntity>;
   updateAsync: (value: TEntity) => Promise<TEntity>;

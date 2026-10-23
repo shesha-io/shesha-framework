@@ -55,7 +55,7 @@ export type JustifyItems =
   'revert-layer' |
   'unset';
 
-export type FlexDirection =
+type FlexDirection =
   | 'row' |
   'row-reverse' |
   'column' |
@@ -69,7 +69,7 @@ export type FlexDirection =
 export const FLEX_WRAPS = ['nowrap', 'wrap', 'wrap-reverse', 'inherit', 'initial', 'revert', 'revert-layer', 'unset'] as const;
 export type FlexWrap = StringSubtype<typeof FLEX_WRAPS>;
 
-export type JustifySelf =
+type JustifySelf =
   | 'auto' |
   'normal' |
   'stretch' |
@@ -93,7 +93,7 @@ export type JustifySelf =
   'revert-layer' |
   'unset';
 
-export type TextJustify =
+type TextJustify =
   // | 'none'
   | 'auto' |
   'inter-word' |
@@ -124,7 +124,7 @@ export type AlignItems =
   'revert-layer' |
   'unset';
 
-export type AlignSelf =
+type AlignSelf =
   | 'auto' |
   'normal' |
   'center' |
@@ -145,8 +145,6 @@ export type AlignSelf =
   'revert' |
   'revert-layer' |
   'unset';
-
-export type ShadowStyleType = 'none' | 'above' | 'below';
 
 export const DISPLAY_TYPES = ['block', 'flex', 'grid', 'inline-grid'] as const;
 export type DisplayType = StringSubtype<typeof DISPLAY_TYPES>;

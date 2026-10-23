@@ -78,7 +78,7 @@ export type DownloadZipByIdsArgs = {
   filesId: string[];
 };
 
-export type UploadFileStatus = 'error' | 'done' | 'uploading' | 'removed';
+type UploadFileStatus = 'error' | 'done' | 'uploading' | 'removed';
 
 export type StoredFileModel = {
   uid: string;

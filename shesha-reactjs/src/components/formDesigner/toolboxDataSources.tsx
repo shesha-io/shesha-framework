@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react';
 import { Collapse, Empty, Tooltip } from 'antd';
 import { useLocalStorage } from '@/hooks';
 import { IDataSource } from '@/providers/formDesigner/models';
-import SearchBox from './toolboxSearchBox';
+import { SearchBox } from './toolboxSearchBox';
 import DataSourceTree from './dataSourceTree';
 import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { getClassNameFromFullName } from '@/providers/metadataDispatcher/utils';
@@ -95,4 +95,4 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
   );
 };
 
-export default ToolboxDataSources;
+

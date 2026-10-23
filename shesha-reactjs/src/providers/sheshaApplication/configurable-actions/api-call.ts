@@ -34,7 +34,7 @@ interface IApiCallArgumentsV0 extends IHasVersion {
   sendStandardHeaders: boolean;
 }
 
-export interface IApiCallArguments extends IHasVersion {
+interface IApiCallArguments extends IHasVersion {
   url: string;
   verb: string;
   sendStandardHeaders: boolean;

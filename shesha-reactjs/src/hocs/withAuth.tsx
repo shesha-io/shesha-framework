@@ -5,12 +5,12 @@ import { useLoginUrl } from '@/hooks/useLoginUrl';
 import SheshaLoader from '@/components/sheshaLoader';
 import { IdleTimerWrapper } from '@/components/idleTimerRenderer/wrapper';
 
-export interface IComponentWithAuthProps {
+interface IComponentWithAuthProps {
   unauthorizedRedirectUrl: string;
   landingPage: string;
   children: (query: NodeJS.Dict<string | string[]>) => React.ReactElement;
 }
-export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
+const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
   const { landingPage, unauthorizedRedirectUrl } = props;
   const { state: authState, isLoggedIn, checkAuthAsync: checkAuth } = useAuth();
   const [, forceUpdate] = React.useState({});

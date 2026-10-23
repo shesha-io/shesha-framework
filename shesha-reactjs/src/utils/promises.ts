@@ -238,31 +238,9 @@ class StatefulPromise<T> implements PromisedValue<T> {
   }
 }
 
-// Factory functions
-function createStatefulPromise<T>(
-  executor: (
-    resolve: (value: T | PromiseLike<T>) => void,
-    reject: (reason?: unknown) => void,
-  ) => void,
-): StatefulPromise<T> {
-  return new StatefulPromise<T>(executor);
-}
-
-function wrapPromise<T>(promise: Promise<T>): StatefulPromise<T> {
-  return StatefulPromise.from(promise);
-}
-
 export {
   StatefulPromise,
-  createStatefulPromise,
-  wrapPromise,
 };
-
-export function MakePromiseWithState<T>(promise: Promise<T>): StatefulPromise<T> {
-  const result = wrapPromise(promise);
-
-  return result;
-}
 
 /**
  * Type guard to check if a value is a Promise (or Thenable).

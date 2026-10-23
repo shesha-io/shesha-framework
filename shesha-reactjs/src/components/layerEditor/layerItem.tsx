@@ -8,12 +8,12 @@ import { useLayerGroupConfigurator } from '@/providers/layersProvider';
 import { ILayerFormModel } from '@/providers/layersProvider/models';
 import { ShaIcon, IconType } from '../shaIcon';
 
-export interface ILayerGroupItemProps extends ILayerFormModel {
+interface ILayerGroupItemProps extends ILayerFormModel {
   index: number[];
   onConfigClick?: ((selectedItemId: string) => void) | undefined;
 }
 
-export const LayerItem: FC<ILayerGroupItemProps> = (props) => {
+const LayerItem: FC<ILayerGroupItemProps> = (props) => {
   const { styles } = useStyles();
   const { deleteLayer, selectedItemId, readOnly } = useLayerGroupConfigurator();
 

@@ -4,29 +4,29 @@ import { useAppConfigurator } from '@/providers';
 import { useStyles } from './styles/styles';
 import { isDefined } from '@/utils/nullables';
 
-export interface IComponentStateProps<TSettings extends object = object> {
+interface IComponentStateProps<TSettings extends object = object> {
   isSelected: boolean;
   isEditMode: boolean;
   wrapperClassName: string;
   settings: TSettings | null;
 }
 
-export interface IOverlayProps {
+interface IOverlayProps {
   children?: React.ReactElement;
 }
 
-export type ConfigurableComponentChildrenFn<TSettings extends object = object> = (
+type ConfigurableComponentChildrenFn<TSettings extends object = object> = (
   componentState: IComponentStateProps<TSettings>,
   BlockOverlay: (props: IOverlayProps) => React.ReactElement,
 ) => React.ReactNode | null;
 
-export interface IConfigurableComponentProps<TSettings extends object = object> {
+interface IConfigurableComponentProps<TSettings extends object = object> {
   canConfigure?: boolean;
   children: ConfigurableComponentChildrenFn<TSettings>;
   onStartEdit?: () => void;
 }
 
-export interface IBlockOverlayProps {
+interface IBlockOverlayProps {
   visible: boolean;
   onClick?: () => void;
 }
@@ -42,7 +42,7 @@ const BlockOverlay: FC<PropsWithChildren<IBlockOverlayProps>> = ({ onClick, chil
   );
 };
 
-export const ConfigurableComponent = <TSettings extends object = object>({
+const ConfigurableComponent = <TSettings extends object = object>({
   children,
   canConfigure = true,
   onStartEdit,

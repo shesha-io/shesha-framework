@@ -75,6 +75,3 @@ export const ExpressionEditorWidget: ExpressionEditorWidgetType = {
     return <ExpressionEditorWidgetControl value={props.value ?? undefined} setValue={props.setValue} readOnly={props.readonly ?? false} />;
   },
 };
-
-// Backward-compatible alias used by existing query builder config.
-export const MustacheExpressionWidget = ExpressionEditorWidget;

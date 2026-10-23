@@ -3,7 +3,7 @@ import { Autocomplete } from '@/components/autocomplete';
 import { CustomFieldSettings } from '@/providers/queryBuilder/models';
 import { getIdOrUndefined } from '@/utils/entity';
 
-export type EntityAutocompleteWidgetType = TextWidget & SelectFieldSettings<string>;
+type EntityAutocompleteWidgetType = TextWidget & SelectFieldSettings<string>;
 const EntityAutocompleteWidget: EntityAutocompleteWidgetType = {
   ...BasicConfig.widgets.select,
   type: 'entityReference',

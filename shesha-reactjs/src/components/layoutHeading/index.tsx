@@ -9,7 +9,7 @@ export interface ILayoutHeadingProps {
   className?: string;
 }
 
-export const LayoutHeading: FC<ILayoutHeadingProps> = ({ title, extra, style, className }) => {
+const LayoutHeading: FC<ILayoutHeadingProps> = ({ title, extra, style, className }) => {
   const { styles } = useStyles();
 
   return (

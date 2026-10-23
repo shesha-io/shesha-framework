@@ -5,11 +5,6 @@ import { IStoredToken } from '@/interfaces/accessToken';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 import { isDefined, isNullOrWhiteSpace } from './nullables';
 
-/**
- * Standard Authorization header name
- */
-export const AUTHORIZATION_HEADER_NAME = 'Authorization';
-
 export const saveUserToken = ({ accessToken, expireInSeconds, expireOn }: IAccessToken, tokenName: string = DEFAULT_ACCESS_TOKEN_NAME): IAccessToken => {
   const nonce = crypto.randomUUID();
 
@@ -60,7 +55,7 @@ const parseToken = (token: string): IAccessToken | null => {
   }
 };
 
-export const hasTokenExpired = (date: string): boolean => {
+const hasTokenExpired = (date: string): boolean => {
   return new Date(date) < new Date();
 };
 

@@ -10,7 +10,7 @@ export interface ILabelComponentProps extends IConfigurableFormComponent {
   placeholder?: string | undefined;
 }
 
-export interface ILabelComponentCalcProps {
+interface ILabelComponentCalcProps {
   hideLabel: boolean;
 }
 

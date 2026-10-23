@@ -17,7 +17,7 @@ const withoutChildItems = (item: RefListGroupItemProps): IRefListGroupItemBase =
   return rest;
 };
 
-export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE, (builder) => {
+const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE, (builder) => {
   builder
     .addCase(setItems, (state, { payload }) => {
       // Preserve the per-item configuration the user already set, matched by itemValue, so

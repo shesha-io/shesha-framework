@@ -6,7 +6,7 @@ import { SettingInput } from '../settingsInput/settingsInput';
 import { nanoid } from '@/utils/uuid';
 import { IRadioOption } from '../settingsInput/interfaces';
 
-export interface ILabelProps {
+interface ILabelProps {
   readOnly?: boolean | undefined;
   label: string | React.ReactNode;
   hideLabel?: boolean | undefined;

@@ -14,7 +14,7 @@ import { getClassNameOrUndefined, getIdOrUndefined } from '@/utils/entity';
 import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
 import { findMap, isNonEmptyArray } from '@/utils/array';
 
-export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValue = unknown>(props: IReadOnlyDisplayFormItemProps<TValue>) => {
+const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValue = unknown>(props: IReadOnlyDisplayFormItemProps<TValue>) => {
   const {
     value,
     type = 'string',

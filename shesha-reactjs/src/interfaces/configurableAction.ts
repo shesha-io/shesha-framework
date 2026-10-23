@@ -10,7 +10,7 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { IArgumentsEvaluationContext } from '@/providers/configurableActionsDispatcher/contexts';
 import { ISettingsFormFactoryArgs } from '..';
 
-export interface IHasPreviousActionResponse {
+interface IHasPreviousActionResponse {
   actionResponse?: unknown;
 }
 export interface IHasPreviousActionError {
@@ -29,19 +29,15 @@ export const hasPreviousActionError = (value: HasPreviousActionResult): value is
   return isDefined(value) && (value as IHasPreviousActionError).actionError !== undefined;
 };
 
-export const HasPreviousActionResponse = (value: HasPreviousActionResult): value is IHasPreviousActionResponse => {
-  return isDefined(value) && (value as IHasPreviousActionResponse).actionResponse !== undefined;
-};
-
 /**
  * Configuration action executer
  */
-export type IConfigurableActionExecuter<TArguments, TReponse, TExecutionContext extends IActionExecutionContext = IActionExecutionContext> = (
+type IConfigurableActionExecuter<TArguments, TReponse, TExecutionContext extends IActionExecutionContext = IActionExecutionContext> = (
   actionArguments: TArguments,
   context: TExecutionContext,
 ) => Promise<TReponse>;
 
-export interface FormMarkupFactoryArgs {
+interface FormMarkupFactoryArgs {
   availableConstants?: IObjectMetadata | undefined;
   fbf: FormBuilderFactory;
 }
@@ -51,7 +47,7 @@ export type IConfigurableActionArgumentsFormFactory<TModel extends object = obje
   props: ISettingsFormFactoryArgs<TModel>,
 ) => ReactNode;
 
-export interface IHasActionOwner {
+interface IHasActionOwner {
   /**
    * Action owner name (component responsible for the action execution)
    */
@@ -78,7 +74,7 @@ export type ConfigurableActionArgumentsMigrationContext = object;
 /**
  * Arguments migrator
  */
-export type ConfigurableActionArgumentsMigrator<TArguments extends IHasVersion = IHasVersion> = (
+type ConfigurableActionArgumentsMigrator<TArguments extends IHasVersion = IHasVersion> = (
   migrator: Migrator<TArguments, TArguments, ConfigurableActionArgumentsMigrationContext>,
 ) => MigratorFluent<TArguments, TArguments, ConfigurableActionArgumentsMigrationContext>;
 
@@ -141,7 +137,7 @@ export type IConfigurableActionDescriptor<TArguments extends object = object, TR
   IActionDescriptor<TArguments> &
   IActionImplementation<TArguments, TReponse, TExecutionContext>;
 
-export interface IMayHaveType {
+interface IMayHaveType {
   _type: string | undefined;
 }
 

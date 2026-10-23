@@ -3,7 +3,7 @@ import * as React from 'react';
 import { BulbTwoTone, DownOutlined, QuestionCircleOutlined, LayoutOutlined } from '@ant-design/icons';
 import { Dropdown, MenuProps, Popover, Space, Tooltip, Badge } from 'antd';
 import { IStoredFilter } from '@/providers/dataTable/interfaces';
-import Show from '@/components/show';
+import { Show } from '@/components/show';
 import { nanoid } from '@/utils/uuid';
 import { useStyles } from './styles/styles';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
@@ -24,7 +24,7 @@ const TooltipIcon: FC<ITooltipIconProps> = ({ tooltip }) => {
   );
 };
 
-export interface ITableViewSelectorRendererProps {
+interface ITableViewSelectorRendererProps {
   filters?: IStoredFilter[] | undefined;
   hidden?: boolean | undefined;
   selectedFilterId?: string | undefined;
@@ -32,7 +32,7 @@ export interface ITableViewSelectorRendererProps {
   showIcon?: boolean | undefined;
 }
 
-export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
+const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
   filters = [],
   hidden,
   selectedFilterId,

@@ -166,5 +166,3 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = (props) => {
     return renderPopover(getPopoverContent(), popoverTitle, effectiveType);
   }
 };
-
-export default ErrorIconPopover;

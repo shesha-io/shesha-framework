@@ -4,7 +4,7 @@ import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues, getString
 import { isEqual } from "lodash";
 import { ReactElement } from "react";
 
-export type DefaultModelValueState = 'usedDefault' | 'usedModel' | 'onlyModel';
+type DefaultModelValueState = 'usedDefault' | 'usedModel' | 'onlyModel';
 
 export interface IDefaultModelValueInfo {
   state: DefaultModelValueState;

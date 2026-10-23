@@ -8,7 +8,7 @@ import { CustomIconProps } from './interfaces';
  * Each icon has a designated brand colour and defaults to it, so callers can just render
  * `<CsFormIcon />`. Pass `fill` (or `style.color`) to override, e.g. to grey a code-based item out.
  */
-export const CS_ICON_COLORS = {
+const CS_ICON_COLORS = {
   home: '#2B78E4',
   module: '#355C9A',
   folder: '#E6B800',

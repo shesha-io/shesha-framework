@@ -3,12 +3,6 @@ import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import { CSSProperties, KeyboardEventHandler, MouseEventHandler } from 'react';
 
-export type RangeType = 'start' | 'end';
-
-export interface IRangeInfo {
-  range: RangeType;
-}
-
 export type NoUndefinedRangeValueType<DateType> = [start: DateType | null, end: DateType | null];
 export type RangeValue = [moment.Moment, moment.Moment];
 
@@ -44,9 +38,9 @@ export type DateBindingFormat =
   'unix';
 
 /** Granularity of the minute column in the time picker. Only meaningful for date+time selections. */
-export type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;
+type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;
 
-export type DateRestriction = 'none' | 'past' | 'future';
+type DateRestriction = 'none' | 'past' | 'future';
 
 export interface IDateFieldProps extends IConfigurableFormComponent, IInputStyles {
   placeholder?: string | undefined;

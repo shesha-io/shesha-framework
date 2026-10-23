@@ -7,7 +7,7 @@ export interface IFormFlatMarkupProviderProps {
   markup: IFlatComponentsStructure;
 }
 
-export const FormFlatMarkupContext = createNamedContext<IFlatComponentsStructure | undefined>(undefined, "FormFlatMarkupContext");
+const FormFlatMarkupContext = createNamedContext<IFlatComponentsStructure | undefined>(undefined, "FormFlatMarkupContext");
 
 export const FormFlatMarkupProvider: FC<PropsWithChildren<IFormFlatMarkupProviderProps>> = ({ children, markup }) => {
   return (

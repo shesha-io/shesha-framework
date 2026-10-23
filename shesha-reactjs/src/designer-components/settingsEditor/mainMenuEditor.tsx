@@ -17,7 +17,7 @@ import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { isDefined } from '@/utils/nullables';
 import { ISidebarMenuItem } from '@/interfaces/sidebar';
 
-export interface IMainMenuEditorComponentProps extends IConfigurableFormComponent {
+interface IMainMenuEditorComponentProps extends IConfigurableFormComponent {
   height?: string;
 }
 

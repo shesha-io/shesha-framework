@@ -7,7 +7,7 @@ const EmptySidebarProps: ISideBarMenuProps = {
   items: [],
 };
 
-export const Editor = ({ settings, onCancel, onSave }: ISettingsEditorProps<ISideBarMenuProps>): ReactNode => (
+const Editor = ({ settings, onCancel, onSave }: ISettingsEditorProps<ISideBarMenuProps>): ReactNode => (
   <ComponentSettingsModal
     title="Menu Configuration"
     settings={settings ?? EmptySidebarProps}

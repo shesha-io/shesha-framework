@@ -35,9 +35,9 @@ import { ShaFormProvider } from '../form/providers/shaFormProvider';
 import { useShaForm } from '../form/store/shaFormInstance';
 import { extractErrorInfo, throwError } from '@/utils/errors';
 
-export type DataProcessor<TData extends object = object> = (data: TData) => Promise<TData>;
+type DataProcessor<TData extends object = object> = (data: TData) => Promise<TData>;
 
-export interface ICrudProviderProps<TData extends object = object> {
+interface ICrudProviderProps<TData extends object = object> {
   isNewObject: boolean;
   allowEdit: boolean;
   allowDelete: boolean;

@@ -10,7 +10,7 @@ import { cloneElement, FC, ReactNode, useEffect } from 'react';
 import * as React from 'react';
 import { IPropertySetting } from '../..';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
-import SettingsControl, { SettingsControlChildrenType } from './settingsControl';
+import { SettingsControl, SettingsControlChildrenType } from './settingsControl';
 import { useSettingsForm } from './settingsForm';
 import { getPropertySettingsFromData } from './utils/utils';
 

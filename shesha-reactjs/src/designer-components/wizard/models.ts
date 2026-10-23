@@ -8,7 +8,7 @@ type StepsProps = ComponentProps<typeof Steps>;
 type StepProps = Required<StepsProps>['items'][number];
 type StepStatus = 'wait' | 'process' | 'finish' | 'error';
 
-export interface IStepFooterContainer {
+interface IStepFooterContainer {
   id: string;
   components?: IConfigurableFormComponent[];
 }

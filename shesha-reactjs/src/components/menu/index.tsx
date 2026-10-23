@@ -43,7 +43,7 @@ const isSidebarButton = (item: ISidebarMenuItem | undefined): item is ISidebarBu
 
 type MenuItem = Required<MenuProps>['items'][number];
 
-export const LayoutMenu: FC<IProps> = ({
+const LayoutMenu: FC<IProps> = ({
   colors,
   fontSize,
   overflow,

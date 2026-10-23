@@ -54,7 +54,7 @@ type TextAreaRef = GetRef<typeof Input.TextArea>;
 
 const EMPTY_NOTES: NoteModel[] = [];
 
-export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
+const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   notes,
 
   allowEdit = true,

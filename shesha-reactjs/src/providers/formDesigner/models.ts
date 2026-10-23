@@ -1,11 +1,9 @@
 import {
-  IAsyncValidationError,
   IFormValidationErrors,
   ISettingsFormFactory,
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
-import { createNamedContext } from '@/utils/react';
-import { DEFAULT_FORM_SETTINGS, FormMode, IConfigurableFormComponent, IFlatComponentsStructure, IFormSettings, ROOT_COMPONENT_KEY } from "../form/models";
+import { FormMode, IFlatComponentsStructure, IFormSettings } from "../form/models";
 import { IComponentUpdatePayload } from './contexts';
 
 /** Named Data Source */
@@ -17,72 +15,53 @@ export interface IDataSource {
   items: IPropertyMetadata[];
 }
 
-export interface IComponentSettingsEditor<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> {
-  value: TModel;
-  onChange: (value: TModel) => void;
-  readOnly: boolean;
-}
-
 export type IComponentSettingsEditorsCache = Record<string, ISettingsFormFactory>;
-
-export type RerenderTrigger = () => void;
 
 export type FormDesignerSubscription = (designer: IFormDesignerInstance) => void;
 export type FormDesignerSubscriptionType = 'markup' | 'selection' | 'readonly' | 'mode' | 'debug' | 'history' | 'data-modified' | 'settings-tab' | 'settings';
 
-export interface AddComponentPayloadBase {
+interface AddComponentPayloadBase {
   index: number;
   containerId: string;
 }
 
-export interface IComponentAddPayload extends AddComponentPayloadBase {
+interface IComponentAddPayload extends AddComponentPayloadBase {
   componentType: string;
 }
 
-export type IComponentAddFromTemplatePayload = AddComponentPayloadBase;
-
-export interface IAddDataPropertyPayload {
+interface IAddDataPropertyPayload {
   propertyMetadata: IPropertyMetadata;
   index: number;
   containerId: string;
 }
 
-export interface IUpdateChildComponentsPayload {
+interface IUpdateChildComponentsPayload {
   containerId: string;
   componentIds: string[];
 }
 
-export interface IComponentDeletePayload {
+interface IComponentDeletePayload {
   componentId: string;
 }
 
-export interface IComponentDuplicatePayload {
+interface IComponentDuplicatePayload {
   componentId: string;
 }
 
-export interface IComponentUpdateSettingsValidationPayload {
-  componentId: string;
-  validationErrors: IAsyncValidationError[];
-}
-
-export interface ISetSelectedComponentPayload {
-  id: string;
-}
-
-export type Undoable = {
+type Undoable = {
   undo: () => void;
   redo: () => void;
   canUndo: boolean;
   canRedo: boolean;
 };
 
-export type FormDesignerFormState = {
+type FormDesignerFormState = {
   formSettings: IFormSettings;
   formFlatMarkup: IFlatComponentsStructure;
   validationErrors?: IFormValidationErrors | undefined;
 };
 
-export type FormDesignerState = {
+type FormDesignerState = {
   // toolboxComponentGroups: IToolboxComponentGroup[];
   state: FormDesignerFormState;
 
@@ -97,7 +76,7 @@ export type FormDesignerState = {
   settingsPanelElement: HTMLDivElement | null;
 };
 
-export type FormDesignerActions = {
+type FormDesignerActions = {
   setMarkupAndSettings: (flatMarkup: IFlatComponentsStructure, settings: IFormSettings) => void;
 
   addComponent: (payload: IComponentAddPayload) => void;
@@ -129,26 +108,14 @@ export type FormDesignerActions = {
   setSettingsPanelElement: (element: HTMLDivElement | null) => void;
 };
 
-
-export const FORM_INITIAL_STATE: FormDesignerFormState = {
-  formSettings: DEFAULT_FORM_SETTINGS,
-  formFlatMarkup: {
-    allComponents: {},
-    componentRelations: { [ROOT_COMPONENT_KEY]: [] },
-    parents: {},
-  },
-};
-
-export type IFormDesignerInstance = FormDesignerActions & Undoable & FormDesignerState;
-
-export const FormDesignerContext = createNamedContext<IFormDesignerInstance | undefined>(undefined, "FormDesignerContext");
+type IFormDesignerInstance = FormDesignerActions & Undoable & FormDesignerState;
 
 export type BaseHistoryItem = {
   description: string;
   time: Date;
 };
 
-export type IssueSeverity = 'warning' | 'error';
+type IssueSeverity = 'warning' | 'error';
 export type ConfigurationIssue = {
   severity: IssueSeverity;
   location: string;

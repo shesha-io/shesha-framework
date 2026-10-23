@@ -10,7 +10,7 @@ const GenericOutlinedSvg = (): React.JSX.Element => (
 );
 
 
-export const GenericOutlined: FC<Partial<CustomIconComponentProps>> = (props) => {
+const GenericOutlined: FC<Partial<CustomIconComponentProps>> = (props) => {
   return <Icon component={GenericOutlinedSvg} {...props} />;
 };
 

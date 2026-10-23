@@ -129,4 +129,4 @@ export const ToolboxComponents: FC = () => {
   );
 };
 
-export default ToolboxComponents;
+

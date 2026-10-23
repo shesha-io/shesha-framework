@@ -1,10 +1,10 @@
 import { useContext, useEffect, useState } from "react";
-import { ILogEvent, IProcessMonitor, ProcessMonitorSubscriptionType, ProcessStatus } from "./interfaces";
+import { ILogEvent, IProcessMonitor, ProcessMonitorSubscriptionType } from "./interfaces";
 import { ProcessMonitorContext } from "./providers";
 
-export const useProcessMonitorUndefined = (): IProcessMonitor | undefined => useContext(ProcessMonitorContext);
+const useProcessMonitorUndefined = (): IProcessMonitor | undefined => useContext(ProcessMonitorContext);
 
-export const useProcessMonitor = (): IProcessMonitor => {
+const useProcessMonitor = (): IProcessMonitor => {
   const context = useProcessMonitorUndefined();
   if (context === undefined)
     throw new Error('useOnlineLogger must be used within a OnlineLoggerProvider');
@@ -29,13 +29,3 @@ export const useProcessLogEvents = (): ILogEvent[] => {
 
   return processMonitor.events;
 };
-
-
-export const useProcessStatus = (): ProcessStatus => {
-  const processMonitor = useProcessMonitor();
-
-  useProcessMonitorSubscription(processMonitor, "status");
-
-  return processMonitor.status;
-};
-

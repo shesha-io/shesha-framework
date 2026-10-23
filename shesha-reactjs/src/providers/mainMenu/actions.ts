@@ -2,7 +2,7 @@ import { createAction } from '@reduxjs/toolkit';
 import { IConfigurableMainMenu } from './contexts';
 import { ISidebarMenuItem } from '@/interfaces/sidebar';
 
-export enum MainMenuActionEnums {
+enum MainMenuActionEnums {
   SetLoadedMenu = 'SET_LOADED_MENU',
   SetItems = 'SET_ITEMS',
 }

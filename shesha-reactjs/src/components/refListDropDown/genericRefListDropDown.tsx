@@ -22,7 +22,7 @@ const parseDisabledValues = (input: number[] | string | undefined): number[] => 
     .filter((num) => !isNaN(num)); // Remove invalid values
 };
 
-export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListDropDownProps<TValue>): React.JSX.Element => {
+const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListDropDownProps<TValue>): React.JSX.Element => {
   const {
     referenceListId,
     value,

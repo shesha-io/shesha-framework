@@ -8,11 +8,6 @@ import { IBorderValue } from '@/designer-components/_settings/utils/border/inter
 import { TableSelectionMode } from '../dataTable/interfaces';
 import { IDimensionsValue, IShadowValue } from '@/designer-components/_settings/utils/index';
 
-export interface IColumnWidth {
-  id: React.Key;
-  value: number;
-}
-
 export type NewRowCapturePosition = 'top' | 'bottom';
 
 export interface IColumnResizing {
@@ -331,7 +326,7 @@ export interface IReactTableProps<TData extends ITableRowData = ITableRowData> e
 
 
 export type RowRenderer<T extends ITableRowData = ITableRowData> = (row: Row<T>, index: number) => React.ReactElement;
-export interface OnRowRenderingArgs<T extends ITableRowData = ITableRowData> {
+interface OnRowRenderingArgs<T extends ITableRowData = ITableRowData> {
   rows: Row<T>[];
   defaultRender: RowRenderer<T>;
 }

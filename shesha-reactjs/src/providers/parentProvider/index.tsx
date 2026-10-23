@@ -39,7 +39,7 @@ export interface IParentProviderProps<TValue extends object = object> {
   contextProps?: IDataContextProviderProps<object> | undefined;
 }
 
-export const ParentProviderStateContext = createNamedContext<IParentProviderStateContext>(
+const ParentProviderStateContext = createNamedContext<IParentProviderStateContext>(
   {
     id: '',
     model: {},

@@ -7,7 +7,7 @@ import { isNullOrWhiteSpace } from "@/utils";
 
 const NAVIGATE_ACTION_NAME = 'Navigate';
 
-export type NavigationType = 'url' | 'form';
+type NavigationType = 'url' | 'form';
 
 export interface INavigateActoinArguments extends IHasVersion {
   navigationType: NavigationType;

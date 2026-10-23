@@ -4,7 +4,7 @@ import { ICheckboxGroupProps } from './interfaces';
 
 // Checkboxes are designed for multiple independent selections, so the group
 // always renders in multi-select mode.
-export const RefListCheckboxGroup: FC<ICheckboxGroupProps> = (props) => {
+const RefListCheckboxGroup: FC<ICheckboxGroupProps> = (props) => {
   return <MultiCheckbox {...props} />;
 };
 

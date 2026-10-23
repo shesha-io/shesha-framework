@@ -4,7 +4,7 @@ import { FormInstance, FormProps } from 'antd/lib/form';
 import { FormLayout } from 'antd/lib/form/Form';
 import { IFormActionsContext } from '@/providers/form/contexts';
 import { FormMode, HasFormIdOrMarkup, IFormActions, IFormSections, FormIdentifier } from '@/providers/form/models';
-import { IConfigurableFormComponent, ValidateErrorEntity } from '@/interfaces';
+import { ValidateErrorEntity } from '@/interfaces';
 import { AfterSubmitHandler, IShaFormInstance, OnMarkupLoadedHandler, ProcessingState, SubmitHandler } from '@/providers/form/store/interfaces';
 
 type SizeType = FormProps['size'];
@@ -148,7 +148,7 @@ export type MarkupLoadingErrorRenderProps = {
 export type DataLoadingErrorRenderProps = {
   dataLoadingState: ProcessingState;
 };
-export type IConfigurableFormRenderingProps = {
+type IConfigurableFormRenderingProps = {
   markupLoadingError?: FC<MarkupLoadingErrorRenderProps> | undefined;
 };
 
@@ -171,10 +171,6 @@ export type IConfigurableFormProps<Values extends object = object> = HasFormIdOr
    */
   showMarkupLoadingIndicator?: boolean;
 };
-
-export interface IDataSourceComponent extends IConfigurableFormComponent {
-  dataSource: 'api' | 'form';
-}
 
 export type SheshaFormProps = {
   actions?: IFormActions;

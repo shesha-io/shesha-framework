@@ -50,7 +50,7 @@ const getInternalValidationStatus = (
   return undefined;
 };
 
-export const TableContextInner: FCUnwrapped<ITableContextInnerProps> = (props) => {
+const TableContextInner: FCUnwrapped<ITableContextInnerProps> = (props) => {
   const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering, components, onBeforeRowReorder, onAfterRowReorder } = props;
   const { styles } = useStyles();
   const parent = useParent();

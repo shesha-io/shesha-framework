@@ -1,7 +1,7 @@
 import { IConfigurableFormComponent } from "../../providers/form/models";
 import { IContainerWithNestedProperties, IHasMethods, IMetadata, TypeDefinition } from "@/interfaces/metadata";
 
-export interface IApiMetadata extends IMetadata, IContainerWithNestedProperties, IHasMethods {
+interface IApiMetadata extends IMetadata, IContainerWithNestedProperties, IHasMethods {
 }
 
 export type ComponentApiProperty<T extends object = object> = {
@@ -13,7 +13,7 @@ export type ComponentApiProperty<T extends object = object> = {
   };
 }[keyof T];
 
-export type CreateApiPropertyFunc = <T extends object = Record<string, unknown>>(data: T, property: ComponentApiProperty<T>) => void;
+type CreateApiPropertyFunc = <T extends object = Record<string, unknown>>(data: T, property: ComponentApiProperty<T>) => void;
 
 export interface IComponentApiDescription<T extends object = Record<string, unknown>> {
   id: string;

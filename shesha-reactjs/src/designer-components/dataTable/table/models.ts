@@ -8,14 +8,12 @@ import { IShadowValue } from '@/designer-components/_settings/utils/shadow/inter
 import { ComponentDefinition } from '@/interfaces';
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 
-export type RowDroppedMode = 'executeScript' | 'showDialog';
-
-export type TableDeviceStyles = IInputStyles & {
+type TableDeviceStyles = IInputStyles & {
   rowDimensions?: IDimensionsValue | undefined;
   rowHeight?: string | undefined;
 };
 
-export interface ITableComponentBaseProps extends IShaDataTableInlineEditableProps, Omit<ICommonContainerProps, 'style'> {
+interface ITableComponentBaseProps extends IShaDataTableInlineEditableProps, Omit<ICommonContainerProps, 'style'> {
   items: IConfigurableColumnsProps[];
   selectionMode?: TableSelectionMode | undefined;
   freezeHeaders?: boolean | undefined;

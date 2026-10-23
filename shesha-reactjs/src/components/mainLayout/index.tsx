@@ -1,6 +1,6 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 "use client";
-import ConfigurableSidebarMenu from '@/components/configurableSidebarMenu';
+import { ConfigurableSidebarMenu } from '@/components/configurableSidebarMenu';
 import { IHtmlHeadProps } from '@/components/htmlHead';
 import LayoutHeading from '@/components/layoutHeading';
 import NodeOrFuncRenderer, { ReactNodeOrFunc } from '@/components/nodeOrFuncRenderer';
@@ -30,7 +30,7 @@ import { useStyles } from './styles/styles';
 
 const { Header, Content, Footer, Sider } = Layout;
 
-export interface IMenuTriggerProps {
+interface IMenuTriggerProps {
   collapsed: boolean;
 }
 

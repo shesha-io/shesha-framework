@@ -16,9 +16,9 @@ import { useAvailableConstantsData } from '@/providers/form/utils';
 import { ShaIcon, IconType } from '@/components/shaIcon';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 
-export type IActionCellProps<D extends object = object, V = unknown> = ICommonCellProps<ITableActionColumn, D, V>;
+type IActionCellProps<D extends object = object, V = unknown> = ICommonCellProps<ITableActionColumn, D, V>;
 
-export const ActionCell = <D extends ITableRowData = ITableRowData, V = unknown>(props: IActionCellProps<D, V>): React.JSX.Element => {
+const ActionCell = <D extends ITableRowData = ITableRowData, V = unknown>(props: IActionCellProps<D, V>): React.JSX.Element => {
   const { columnConfig } = props;
   const { changeActionedRow } = useDataTableStore();
   const { executeAction, prepareArguments, useActionDynamicContext } = useConfigurableActionDispatcher();

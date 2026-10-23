@@ -3,7 +3,7 @@ import { Button, Modal, Space } from 'antd';
 import { ColumnsEditor } from './columnsEditor';
 import { IColumnProps } from './interfaces';
 
-export interface IProps {
+interface IProps {
   readOnly: boolean;
   value: IColumnProps[] | undefined;
   onChange: ((newValue: IColumnProps[]) => void) | undefined;
@@ -14,7 +14,7 @@ const EMPTY_ON_CHANGE = (_value: IColumnProps[]): void => {
   /* noop*/
 };
 
-export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
+const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
   const [showDialog, setShowDialog] = useState(false);
 
   const toggleModal = (): void => setShowDialog((prevVisible) => !prevVisible);

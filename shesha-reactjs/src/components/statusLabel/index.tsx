@@ -53,7 +53,7 @@ export interface IStatusLabelProps {
   customColor?: string;
 }
 
-export const StatusLabel: FC<IStatusLabelProps> = ({ text, color }) => {
+const StatusLabel: FC<IStatusLabelProps> = ({ text, color }) => {
   const hexColor = color ? COLORS[color] : undefined;
 
   const className = cx("sha-status-label", css`

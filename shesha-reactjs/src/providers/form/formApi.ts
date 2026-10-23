@@ -10,15 +10,7 @@ import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/m
 import { FormData } from "./store/shaFormInstance";
 import { ILoaderInstance } from "../blockingLoader/instance";
 
-/**
- * Form loader instance with progressive feedback methods
- */
-export interface IFormLoaderInstanceApi {
-  updateMessage(message: string): void;
-  close(): void;
-}
-
-export interface IFormSettings {
+interface IFormSettings {
   modelType?: string | IEntityTypeIdentifier | undefined;
 
   postUrl?: string | undefined;

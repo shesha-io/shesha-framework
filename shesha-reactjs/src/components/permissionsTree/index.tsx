@@ -1,5 +1,5 @@
 import React, { ReactNode, useEffect, useState, FC, Key } from 'react';
-import SearchBox from '../formDesigner/toolboxSearchBox';
+import { SearchBox } from '../formDesigner/toolboxSearchBox';
 import { IUpdateItemArguments } from './update-item-arguments';
 import {
   App,
@@ -21,7 +21,7 @@ import { GuidEntityReferenceDto } from '@/apis/common';
 import { useShaFormInstanceOrUndefined } from '@/providers/form/providers/shaFormProvider';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { useAvailableConstantsData } from '@/providers/form/utils';
-import ShaSpin from '../shaSpin';
+import { ShaSpin } from '../shaSpin';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { FirstArgument } from '@/interfaces/utilityTypes';
 import { extractErrorInfo } from '@/utils/errors';

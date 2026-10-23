@@ -18,12 +18,7 @@ interface IWrappedEntityPickerProps {
   allowNewRecord?: boolean;
 }
 
-export interface ISelectedProps {
-  id?: string;
-  displayName?: string;
-}
-
-export interface IAddNewRecordProps {
+interface IAddNewRecordProps {
   modalFormId?: FormIdentifier | undefined;
   modalTitle?: string | undefined;
   showModalFooter?: boolean | undefined;
@@ -57,7 +52,7 @@ export interface EntityPickerRef {
  * Aliased to the producer's own return type rather than a `Record<string, ...>`, so the two cannot
  * drift: a handler the picker does not actually emit fails to type-check here.
  */
-export type EntityPickerEvents = EventsObject;
+type EntityPickerEvents = EventsObject;
 
 export interface IEntityPickerProps extends Omit<IWrappedEntityPickerProps, 'onDblClick'> {
   formId?: FormIdentifier | undefined;

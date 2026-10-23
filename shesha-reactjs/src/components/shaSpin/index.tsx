@@ -16,5 +16,3 @@ export const ShaSpin: FC<PropsWithChildren<IShaSpin>> = ({ children, spinning, s
     </Spin>
   );
 };
-
-export default ShaSpin;

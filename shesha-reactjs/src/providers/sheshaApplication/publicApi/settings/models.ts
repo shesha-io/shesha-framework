@@ -1,10 +1,10 @@
-export interface SettingApiItem {
+interface SettingApiItem {
   name: string;
   description?: string;
   accessor: string;
 }
 
-export interface DataTypeInfo {
+interface DataTypeInfo {
   dataType: string;
   dataFormat?: string;
   objectType?: string;

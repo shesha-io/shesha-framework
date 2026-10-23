@@ -119,4 +119,4 @@ export const FormLayoutSettingsPanel: FC<IFormLayoutSettingsPanelProps> = ({ val
   );
 };
 
-export default FormLayoutSettingsPanel;
+

@@ -6,35 +6,12 @@ export type Promisify<T> = T extends (...args: infer Args) => infer Return
   ? (...args: Args) => Promise<Awaited<Return>>
   : never;
 
-export type WithRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
-
-export type WithNonUndefined<T, K extends keyof T> = Omit<T, K> & {
-  [P in K]: Required<Exclude<T[P], undefined>>;
-};
-
 export type WithRequiredStrict<T, K extends keyof T> = Omit<T, K> & {
   [P in K]-?: Exclude<T[P], undefined>;
 };
 
-export type WithOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-
-// Basic diff: shows differences between two types T and U
-export type Diff<T, U> = {
-  onlyInT?: {
-    [K in Exclude<keyof T, keyof U>]: T[K];
-  };
-  onlyInU?: {
-    [K in Exclude<keyof U, keyof T>]: U[K];
-  };
-  diff?: {
-    [K in Extract<keyof T, keyof U> as T[K] extends U[K] ? never : K]: {
-      left: T[K];
-      right: U[K];
-    };
-  };
-};
-
 // Optional: A more detailed diff that also goes deep recursively
+/** @public */
 export type DeepDiff<T, U> = {
   onlyInT?: {
     [K in Exclude<keyof T, keyof U>]: T[K];

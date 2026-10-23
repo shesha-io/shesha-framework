@@ -27,7 +27,7 @@ export type ValidationResult = {
   issues: ConfigurationIssue[];
 };
 
-export type FormDependencyType = 'entity' | 'ref-list' | 'form' | 'form-component';
+type FormDependencyType = 'entity' | 'ref-list' | 'form' | 'form-component';
 
 export type FormDependency = {
   type: FormDependencyType;

@@ -4,7 +4,7 @@ import { DefaultOptionType } from 'antd/lib/select';
 import React, { useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useEntitySelectionData } from '@/utils/entity';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { EntityPickerRef, IEntityPickerProps } from './models';
+import { IEntityPickerProps } from './models';
 import { useDeepCompareMemo } from '@/hooks';
 import { useStyles } from './styles/styles';
 import { EntityPickerModal } from './modal';
@@ -293,7 +293,3 @@ export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }
     <EntityPickerEditable {...restProps} displayEntityKey={displayEntityKey} />
   );
 };
-
-export type { EntityPickerRef };
-
-export default EntityPicker;

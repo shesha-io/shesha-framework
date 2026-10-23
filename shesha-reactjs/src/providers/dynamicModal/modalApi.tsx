@@ -9,17 +9,17 @@ import { isNullOrWhiteSpace } from '@/utils';
 /**
  * Form identifier - can be a string path or an object with name and module
  */
-export type FormIdentifierType = FormIdentifier;
+type FormIdentifierType = FormIdentifier;
 
 /**
  * Modal width presets
  */
-export type ModalWidth = 'small' | 'medium' | 'large' | 'full' | string;
+type ModalWidth = 'small' | 'medium' | 'large' | 'full' | string;
 
 /**
  * Arguments for showing a form in a modal
  */
-export interface ShowFormModalArgs {
+interface ShowFormModalArgs {
   /** Form identifier to display in the modal */
   formId: FormIdentifierType;
   /** Modal title */
@@ -41,7 +41,7 @@ export interface ShowFormModalArgs {
 /**
  * Arguments for confirmation dialogs
  */
-export interface ConfirmModalArgs {
+interface ConfirmModalArgs {
   /** Dialog title */
   title?: string;
   /** Dialog content/message */
@@ -57,7 +57,7 @@ export interface ConfirmModalArgs {
 /**
  * Arguments for warning/info dialogs
  */
-export interface AlertModalArgs {
+interface AlertModalArgs {
   /** Dialog title */
   title?: string;
   /** Dialog content/message */
@@ -69,7 +69,7 @@ export interface AlertModalArgs {
 /**
  * Arguments for custom content modals
  */
-export interface ShowContentModalArgs {
+interface ShowContentModalArgs {
   /** Modal title */
   title?: string;
   /**

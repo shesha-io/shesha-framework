@@ -3,7 +3,7 @@ import { IModelValidation } from '@/utils/errors';
 import { createNamedContext } from '@/utils/react';
 import { isEqual } from 'lodash';
 
-export interface IComponentValidationError extends IModelValidation {
+interface IComponentValidationError extends IModelValidation {
   componentId: string;
 }
 
@@ -200,9 +200,6 @@ export const useValidationErrorsOrDefault = (): IValidationErrorsStateContext & 
     ...useValidationErrorsActionsOrDefault(),
   };
 };
-
-// Backward compatibility: export with old name
-export const ValidationErrorsProvider = FormComponentValidationProvider;
 
 // Export the component validation hook
 export { useComponentValidation } from './useComponentValidation';

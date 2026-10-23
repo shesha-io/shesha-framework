@@ -4,15 +4,14 @@ import { IConfigurationLoader } from "@/providers/configurationItemsLoader/confi
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 
-export type SyncStatus = 'uptodate' | 'unknown' | 'outofdate';
+type SyncStatus = 'uptodate' | 'unknown' | 'outofdate';
 
 export enum ConfigurationType {
   ReferenceList = 'reference-list',
   Form = 'form',
-  Entity = 'entity',
 }
 
-export interface EntitySyncRequest {
+interface EntitySyncRequest {
   accessor: string;
   md5: string;
   modificationTime: Date;
@@ -43,18 +42,18 @@ export type EntitySyncResponse = EntityOutOfDateResponse | {
   status: Omit<SyncStatus, 'outofdate'>;
 };
 
-export interface ModuleSyncResponse {
+interface ModuleSyncResponse {
   accessor: string;
   status: SyncStatus;
   entities: EntitySyncResponse[];
 }
 
-export interface LookupItemSyncResponse {
+interface LookupItemSyncResponse {
   module: string;
   match: string;
 }
 
-export interface LookupSyncResponse {
+interface LookupSyncResponse {
   id?: string;
   aliases?: string[];
   module?: string;

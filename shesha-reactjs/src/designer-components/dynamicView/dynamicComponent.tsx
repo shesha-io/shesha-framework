@@ -4,7 +4,7 @@ import { IConfigurableFormComponent, UnwrapCodeEvaluators } from '@/interfaces';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { formComponentActualModelPropertyFilter, isFormFullName } from '@/providers/form/utils';
 import { IModelValidation, throwError } from '@/utils/errors';
-import ErrorIconPopover from '@/components/componentErrors/errorIconPopover';
+import { ErrorIconPopover } from '@/components/componentErrors/errorIconPopover';
 import AttributeDecorator from '@/components/attributeDecorator';
 import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
@@ -14,7 +14,7 @@ import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { isSubFormComponent } from '../subForm';
 import { getDeviceModel } from '@/utils/form';
 
-export interface IConfigurableFormComponentProps {
+interface IConfigurableFormComponentProps {
   model: IConfigurableFormComponent;
 }
 

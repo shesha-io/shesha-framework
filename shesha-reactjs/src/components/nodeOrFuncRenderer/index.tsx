@@ -7,7 +7,7 @@ type NodeOrFuncRendererProps = {
   children?: ReactNodeOrFunc;
 };
 
-export const NodeOrFuncRenderer: FC<NodeOrFuncRendererProps> = ({ children }) => {
+const NodeOrFuncRenderer: FC<NodeOrFuncRendererProps> = ({ children }) => {
   const value = typeof children === 'function'
     ? children()
     : children;

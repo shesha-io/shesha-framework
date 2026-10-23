@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
 import { EnhancedValidateError } from '..';
 import { ValidateError } from '@rc-component/async-validator';
 
-export const isAsyncValidationError = (error: unknown): error is AsyncValidationError => {
+const isAsyncValidationError = (error: unknown): error is AsyncValidationError => {
   return error instanceof AsyncValidationError ||
     // note: `error instanceof AsyncValidationError` may not work
     (error instanceof Error &&

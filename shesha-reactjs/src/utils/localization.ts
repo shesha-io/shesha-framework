@@ -8,8 +8,8 @@ const LOCALIZATION = 'LOCALIZATION';
  * @param localization - localization
  */
 
-export const setLocalization = (localization: string): void => getLocalStorage()?.setItem(LOCALIZATION, localization);
-export const getLocalization = (): string | undefined => getLocalStorage()?.getItem(LOCALIZATION) ?? undefined;
+const setLocalization = (localization: string): void => getLocalStorage()?.setItem(LOCALIZATION, localization);
+const getLocalization = (): string | undefined => getLocalStorage()?.getItem(LOCALIZATION) ?? undefined;
 export const getLocalizationOrDefault = (): string => {
   let localization = getLocalization();
   if (localization)

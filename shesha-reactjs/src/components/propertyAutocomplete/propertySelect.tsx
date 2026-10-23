@@ -33,12 +33,6 @@ export interface IPropertySelectProps {
   isPropertySelectable?: PropertyPredicate;
 }
 
-export interface IQbItem {
-  label: string;
-  key: string;
-  items?: IQbItem[];
-}
-
 interface IOption extends DefaultOptionType {
   value: string;
   label: string | React.ReactNode;
@@ -68,7 +62,7 @@ const isSpecification = (item: IPropertyItem): item is ISpecification & IHasProp
   return item.itemType === 'specification';
 };
 
-export const getPropertyItemIdentifier = (item: IPropertyItem, prefix: string): string => {
+const getPropertyItemIdentifier = (item: IPropertyItem, prefix: string): string => {
   if (isPropertyMetadata(item))
     return getFullPath(item.path, prefix);
 
@@ -249,4 +243,4 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
   );
 };
 
-export default PropertySelect;
+

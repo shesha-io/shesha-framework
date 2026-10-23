@@ -1,7 +1,7 @@
 import { CSSProperties, FC, useMemo } from 'react';
 import { FormOutlined } from '@ant-design/icons';
-import ShaSpin from '@/components/shaSpin';
-import ValidationErrors from '@/components/validationErrors';
+import { ShaSpin } from '@/components/shaSpin';
+import { ValidationErrors } from '@/components/validationErrors';
 import { useSubForm } from '@/providers/subForm';
 import { FormItemProvider, isConfigurableFormComponent, ROOT_COMPONENT_KEY, useForm, useSheshaApplication } from '@/providers';
 import FormInfo from '@/components/configurableForm/formInfo';
@@ -154,6 +154,6 @@ const SubForm: FC<ISubFormProps> = ({ readOnly, formSelectionMode }) => {
 
 SubForm.displayName = 'SubForm';
 
-export { SubForm };
+;
 
 export default SubForm;

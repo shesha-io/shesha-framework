@@ -5,8 +5,8 @@ import { isDefined, isNullOrWhiteSpace } from './nullables';
 import { JsonLogicFilter } from '@/interfaces/jsonLogic';
 import { isNonEmptyArray } from './array';
 
-export type EvaluationType = 'mustache' | 'javascript';
-export interface IEvaluateNodeArgs {
+type EvaluationType = 'mustache' | 'javascript';
+interface IEvaluateNodeArgs {
   expression: string;
   type: EvaluationType | undefined;
   required?: boolean | undefined;
@@ -62,13 +62,13 @@ export interface IArgumentEvaluationResult {
   handled: boolean;
   value?: unknown | undefined;
 }
-export type JsonLogicContainerProcessingCallback = (
+type JsonLogicContainerProcessingCallback = (
   operator: string,
   args: unknown[],
   argIndex: number,
 ) => IArgumentEvaluationResult;
 
-export interface OnEvaluatedArguments extends IEvaluateComplexStringResult {
+interface OnEvaluatedArguments extends IEvaluateComplexStringResult {
   expression: string;
 }
 export interface IJsonLogicConversionOptions {
@@ -427,15 +427,6 @@ export const convertJsonLogicNodeSync = (
 
   return result;
 };
-
-export interface IMustacheEvaluateNodeArgs {
-  expression: string;
-  required: boolean;
-}
-
-export interface IMustacheEvaluateNode {
-  evaluate: IMustacheEvaluateNodeArgs[];
-}
 
 export const combineExpressionsWithAnd = (filters: JsonLogicFilter[]): JsonLogicFilter | undefined => {
   return isNonEmptyArray(filters)

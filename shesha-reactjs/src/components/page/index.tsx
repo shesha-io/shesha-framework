@@ -2,15 +2,15 @@ import { Breadcrumb, Button, Result, Space } from 'antd';
 import classNames from 'classnames';
 import { FC, PropsWithChildren, useEffect } from 'react';
 import { ShaSpin } from '..';
-import Show from '@/components/show';
+import { Show } from '@/components/show';
 import { useShaRouting, useSheshaApplication, useTheme } from '@/providers';
-import StatusTag, { IStatusTagProps } from '@/components/statusTag';
+import { StatusTag, IStatusTagProps } from '@/components/statusTag';
 import { FormIdentifier } from '@/providers/form/models';
 import { ItemType } from 'antd/lib/breadcrumb/Breadcrumb';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { isNonEmptyArray } from '@/utils/array';
 
-export interface IPageHeadProps {
+interface IPageHeadProps {
   readonly title?: string;
   readonly description?: string;
   readonly url?: string;
@@ -19,12 +19,12 @@ export interface IPageHeadProps {
   readonly formMode?: string;
 }
 
-export interface IBreadcrumbItem {
+interface IBreadcrumbItem {
   text: string;
   link?: string;
 }
 
-export interface IPageProps extends IPageHeadProps {
+interface IPageProps extends IPageHeadProps {
   backUrl?: string;
   breadcrumbItems?: IBreadcrumbItem[];
   loading?: boolean;

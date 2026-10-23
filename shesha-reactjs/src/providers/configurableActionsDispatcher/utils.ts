@@ -8,7 +8,7 @@ import { FormActions } from "../form/configurableActions/descriptors";
 import { appendValidationPath } from "../form/utils/validation";
 import { isNullOrWhiteSpace } from "@/utils/nullables";
 
-export const copyActionsTo = (src: IConfigurableActionGroupDictionary, dst: IConfigurableActionGroupDictionary): void => {
+const copyActionsTo = (src: IConfigurableActionGroupDictionary, dst: IConfigurableActionGroupDictionary): void => {
   for (const key in src) {
     if (src.hasOwnProperty(key) && isDefined(src[key])) {
       const srcGroup = src[key];

@@ -6,12 +6,12 @@ import { ISelectionProps, RowSelection } from '@/providers/dataTable/interfaces'
 import { ISortingItem, ITableRowData } from '@/providers/dataTable/interfaces';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
-export type DataListSelectionMode = 'none' | 'single' | 'multiple';
-export type FormSelectionMode = 'name' | 'view' | 'expression';
-export type Orientation = 'vertical' | 'horizontal' | 'wrap';
-export type ListItemWidth = number | 'custom';
+type DataListSelectionMode = 'none' | 'single' | 'multiple';
+type FormSelectionMode = 'name' | 'view' | 'expression';
+type Orientation = 'vertical' | 'horizontal' | 'wrap';
+type ListItemWidth = number | 'custom';
 export type InlineEditMode = 'one-by-one' | 'all-at-once';
-export type InlineSaveMode = 'auto' | 'manual';
+type InlineSaveMode = 'auto' | 'manual';
 export type NewItemInitializer<TValue extends object = object> = () => Promise<TValue>;
 
 export type ActionRefType = {

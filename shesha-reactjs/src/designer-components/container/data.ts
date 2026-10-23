@@ -93,19 +93,6 @@ export const JUSTIFY_SELF = [
   { id: nanoid(), label: 'Unset', value: 'unset' },
 ];
 
-export const TEXT_JUSTIFY = [
-  { id: nanoid(), label: 'None', value: 'none' },
-  { id: nanoid(), label: 'Auto', value: 'auto' },
-  { id: nanoid(), label: 'Inter word', value: 'inter-word' },
-  { id: nanoid(), label: 'Inter character', value: 'inter-character' },
-  { id: nanoid(), label: 'Distribute', value: 'distribute' },
-  { id: nanoid(), label: 'Inherit', value: 'inherit' },
-  { id: nanoid(), label: 'Initial', value: 'initial' },
-  { id: nanoid(), label: 'Revert', value: 'revert' },
-  { id: nanoid(), label: 'Revert layer', value: 'revert-layer' },
-  { id: nanoid(), label: 'Unset', value: 'unset' },
-];
-
 export const ALIGN_ITEMS = [
   { id: nanoid(), label: 'Normal', value: 'normal' },
   { id: nanoid(), label: 'Center', value: 'center' },
@@ -123,11 +110,6 @@ export const ALIGN_ITEMS_GRID = [
   { id: nanoid(), label: 'End', value: 'end' },
   { id: nanoid(), label: 'First baseline', value: 'first baseline' },
   { id: nanoid(), label: 'Last baseline', value: 'last baseline' },
-];
-
-export const ALIGN_ITEMS_FLEX = [
-  { id: nanoid(), label: 'Flex start', value: 'flex-start' },
-  { id: nanoid(), label: 'Flex end', value: 'flex-end' },
 ];
 
 export const ALIGN_SELF = [

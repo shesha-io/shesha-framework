@@ -47,9 +47,9 @@ export const getEffectiveStyle = (model: IConfigurableFormComponent, effectiveDe
   return effectiveDesktopStyle as IStyleValue;
 };
 
-export const DIMENSION_UNITS = ['px', '%', 'vw', 'vh', 'em', 'rem', 'auto', 'calc', 'none', 'fr', 'in', 'cm', 'mm', 'pt', 'pc'] as const;
-export type DimensionUnits = typeof DIMENSION_UNITS[number];
-export interface DimensionValue {
+const DIMENSION_UNITS = ['px', '%', 'vw', 'vh', 'em', 'rem', 'auto', 'calc', 'none', 'fr', 'in', 'cm', 'mm', 'pt', 'pc'] as const;
+type DimensionUnits = typeof DIMENSION_UNITS[number];
+interface DimensionValue {
   value: number;
   unit: DimensionUnits;
   calc?: string;
@@ -73,7 +73,7 @@ const isValidDimensionResult = (value: unknown): value is string | number | null
  * @param context - Optional context object containing available constants (from useAvailableConstantsData)
  * @returns Parsed dimension object with value and unit, or null if invalid
  */
-export const parseDimension = (value: string | number | null | undefined | IPropertySetting, context?: object): DimensionValue | null => {
+const parseDimension = (value: string | number | null | undefined | IPropertySetting, context?: object): DimensionValue | null => {
   if (!isDefined(value)) return null;
 
   if (typeof value === 'number') {
@@ -177,27 +177,6 @@ export const addPx = (value: number | string | null | undefined, context?: objec
   }
 
   return `${parsed.value}${parsed.unit}`;
-};
-
-/**
- * Returns style overrides for ghost buttons.
- * Ghost buttons display only foreground color (text/icon) with no background, border, or shadow.
- * These overrides ensure ghost buttons maintain their transparent appearance.
- *
- * @returns Style object with transparent background, no border, and no shadow
- * @example
- * const ghostStyles = getGhostStyleOverrides();
- * // Returns: { background: 'transparent', backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }
- */
-export const getGhostStyleOverrides = (fontStyles?: React.CSSProperties): React.CSSProperties => {
-  return {
-    ...fontStyles,
-    background: 'transparent',
-    backgroundColor: 'transparent',
-    border: 'none',
-    boxShadow: 'none',
-    color: fontStyles?.color ?? '#000',
-  };
 };
 
 export const hasNumber = (str: string | number): boolean => typeof str === 'number' ? true : /\d/.test(str);

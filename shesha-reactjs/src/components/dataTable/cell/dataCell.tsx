@@ -27,7 +27,7 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getNumberOrUndefined } from '@/utils/string';
 import { IPropertyMetadata, IToolboxComponent } from '@/interfaces';
 
-export const DefaultDataDisplayCell = <D extends object = object, V = unknown>(props: IDataCellProps<D, V>): ReactNode => {
+const DefaultDataDisplayCell = <D extends object = object, V = unknown>(props: IDataCellProps<D, V>): ReactNode => {
   const { columnConfig } = props;
   const { form } = useForm();
   const value = !isNullOrWhiteSpace(columnConfig.propertyName) && isDefined(form)
@@ -205,7 +205,7 @@ const UpdateDataCell = <D extends object = object, V = number>(props: IDataCellP
     : <DefaultDataDisplayCell {...props} />;
 };
 
-export const DataCell = <D extends object = object, V = unknown>(props: IDataCellProps<D, V>): ReactNode => {
+const DataCell = <D extends object = object, V = unknown>(props: IDataCellProps<D, V>): ReactNode => {
   const { mode } = useCrud();
 
   switch (mode) {

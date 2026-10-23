@@ -17,7 +17,7 @@ import { useFormManager } from '../formManager';
 import { FormPersister } from './formPersister';
 import { throwError } from '@/utils/errors';
 
-export interface IFormProviderProps {
+interface IFormProviderProps {
   formId: FormIdentifier;
   skipCache?: boolean;
 }
@@ -56,7 +56,6 @@ const useFormPersisterStateOrUndefined = (): IFormPersisterStateContext | undefi
 const useFormPersisterState = (): IFormPersisterStateContext => useFormPersisterStateOrUndefined() ?? throwError("useFormPersisterState must be used within a FormPersisterProvider");
 
 const useFormPersisterActionsOrUndefined = (): IFormPersisterActionsContext | undefined => useContext(FormPersisterActionsContext);
-const useFormPersisterActions = (): IFormPersisterActionsContext => useFormPersisterActionsOrUndefined() ?? throwError("useFormPersisterActions must be used within a FormPersisterProvider");
 
 const useFormPersisterIfAvailable = (): IFormPersisterContext | undefined => {
   const actionsContext = useFormPersisterActionsOrUndefined();
@@ -72,4 +71,4 @@ const useFormPersisterIfAvailable = (): IFormPersisterContext | undefined => {
 
 const useFormPersister = (): IFormPersisterContext => useFormPersisterIfAvailable() ?? throwError("useFormPersister must be used within a FormPersisterProvider");
 
-export { FormPersisterProvider, useFormPersister, useFormPersisterIfAvailable, useFormPersisterState, useFormPersisterActions };
+export { FormPersisterProvider, useFormPersister, useFormPersisterIfAvailable, useFormPersisterState };

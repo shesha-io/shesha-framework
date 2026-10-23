@@ -27,4 +27,4 @@ export const LayerGroupConfigurator: FC<ILayerGroupConfiguratorProps> = ({ setti
   );
 };
 
-export default LayerGroupConfigurator;
+

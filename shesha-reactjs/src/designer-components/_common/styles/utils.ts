@@ -134,7 +134,7 @@ export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyl
 
 export const borderCss = (b: BorderStyle | undefined): string => `${addPx(b?.width) ?? '0px'} ${b?.style ?? 'none'} ${isNullOrWhiteSpace(b?.color) ? 'transparent' : b.color}`;
 
-export const gradientCss = (g: IGradientValue): string => {
+const gradientCss = (g: IGradientValue): string => {
   const direction = g.direction;
   const isRadial = direction === 'radial';
   const isConic = direction === 'conic';
@@ -257,7 +257,7 @@ export const paddingValue = (model: StyleBoxValue | undefined): string => {
   return sb.join(' ');
 };
 
-export const normalizeFontFamily = (fontFamily: string | undefined): string | undefined => {
+const normalizeFontFamily = (fontFamily: string | undefined): string | undefined => {
   if (!isDefined(fontFamily)) return fontFamily;
 
   const fonts = fontFamily.split(',').map((f) => {

@@ -1,15 +1,5 @@
 import inside from 'point-in-polygon';
 
-export interface ICoords {
-  lat?: number;
-  lng?: number;
-}
-
-export interface IGoogleMapsLatLng {
-  lat: () => number;
-  lng: () => number;
-}
-
 export type LatLngPolygon = Array<{
   lng: number;
   lat: number;
@@ -23,10 +13,10 @@ interface IFuncPointsArray {
   lng: () => number;
 }
 
-export const convertLatLngPolygonToPointsPolygon = (polygon: LatLngPolygon): number[][] =>
+const convertLatLngPolygonToPointsPolygon = (polygon: LatLngPolygon): number[][] =>
   polygon.map(({ lat, lng }) => [lat, lng]);
 
-export const convertFuncPointsArrayToSimplePointsArray = ({ lat, lng }: IFuncPointsArray): SimplePointsArray =>
+const convertFuncPointsArrayToSimplePointsArray = ({ lat, lng }: IFuncPointsArray): SimplePointsArray =>
   [lat(), lng()] as SimplePointsArray;
 
 export const pointsInPolygon = (

@@ -56,7 +56,7 @@ export interface AuthenticatorArgs {
   onTokenExpired?: () => void;
 }
 
-export class Authenticator implements IAuthenticator {
+class Authenticator implements IAuthenticator {
   #httpClient: HttpClientApi;
 
   #settings: ISettingsClientContext;

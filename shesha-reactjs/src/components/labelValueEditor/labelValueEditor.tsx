@@ -1,6 +1,6 @@
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { FC, Fragment, ReactElement, useState } from 'react';
-import Show from '@/components/show';
+import { Show } from '@/components/show';
 import {
   Alert,
   Button,
@@ -47,7 +47,7 @@ interface InputPropertyEditorProps<TItem> {
   placeholder?: string | undefined;
   propertyName: string;
 }
-export const InputPropertyEditor = <TItem extends object>(props: InputPropertyEditorProps<TItem>): ReactElement => {
+const InputPropertyEditor = <TItem extends object>(props: InputPropertyEditorProps<TItem>): ReactElement => {
   const { item, propertyName, itemOnChange, placeholder } = props;
   return (
     <Input

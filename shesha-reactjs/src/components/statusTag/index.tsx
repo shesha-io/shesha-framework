@@ -16,7 +16,7 @@ export interface IStatusMappings {
   default?: IStatusMap;
 }
 
-export const DEFAULT_STATUS_TAG_MAPPINGS: IStatusMappings = {
+const DEFAULT_STATUS_TAG_MAPPINGS: IStatusMappings = {
   mapping: [
     { code: 1, text: 'Completed', color: '#87d068' },
     { code: 2, text: 'In Progress', color: '#4DA6FF', override: 'Still Busy!' },
@@ -96,5 +96,3 @@ export const StatusTag: FC<IStatusTagProps> = ({
     </Tag>
   );
 };
-
-export default StatusTag;

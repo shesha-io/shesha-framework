@@ -4,7 +4,7 @@ import { css, cx } from 'antd-style';
 import { PropsWithChildren, FC } from 'react';
 
 
-export interface IHelpTextPopoverProps {
+interface IHelpTextPopoverProps {
   content?: string | undefined;
 }
 
@@ -26,5 +26,3 @@ export const HelpTextPopover: FC<PropsWithChildren<IHelpTextPopoverProps>> = ({ 
     )
     : <>{children}</>;
 };
-
-export default HelpTextPopover;

@@ -79,7 +79,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
 };
 
 
-export const DataSourceInner: FC<IDataSourceComponentProps> = (props) => {
+const DataSourceInner: FC<IDataSourceComponentProps> = (props) => {
   const { sourceType, entityType, endpoint, id, propertyName: name } = props;
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';

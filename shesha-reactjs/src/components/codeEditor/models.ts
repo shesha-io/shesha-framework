@@ -15,9 +15,6 @@ export interface IMonacoEditorProps extends Omit<EditorProps, "onChange"> {
   onChange: ((newValue: string | null) => void) | undefined;
 }
 
-export interface IGenericCodeEditorProps extends IMonacoEditorProps, Partial<IHasCodeTemplate> {
-}
-
 export interface CodeTemplateSettings {
   useAsyncDeclaration?: boolean | undefined;
   functionName?: string | undefined;

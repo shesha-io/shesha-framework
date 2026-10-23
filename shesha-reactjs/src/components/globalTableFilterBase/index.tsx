@@ -15,7 +15,7 @@ export interface IGlobalTableFilterBaseProps {
   style?: React.CSSProperties | undefined;
 }
 
-export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
+const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
   searchProps,
   changeQuickSearch,
   performQuickSearch,

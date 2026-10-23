@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import DateDisplay from '@/components/dateDisplay';
+import { DateDisplay } from '@/components/dateDisplay';
 import { Input, Button, Typography, Popconfirm } from 'antd';
 import { Comment } from '@/components/antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';

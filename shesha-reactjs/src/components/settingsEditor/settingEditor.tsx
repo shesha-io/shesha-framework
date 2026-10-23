@@ -17,7 +17,7 @@ interface ISettingEditorState {
   editor?: React.ReactElement | undefined;
 }
 
-export const SettingEditor: FC = () => {
+const SettingEditor: FC = () => {
   const { settingSelection, fetchSettingValue } = useSettingsEditor();
   const [state, setState] = useState<ISettingEditorState>({ isLoading: false });
 

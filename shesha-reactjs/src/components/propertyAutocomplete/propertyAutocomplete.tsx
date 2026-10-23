@@ -334,5 +334,3 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     </>
   );
 };
-
-export default PropertyAutocomplete;

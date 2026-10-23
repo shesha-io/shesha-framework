@@ -5,7 +5,7 @@ import { NotificationChannelAutocomplete } from './notificationChannelAutocomple
 import { ReferenceListAutocomplete } from './referenceListAutocomplete';
 import { RoleAutocomplete } from './roleAutocomplete';
 
-export { GenericConfigItemAutocomplete as ConfigurableItemAutocomplete };
+;
 
 type GenericConfigItemAutocompleteType = typeof GenericConfigItemAutocomplete;
 interface ConfigItemAutocompleteType extends GenericConfigItemAutocompleteType {
