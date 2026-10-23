@@ -10,15 +10,23 @@ namespace Shesha.Sms
     public interface ISmsGatewayFactory
     {
         /// <summary>
-        /// Get current <see cref="ISmsGateway"/>
+        /// Get the gateway currently selected in SMS settings.
         /// </summary>
-        /// <returns></returns>
+        /// <remarks>
+        /// Reads settings on every call, so a settings change applies to the next call.
+        /// Does not block the caller. Prefer this over injecting <see cref="ISmsGateway"/>.
+        /// </remarks>
         Task<ISmsGateway> GetSmsGatewayAsync();
 
         /// <summary>
-        /// Get available SMS gateways
+        /// Get registered SMS gateways.
         /// </summary>
-        /// <returns></returns>
+        /// <remarks>
+        /// Type discovery is cached for the process and is safe to call concurrently.
+        /// Reading the catalogue does not resolve a gateway and does not read settings.
+        /// <see cref="AvailableSmsGatewayInfo.SettingsType"/> is inferred from
+        /// <see cref="IConfigurableSmsGateway{TSettings}"/> without creating an instance.
+        /// </remarks>
         List<AvailableSmsGatewayInfo> GetSmsGatewayTypes();
     }
 }

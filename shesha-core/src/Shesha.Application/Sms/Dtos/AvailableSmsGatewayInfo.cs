@@ -12,5 +12,11 @@ namespace Shesha.Sms.Dtos
         public string Alias { get; init; }
         public string Name { get; init; }
         public string Description { get; init; }
+
+        /// <summary>
+        /// Settings CLR type inferred from <c>IConfigurableSmsGateway&lt;TSettings&gt;</c>, or null.
+        /// Populated from the gateway type without creating an instance.
+        /// </summary>
+        public Type SettingsType { get; init; }
     }
 }
