@@ -67,7 +67,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                 }                
                 else
                 {
-                    var gqlType = Assembly.GetAssembly(typeof(ISchema)).GetTypes().FirstOrDefault(t => t.Name == $"{typeName}Type" && t.IsAssignableTo(typeof(IGraphType)));
+                    var gqlType = typeof(ISchema).Assembly.GetTypes().FirstOrDefault(t => t.Name == $"{typeName}Type" && t.IsAssignableTo(typeof(IGraphType)));
 
                     gqlType ??= isDictionary
                         ? MakeDictionaryType(propertyInfo)
@@ -95,7 +95,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
         {
             var dictType = propertyInfo.PropertyType.GetGenericTypeAssignableTo(typeof(IDictionary<,>));
 
-            var args = dictType.GetGenericArguments();
+            var args = dictType.NotNull().GetGenericArguments();
 
             return typeof(DictionaryGraphType<,>).MakeGenericType(args[0], args[1]);
         }

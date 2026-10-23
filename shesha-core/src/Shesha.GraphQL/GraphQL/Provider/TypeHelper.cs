@@ -12,7 +12,7 @@ namespace Shesha.GraphQL
         {
             if (t.GetGenericArguments().Length != 0 && t.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
-                return t.GetGenericArguments().FirstOrDefault();
+                return t.GetGenericArguments().First();
             }
 
             return t;

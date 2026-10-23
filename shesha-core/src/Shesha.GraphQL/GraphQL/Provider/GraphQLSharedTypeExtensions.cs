@@ -24,7 +24,7 @@ namespace Shesha.GraphQL
             return baseType != null && IsAssignableToGenericType(baseType, genericType);
         }
 
-        public static Type GetGenericTypeAssignableTo(this Type givenType, Type genericType)
+        public static Type? GetGenericTypeAssignableTo(this Type givenType, Type genericType)
         {
             var interfaceTypes = givenType.GetInterfaces();
 

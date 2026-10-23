@@ -136,6 +136,8 @@ namespace Shesha.GraphQL.Provider.Queries
 
                         var parentPropertyColumnName = MappingHelper.GetForeignKeyColumn(parentProperty.PropertyInfo);
 
+                        if (string.IsNullOrWhiteSpace(entityConfig.TableName))
+                            throw new NotSupportedException($"Entity '{entityConfig.EntityType.FullName}' is not mapped to a table");
                         var treeEntities = await GetTreeQueryAsync(entityConfig.TableName, parentPropertyColumnName, idColumnName, isDeletedColumnName, input.ParentId);
 
                         // filter entities
@@ -243,7 +245,7 @@ from
         private List<string> GetEntityPropertiesFromContext(IResolveFieldContext context) 
         {
             var itemsName = StringHelper.ToCamelCase(nameof(PagedResultDto<TEntity>.Items));
-            if (context.SubFields.ContainsKey(itemsName))
+            if (context.SubFields != null && context.SubFields.ContainsKey(itemsName))
             {
                 var itemsField = context.SubFields[itemsName];
                 var fields = itemsField.Field.SelectionSet?.Selections.OfType<GraphQLField>().ToList();
@@ -269,14 +271,14 @@ from
             return properties;
         }
 
-        private string PrefixName(string name, string prefix) 
+        private string PrefixName(string name, string? prefix) 
         {
             return string.IsNullOrWhiteSpace(prefix)
                 ? name
                 : prefix + "." + name;
         }
 
-        private void ProcessField(GraphQLField field, Action<GraphQLField, string> fieldAction, string path)
+        private void ProcessField(GraphQLField field, Action<GraphQLField, string?> fieldAction, string? path)
         {
             fieldAction.Invoke(field, path);
             if (field.SelectionSet != null) 
@@ -299,7 +301,7 @@ from
         /// <param name="query">Queryable to be filtered</param>
         /// <param name="filter">String representation of JsonLogic filter</param>
         /// <returns></returns>
-        private IQueryable<TEntity> AddFilter(IQueryable<TEntity> query, string filter) 
+        private IQueryable<TEntity> AddFilter(IQueryable<TEntity> query, string? filter) 
         {
             if (string.IsNullOrWhiteSpace(filter))
                 return query;

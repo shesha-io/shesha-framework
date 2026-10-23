@@ -10,6 +10,7 @@ using Shesha.Domain;
 using Shesha.DynamicEntities.TypeFinder;
 using Shesha.Extensions;
 using Shesha.GraphQL.Provider.Schemas;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,6 @@ namespace Shesha.GraphQL.Provider
 {
     public class SchemaContainer : CacheHolder<string, ISchema>, ISchemaContainer, ISingletonDependency, IEventHandler<EntityChangedEventData<EntityProperty>>
     {
-        private readonly ICacheManager _cacheManager;
         private readonly IShaTypeFinder _shaTypeFinder;
         private readonly IServiceProvider _serviceProvider;
         private readonly Schema _defaultSchema;
@@ -40,7 +40,6 @@ namespace Shesha.GraphQL.Provider
             _defaultSchema = new Schema();
             _defaultSchema.Query = new EmptyQuery();
             _shaTypeFinder = shaTypeFinder;
-            _cacheManager = cacheManager;
             _serviceProvider = serviceProvider;
 
             CustomSchemas = customSchemas.ToDictionary(
@@ -48,11 +47,11 @@ namespace Shesha.GraphQL.Provider
                 elementSelector: schema => schema);
         }
 
-        private ISchema GetEntitySchema(string schemaName)
+        private ISchema? GetEntitySchema(string schemaName)
         {
             var entityType = _shaTypeFinder.Find(t => GetEntitySchemaName(t) == schemaName && t.IsEntityType()).FirstOrDefault();
             if (entityType == null)
-                    return null;
+                return null;
 
             return Cache.Get(schemaName, sn => GetEntitySchema(entityType, _serviceProvider));
         }
@@ -62,9 +61,9 @@ namespace Shesha.GraphQL.Provider
             var idType = entityType.GetEntityIdType();
             var schemaType = typeof(EntitySchema<,>).MakeGenericType(entityType, idType);
 
-            var schema = Activator.CreateInstance(schemaType, serviceProvider);
+            var schema = Activator.CreateInstance(schemaType, serviceProvider).ForceCastAs<ISchema>();
 
-            return (ISchema)schema;
+            return schema;
         }
 
         /// <summary>
@@ -87,9 +86,9 @@ namespace Shesha.GraphQL.Provider
             return StringHelper.ToCamelCase(entityTypeName);
         }
 
-        public virtual Task<ISchema> GetOrDefaultAsync(string schemaName, string defaultSchemaName = null)
+        public virtual Task<ISchema> GetOrDefaultAsync(string? schemaName, string? defaultSchemaName = null)
         {
-            ISchema schema = null;
+            ISchema? schema = null;
             if (!string.IsNullOrWhiteSpace(schemaName))
             {
                 schema = CustomSchemas.ContainsKey(schemaName)

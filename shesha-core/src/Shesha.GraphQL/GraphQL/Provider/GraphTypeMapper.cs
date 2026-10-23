@@ -1,12 +1,11 @@
-﻿using GraphQL.Types;
-using Shesha.EntityReferences;
+﻿using GraphQL;
+using GraphQL.Types;
 using Shesha.GraphQL.Provider.GraphTypes;
 using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Reflection;
 
 namespace Shesha.GraphQL.Provider
 {
@@ -79,12 +78,19 @@ namespace Shesha.GraphQL.Provider
                 return isInput ? typeof(GraphQLInputGenericType<IDictionary<string, object>>) : typeof(StringGraphType);
             }
 
-            var graphType = Assembly.GetAssembly(typeof(ISchema)).GetTypes()
+            var graphType = typeof(ISchema).Assembly.GetTypes()
                 .FirstOrDefault(t => t.Name == $"{type.Name}Type" && t.IsAssignableTo(typeof(IGraphType)));
 
             return graphType ?? (isInput
                 ? typeof(GraphQLInputGenericType<>).MakeGenericType(type)
                 : typeof(GraphQLGenericType<>).MakeGenericType(type));
+        }
+
+        public static string GetTypeName<T>()
+        {
+            return BuiltInScalarMappings.ContainsKey(typeof(T))
+                ? Activator.CreateInstance(BuiltInScalarMappings[typeof(T)]).ForceCastAs<IGraphType>().Name
+                : typeof(T).GetNamedType().Name;
         }
     }
 }

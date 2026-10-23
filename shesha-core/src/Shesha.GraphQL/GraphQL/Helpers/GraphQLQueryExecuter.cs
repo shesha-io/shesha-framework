@@ -9,6 +9,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Exceptions;
+using Shesha.Extensions;
 using Shesha.GraphQL.Middleware;
 using Shesha.GraphQL.Mvc;
 using Shesha.GraphQL.Provider;
@@ -101,7 +102,7 @@ namespace Shesha.GraphQL.Helpers
         private async Task<string> GetGqlTopLevelPropertiesAsync(Type entityType, bool fullReference = false)
         {
             var sb = new StringBuilder();
-            var properties = (await EntityConfigCache.GetEntityPropertiesAsync(entityType))
+            var properties = (await EntityConfigCache.GetEntityPropertiesAsync(entityType) ?? new List<EntityPropertyDto>())
                 .Where(x => !x.Suppress);
             foreach (var property in properties)
             {
@@ -175,7 +176,7 @@ namespace Shesha.GraphQL.Helpers
 
             var sb = new StringBuilder();
 
-            await AppendPropertiesAsync(sb, entityType.FullName, propList.Where(x => !x.IsNullOrWhiteSpace()).ToList());
+            await AppendPropertiesAsync(sb, entityType.GetRequiredFullName(), propList.Where(x => !x.IsNullOrWhiteSpace()).ToList());
 
             return "id " + sb.ToString();
         }
@@ -186,7 +187,7 @@ namespace Shesha.GraphQL.Helpers
             var entityConfig = EntityConfigurationStore.Get(entityType);
 
             var propConfigs = entityConfig != null
-                ? await EntityConfigCache.GetEntityPropertiesAsync(entityConfig.EntityType.FullName)
+                ? await EntityConfigCache.GetEntityPropertiesAsync(entityConfig.EntityType.GetRequiredFullName())
                 : null;
 
             while (i < propList.Count)
