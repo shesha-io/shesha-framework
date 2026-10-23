@@ -23,7 +23,7 @@ import { useCanvas } from '../canvas';
 import { useConfigurableActionDispatcher } from '../configurableActionsDispatcher';
 import { useAvailableConstantsDataNoRefresh, useConfigurationItemsLoader, useHttpClient, useSettingsComponents } from '../..';
 
-export interface IFormDesignerProviderProps {
+interface IFormDesignerProviderProps {
   flatMarkup: IFlatComponentsStructure;
   formSettings: IFormSettings;
   readOnly: boolean;
@@ -127,7 +127,7 @@ const useFormDesigner = (): IFormDesignerInstance => {
   return formDesigner;
 };
 
-export const useFormDesignerSubscription = (subscriptionType: FormDesignerSubscriptionType): object => {
+const useFormDesignerSubscription = (subscriptionType: FormDesignerSubscriptionType): object => {
   const formDesigner = useFormDesigner();
 
   const [dummy, forceUpdate] = useState({});

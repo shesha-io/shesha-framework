@@ -21,10 +21,6 @@ export const ErrorDetails: FC<IErrorDetailsProps> = ({ error, showDetails = fals
 
 //#endregion
 
-export interface ItemWithIdPayload {
-  id: string;
-}
-
 interface IHasHttpClient {
   httpClient: HttpClientApi;
 }

@@ -1,8 +1,8 @@
 import { IAjaxResponse } from '@/interfaces/ajaxResponse';
 
-export type AuthenticateResultType = 0 | 1 | 2;
+type AuthenticateResultType = 0 | 1 | 2;
 
-export interface AuthenticateResultModel {
+interface AuthenticateResultModel {
   accessToken?: string | null;
   encryptedAccessToken?: string | null;
   expireInSeconds?: number;
@@ -21,19 +21,10 @@ export interface AuthenticateResultModel {
 
 export type AuthenticateResultModelAjaxResponse = IAjaxResponse<AuthenticateResultModel>;
 
-export interface RefreshTokenResultModel {
+interface RefreshTokenResultModel {
   accessToken?: string;
   expireInSeconds?: number;
   expireOn?: string;
 }
 
 export type RefreshTokenResultModelAjaxResponse = IAjaxResponse<RefreshTokenResultModel>;
-
-export interface AuthenticateModel {
-  userNameOrEmailAddress: string;
-  password: string;
-  /**
-   * Optional IMEI number. Is used for mobile applications
-   */
-  imei?: string | null;
-}

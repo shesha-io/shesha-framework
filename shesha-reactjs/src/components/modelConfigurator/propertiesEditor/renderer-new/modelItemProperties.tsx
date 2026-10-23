@@ -45,4 +45,4 @@ export const ModelItemProperties: FC<IModelItemProperties> = ({ item, onChange }
     );
 };
 
-export default ModelItemProperties;
+

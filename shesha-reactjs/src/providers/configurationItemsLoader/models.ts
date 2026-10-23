@@ -1,14 +1,6 @@
-import { IReferenceList, IReferenceListItem } from "@/interfaces/referenceList";
-import { PromisedValue } from "@/utils/promises";
-import { FormIdentifier, IFormDto } from "../form/models";
+import { IReferenceListItem } from "@/interfaces/referenceList";
+import { FormIdentifier } from "../form/models";
 
-export interface IFormsDictionary {
-  [key: string]: Promise<IFormDto> | undefined;
-}
-
-export interface IReferenceListsDictionary {
-  [key: string]: PromisedValue<IReferenceList> | undefined;
-}
 
 export interface ConfigurationDto {
   id: string;
@@ -50,10 +42,3 @@ export interface IUpdateComponentPayload {
 export interface IClearFormCachePayload {
   formId: FormIdentifier;
 }
-
-export interface IGetConfigurationPayload {
-  module: string;
-  name: string;
-  itemType: string;
-  skipCache: boolean;
-};

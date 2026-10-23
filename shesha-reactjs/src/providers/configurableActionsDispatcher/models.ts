@@ -2,11 +2,7 @@ import { IConfigurableActionDescriptor } from '@/interfaces/configurableAction';
 import { IGetConfigurableActionPayload } from './contexts';
 import { ActionParametersDictionary } from '../..';
 
-export interface IConfigurableActionDictionary {
-  [key: string]: IConfigurableActionDescriptor[];
-}
-
-export interface IConfigurableActionGroup {
+interface IConfigurableActionGroup {
   ownerName: string;
   actions: IConfigurableActionDescriptor[];
 }

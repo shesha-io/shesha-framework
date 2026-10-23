@@ -1,10 +1,10 @@
-import { IFormItem, IToolboxComponent } from '@/interfaces';
+import { IFormItem } from '@/interfaces';
 import { IInputStyles, IPropertySetting, IStyleValue } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { ImageSourceType } from './image';
 
-export interface IImageStyleProps extends IInputStyles {
+interface IImageStyleProps extends IInputStyles {
   objectFit?: 'fill' | 'contain' | 'cover' | 'scale-down' | 'none' | undefined;
   objectPosition?: string | undefined;
   filter?: string | undefined;
@@ -31,5 +31,3 @@ export interface IImageProps extends IConfigurableFormComponent, IFormItem, IIma
   hueRotate?: number | undefined;
   invert?: number | undefined;
 }
-
-export type ImageComponentDefinition = IToolboxComponent<IImageProps>;

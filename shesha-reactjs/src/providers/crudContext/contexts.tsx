@@ -20,7 +20,7 @@ export interface ICrudStateContext {
   deletingError?: IErrorInfo | undefined;
 }
 
-export interface ICrudActionsContext {
+interface ICrudActionsContext {
   switchMode: (mode: CrudMode) => void;
 }
 

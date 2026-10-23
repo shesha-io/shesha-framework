@@ -20,7 +20,7 @@ const columnsToOptions = (columns: ITableColumn[]): DefaultOptionType[] => {
   return result;
 };
 
-export const ColumnsFilterSelectBase: FC<IColumnsFilterSelectBaseProps> = ({
+const ColumnsFilterSelectBase: FC<IColumnsFilterSelectBaseProps> = ({
   columns,
   appliedFiltersColumnIds,
   toggleColumnFilter,

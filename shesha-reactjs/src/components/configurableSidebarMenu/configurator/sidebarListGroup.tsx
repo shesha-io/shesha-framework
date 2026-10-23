@@ -8,7 +8,7 @@ import { useStyles } from '@/components/listEditor/styles/styles';
 import { ItemChangeDetails } from '@/components/listEditor';
 import { useActualContextData } from '@/hooks';
 
-export interface IContainerRenderArgs {
+interface IContainerRenderArgs {
   id?: string;
   items: ISidebarMenuItem[];
   onChange: (newValue: ISidebarMenuItem[], changeDetails?: ItemChangeDetails | undefined) => void;

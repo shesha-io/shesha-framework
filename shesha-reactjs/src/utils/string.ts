@@ -26,7 +26,7 @@ const handlePreserveConsecutiveUppercase = (decamelized: string, separator: stri
 
 type DecamelizeOptions = { separator: string; preserveConsecutiveUppercase: boolean };
 const DEFAULT_DECAMELIZE_OPTIONS: DecamelizeOptions = { separator: '_', preserveConsecutiveUppercase: false };
-export function decamelize(text: string, options?: DecamelizeOptions): string {
+function decamelize(text: string, options?: DecamelizeOptions): string {
   const { separator, preserveConsecutiveUppercase } = options ?? DEFAULT_DECAMELIZE_OPTIONS;
   if (isNullOrWhiteSpace(text))
     return text;
@@ -258,22 +258,6 @@ export const reactNodeToString = (node: ReactNode): string => {
   }
 
   return '';
-};
-
-export const incrementStringNumber = (input: string): string => {
-  // Match a space followed by one or more digits at the end of the string
-  const regex = / (\d+)$/;
-  const match = input.match(regex);
-
-  if (isDefined(match) && isDefined(match[1])) {
-    const prefix = input.slice(0, match.index);
-    const currentNumber = parseInt(match[1], 10);
-    const incrementedNumber = currentNumber + 1;
-    return `${prefix} ${incrementedNumber}`;
-  }
-
-  // No trailing number found, append " 1"
-  return `${input} 1`;
 };
 
 export const firstNonEmptyString = (...args: (string | null | undefined)[]): string => firstNonEmptyStringOrUndefined(...args) ?? '';

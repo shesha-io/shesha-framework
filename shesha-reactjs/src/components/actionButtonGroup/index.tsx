@@ -6,7 +6,7 @@ import { nanoid } from '@/utils/uuid';
 import classNames from 'classnames';
 import { useStyles } from './styles/styles';
 
-export interface IActionButtonGroupProps {
+interface IActionButtonGroupProps {
   /** The items to display as buttons */
   items: IToolbarItem[];
 
@@ -22,7 +22,7 @@ export interface IActionButtonGroupProps {
  *
  * Can be rendered as toolbar items and extra buttons on the CollapsiblePanel
  */
-export const ActionButtonGroup: FC<IActionButtonGroupProps> = ({ items, className, btnSize = 'small' }) => {
+const ActionButtonGroup: FC<IActionButtonGroupProps> = ({ items, className, btnSize = 'small' }) => {
   const { styles } = useStyles();
   return (
     <div className={classNames(styles.shaActionBtnGroup, className)}>

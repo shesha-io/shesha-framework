@@ -20,16 +20,16 @@ export interface ApplicationPluginRegistration {
   data: unknown;
 }
 
-export interface IApplicationActionsContext {
+interface IApplicationActionsContext {
   registerPlugin: (plugin: ApplicationPluginRegistration) => void;
   unregisterPlugin: (pluginName: string) => void;
   getPlugin: (pluginName: string) => ApplicationPluginRegistration | undefined;
 }
-export const ApplicationActionsContext = createNamedContext<IApplicationActionsContext | undefined>(
+const ApplicationActionsContext = createNamedContext<IApplicationActionsContext | undefined>(
   undefined,
   'ApplicationActionsContext',
 );
-export const ApplicationPublicApiContext = createNamedContext<IApplicationApi | undefined>(
+const ApplicationPublicApiContext = createNamedContext<IApplicationApi | undefined>(
   undefined,
   'ApplicationPublicApiContext',
 );
@@ -106,7 +106,7 @@ export const ApplicationDataProvider: FC<PropsWithChildren> = ({ children }) => 
   );
 };
 
-export const useApplicationActions = (): IApplicationActionsContext => {
+const useApplicationActions = (): IApplicationActionsContext => {
   const context = useContext(ApplicationActionsContext);
 
   if (context === undefined) {

@@ -83,4 +83,4 @@ export const GroupSettingsPanel: FC<IGroupSettingsPanelProps> = ({ group, value:
   );
 };
 
-export default GroupSettingsPanel;
+

@@ -9,8 +9,6 @@ import { getSettings } from './settingsForm';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
-export type IActionParameters = [{ key: string; value: string }];
-
 export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorComponentProps> = {
   type: 'component-selector',
   name: 'Component selector',

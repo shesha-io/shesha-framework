@@ -67,7 +67,7 @@ export interface IRadioComponentProps extends IRadioOptionsSource, IConfigurable
 }
 
 /** Values derived from the model before render — currently the evaluated `url` data source. */
-export interface IRadioCalculatedValues {
+interface IRadioCalculatedValues {
   dataSourceUrl?: string | undefined;
 }
 

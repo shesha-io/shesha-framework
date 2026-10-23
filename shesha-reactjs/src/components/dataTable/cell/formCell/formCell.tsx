@@ -186,7 +186,7 @@ const EditFormCell = <D extends object = object, V = number>(props: IFormCellPro
     );
 };
 
-export const FormCell = <D extends object = object, V = unknown>(props: IFormCellProps<D, V>): ReactNode => {
+const FormCell = <D extends object = object, V = unknown>(props: IFormCellProps<D, V>): ReactNode => {
   const { mode } = useCrud();
 
   switch (mode) {

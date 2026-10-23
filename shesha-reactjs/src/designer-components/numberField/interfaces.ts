@@ -15,7 +15,7 @@ export interface INumberFieldComponentPropsV1 extends IConfigurableFormComponent
   prefixIcon?: string;
 }
 
-export type NumberFieldFormat = 'integer' | 'decimal' | 'percent' | 'currency' | 'custom';
+type NumberFieldFormat = 'integer' | 'decimal' | 'percent' | 'currency' | 'custom';
 
 export interface INumberFieldComponentProps extends IConfigurableFormComponent, IInputStyles {
   numberFormat?: NumberFieldFormat | undefined;

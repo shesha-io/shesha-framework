@@ -12,19 +12,7 @@ type ButtonGroupItemType = 'item' | 'group';
 
 export type ButtonGroupItemProps = IButtonGroupItem | IButtonGroup;
 
-export type ToolbarItemSubType = 'button' | 'separator' | 'line' | 'dynamic';
-
-export type ButtonActionType =
-  | 'navigate' |
-  'dialogue' |
-  'executeScript' |
-  'executeFormAction' | // This is the old one which is now only being used for backward compatibility. The new one is 'customAction' to be consistent with the ButtonGroup
-  'customAction' | // This is the new one. Old one is 'executeFormAction'
-  'submit' |
-  'reset' |
-  'startFormEdit' |
-  'cancelFormEdit' |
-  'dispatchAnEvent';
+type ToolbarItemSubType = 'button' | 'separator' | 'line' | 'dynamic';
 
 export interface IButtonGroupItemBase extends IStyleValue {
   id: string;

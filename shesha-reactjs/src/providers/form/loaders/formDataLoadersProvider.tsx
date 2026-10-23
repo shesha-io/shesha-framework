@@ -9,7 +9,7 @@ export interface IFormDataLoadersContext {
   getFormDataLoader: (type: string) => IFormDataLoader | undefined;
 }
 
-export const FormDataLoadersContext = createNamedContext<IFormDataLoadersContext | undefined>(undefined, "FormDataLoadersContext");
+const FormDataLoadersContext = createNamedContext<IFormDataLoadersContext | undefined>(undefined, "FormDataLoadersContext");
 
 export const FormDataLoadersProvider: FC<PropsWithChildren> = ({ children }) => {
   const gqlLoader = useGqlLoader();

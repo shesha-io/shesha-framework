@@ -1,7 +1,6 @@
-import { IEntity } from '@/interfaces/gql';
 import { FormFullName } from '@/providers/form/models';
 
-export type FormMode = 'designer' | 'edit' | 'readonly';
+type FormMode = 'designer' | 'edit' | 'readonly';
 
 export interface IDynamicPageProps {
   /**
@@ -20,17 +19,4 @@ export interface IDynamicPageProps {
   mode?: FormMode;
 
   path?: string | string[];
-}
-
-export interface EntityAjaxResponse {
-  targetUrl?: string | null;
-  success?: boolean;
-  error?: unknown;
-  unAuthorizedRequest?: boolean;
-  __abp?: boolean;
-  result?: IEntity;
-}
-
-export interface IDynamicPageState extends IDynamicPageProps {
-  stackId?: string;
 }

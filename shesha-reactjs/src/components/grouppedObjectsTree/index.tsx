@@ -7,7 +7,7 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { isNonEmptyArray } from '@/utils/array';
 import { getStringPropertyOrUndefined } from '@/utils/object';
 
-export interface IGrouppedObjectsTreeProps<TItem> {
+interface IGrouppedObjectsTreeProps<TItem> {
   defaultSelected?: string | undefined;
   items: TItem[];
   searchText?: string | undefined;
@@ -30,7 +30,7 @@ interface GrouppedObjects<TItem> {
   visibleItems: TItem[];
 }
 
-export const GrouppedObjectsTree = <TItem extends object = object>(props: IGrouppedObjectsTreeProps<TItem>): React.JSX.Element => {
+const GrouppedObjectsTree = <TItem extends object = object>(props: IGrouppedObjectsTreeProps<TItem>): React.JSX.Element => {
   const { items, onGetGroupName, searchText, isMatch, openedKeys = [], defaultSelected = "", idFieldName = "id", setOpenedKeys } = props;
   const childFieldName = (props.childFieldName ?? 'children') as keyof TItem;
 

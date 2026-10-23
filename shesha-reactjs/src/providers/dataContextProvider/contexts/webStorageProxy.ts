@@ -1,10 +1,6 @@
 import { isDefined } from "@/utils/nullables";
 import { hasProperty } from "@/utils/object";
 
-export interface IWebStorageProxy {
-  updateOnChangeHandler: (func: () => void) => void;
-};
-
 export type WebStorageType = 'localStorage' | 'sessionStorage';
 
 export class WebStorageProxy {

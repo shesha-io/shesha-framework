@@ -4,26 +4,6 @@ import { ISheshaErrorTypes } from "@/utils/errors";
 
 export type Severity = ISheshaErrorTypes;
 
-export interface NodeRef {
-  kind: 'form' | 'component';
-  /** index among siblings; ignored for the form node */
-  index?: number;
-  /** stable component id, if any */
-  id?: string;
-  /** human readable label, e.g. "Email field" */
-  label?: string;
-}
-
-export interface Issue {
-  severity: Severity;
-  code?: string;
-  message: string;
-  /** Address of the settings owner. Must be non-empty. */
-  path: NodeRef[];
-  /** Dotted path inside the owner's settings, e.g. "validation.pattern" */
-  property?: string;
-}
-
 export const SEVERITY_META: Record<Severity, { color: string; label: string }> = {
   error: { color: 'error', label: 'Error' },
   warning: { color: 'warning', label: 'Warn' },
@@ -31,7 +11,7 @@ export const SEVERITY_META: Record<Severity, { color: string; label: string }> =
 };
 
 /** `components[0]#contact-form.children[1]#email.settings.name` */
-export function formatPath(path: ValidationNodeRef[], property?: string): string {
+function formatPath(path: ValidationNodeRef[], property?: string): string {
   const pathParts = path.map((ref) => typeof (ref.label) === "string" && !isNullOrWhiteSpace(ref.label)
     ? ref.label
     : !isNullOrWhiteSpace(ref.id)

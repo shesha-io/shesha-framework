@@ -14,7 +14,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { isDefined } from '@/utils/nullables';
 
-export interface IRateProps extends IConfigurableFormComponent {
+interface IRateProps extends IConfigurableFormComponent {
   value?: number;
   allowClear?: boolean;
   allowHalf?: boolean;

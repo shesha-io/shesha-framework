@@ -17,7 +17,7 @@ import { buildUrl } from '@/utils';
 import { SetGroupingAction, SetSearchTextAction, UpdateItemAction } from './configurableActions';
 import { firstNonEmptyString } from '@/utils/string';
 
-export interface IPermissionedObjectsTreeProps {
+interface IPermissionedObjectsTreeProps {
   objectsType?: string | undefined;
   height?: string | undefined;
 
@@ -37,7 +37,7 @@ export interface IPermissionedObjectsTreeProps {
   searchText?: string | undefined;
 }
 
-export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props) => {
+const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props) => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaPermissionedObjects.toolbox.objects.openedKeys.' + props.objectsType, ['']);
   const [searchText, setSearchText] = useLocalStorage('shaPermissionedObjects.toolbox.objects.search.' + props.objectsType, '');
   const [groupBy, setGroupBy] = useLocalStorage('shaPermissionedObjects.toolbox.objects.grouping.' + props.objectsType, '-');

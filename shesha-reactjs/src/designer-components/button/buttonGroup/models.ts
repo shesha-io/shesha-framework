@@ -14,7 +14,7 @@ export interface IButtonGroupProps extends IBaseButtonGroupProps, IStyleValue {
   readOnly?: boolean | undefined;
 }
 
-export interface IBaseButtonGroupProps {
+interface IBaseButtonGroupProps {
   items: ButtonGroupItemProps[];
   size?: SizeType | undefined;
   spaceSize?: SizeType | undefined;

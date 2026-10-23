@@ -14,7 +14,7 @@ import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { isSubFormComponent } from '../subForm';
 import { getDeviceModel } from '@/utils/form';
 
-export interface IConfigurableFormComponentProps {
+interface IConfigurableFormComponentProps {
   model: IConfigurableFormComponent;
 }
 

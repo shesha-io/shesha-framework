@@ -1,7 +1,7 @@
 import { ListItem } from "./models";
 
-export type SelectionType = 'none' | 'single' | 'multiple';
-export interface IGenericEditorProps<TModel extends ListItem = ListItem> {
+type SelectionType = 'none' | 'single' | 'multiple';
+interface IGenericEditorProps<TModel extends ListItem = ListItem> {
   value: TModel[];
   onChange: ValueMutator<TModel[]>;
   selectionType?: SelectionType | undefined;

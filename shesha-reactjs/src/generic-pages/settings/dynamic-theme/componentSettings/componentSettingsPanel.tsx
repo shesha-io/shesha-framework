@@ -23,12 +23,12 @@ import { IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useFormBuilderFactory } from '../../../..';
 /** Markup node that wraps designer settings tabs (e.g. Appearance). */
-export interface SearchableTabsMarkup extends IConfigurableFormComponent {
+interface SearchableTabsMarkup extends IConfigurableFormComponent {
   type: 'propertiesTabs' | 'searchableTabs';
   tabs: ITabPaneProps[];
 }
 
-export interface MenuInfo {
+interface MenuInfo {
   key: string;
   keyPath: string[];
   /** @deprecated This will not support in future. You should avoid to use this */
@@ -51,7 +51,7 @@ export interface IComponentDefaultsPanelProps {
 const componentMenuCardStyle = { height: '100%', overflowY: 'auto' } as CSSProperties;
 
 /** Filters the component tree by name, keeping groups that match or that contain a match. */
-export const filterMenuItems = (items: IMenuItem[], searchText: string): IMenuItem[] => {
+const filterMenuItems = (items: IMenuItem[], searchText: string): IMenuItem[] => {
   const query = searchText.trim().toLowerCase();
   if (query === '') return items;
 

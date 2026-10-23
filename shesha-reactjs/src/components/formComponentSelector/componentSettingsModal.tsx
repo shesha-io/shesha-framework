@@ -5,7 +5,7 @@ import { useMedia } from 'react-use';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ComponentPropertiesEditor } from '@/components/formDesigner/componentPropertiesPanel/componentPropertiesEditor';
 
-export interface IProps<T extends IConfigurableFormComponent> {
+interface IProps<T extends IConfigurableFormComponent> {
   model: T;
   isVisible: boolean;
   onSave: (model: T) => Promise<void>;

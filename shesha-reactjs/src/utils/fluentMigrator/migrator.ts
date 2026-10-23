@@ -1,5 +1,3 @@
-import { isDefined } from "../nullables";
-
 export interface IHasVersion {
   version?: number | 'latest' | undefined;
 }
@@ -12,10 +10,6 @@ export interface MigrationRegistration<TPrev = IHasVersion, TNext = IHasVersion,
   version: number;
   up: Migration<TPrev, TNext, TContext>;
 }
-
-export const isHasVersion = (value: unknown): value is IHasVersion => {
-  return isDefined(value) && "version" in value && (typeof (value.version) === 'number' || value.version === 'latest');
-};
 
 export interface IAddMigrationPayload<TModel extends IHasVersion = IHasVersion, TNext extends IHasVersion = IHasVersion, TContext extends object = object> {
   version: number;

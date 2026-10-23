@@ -22,7 +22,7 @@ export interface IShaLinkProps {
   disabled?: boolean | undefined;
 }
 
-export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
+const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
   linkTo,
   linkToForm,
   params,

@@ -2,7 +2,6 @@ import { IConfigurableFormComponent, IInputStyles, ValueOrCodeEvaluator } from '
 import { IDropdownProps, ILabelValue, TagVariant } from '@/components/dropdown/model';
 import { ComponentDefinition } from '@/interfaces';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
-import { IStatusMappings } from '@/components/statusTag';
 
 /** Supplied by the Factory, not configured on the form. */
 type StatusTagRuntimeProps = 'className' | 'popupClassName' | 'events' | 'selectRef' | 'styleValue';
@@ -40,8 +39,5 @@ export interface IStatusTagComponentPropsV0 extends IConfigurableFormComponent, 
   showIcon?: boolean | undefined;
   tagVariant?: TagVariant | undefined;
 }
-
-/** The parsed form of the legacy `mappings` JSON, used when converting it to `values`. */
-export type LegacyStatusMappings = IStatusMappings;
 
 export type StatusTagComponentDefinition = ComponentDefinition<'statusTag', IStatusTagComponentProps>;

@@ -27,12 +27,7 @@ import { isEmpty } from "lodash";
 import { isDefined } from "@/utils/nullables";
 import { Path } from "@/utils/dotnotation";
 
-export interface IDataContextBinderRef {
-  fireListener: (propertyName: string) => void;
-  fireAllListeners: () => void;
-}
-
-export interface IDataContextBinderProps<TData extends object = object> {
+interface IDataContextBinderProps<TData extends object = object> {
   id: string;
   name: string;
   description?: string | undefined;

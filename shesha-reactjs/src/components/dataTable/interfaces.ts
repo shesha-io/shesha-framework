@@ -74,11 +74,6 @@ export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInl
   onFetchDataSuccess?: (() => void) | undefined;
 }
 
-export interface ITableCellRenderingArgs<TValue = unknown> {
-  value?: TValue;
-  onChange?: (value?: TValue) => void;
-}
-
 export type OnSaveHandler = (data: ITableRowData) => Promise<ITableRowData | undefined>;
 export type OnSaveSuccessHandler = (
   data: ITableRowData,

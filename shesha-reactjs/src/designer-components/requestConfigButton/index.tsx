@@ -70,4 +70,4 @@ export const RequestConfigButton: FC<IRequestConfigButtonProps> = ({
   );
 };
 
-export default RequestConfigButton;
+

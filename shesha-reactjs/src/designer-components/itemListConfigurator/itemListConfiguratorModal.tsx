@@ -9,7 +9,7 @@ import { DefaultItemRenderer, ItemSettingsMarkupFactory } from './interfaces';
 import { ListEditorChildrenFn } from '@/components/listEditor';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
-export interface ModalSettings {
+interface ModalSettings {
   title?: string | undefined;
   header?: React.ReactNode | undefined;
 }

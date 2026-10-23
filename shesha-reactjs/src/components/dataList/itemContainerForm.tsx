@@ -22,7 +22,7 @@ type AlignmentProps = Pick<
   'flexWrap'
 >;
 
-export const getAlignmentStyle = ({
+const getAlignmentStyle = ({
   direction = 'vertical',
   justifyContent,
   alignItems,

@@ -6,7 +6,7 @@ import { type GetRef } from 'antd';
 
 type OnChangeHandler = (date: Moment | Moment[] | null, dateString: string | string[] | null) => void;
 
-export type TimePickerProps = Omit<PickerProps<Moment>, 'picker' | 'onChange'> & {
+type TimePickerProps = Omit<PickerProps<Moment>, 'picker' | 'onChange'> & {
   onChange?: OnChangeHandler;
 };
 type PickerRef = GetRef<typeof DatePicker>; // Resolves to BaseSelectRef

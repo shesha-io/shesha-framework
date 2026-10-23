@@ -110,7 +110,7 @@ const getListFetcherQueryParams = (
 
 type OnChangeHandler = Required<SelectProps<string, IOption>>["onChange"];
 
-export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) => {
+const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) => {
   const {
     value,
     placeholder,

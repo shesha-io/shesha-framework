@@ -6,7 +6,6 @@ import {
 } from './context';
 import { IDelayedUpdateGroup } from './models';
 import { IAnyObject } from '@/interfaces';
-import { throwError } from '@/utils/errors';
 
 const getOrCreateGroup = (groups: IDelayedUpdateGroup[], groupName: string): IDelayedUpdateGroup => {
   const existing = groups.find((x) => x.name === groupName);
@@ -57,10 +56,8 @@ const DelayedUpdateProvider: FC<PropsWithChildren> = ({ children }) => {
 
 const useDelayedUpdateOrUndefined = (): IDelayedUpdateActionContext | undefined => useContext(DelayedUpdateProviderActionsContext);
 
-const useDelayedUpdate = (): IDelayedUpdateActionContext => useDelayedUpdateOrUndefined() ?? throwError('useDelayedUpdate must be used within a DelayedUpdateProvider');
-
 export const addDelayedUpdateProperty = <TData extends object = object>(data: TData, delayedUpdate: IDelayedUpdateGroup[]): void => {
   (data as Record<string, unknown>)["_delayedUpdate"] = delayedUpdate;
 };
 
-export { DelayedUpdateProvider, useDelayedUpdateOrUndefined, useDelayedUpdate };
+export { DelayedUpdateProvider, useDelayedUpdateOrUndefined };

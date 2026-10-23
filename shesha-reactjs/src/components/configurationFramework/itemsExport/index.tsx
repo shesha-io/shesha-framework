@@ -29,12 +29,12 @@ export interface IExportInterface {
   exportInProgress: boolean;
 }
 
-export interface IConfigurationItemsExportProps {
+interface IConfigurationItemsExportProps {
   onExported?: () => void;
   setExporterApi: (ref: IExportInterface) => void;
 }
 
-export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (props) => {
+const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (props) => {
   const [filterState, setFilterState] = useState<FilterState>(EMPTY_FILTER);
   const [exportDependencies, setExportDependencies] = useState<boolean>(true);
   const httpClient = useHttpClient();

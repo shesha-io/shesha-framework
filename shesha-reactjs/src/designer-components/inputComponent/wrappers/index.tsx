@@ -1,5 +1,4 @@
 import { BaseInputProps, ISettingsInputProps } from "@/designer-components/settingsInput/interfaces";
-import { FC } from "react";
 import { CodeEditorWrapper } from "./codeEditor";
 import { TooltipWrapper } from "./tooltip";
 import { PermissionsEditorWrapper } from "./permissionsEditor";
@@ -52,8 +51,6 @@ import { DimensionFieldWrapper } from "./dimensionField";
 import { ValidatableComponent } from "./models";
 
 type InputType = Exclude<ISettingsInputProps['type'], undefined | "settingsInput">;
-
-export type EditorComponent = FC<ISettingsInputProps>;
 
 type EditorDictionary = {
   [K in InputType]: ValidatableComponent<UnwrapCodeEvaluators<BaseInputProps & { type: K }>>;

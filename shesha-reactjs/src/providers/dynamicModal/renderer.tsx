@@ -11,7 +11,7 @@ import { DynamicModal } from '@/components/dynamicModal';
 import { DynamicModalInstanceContext, DynamicModalRendererContext } from './contexts';
 import { useDynamicModals } from '.';
 
-export interface IDynamicModalRendererProps {
+interface IDynamicModalRendererProps {
   id: string;
 };
 
@@ -86,4 +86,4 @@ const DynamicModalRenderer: FC<PropsWithChildren<IDynamicModalRendererProps>> = 
   );
 };
 
-export { DynamicModalRenderer, useDynamicRendererRegistar };
+export { DynamicModalRenderer };

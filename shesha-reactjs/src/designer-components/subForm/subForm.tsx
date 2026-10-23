@@ -154,6 +154,6 @@ const SubForm: FC<ISubFormProps> = ({ readOnly, formSelectionMode }) => {
 
 SubForm.displayName = 'SubForm';
 
-export { SubForm };
+;
 
 export default SubForm;

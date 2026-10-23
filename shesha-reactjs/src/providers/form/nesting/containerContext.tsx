@@ -5,7 +5,7 @@ import { throwError } from '@/utils/errors';
 
 export type ContainerType = FC<IComponentsContainerBaseProps>;
 
-export const ComponentsContainerContext = createNamedContext<ContainerType | undefined>(undefined, "ComponentsContainerContext");
+const ComponentsContainerContext = createNamedContext<ContainerType | undefined>(undefined, "ComponentsContainerContext");
 
 export interface IComponentsContainerProviderProps {
   ContainerComponent: ContainerType;

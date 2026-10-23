@@ -221,6 +221,6 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
 
 ShaDrawer.displayName = 'ShaDrawer';
 
-export { ShaDrawer };
+;
 
 export default ShaDrawer;

@@ -1,6 +1,4 @@
-export const MIN_TIME = 10;
 export const ONE_SECOND = 1000;
-export const SIXTY = 60;
 export const WARNING_DURATION = 60;
 
 export const getPercentage = (rt: number): number => (rt / WARNING_DURATION) * 100;

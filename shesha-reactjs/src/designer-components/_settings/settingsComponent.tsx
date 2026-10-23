@@ -12,7 +12,7 @@ import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/inte
 import { isNonEmptyArray } from '@/utils/array';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
-export interface ISettingsComponentProps extends IConfigurableFormComponent {
+interface ISettingsComponentProps extends IConfigurableFormComponent {
   availableConstantsExpression?: string | GetAvailableConstantsFunc | undefined;
   components?: IConfigurableFormComponent[] | undefined;
   lazy?: boolean | undefined;

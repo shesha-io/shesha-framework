@@ -11,7 +11,7 @@ import { ContainerRenderer } from './itemsContainer';
 import { MetadataSourceType } from '@/interfaces/metadata';
 import { isNonEmptyArray } from '@/utils/array';
 
-export interface IProps {
+interface IProps {
   index: number[];
   data: IModelItem;
   parent?: IModelItem | undefined;
@@ -19,7 +19,7 @@ export interface IProps {
   onChange?: ((newValue: IModelItem, changeDetails?: ItemChangeDetails) => void) | undefined;
 }
 
-export const ArrayObjectProperty: FC<IProps> = (props) => {
+const ArrayObjectProperty: FC<IProps> = (props) => {
   const { addItem } = usePropertiesEditor();
   const { styles } = useStyles();
 

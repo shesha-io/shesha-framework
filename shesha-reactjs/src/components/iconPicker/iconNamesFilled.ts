@@ -216,17 +216,17 @@ export const FILLED_ICON_GROUPS = {
   ] as const,
 };
 
-export type DirectionalFilledIconTypes = typeof FILLED_ICON_GROUPS.directional[number];
+type DirectionalFilledIconTypes = typeof FILLED_ICON_GROUPS.directional[number];
 
-export type SuggestedFilledIconTypes = typeof FILLED_ICON_GROUPS.suggested[number];
+type SuggestedFilledIconTypes = typeof FILLED_ICON_GROUPS.suggested[number];
 
-export type EditorFilledIconTypes = typeof FILLED_ICON_GROUPS.editor[number];
+type EditorFilledIconTypes = typeof FILLED_ICON_GROUPS.editor[number];
 
-export type DataFilledIconTypes = typeof FILLED_ICON_GROUPS.data[number];
+type DataFilledIconTypes = typeof FILLED_ICON_GROUPS.data[number];
 
-export type BrandAndLogosFilledIconTypes = typeof FILLED_ICON_GROUPS.brandAndLogos[number];
+type BrandAndLogosFilledIconTypes = typeof FILLED_ICON_GROUPS.brandAndLogos[number];
 
-export type ApplicationFilledIconTypes = typeof FILLED_ICON_GROUPS.application[number];
+type ApplicationFilledIconTypes = typeof FILLED_ICON_GROUPS.application[number];
 
 export type FilledIconTypes =
   | DirectionalFilledIconTypes |

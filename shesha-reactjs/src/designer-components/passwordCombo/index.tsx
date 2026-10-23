@@ -30,7 +30,7 @@ const CONFIRM_MATCH_VALIDATOR = `
   }
 `;
 
-export const migratePasswordComboToTextField = (
+const migratePasswordComboToTextField = (
   prev: IPasswordComponentProps,
   context: SettingsMigrationContext,
 ): ITextFieldComponentProps => {

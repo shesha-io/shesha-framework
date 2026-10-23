@@ -75,7 +75,7 @@ const CreateModal: FC<ICreateModalProps> = ({
   );
 };
 
-export interface IDataListItemCreateModalProps<TValue extends object = object> {
+interface IDataListItemCreateModalProps<TValue extends object = object> {
   formInfo?: IPersistedFormProps | undefined;
   creater?: DataProcessor<TValue> | undefined;
   data: TValue | NewItemInitializer<TValue> | undefined;

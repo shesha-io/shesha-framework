@@ -2,7 +2,6 @@ import { createNamedContext } from '@/utils/react';
 import { defaultDesignerWidth } from './utils';
 
 export type DeviceTypes = 'desktop' | 'mobile' | 'tablet' | 'custom';
-export type IViewType = 'configStudio' | 'page' | 'modal';
 
 export interface ICanvasStateContext {
   zoom: number;

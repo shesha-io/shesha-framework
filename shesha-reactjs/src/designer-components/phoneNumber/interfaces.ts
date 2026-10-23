@@ -1,7 +1,7 @@
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import { ComponentDefinition } from '@/interfaces';
 
-export type PhoneNumberValueFormat = 'string' | 'national' | 'object';
+type PhoneNumberValueFormat = 'string' | 'national' | 'object';
 
 export interface IPhoneNumberValue {
   number: string;

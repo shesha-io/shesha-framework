@@ -5,11 +5,6 @@ import { useStyles } from '../styles/styles';
 import classNames from 'classnames';
 import { useDeepCompareMemo } from '@/hooks';
 
-export interface IComponentsContainerDynamicProps extends Omit<IComponentsContainerProps, 'dynamicComponents'>,
-  Required<Pick<IComponentsContainerProps, 'dynamicComponents'>> {
-
-}
-
 export const ComponentsContainerDynamic: FC<IComponentsContainerProps> = (props) => {
   const {
     dynamicComponents = [],

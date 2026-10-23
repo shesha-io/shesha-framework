@@ -5,7 +5,7 @@ import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { FieldValueGetter, FieldValueSetter, Path } from '@/utils/dotnotation';
 import { ContextSetData, ContextSetFieldValue } from "../contexts";
 
-export interface IHasGetAccessorValue {
+interface IHasGetAccessorValue {
   getAccessorValue: () => unknown;
 };
 
@@ -18,11 +18,11 @@ export interface IShaDataAccessor<TData extends object> extends IHasGetAccessorV
 
 export type IShaDataWrapper<TData extends object> = TData & IShaDataAccessor<TData>;
 
-export interface IHasDataAccessor<TData extends object> extends IHasGetAccessorValue {
+interface IHasDataAccessor<TData extends object> extends IHasGetAccessorValue {
   readonly accessor: IShaDataAccessor<TData>;
 }
 
-export type IShaDataAccessorWithNested<TData extends object> = IShaDataAccessor<TData> & IHasDataAccessor<TData>;
+type IShaDataAccessorWithNested<TData extends object> = IShaDataAccessor<TData> & IHasDataAccessor<TData>;
 
 export const CreateDataAccessor = <TData extends object = object>(
   getData: () => TData,

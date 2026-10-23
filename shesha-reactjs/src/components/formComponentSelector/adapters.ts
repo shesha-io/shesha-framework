@@ -20,7 +20,7 @@ export const updateModelExcludeFiltered = <T extends object = object>(model: T, 
   return model;
 };
 
-export const getAllExceptPredicate = (names: string[]): PropertyInclusionPredicate => {
+const getAllExceptPredicate = (names: string[]): PropertyInclusionPredicate => {
   return (name: string) => {
     return names.indexOf(name) === -1;
   };

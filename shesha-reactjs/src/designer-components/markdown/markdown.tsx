@@ -89,5 +89,5 @@ const Markdown: FC<IMarkdownComponentProps> = (model) => {
 
 Markdown.displayName = 'Markdown';
 
-export { Markdown };
+;
 export default Markdown;

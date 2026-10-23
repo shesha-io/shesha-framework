@@ -21,7 +21,7 @@ export interface IEditableColumnProps {
 /**
  * Base properties of configurable column
  */
-export interface IConfigurableColumnsBase {
+interface IConfigurableColumnsBase {
   id: string;
   caption: string;
   columnType?: DatatableColumnType | undefined;

@@ -13,7 +13,7 @@ type IconProps = {
   className?: string | undefined;
 };
 
-export const Icon = ({
+const Icon = ({
   icon,
   hint,
   style,

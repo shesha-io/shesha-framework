@@ -5,19 +5,6 @@ const TENANT_KEY = 'TENANT';
 const CUSTOM_HEADERS_KEY = 'f5b34b63-d808-40d5-8b3b-01a16520ac9e';
 
 /**
- * Sets the tenant id
- *
- * @param tenantId - the tenant id
- */
-export const setTenantId = (tenantId: string): void => {
-  if (tenantId) {
-    getLocalStorage()?.setItem(TENANT_KEY, tenantId);
-  } else {
-    getLocalStorage()?.removeItem(TENANT_KEY);
-  }
-};
-
-/**
  * Gets the tenant id
  *
  * @returns tenantId
@@ -31,7 +18,7 @@ export const getTenantId = (): number | null => {
   return parseInt(value, 10);
 };
 
-export const isJsonParseable = (value: string): boolean => {
+const isJsonParseable = (value: string): boolean => {
   try {
     JSON.parse(value);
     return true;

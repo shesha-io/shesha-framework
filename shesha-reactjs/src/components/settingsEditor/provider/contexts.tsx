@@ -29,7 +29,7 @@ export interface ISettingsEditorStateContext {
   saveStatus: SaveStatus | undefined;
 }
 
-export interface ISettingsEditorActionsContext {
+interface ISettingsEditorActionsContext {
   selectApplication: (app?: IFrontEndApplication | undefined) => void;
   selectSetting: (setting: ISettingConfiguration, app?: IFrontEndApplication | undefined) => void;
 

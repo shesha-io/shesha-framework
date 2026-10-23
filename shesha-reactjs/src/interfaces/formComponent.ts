@@ -1,14 +1,14 @@
-export type DataTypeName = 'string' | 'number' | 'date' | 'entity' | 'boolean';
+type DataTypeName = 'string' | 'number' | 'date' | 'entity' | 'boolean';
 
-export type DataTypeDisplayAs = 'text' | 'drill-down' | 'quick-view' | 'stored-file';
+type DataTypeDisplayAs = 'text' | 'drill-down' | 'quick-view' | 'stored-file';
 
 export enum StandardNodeTypes {
   ConfigurableActionConfig = 'action-config',
 };
 
-export type StringValueChange = (key: string, value: string) => void;
-export type NumberValueChange = (key: string, value: number) => void;
-export type BooleanValueChange = (key: string, value: boolean) => void;
+type StringValueChange = (key: string, value: string) => void;
+type NumberValueChange = (key: string, value: number) => void;
+type BooleanValueChange = (key: string, value: boolean) => void;
 
 export interface IFormComponent {
   id?: string;

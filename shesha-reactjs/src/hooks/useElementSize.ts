@@ -1,11 +1,5 @@
 import { isDefined } from '@/utils/nullables';
-import { useEffect, useRef, useState } from 'react';
-
-export type ElementSize<T extends HTMLElement = HTMLDivElement> = {
-  ref: React.RefObject<T | null>;
-  width: number;
-  height: number;
-};
+import { useEffect, useRef } from 'react';
 
 export type OnResize = (entry: ResizeObserverEntry) => void;
 
@@ -38,17 +32,4 @@ export const useElementSizeTracking = <T extends HTMLElement = HTMLDivElement>(o
   }, [onResize]); // Empty dependency array: runs once on mount
 
   return ref;
-};
-
-
-export const useElementSize = <T extends HTMLElement = HTMLDivElement>(): ElementSize<T> => {
-  const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
-  const ref = useElementSizeTracking<T>((entry) => {
-    const { width, height } = entry.contentRect;
-    setWidth(width);
-    setHeight(height);
-  });
-
-  return { ref, width, height };
 };

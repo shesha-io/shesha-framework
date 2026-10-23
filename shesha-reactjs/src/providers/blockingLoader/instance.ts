@@ -13,12 +13,6 @@ export interface ILoaderInstance {
   close(): void;
 }
 
-/** Loader API */
-export interface IBlockingApi {
-  showLoader: (message?: string, isBlocking?: boolean) => ILoaderInstance;
-  hideLoaders: () => void;
-}
-
 /** Loader context */
 export interface IBlockingLoader {
   loaders: ILoaderData[];

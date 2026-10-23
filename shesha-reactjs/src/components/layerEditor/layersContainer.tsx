@@ -54,4 +54,4 @@ export const LayerItemsContainer: FC<ILayerItemsContainerProps> = (props) => {
     </div>
   );
 };
-export default LayerItemsContainer;
+

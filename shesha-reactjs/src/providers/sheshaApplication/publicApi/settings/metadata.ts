@@ -9,7 +9,7 @@ import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 type SettingItemType = 'module' | 'category' | 'setting';
 
-export interface ISettingPropertyMetadata extends IPropertyMetadata {
+interface ISettingPropertyMetadata extends IPropertyMetadata {
   settingItemType: SettingItemType;
 }
 const isSettingPropertyMetadata = (value: IPropertyMetadata): value is ISettingPropertyMetadata => isDefined(value) && 'settingItemType' in value;
@@ -71,7 +71,7 @@ const settingsConfigurationToProperties = (settings: SettingConfigurationDto[]):
  * @param {HttpClientApi} httpClient - The HttpClientApi used to make the API request.
  * @return {Promise<IPropertyMetadata[]>} a promise of an array of property metadata
  */
-export const fetchSettingsApiAsMetadataProperties = (httpClient: HttpClientApi): Promise<IPropertyMetadata[]> => {
+const fetchSettingsApiAsMetadataProperties = (httpClient: HttpClientApi): Promise<IPropertyMetadata[]> => {
   return SettingsManager.fetchConfigurationsAsync(httpClient).then((res) => settingsConfigurationToProperties(res));
 };
 

@@ -6,9 +6,9 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { DefaultModelInstance, DefaultModelSubscriptionType, IDefaultModelInstance } from './defaultModelInstance';
+import { DefaultModelInstance, IDefaultModelInstance } from './defaultModelInstance';
 
-export interface IDefaultModelProviderProps<TData extends object = object> {
+interface IDefaultModelProviderProps<TData extends object = object> {
   name: string;
   defaultModel?: TData | undefined;
   model?: TData | undefined;
@@ -28,19 +28,6 @@ export const useDefaultModelPropertyUpdateSubscription = (propertyName: string):
     const unsubscribe = defaultModel.subscribePropertyUpdate(propertyName, () => updateProperty({}));
     return unsubscribe; // Cleanup on unmount
   }, [defaultModel, propertyName]);
-
-  return dummy;
-};
-
-export const useDefaultModelSubscription = (subscriptionType: DefaultModelSubscriptionType): object => {
-  const defaultModel = useDefaultModelActionsOrUndefined();
-  const [dummy, updateModel] = useState({});
-  useEffect(() => {
-    if (!defaultModel) return undefined;
-    // Subscribe to changes
-    const unsubscribe = defaultModel.subscribe(subscriptionType, () => updateModel({}));
-    return unsubscribe; // Cleanup on unmount
-  }, [defaultModel, subscriptionType]);
 
   return dummy;
 };

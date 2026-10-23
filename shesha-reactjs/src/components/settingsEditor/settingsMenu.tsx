@@ -17,13 +17,7 @@ interface ISettingItem {
   app?: IFrontEndApplication | undefined;
 }
 
-export interface ISettingApplication {
-  name: string;
-  visible?: boolean;
-  settings: ISettingGroup[];
-}
-
-export interface ISettingGroup {
+interface ISettingGroup {
   name: string;
   visible?: boolean;
   settings: ISettingItem[];
@@ -39,7 +33,7 @@ const getSettingKey = (config: ISettingConfiguration, app?: IFrontEndApplication
   return `${config.module}|${config.name}|${app?.appKey}`;
 };
 
-export const SettingsMenu: FC = () => {
+const SettingsMenu: FC = () => {
   const [isDevmode, setDevMode] = useDevMode();
 
   const [openedKeys, setOpenedKeys] = useLocalStorage<Record<string, string[]>>('settings-editor.openedKeys', {});

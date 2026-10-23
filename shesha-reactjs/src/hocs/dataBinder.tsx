@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { IConfigurableFormItemChildFunc } from '@/components/formDesigner/components/model';
 import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
-export type IDataBinderProps<TValue = unknown> = {
+type IDataBinderProps<TValue = unknown> = {
   value?: TValue | undefined;
   onChange?: ((newValue: TValue | undefined | null) => void) | undefined;
   children: IConfigurableFormItemChildFunc<TValue>;

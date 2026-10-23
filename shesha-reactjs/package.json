@@ -165,7 +165,6 @@
     "@reduxjs/toolkit": "^2.9.0",
     "@types/pluralize": "^0.0.33",
     "antd-phone-input": "^0.3.20",
-    "async-validator": "^3.5.2",
     "chart.js": "^4.4.9",
     "clean-deep": "^3.4.0",
     "color-convert": "^3.1.3",

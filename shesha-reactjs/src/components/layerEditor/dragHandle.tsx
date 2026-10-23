@@ -3,11 +3,11 @@ import { FC } from 'react';
 import { useStyles } from './styles/styles';
 import { useLayerGroupConfigurator } from '@/providers/layersProvider';
 
-export interface IDragHandleProps {
+interface IDragHandleProps {
   id: string;
 }
 
-export const DragHandle: FC<IDragHandleProps> = ({ id }) => {
+const DragHandle: FC<IDragHandleProps> = ({ id }) => {
   const { styles } = useStyles();
   const { selectItem } = useLayerGroupConfigurator();
   return (

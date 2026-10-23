@@ -3,11 +3,11 @@ import { Button } from 'antd';
 import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
 import { IPersistedFormProps } from '@/providers/form/models';
 
-export interface IEditViewMsgProps {
+interface IEditViewMsgProps {
   persistedFormProps?: IPersistedFormProps | undefined;
 }
 
-export const EditViewMsg: FC<IEditViewMsgProps> = ({ persistedFormProps }) => {
+const EditViewMsg: FC<IEditViewMsgProps> = ({ persistedFormProps }) => {
   return persistedFormProps && persistedFormProps.name
     ? (
       <div className="sha-configurable-view-button-wrapper">

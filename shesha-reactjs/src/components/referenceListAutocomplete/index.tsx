@@ -24,7 +24,7 @@ import {
 } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
-export interface IReferenceListAutocompleteRuntimeProps {
+interface IReferenceListAutocompleteRuntimeProps {
   value?: IReferenceListIdentifier | null | undefined;
   onChange?: ((value: IReferenceListIdentifier | null) => void) | undefined;
   readOnly?: boolean | undefined;
@@ -176,7 +176,7 @@ const useDataWithLoadingState = <TData = unknown>(): [DataWithLoadingState<TData
   return useState<DataWithLoadingState<TData>>(() => ({ data: undefined, loading: false }));
 };
 
-export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProps> = (props) => {
+const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProps> = (props) => {
   const selectedValue = useRef<IReferenceListIdentifier | null>(null);
   const [autocompleteText, setAutocompleteText] = useState<string>("");
   const {

@@ -19,4 +19,4 @@ export const ScrollButton: FC<IScrollButtonProps> = ({
   );
 };
 
-export default ScrollButton;
+

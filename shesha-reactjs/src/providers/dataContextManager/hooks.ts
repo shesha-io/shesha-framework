@@ -1,13 +1,8 @@
 import { useContext } from "react";
-import { DataContextManagerActionsContext, DataContextManagerStateContext, DataContextManagerUpdateContext } from "./index";
-import { IDataContextDescriptor, IDataContextManagerActions, IDataContextManagerFullInstance, IDataContextManagerState, IRegisterDataContextPayload } from "./models";
+import { DataContextManagerActionsContext, DataContextManagerStateContext } from "./index";
+import { IDataContextManagerActions, IDataContextManagerFullInstance, IDataContextManagerState, IRegisterDataContextPayload } from "./models";
 import { isDefined } from "@/utils/nullables";
-import { DataContextType, useDataContextOrUndefined } from "../dataContextProvider/contexts";
 import { useEffectOnce } from "@/hooks/useEffectOnce";
-
-export const useDataContextManagerUpdate = (): object => {
-  return useContext(DataContextManagerUpdateContext);
-};
 
 const useDataContextManagerActionsOrUndefined = (): IDataContextManagerActions | undefined => {
   return useContext(DataContextManagerActionsContext);
@@ -22,14 +17,6 @@ const useDataContextManagerActions = (): IDataContextManagerActions => {
 
 const useDataContextManagerStateOrUndefined = (): IDataContextManagerState | undefined => {
   return useContext(DataContextManagerStateContext);
-};
-
-const useDataContextManagerState = (): IDataContextManagerState => {
-  const stateContext = useDataContextManagerStateOrUndefined();
-  if (!stateContext)
-    throw new Error('useDataContextManagerState must be used within a DataContextManager');
-
-  return stateContext;
 };
 
 const useDataContextManagerOrUndefined = (): IDataContextManagerFullInstance | undefined => {
@@ -64,24 +51,11 @@ const useDataContextRegister = (payload: IRegisterDataContextPayload): void => {
   useEffectOnce(() => () => manager?.unregisterDataContext(payload));
 };
 
-function useNearestDataContext(type: DataContextType): IDataContextDescriptor | undefined {
-  const currentDataContext = useDataContextOrUndefined();
-  const dcm = useDataContextManagerActions();
-
-  if (!currentDataContext)
-    return undefined;
-
-  const nearestDataContext = dcm.getNearestDataContext(currentDataContext.id, type);
-  return nearestDataContext;
-};
-
 export {
   useDataContextManagerOrUndefined,
   useDataContextManager,
   useDataContextManagerActions,
   useDataContextManagerActionsOrUndefined,
-  useDataContextManagerState,
   useDataManagerRegister,
   useDataContextRegister,
-  useNearestDataContext,
 };

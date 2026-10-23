@@ -10,9 +10,9 @@ import DynamicContainer from './dynamicContainer';
 import { isConfigurableFormComponent } from '@/providers/form/models';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
-export type DynamicViewProps = IConfigurableFormComponent;
+type DynamicViewProps = IConfigurableFormComponent;
 
-export const DynamicView: FC<DynamicViewProps> = (model) => {
+const DynamicView: FC<DynamicViewProps> = (model) => {
   const currentMeta = useMetadataOrUndefined()?.metadata;
 
   const { formSettings } = useForm();

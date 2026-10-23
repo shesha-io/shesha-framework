@@ -15,7 +15,7 @@ type EntityItemType = 'module' | 'entityType';
 
 const UNKNOWN_TYPE = 'unknown';
 
-export interface IEntityPropertyMetadata extends IPropertyMetadata {
+interface IEntityPropertyMetadata extends IPropertyMetadata {
   entityItemType: EntityItemType;
 }
 
@@ -70,7 +70,7 @@ const entitiesConfigurationToProperties = (entityConfigs: EntityConfigurationDto
  * @param {HttpClientApi} httpClient - The HTTP client to use for the API request.
  * @return {Promise<IPropertyMetadata[]>} A promise that resolves to an array of property metadata objects.
  */
-export const fetchEntitiesApiAsMetadataProperties = (httpClient: HttpClientApi): Promise<IPropertyMetadata[]> => {
+const fetchEntitiesApiAsMetadataProperties = (httpClient: HttpClientApi): Promise<IPropertyMetadata[]> => {
   return EntitiesManager.fetchConfigurationsAsync(httpClient).then((res) => entitiesConfigurationToProperties(res));
 };
 

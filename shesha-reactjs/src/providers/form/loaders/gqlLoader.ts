@@ -18,7 +18,7 @@ import { getIdOrUndefined } from "@/utils/entity";
 import { extractErrorInfo } from "@/utils/errors";
 import { isValidEntityType } from "@/providers/metadataDispatcher/entities/utils";
 
-export interface GqlLoaderArguments {
+interface GqlLoaderArguments {
   httpClient: HttpClientApi;
   metadataDispatcher: IMetadataDispatcher;
   toolboxComponents: IToolboxComponents;
@@ -28,7 +28,7 @@ export interface GqlLoaderArguments {
 
 // register loader factory and accept only form-specific parameters
 
-export class GqlLoader<Values extends object = object> implements IFormDataLoader<Values> {
+class GqlLoader<Values extends object = object> implements IFormDataLoader<Values> {
   #httpClient: HttpClientApi;
 
   #metadataDispatcher: IMetadataDispatcher;

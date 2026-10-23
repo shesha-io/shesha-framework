@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { MusicNoteOutlined } from './musicNote';
 import { FileExcelOutlined, FileImageOutlined, FilePdfOutlined, FilePptOutlined, FileTextOutlined, FileWordOutlined, FileZipOutlined, PaperClipOutlined } from '@ant-design/icons';
 import { MovieOutlined } from './movieOutlined';
@@ -17,12 +16,10 @@ type FileTypeProps = {
 };
 
 export const isImageType = (type: string | null | undefined): boolean => !isNullOrWhiteSpace(type) && imageTypes.includes(type);
-export const isVideoType = (type: string | null | undefined): boolean => !isNullOrWhiteSpace(type) && videoTypes.includes(type);
-export const isAudioType = (type: string | null | undefined): boolean => !isNullOrWhiteSpace(type) && audioTypes.includes(type);
 
 const DEFAULT_ICON: FileTypeProps = { color: '#848588', icon: PaperClipOutlined };
 
-export const fileIcons: Record<string, FileTypeProps> = {
+const fileIcons: Record<string, FileTypeProps> = {
   '.pdf': { color: '#ED2224', icon: FilePdfOutlined },
   '.doc': { color: '#2B579A', icon: FileWordOutlined },
   '.docx': { color: '#2B579A', icon: FileWordOutlined },

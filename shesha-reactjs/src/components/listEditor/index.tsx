@@ -25,7 +25,7 @@ interface CreateListEditorComponentResult<TItem extends object> {
   useListEditorComponent: () => IListEditorContext<TItem>;
 }
 
-export const createListEditorComponent = <TItem extends object>(): CreateListEditorComponentResult<TItem> => {
+const createListEditorComponent = <TItem extends object>(): CreateListEditorComponentResult<TItem> => {
   const StateContext = getListEditorStateContext<TItem>(undefined);
   const ActionContext = getListEditorActionsContext<TItem>();
 

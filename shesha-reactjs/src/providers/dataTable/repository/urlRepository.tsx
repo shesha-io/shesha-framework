@@ -29,7 +29,7 @@ export interface IWithUrlRepositoryArgs {
   getListUrl: string;
 }
 
-export const UrlRepositoryType = 'url-repository';
+const UrlRepositoryType = 'url-repository';
 
 export type IUrlRepository = IRepository;
 

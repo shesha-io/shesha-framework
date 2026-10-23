@@ -7,7 +7,7 @@ import { migrateFormApi } from '@/designer-components/_common-migrations/migrate
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { SetGroupingAction, SetSearchTextAction, UpdateItemAction } from '@/components/permissionedObjectsTree/configurableActions';
 
-export interface IPermissionedObjectsTreeComponentProps extends IConfigurableFormComponent {
+interface IPermissionedObjectsTreeComponentProps extends IConfigurableFormComponent {
   objectsType?: string;
   height?: string;
 

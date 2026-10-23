@@ -4,7 +4,7 @@ import { useSettingsEditor } from './provider';
 import { DefaultOptionType } from 'antd/es/select';
 import { useStyles } from './styles/styles';
 
-export const AppSelector: FC = () => {
+const AppSelector: FC = () => {
   const { selectApplication, applications } = useSettingsEditor();
   const { styles } = useStyles();
 

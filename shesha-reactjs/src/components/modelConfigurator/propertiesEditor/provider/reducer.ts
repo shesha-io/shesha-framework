@@ -40,7 +40,7 @@ function removeIdDeep(list: IModelItem[], idToRemove: string): IModelItem[] {
   });
 }
 
-export const modelReducer = createReducer(PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE, (builder) => {
+const modelReducer = createReducer(PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE, (builder) => {
   builder
     .addCase(addItemAction, (state, { payload }) => {
       const itemProps: IModelItem = {

@@ -30,7 +30,7 @@ type CalendarExposedData = {
   visibleLayers: string[];
 };
 
-export const CalendarControl: FC<ICalendarProps> = (props) => {
+const CalendarControl: FC<ICalendarProps> = (props) => {
   const {
     items,
     displayPeriod,

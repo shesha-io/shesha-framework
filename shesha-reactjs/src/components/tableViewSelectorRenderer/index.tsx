@@ -24,7 +24,7 @@ const TooltipIcon: FC<ITooltipIconProps> = ({ tooltip }) => {
   );
 };
 
-export interface ITableViewSelectorRendererProps {
+interface ITableViewSelectorRendererProps {
   filters?: IStoredFilter[] | undefined;
   hidden?: boolean | undefined;
   selectedFilterId?: string | undefined;
@@ -32,7 +32,7 @@ export interface ITableViewSelectorRendererProps {
   showIcon?: boolean | undefined;
 }
 
-export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
+const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
   filters = [],
   hidden,
   selectedFilterId,

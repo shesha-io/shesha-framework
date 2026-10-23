@@ -56,7 +56,7 @@ const errorIntoToModelErrors = (errorInfo: IErrorInfo): ModelConfigurationError[
 };
 
 
-export const modelReducer = createReducer(MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE, (builder) => {
+const modelReducer = createReducer(MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE, (builder) => {
   builder
     .addCase(loadRequestAction, (state) => {
       state.isLoading = true;

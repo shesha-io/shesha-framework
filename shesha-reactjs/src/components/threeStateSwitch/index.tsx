@@ -4,7 +4,7 @@ import { useDeepCompareMemo } from '@/hooks';
 import IconRadioGroup, { IIconRadioGroupValueDefinition } from '../iconRadioGroup';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
-export interface IThreeStateSwitchProps {
+interface IThreeStateSwitchProps {
   value?: boolean | undefined;
   defaultValue?: boolean | undefined;
   readOnly?: boolean | undefined;

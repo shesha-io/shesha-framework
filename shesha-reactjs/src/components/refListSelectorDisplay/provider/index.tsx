@@ -33,11 +33,7 @@ import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { throwError } from '@/utils/errors';
 
-export interface IRefListItemGroupConfiguratorProviderPropsBase {
-  baseUrl?: string;
-}
-
-export interface IRefListItemGroupConfiguratorProviderProps {
+interface IRefListItemGroupConfiguratorProviderProps {
   items: RefListGroupItemProps[];
   readOnly?: boolean | undefined;
   referenceList?: IReferenceListIdentifier | undefined;

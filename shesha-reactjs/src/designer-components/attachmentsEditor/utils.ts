@@ -1,4 +1,4 @@
-import { INestedStyleValue, IStyleValue } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 import { IAttachmentsEditorDeviceStyles } from "./interfaces";
 
 /** Margin/padding slot shared by every default style set below. */
@@ -137,6 +137,3 @@ export const downloadedFileDefaultStyles = (): IStyleValue => {
     },
   };
 };
-
-/** Convenience alias matching the checkbox group's `INestedStyleValue` typing. */
-export type AttachmentsEditorStyles = INestedStyleValue<'thumbnail'>;

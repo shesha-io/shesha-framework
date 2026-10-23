@@ -3,7 +3,6 @@ import { FormInstance } from 'antd';
 import { IConfigurableFormComponent, YesNoInherit } from '@/interfaces/formDesigner';
 import { FormFullName, FormIdentifier, FormMode } from '@/providers/form/models';
 import { isFormFullName, isFormRawId } from '@/providers/form/utils';
-import { isNumeric } from './string';
 import { isDefined, isNullOrWhiteSpace } from './nullables';
 import { DeviceTypes } from '@/providers/canvas/contexts';
 
@@ -14,7 +13,7 @@ interface IDataWithFields {
 
 export const GHOST_PAYLOAD_KEY = '_&@#GH0ST';
 
-export const getFieldNames = (data: object): string[] => {
+const getFieldNames = (data: object): string[] => {
   const processContainer = (container: unknown, containerName: string, fieldsList: string[]): void => {
     if (!isDefined(container)) return;
     if (containerName) fieldsList.push(containerName);
@@ -137,18 +136,6 @@ export const getFormCacheKey = (formId: FormIdentifier): string | undefined => {
 export const getFormFullNameDisplayText = (formId: FormFullName): string => {
   return `${formId.module}/${formId.name}`;
 };
-
-/**
- * Convert size value (numeric or string) to a valid css property value. Numeric values are converted to pixels, string values remain as is.
- */
-export const toSizeCssProp = (value: string | number | undefined): string | undefined => {
-  return (typeof (value) === 'string' && isNumeric(value)) || typeof (value) === 'number'
-    ? `${value}px`
-    : Boolean(value)
-      ? value
-      : undefined;
-};
-
 
 export const getDeviceModel = <TComponent extends IConfigurableFormComponent = IConfigurableFormComponent>(componentModel: TComponent, activeDevice: DeviceTypes | undefined): Partial<TComponent> | undefined => {
   return !isNullOrWhiteSpace(activeDevice) && typeof activeDevice === 'string'

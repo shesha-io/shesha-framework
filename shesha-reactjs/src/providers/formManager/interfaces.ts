@@ -16,8 +16,7 @@ export interface UpToDateForm {
   readOnly: boolean;
 }
 
-export const FORM_LOADING_STATES = ['ready', 'loading', 'error'] as const;
-export type FormLoadingState = typeof FORM_LOADING_STATES[number];
+export type FormLoadingState = 'ready' | 'loading' | 'error';
 
 export interface FormLoadingItem {
   state: FormLoadingState;

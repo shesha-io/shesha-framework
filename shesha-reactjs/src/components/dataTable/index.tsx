@@ -57,7 +57,7 @@ import { IDimensionsValue } from '@/designer-components/_settings/utils/index';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getNestedPropertyValue } from '@/utils/dotnotation';
 
-export interface IIndexTableOptions {
+interface IIndexTableOptions {
   omitClick?: boolean;
 }
 

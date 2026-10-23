@@ -277,23 +277,9 @@ export const pickProps = <T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> =
   }, {} as Pick<T, K>);
 };
 
-export const mapProps = <T extends object, K extends keyof T>(
-  source: T,
-  target: Partial<T>,
-  properties: K[],
-): void => {
-  properties.forEach((prop) => {
-    if (source[prop] !== undefined) {
-      target[prop] = source[prop];
-    }
-  });
-};
-
-
 export const unwrapDraft = <T>(draft: WritableDraft<T>): T => {
   return draft as T;
 };
-
 
 export const getPropertyOrUndefined = <TValue>(obj: object, key: string | null | undefined, converter: (propertyValue: unknown) => TValue | undefined): TValue | undefined => {
   if (!isNullOrWhiteSpace(key) && key in obj) {

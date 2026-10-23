@@ -44,7 +44,7 @@ const getActionConfig = (
 
 //#region V0 model
 
-export type ButtonActionTypeV0 = 'executeScript' | 'dispatchAnEvent';
+type ButtonActionTypeV0 = 'executeScript' | 'dispatchAnEvent';
 
 export interface IWizardTabPropsV0 {
   id: string;
@@ -105,7 +105,7 @@ export interface IWizardComponentPropsV0 extends IConfigurableFormComponent {
   defaultActiveStep?: string | undefined;
 }
 
-export interface IWizardStepPropsV1 {
+interface IWizardStepPropsV1 {
   id: string;
   icon?: string;
   key: string;

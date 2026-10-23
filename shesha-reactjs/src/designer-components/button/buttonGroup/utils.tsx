@@ -37,7 +37,7 @@ export const createMenuItem = (
 };
 
 
-export function getButtonGroupMenuItem(
+function getButtonGroupMenuItem(
   label: React.ReactNode,
   key: React.Key,
   disabled = false,

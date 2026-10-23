@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { ICommonModalProps } from './models';
 
-export enum DynamicModalActionEnums {
+enum DynamicModalActionEnums {
   Open = 'OPEN',
   CreateModal = 'CREATE_MODAL',
   RemoveModal = 'REMOVE_MODAL',

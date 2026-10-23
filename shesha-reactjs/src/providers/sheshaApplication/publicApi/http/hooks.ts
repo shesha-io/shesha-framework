@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import axios, { AxiosRequestConfig } from "axios";
 import { isDefined } from "@/utils/nullables";
 
-export class AxiosHttpClient implements HttpClientApi {
+class AxiosHttpClient implements HttpClientApi {
   #axiosConfig: AxiosRequestConfig;
 
   #getRequestConfig = (config?: HttpRequestConfig): AxiosRequestConfig => {

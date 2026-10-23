@@ -10,7 +10,7 @@ import { ItemType } from 'antd/lib/breadcrumb/Breadcrumb';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { isNonEmptyArray } from '@/utils/array';
 
-export interface IPageHeadProps {
+interface IPageHeadProps {
   readonly title?: string;
   readonly description?: string;
   readonly url?: string;
@@ -19,12 +19,12 @@ export interface IPageHeadProps {
   readonly formMode?: string;
 }
 
-export interface IBreadcrumbItem {
+interface IBreadcrumbItem {
   text: string;
   link?: string;
 }
 
-export interface IPageProps extends IPageHeadProps {
+interface IPageProps extends IPageHeadProps {
   backUrl?: string;
   breadcrumbItems?: IBreadcrumbItem[];
   loading?: boolean;

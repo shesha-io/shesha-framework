@@ -10,7 +10,7 @@ export interface IContextPropertyAutocompleteComponentProps extends IConfigurabl
   styledLabel?: boolean | undefined;
 }
 
-export interface IContextPropertyAutocompleteCalculatedModel {
+interface IContextPropertyAutocompleteCalculatedModel {
   componentId: string;
   componentType: string;
   componentName?: string | undefined;

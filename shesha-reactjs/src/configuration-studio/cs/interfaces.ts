@@ -13,7 +13,7 @@ import {
 } from "../models";
 import { IConfigurationStudioEnvironment } from "../cs-environment/interfaces";
 
-export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
+type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
 export type CsSubscriptionType = 'tree' | 'tabs' | 'doc' | 'tree-dnd';
 
 export interface ProcessingState {

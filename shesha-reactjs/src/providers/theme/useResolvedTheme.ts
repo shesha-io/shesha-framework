@@ -3,12 +3,6 @@ import { ColorScheme, ResolvedTheme } from './contexts';
 
 const DARK_SCHEME_QUERY = '(prefers-color-scheme: dark)';
 
-/** Reads the OS colour scheme on demand. Returns 'light' where matchMedia is unavailable (SSR). */
-const getSystemTheme = (): ResolvedTheme => {
-  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return 'light';
-  return window.matchMedia(DARK_SCHEME_QUERY).matches ? 'dark' : 'light';
-};
-
 // useLayoutEffect runs before paint, which is what keeps a dark-mode user from seeing a light
 // flash. It warns when run on the server, so fall back to useEffect where there is no DOM.
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
@@ -45,4 +39,4 @@ export const useResolvedTheme = (scheme: ColorScheme | undefined): ResolvedTheme
   return followSystem ? systemTheme : scheme;
 };
 
-export { getSystemTheme };
+;

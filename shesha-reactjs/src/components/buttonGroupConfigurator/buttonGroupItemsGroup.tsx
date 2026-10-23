@@ -12,7 +12,7 @@ import { defaultGroupStyles } from '@/designer-components/button/buttonGroup/uti
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { IToolboxComponent } from '@/interfaces';
 
-export interface IContainerRenderArgs {
+interface IContainerRenderArgs {
   index?: number[];
   id?: string;
   items: ButtonGroupItemProps[];

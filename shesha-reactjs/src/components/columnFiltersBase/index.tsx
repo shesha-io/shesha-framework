@@ -19,7 +19,7 @@ export interface IColumnFiltersBaseProps {
   removeColumnFilter?: (columnId: string) => void;
 }
 
-export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
+const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
   columns,
   changeFilterOption,
   changeFilter,

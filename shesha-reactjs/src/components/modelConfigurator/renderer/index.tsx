@@ -17,7 +17,7 @@ import { isNonEmptyArray } from '@/utils/array';
 
 const markup = modelSettingsMarkup as FormMarkup;
 
-export const ModelConfiguratorRenderer: FC = () => {
+const ModelConfiguratorRenderer: FC = () => {
   const { styles } = useStyles({ height: 180 });
   const { message } = App.useApp();
   const { showErrors, errors, modelConfiguration, initialConfiguration, getForm, saveForm, setModified, validateModel } = useModelConfigurator();

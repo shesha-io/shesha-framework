@@ -1,10 +1,9 @@
 import { FC, PropsWithChildren, ReactNode } from 'react';
 import { ValidateErrorEntity } from '@/interfaces';
-import { IKeyValue } from '@/interfaces/keyValue';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { FormIdentifier, FormMode } from './../form/models';
 
-export interface IModalBaseProps {
+interface IModalBaseProps {
   /**
    * Id of the modal
    */
@@ -38,7 +37,7 @@ export interface IModalBaseProps {
 
 export type ModalFooterButtons = 'default' | 'custom' | 'none';
 
-export interface IClosableModalProps<Values extends object = object> {
+interface IClosableModalProps<Values extends object = object> {
   onClose?: ((positive?: boolean, result?: Values | undefined) => void) | undefined;
 }
 
@@ -121,18 +120,4 @@ export interface IModalInstance<Values extends object = object> {
   index: number;
 
   onClose?: ((positive?: boolean, result?: Values) => void) | undefined;
-}
-
-/**
- * An interface for configuring the modal on the form designer for buttons, toolbarItem and columns
- */
-export interface IModalProperties {
-  modalTitle?: string;
-  modalFormId?: string;
-  submitHttpVerb?: 'POST' | 'PUT';
-  onSuccessRedirectUrl?: string;
-  additionalProperties?: IKeyValue[];
-  modalWidth?: number;
-  showModalFooter?: boolean;
-  showCloseIcon?: boolean;
 }

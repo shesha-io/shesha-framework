@@ -1,4 +1,4 @@
-import { FullToken, createStyles, css, createGlobalStyle, ThemeProvider } from "antd-style";
+import { FullToken, createStyles, css, createGlobalStyle } from "antd-style";
 
 export const sheshaStyles = {
   paddingSM: 4,
@@ -66,4 +66,4 @@ export const getWarningHoverEffects = (token: FullToken): string => {
     `;
 };
 
-export { css, createGlobalStyle, createStyles, ThemeProvider };
+export { css, createGlobalStyle, createStyles };

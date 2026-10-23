@@ -9,7 +9,7 @@ interface MenuItem {
   content: () => ReactNode;
 }
 
-export const SettingsEditorToolbar: FC = () => {
+const SettingsEditorToolbar: FC = () => {
   const { settingSelection: selectedSetting, editorMode, saveSetting, cancelEditSetting, startEditSetting } = useSettingsEditor();
   const { message } = App.useApp();
 

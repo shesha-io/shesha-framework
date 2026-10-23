@@ -1,11 +1,6 @@
 import { createNamedContext } from '@/utils/react';
 import { ISettingIdentifier } from './models';
 
-export interface ILoadSettingPayload {
-  module: string;
-  name: string;
-}
-
 export type SettingChangeListener = () => void;
 
 export interface ISettingsClientContext {

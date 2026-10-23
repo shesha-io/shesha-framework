@@ -4,7 +4,7 @@ import { IAjaxErrorResponse, IAjaxResponse } from '@/interfaces/ajaxResponse';
 /**
  * Generic DTO of the simple autocomplete item
  */
-export interface AutocompleteItemDto {
+interface AutocompleteItemDto {
   value?: string | null;
   displayText?: string | null;
 }

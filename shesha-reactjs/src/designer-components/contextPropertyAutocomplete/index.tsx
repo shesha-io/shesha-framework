@@ -24,7 +24,7 @@ import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nu
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> = (model) => {
+const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> = (model) => {
   const {
     defaultModelType,
     readOnly,

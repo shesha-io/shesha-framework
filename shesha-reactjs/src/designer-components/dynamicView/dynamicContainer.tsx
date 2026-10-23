@@ -3,8 +3,8 @@ import * as React from 'react';
 import { IConfigurableFormComponent } from '@/interfaces';
 import DynamicComponent from './dynamicComponent';
 
-export type Direction = 'horizontal' | 'vertical';
-export interface IProps {
+type Direction = 'horizontal' | 'vertical';
+interface IProps {
   components: IConfigurableFormComponent[];
   direction?: Direction;
   justifyContent?: string;

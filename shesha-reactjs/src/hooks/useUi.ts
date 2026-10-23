@@ -1,9 +1,9 @@
 import { ColProps, FormProps } from "antd";
 import { Gutter } from "antd/lib/grid/row";
 
-export type ControlSize = 'large' | 'default' | 'small';
+type ControlSize = 'large' | 'default' | 'small';
 
-export interface IUiStateContext {
+interface IUiStateContext {
   readonly size?: ControlSize;
   readonly gutter?: Gutter | [Gutter, Gutter];
   readonly formItemLayout?: FormProps;

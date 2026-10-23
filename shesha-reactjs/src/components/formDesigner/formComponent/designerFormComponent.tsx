@@ -24,7 +24,7 @@ import { createPortal } from "react-dom";
 import { ComponentProperties } from "../componentPropertiesPanel/componentProperties";
 import { useComponentValidationResults } from "@/providers/validator/hooks";
 import { getDesignerIndicators } from "./designerIndicators";
-export interface IDesignerFormComponentProps {
+interface IDesignerFormComponentProps {
   componentModel: UnwrapCodeEvaluators<IComponentModelProps>;
   sourceComponentModel: IComponentModelProps;
   toolboxComponent: IToolboxComponent;

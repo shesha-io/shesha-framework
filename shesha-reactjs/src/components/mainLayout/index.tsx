@@ -30,7 +30,7 @@ import { useStyles } from './styles/styles';
 
 const { Header, Content, Footer, Sider } = Layout;
 
-export interface IMenuTriggerProps {
+interface IMenuTriggerProps {
   collapsed: boolean;
 }
 

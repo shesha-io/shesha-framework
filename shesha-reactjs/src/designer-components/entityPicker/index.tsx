@@ -59,7 +59,7 @@ const DEFAULT_DIALOG_WIDTH = '40%';
  * falls back to it when `modalWidth` is the legacy `'custom'` marker but `customWidth` was never
  * set - otherwise the literal string `'custom'` would reach `Modal`'s `width` prop.
  */
-export const resolveDialogWidth = (
+const resolveDialogWidth = (
   modalWidth: IEntityPickerComponentProps['modalWidth'],
   customWidth: number | undefined,
   widthUnits: string | undefined,

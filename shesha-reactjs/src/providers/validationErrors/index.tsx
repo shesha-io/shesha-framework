@@ -3,7 +3,7 @@ import { IModelValidation } from '@/utils/errors';
 import { createNamedContext } from '@/utils/react';
 import { isEqual } from 'lodash';
 
-export interface IComponentValidationError extends IModelValidation {
+interface IComponentValidationError extends IModelValidation {
   componentId: string;
 }
 

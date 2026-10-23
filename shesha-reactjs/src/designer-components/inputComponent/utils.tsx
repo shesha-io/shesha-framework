@@ -13,7 +13,7 @@ import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 const stringToFriendlyMap = new Map<string, string>([['true', 'On'], ['false', 'Off'], ['editable', 'Editable'], ['readOnly', 'Read only'], ['inherited', 'Inherited']]);
 
-export const convertValueToFriendlyString = (value: unknown): string => {
+const convertValueToFriendlyString = (value: unknown): string => {
   if (value === null)
     return 'NULL';
   if (value === undefined)

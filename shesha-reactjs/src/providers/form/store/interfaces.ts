@@ -9,10 +9,7 @@ import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entiti
 import { ExpressionCaller, IDataArguments, SubmitCaller } from "../submitters/interfaces";
 import { ShaFormSubscriptionType } from "./shaFormInstance";
 
-export type LoaderType = 'gql' | 'custom' | 'none';
-export type SubmitType = 'gql' | 'custom' | 'none';
-
-export interface InitFormDataPayload<Values extends object = object> {
+interface InitFormDataPayload<Values extends object = object> {
   formArguments?: object | undefined;
   initialValues?: Partial<Values> | undefined;
   lazyLoadData?: boolean | undefined;
@@ -40,7 +37,7 @@ export interface LoadFormByIdPayload<Values extends object = object> {
   initialValues?: Partial<Values> | undefined;
 }
 
-export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
+type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
 export interface ProcessingState {
   status: LoadingStatus;
   hint?: string | undefined;
@@ -146,7 +143,7 @@ export interface SubmitRelatedEvents<Values extends object = object> {
   onSubmitFailed?: (() => Promise<void>) | undefined;
 }
 
-export interface LiveFormEvents<Values extends object = object> {
+interface LiveFormEvents<Values extends object = object> {
   onBeforeDataLoad?: (() => Promise<void>) | undefined;
   onAfterDataLoad?: (() => Promise<void>) | undefined;
   onValuesUpdate?: ExpressionCaller<IDataArguments<Values>, Promise<void>> | undefined;

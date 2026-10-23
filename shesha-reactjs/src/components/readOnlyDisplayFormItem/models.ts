@@ -3,7 +3,7 @@ import { FormIdentifier, IStyleValue } from '@/providers/form/models';
 import { SwitchSize } from 'antd/es/switch';
 import { TagVariant } from '@/components/dropdown/model';
 
-export type ReadOnlyItemType = 'string' | 'number' | 'dropdown' | 'dropdownMultiple' | 'time' | 'datetime' | 'checkbox' | 'switch' | 'radiogroup' | 'textArea';
+type ReadOnlyItemType = 'string' | 'number' | 'dropdown' | 'dropdownMultiple' | 'time' | 'datetime' | 'checkbox' | 'switch' | 'radiogroup' | 'textArea';
 
 export interface IReadOnlyDisplayFormItemProps<TValue = unknown> {
   value?: TValue | undefined;

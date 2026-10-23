@@ -37,9 +37,6 @@ import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from "../nullabl
 export interface BuildResult {
   content: string;
 }
-export interface BuildContext {
-  requestedFiles: string[];
-}
 
 type OnUseComplexTypeHandler = (typeImport: TypeImport) => void;
 export type BuildTypeContext = {

@@ -28,9 +28,9 @@ const SELECTION_TYPE_TIME_FORMATS: Partial<Record<DateSelectionType, string>> = 
   dateTimeSeconds: 'HH:mm:ss',
 };
 
-export const DEFAULT_SELECTION_TYPE: DateSelectionType = 'dateTimeMinutes';
+const DEFAULT_SELECTION_TYPE: DateSelectionType = 'dateTimeMinutes';
 
-export const getSelectionType = (props: IDateFieldProps): DateSelectionType =>
+const getSelectionType = (props: IDateFieldProps): DateSelectionType =>
   props.selectionType ?? DEFAULT_SELECTION_TYPE;
 
 /** The antd `picker` prop for the configured selection type. */
@@ -74,7 +74,7 @@ function legacyDisabledDate(props: IDateFieldProps, current: Moment, data: objec
     return false;
 }
 
-export const getBindingFormat = (props: IDateFieldProps): DateBindingFormat =>
+const getBindingFormat = (props: IDateFieldProps): DateBindingFormat =>
   props.bindingFormat ?? (props.resolveToUTC === true ? 'utc' : 'isoLocal');
 
 const BINDING_FORMAT_LABELS: Record<DateBindingFormat, string> = {
@@ -136,7 +136,7 @@ export const serializeValue = (value: Moment, props: IDateFieldProps): string =>
   }
 };
 
-export const timeObject = (): { hours: number; minutes: number; seconds: number } => {
+const timeObject = (): { hours: number; minutes: number; seconds: number } => {
   const now = new Date();
   return {
     hours: now.getHours(),

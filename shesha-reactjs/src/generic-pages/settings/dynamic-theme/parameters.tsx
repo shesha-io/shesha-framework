@@ -17,7 +17,7 @@ import TextsPreview from './textsPreview';
  */
 export type ThemeSettingsSection = 'theme' | 'components' | 'input' | 'inline' | 'standard' | 'layout';
 
-export interface ThemeParametersProps {
+interface ThemeParametersProps {
   value: IConfigurableTheme;
   onChange: (theme: IConfigurableTheme) => void;
   readOnly: boolean;

@@ -5,7 +5,7 @@ import { DeleteFilled, MenuOutlined } from '@ant-design/icons';
 import { InsertItemMarker } from './insertItemMarker';
 import { useStyles } from './styles/styles';
 
-export type ItemInsertPosition = 'before' | 'after';
+type ItemInsertPosition = 'before' | 'after';
 
 export interface IListItemWrapperProps extends PropsWithChildren {
   onDelete: () => void;

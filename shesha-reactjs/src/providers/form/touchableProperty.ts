@@ -2,7 +2,7 @@ import { IAnyObject } from "@/interfaces";
 import { isDefined } from "@/utils/nullables";
 import { unproxyValue } from "@/utils/object";
 
-export interface IPropertyTouch {
+interface IPropertyTouch {
   propertyName: string;
   value: unknown;
 }

@@ -32,22 +32,13 @@ const getLastCharPosition = (content: string): TextPosition => {
   return { line: lines.length, column: lastLine.length + 1 };
 };
 
-export const getLeadingWhiteSpaces = (text: string): string => {
-  if (!text)
-    return '';
-
-  const count = text.search(/\S|$/);
-  return text.slice(0, count);
-};
-
-
 /**
  * The placeholder string
  *
  * @param {string} value - the placeholder value
  * @return {Placeholder} the placeholder
  */
-export type Placeholder = {
+type Placeholder = {
   value: string;
   readOnly: boolean;
   toString: () => string;
@@ -56,7 +47,7 @@ export type Placeholder = {
 /**
  * The placeholder evaluation context
  */
-export type PlaceholderEvaluatorContext = {
+type PlaceholderEvaluatorContext = {
   /**
    * Current text position in a template, can be used for formatting of multiline placeholders (e.g. comments)
    */

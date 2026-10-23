@@ -5,7 +5,7 @@ import { AppstoreOutlined } from '@ant-design/icons';
 import DynamicView from './dynamicView';
 import { getSettings } from './settings';
 
-export type DynamicViewComponentProps = IConfigurableFormComponent;
+type DynamicViewComponentProps = IConfigurableFormComponent;
 
 /** @deprecated */
 const DynamicViewComponent: IToolboxComponent<DynamicViewComponentProps> = {

@@ -32,7 +32,7 @@ import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nu
 import { extractErrorInfo } from '@/utils/errors';
 import { isNonEmptyArray } from '@/utils/array';
 
-export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
+type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
 /**
  * Represents the possible value types for an entity reference.

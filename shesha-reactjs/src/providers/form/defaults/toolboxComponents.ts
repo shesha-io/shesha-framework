@@ -320,7 +320,7 @@ export const componentGroupsToComponentDefinitions = (componentGroups: IToolboxC
   return result;
 };
 
-export const getComponentGroups = (): IToolboxComponentGroup[] => {
+const getComponentGroups = (): IToolboxComponentGroup[] => {
   return getToolboxComponents(false, { formId: "", formProps: null });
 };
 

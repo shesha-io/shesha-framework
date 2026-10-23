@@ -18,7 +18,7 @@ interface IFiltersListProps {
   readOnly?: boolean;
 }
 
-export const RefListItemsListInner: FC<Omit<IFiltersListProps, 'items'>> = ({ showModal, readOnly = false }) => {
+const RefListItemsListInner: FC<Omit<IFiltersListProps, 'items'>> = ({ showModal, readOnly = false }) => {
   const { styles } = useStyles();
   const { items, selectItem } = useRefListItemGroupConfigurator();
 
@@ -36,7 +36,7 @@ export const RefListItemsListInner: FC<Omit<IFiltersListProps, 'items'>> = ({ sh
   );
 };
 
-export interface ITableViewSelectorSettingsModal {
+interface ITableViewSelectorSettingsModal {
   visible: boolean;
   hideModal: () => void;
   value?: IRefListItemFormModel[] | null | undefined;
@@ -53,7 +53,7 @@ export interface ITableViewSelectorSettingsModal {
 const isSameConfiguration = (left: IRefListItemFormModel[], right: IRefListItemFormModel[] | null | undefined): boolean =>
   isEqual(removeUndefinedProps(left), removeUndefinedProps(right ?? EMPTY_ITEMS));
 
-export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsModal> = ({
+const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsModal> = ({
   visible,
   value,
   onChange,
@@ -90,7 +90,7 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
   );
 };
 
-export const RefListItemSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsModal, 'visible' | 'hideModal'>> = (
+const RefListItemSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsModal, 'visible' | 'hideModal'>> = (
   props,
 ) => {
   const [modalVisible, setModalVisible] = useState(false);

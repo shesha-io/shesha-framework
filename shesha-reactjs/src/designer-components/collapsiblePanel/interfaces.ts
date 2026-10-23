@@ -48,7 +48,7 @@ export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComp
   components?: IConfigurableFormComponent[] | undefined;
 }
 
-export interface ICollapsiblePanelComponentCalcProps {
+interface ICollapsiblePanelComponentCalcProps {
   evaluatedLabel?: string | ReactNode;
 }
 

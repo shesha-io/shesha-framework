@@ -3,7 +3,7 @@ import { useFormDesignerComponents } from '../form/hooks';
 import { FormRawMarkup, IFlatComponentsStructure, IFormSettings } from '../form/models';
 import { convertFormMarkupToFlatStructure } from '../form/utils';
 
-export interface IFormMarkupConverterProps {
+interface IFormMarkupConverterProps {
   markup: FormRawMarkup;
   formSettings: IFormSettings;
   children: (

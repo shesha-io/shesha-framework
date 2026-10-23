@@ -12,7 +12,7 @@ export interface IMultiCheckBoxRefListProps {
   readonly columns?: 1 | 2 | 3 | 4;
 }
 
-export const MultiCheckBoxRefList: FC<IMultiCheckBoxRefListProps> = ({
+const MultiCheckBoxRefList: FC<IMultiCheckBoxRefListProps> = ({
   listName,
   listNamespace,
   onChange,

@@ -9,7 +9,7 @@ import { useDataContextManager } from '@/providers/dataContextManager/hooks';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { throwError } from '@/utils/errors';
 
-export interface IDataContextSelectorProps<TValue = string> {
+interface IDataContextSelectorProps<TValue = string> {
   readOnly?: boolean | undefined;
   value?: TValue | null | undefined;
   size?: SizeType | undefined;

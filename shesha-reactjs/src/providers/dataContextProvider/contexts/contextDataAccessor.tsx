@@ -13,7 +13,7 @@ export type GetShaDataContextAccessor<TData extends object = object> = (
   setStorageData?: (data: TData) => void,
 ) => IShaDataAccessor<TData>;
 
-export const GetShaContextDataAccessor = <TData extends object = object>(
+const GetShaContextDataAccessor = <TData extends object = object>(
   onChangeCallback: RefreshContext<TData>,
   initialData?: TData,
   setStorageData?: (data: TData) => void,

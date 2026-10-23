@@ -42,7 +42,7 @@ const resolveMenuOverflow = (
   return "dropdown";
 };
 
-export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
+const MenuListComponent: IToolboxComponent<IMenuListProps> = {
   type: "menuList",
   name: "Menu List",
   isInput: false,

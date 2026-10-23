@@ -68,4 +68,4 @@ export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = ({ value, onCh
   );
 };
 
-export default ColumnsConfigurator;
+

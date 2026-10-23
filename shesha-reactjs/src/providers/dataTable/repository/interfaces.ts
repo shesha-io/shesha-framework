@@ -11,9 +11,9 @@ export interface RowsReorderPayload {
   customReorderEndpoint?: string | undefined;
 }
 
-export type DefaultCreateOptions = object;
-export type DefaultUpdateOptions = object;
-export type DefaultDeleteOptions = object;
+type DefaultCreateOptions = object;
+type DefaultUpdateOptions = object;
+type DefaultDeleteOptions = object;
 
 export interface IRepository<TCreateOptions extends DefaultCreateOptions = DefaultCreateOptions, TUpdateOptions extends DefaultUpdateOptions = DefaultUpdateOptions, TDeleteOptions extends DefaultDeleteOptions = DefaultDeleteOptions> {
   repositoryType: string;

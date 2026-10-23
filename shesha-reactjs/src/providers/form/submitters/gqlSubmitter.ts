@@ -16,13 +16,13 @@ import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { getIdOrUndefined } from "@/utils/entity";
 import { isNonEmptyArray } from "@/utils/array";
 
-export interface GqlSubmitterArguments {
+interface GqlSubmitterArguments {
   httpClient: HttpClientApi;
   endpointsEvaluator: IEntityEndpointsEvaluator;
   toolboxComponents: IToolboxComponents;
 }
 
-export class GqlSubmitter implements IFormDataSubmitter {
+class GqlSubmitter implements IFormDataSubmitter {
   #httpClient: HttpClientApi;
 
   #endpointsEvaluator: IEntityEndpointsEvaluator;

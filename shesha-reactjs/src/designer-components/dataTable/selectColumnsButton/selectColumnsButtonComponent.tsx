@@ -8,7 +8,7 @@ import { SlidersOutlined } from '@ant-design/icons';
 
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 
-export type ISelectColumnsButtonComponentProps = IConfigurableFormComponent;
+type ISelectColumnsButtonComponentProps = IConfigurableFormComponent;
 
 const settingsForm = settingsFormJson as FormMarkup;
 

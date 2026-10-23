@@ -1,11 +1,11 @@
 import { ILayerGroup, isLayerGroup, LayerGroupItemProps } from './models';
 
-export interface IItemPosition {
+interface IItemPosition {
   ownerArray: LayerGroupItemProps[];
   index: number;
 }
 
-export const getItemPositionById = (items: LayerGroupItemProps[], id: string): IItemPosition | null => {
+const getItemPositionById = (items: LayerGroupItemProps[], id: string): IItemPosition | null => {
   for (let index = 0; index < items.length; index++) {
     const item = items[index];
     if (!item)

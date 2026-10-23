@@ -8,7 +8,7 @@ import { ISortableItem } from '@/interfaces/modelConfigurator';
 import { useDeepCompareMemo } from '@/hooks';
 import { isEqual } from 'lodash';
 
-export interface IRefListItemsContainerProps {
+interface IRefListItemsContainerProps {
   index?: number[] | undefined;
   id?: string | undefined;
   items: RefListGroupItemProps[];
@@ -16,7 +16,7 @@ export interface IRefListItemsContainerProps {
   readOnly?: boolean | undefined;
 }
 
-export const RefListItemsContainer: FC<IRefListItemsContainerProps> = (props) => {
+const RefListItemsContainer: FC<IRefListItemsContainerProps> = (props) => {
   const { styles } = useStyles();
   const { readOnly, updateChildItems } = useRefListItemGroupConfigurator();
 

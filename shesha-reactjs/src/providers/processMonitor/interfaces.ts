@@ -18,21 +18,6 @@ export interface IProcessMonitor {
   changeProcessId: (processId: string) => Promise<void>;
 }
 
-export interface EventLogItemDto {
-  /**
-   * Logged message
-   */
-  message?: string | null;
-  /**
-   * Event timestamp
-   */
-  timeStamp?: string;
-  /**
-   * Level (info/warn/error)
-   */
-  level?: string | null;
-}
-
 export enum LogLevel {
   INFO = 'info',
   ERROR = 'error',

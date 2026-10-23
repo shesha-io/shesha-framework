@@ -3,7 +3,7 @@ import * as React from 'react';
 import { ValueMutator } from './interfaces';
 import { IListEditorActionsContext, IListEditorStateContext, ListItemFactory } from './models';
 
-export interface IGenericListEditorProviderProps<TItem extends object> {
+interface IGenericListEditorProviderProps<TItem extends object> {
   initialState: IListEditorStateContext<TItem>;
   stateContext: Context<IListEditorStateContext<TItem> | undefined>;
   actionContext: Context<IListEditorActionsContext<TItem> | undefined>;

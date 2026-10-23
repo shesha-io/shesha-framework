@@ -5,13 +5,11 @@ import {
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import {
-  DEFAULT_FORM_SETTINGS,
   FormMarkup,
   FormMode,
   IConfigurableFormComponent,
   IFlatComponentsStructure,
   IFormSettings,
-  ROOT_COMPONENT_KEY,
 } from '../form/models';
 import { createNamedContext } from '@/utils/react';
 import { BaseHistoryItem, FormDesignerSubscription, FormDesignerSubscriptionType } from './models';
@@ -19,7 +17,7 @@ import { IValidationCollector } from '../validator/interfaces';
 import { ReactNode } from 'react';
 import { DeviceTypes } from '../canvas/contexts';
 
-export interface AddComponentPayloadBase {
+interface AddComponentPayloadBase {
   index: number;
   containerId: string;
 }
@@ -27,8 +25,6 @@ export interface AddComponentPayloadBase {
 export interface IComponentAddPayload extends AddComponentPayloadBase {
   componentType: string;
 }
-
-export type IComponentAddFromTemplatePayload = AddComponentPayloadBase;
 
 export interface IAddDataPropertyPayload {
   propertyMetadata: IPropertyMetadata;
@@ -58,16 +54,11 @@ export const VALIDATABLE_ITEM_TYPES = {
   COMPONENT: "component",
   FORM_SETTINGS: "form-settings",
 } as const;
-export type ValidatableItemType = typeof VALIDATABLE_ITEM_TYPES[keyof typeof VALIDATABLE_ITEM_TYPES];
 
 export type IValidationResultsPayload = ({ type: typeof VALIDATABLE_ITEM_TYPES.COMPONENT; componentId: string } | { type: typeof VALIDATABLE_ITEM_TYPES.FORM_SETTINGS }) & {
   displayName: string | ReactNode;
   validationErrors: IAsyncValidationError[];
 };
-
-export interface ISetSelectedComponentPayload {
-  id: string;
-}
 
 export type IUndoable = {
   undo: () => void;
@@ -85,7 +76,7 @@ export type FormDesignerFormState = {
   formFlatMarkup: IFlatComponentsStructure;
 };
 
-export type FormDesignerState = {
+type FormDesignerState = {
   state: FormDesignerFormState;
 
   selectedComponentId: string | undefined;
@@ -105,7 +96,7 @@ export type FormDesignerState = {
   isFormSettingsVisible: boolean;
 };
 
-export type FormDesignerActions = {
+type FormDesignerActions = {
   setMarkupAndSettings: (flatMarkup: IFlatComponentsStructure, settings: IFormSettings) => void;
 
   addComponent: (payload: IComponentAddPayload) => void;
@@ -144,16 +135,6 @@ export type FormDesignerActions = {
   getValidationResults: () => FieldValidationError[];
   openFormSettings: () => void;
   closeFormSettings: () => void;
-};
-
-
-export const FORM_INITIAL_STATE: FormDesignerFormState = {
-  formSettings: DEFAULT_FORM_SETTINGS,
-  formFlatMarkup: {
-    allComponents: {},
-    componentRelations: { [ROOT_COMPONENT_KEY]: [] },
-    parents: {},
-  },
 };
 
 export type IFormDesignerInstance = FormDesignerActions & IUndoable & FormDesignerState;

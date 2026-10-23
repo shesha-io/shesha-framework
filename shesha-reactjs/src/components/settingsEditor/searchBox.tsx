@@ -5,7 +5,7 @@ import { Input } from 'antd';
 import { createStyles } from 'antd-style';
 import { useStyles } from './styles/styles';
 
-export interface ISearchBoxProps {
+interface ISearchBoxProps {
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
@@ -17,7 +17,7 @@ const useSearchBoxStyles = createStyles(({ css, token }) => ({
   `,
 }));
 
-export const SearchBox: FC<ISearchBoxProps> = (props) => {
+const SearchBox: FC<ISearchBoxProps> = (props) => {
   const { styles } = useStyles();
   const { styles: searchBoxStyles } = useSearchBoxStyles();
   const handleSearchChange = (e: React.FormEvent<HTMLInputElement>): void => {

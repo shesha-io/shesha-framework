@@ -13,7 +13,7 @@ export interface IIndexToolbarProps {
   btnSize?: SizeType;
 }
 
-export const IndexToolbar: FC<IIndexToolbarProps> = ({ items, elementsRight, className, btnSize = 'middle' }) => {
+const IndexToolbar: FC<IIndexToolbarProps> = ({ items, elementsRight, className, btnSize = 'middle' }) => {
   return (
     <div className={classNames('sha-index-toolbar', className)}>
       <div className="sha-index-toolbar-left">

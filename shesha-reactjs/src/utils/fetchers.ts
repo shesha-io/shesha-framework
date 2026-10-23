@@ -24,7 +24,7 @@ export function constructUrl<TQueryParams extends object = object>(base: string 
   return composed;
 }
 
-export interface BaseRequestOptions {
+interface BaseRequestOptions {
   /**
    * An escape hatch and an alternative to `path` when you'd like
    * to fetch from an entirely different URL.
@@ -125,7 +125,7 @@ export const mutate = <
   }).then((res) => res.json());
 };
 
-export const getFileNameFromContentDisposition = (disposition: string | null | undefined): string | undefined => {
+const getFileNameFromContentDisposition = (disposition: string | null | undefined): string | undefined => {
   if (!disposition)
     return undefined;
   const utf8FilenameRegex = /filename\*=UTF-8''([\w%\-\.]+)(?:; ?|$)/i;

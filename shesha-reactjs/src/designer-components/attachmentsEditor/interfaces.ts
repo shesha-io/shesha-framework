@@ -20,7 +20,7 @@ export type DisplayStyle = 'text' | 'thumbnailSmall' | 'thumbnailMedium' | 'thum
  * Tile edge for each preset. Medium is 54px, the size every already-saved component stores, so an
  * existing thumbnail keeps its size when migration maps it onto Medium.
  */
-export const THUMBNAIL_PRESET_SIZES: Partial<Record<DisplayStyle, number>> = {
+const THUMBNAIL_PRESET_SIZES: Partial<Record<DisplayStyle, number>> = {
   thumbnailSmall: 32,
   thumbnailMedium: 54,
   thumbnailLarge: 104,

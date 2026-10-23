@@ -9,7 +9,7 @@ export interface ISettingsCollapsiblePanelActionsContext {
   registerField: (name: string) => void;
 }
 
-export const SettingsCollapsiblePanelActionsContext = createNamedContext<ISettingsCollapsiblePanelActionsContext | undefined>(undefined, "SettingsCollapsiblePanelActionsContext");
+const SettingsCollapsiblePanelActionsContext = createNamedContext<ISettingsCollapsiblePanelActionsContext | undefined>(undefined, "SettingsCollapsiblePanelActionsContext");
 
 const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => {
   const [fields, setFields] = useState<string[]>([]);

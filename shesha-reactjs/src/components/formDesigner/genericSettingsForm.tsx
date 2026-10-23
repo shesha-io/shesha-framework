@@ -18,7 +18,7 @@ import { IStyleValue, useThemeActions } from '@/providers';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { getStyleBoxValue } from '@/designer-components/styleBox/utils';
 
-export interface IProps<TModel extends IConfigurableFormComponent> {
+interface IProps<TModel extends IConfigurableFormComponent> {
   readOnly: boolean;
   model: TModel;
   markup: FormMarkup;

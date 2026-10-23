@@ -1,5 +1,5 @@
 import { FormInstance } from 'antd';
-import { IModelMetadata, IToolboxComponentGroup } from '@/interfaces';
+import { IModelMetadata } from '@/interfaces';
 import {
   FormMode,
   IConfigurableFormComponent,
@@ -7,10 +7,6 @@ import {
 } from './models';
 import { createNamedContext } from '@/utils/react';
 import { IShaFormInstance } from './store/interfaces';
-
-export interface IHasComponentGroups {
-  toolboxComponentGroups: IToolboxComponentGroup[];
-}
 
 export interface IFormStateContext<TData extends object = object> {
   name?: string | undefined;
@@ -40,25 +36,6 @@ export interface IFormActionsContext<TData extends object = object> {
 
   isComponentFiltered: (component: IConfigurableFormComponent) => boolean;
 }
-
-export interface FieldData {
-  name: string | number | (string | number)[];
-  value?: unknown;
-  touched?: boolean;
-  validating?: boolean;
-  errors?: string[];
-}
-
-export interface IFormDataStateContext {
-  fields: FieldData[];
-}
-
-export interface IFormDataActionsContext {
-  setFields: (fields: FieldData[]) => void;
-}
-
-export const FormDataStateContext = createNamedContext<IFormDataStateContext | undefined>(undefined, "FormDataStateContext");
-export const FormDataActionsContext = createNamedContext<IFormDataActionsContext | undefined>(undefined, "FormDataActionsContext");
 
 export interface ConfigurableFormInstance<TValue extends object = object> extends IFormActionsContext<TValue>, IFormStateContext<TValue> { }
 

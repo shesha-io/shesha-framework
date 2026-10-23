@@ -4,7 +4,7 @@ import * as React from 'react';
 
 const { ConfigContext } = ConfigProvider;
 
-export interface CommentProps {
+interface CommentProps {
   /** List of action items rendered below the comment content */
   actions?: React.ReactNode[];
   /** The element to display as the comment author. */

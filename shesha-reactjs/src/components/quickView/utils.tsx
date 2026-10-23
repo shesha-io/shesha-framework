@@ -43,21 +43,7 @@ export const loadingBox = (styles: { innerEntityReferenceSpanBoxStyle: string; s
   </span>
 );
 
-export const innerEntityReferenceButtonBoxStyle = {
-  backgroundColor: 'transparent',
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  width: '100%',
-  height: '100%',
-  margin: '0',
-  padding: '0',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'flex-start',
-};
-
-export const compareValueToProperty = (key: string, value: string, properties: IPropertyMetadata[]): [key: string, value: string] => {
+const compareValueToProperty = (key: string, value: string, properties: IPropertyMetadata[]): [key: string, value: string] => {
   const dataType = getDataProperty(properties, key, 'dataType');
   const dataFormat = getDataProperty(properties, key, 'dataFormat') ?? undefined;
 

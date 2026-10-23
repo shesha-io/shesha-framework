@@ -1,12 +1,6 @@
 import { ModelConfigurationDto } from '@/apis/modelConfigurations';
-import { IModelItem } from '@/interfaces/modelConfigurator';
 import { createNamedContext } from '@/utils/react';
 import { FormInstance } from 'antd';
-
-export interface IUpdateItemSettingsPayload {
-  id: string;
-  settings: IModelItem;
-}
 
 export interface IPropertyErrors {
   propertyName: string;

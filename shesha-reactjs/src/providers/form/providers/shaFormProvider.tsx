@@ -16,7 +16,7 @@ import { ShaFormDataUpdateContext, ShaFormErrorsUpdateContext, ShaFormInstanceCo
 import { ShaFormSubscriptionType } from "../store/shaFormInstance";
 import { IFormValidationErrors } from "@/interfaces";
 
-export interface IShaFormProviderProps<TValues extends object = object> {
+interface IShaFormProviderProps<TValues extends object = object> {
   shaForm: IShaFormInstance<TValues>;
 }
 
@@ -98,6 +98,6 @@ export {
   useShaFormDataUpdate,
   useShaFormValidationErrors,
   useShaFormRef,
-  useShaFormSubscription,
+
   useShaFormDataModified,
 };

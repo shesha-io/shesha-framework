@@ -8,7 +8,7 @@ import { capitalizeFirstLetter } from "@/utils/string";
 const messageTypes = ['info', 'success', 'error', 'warning', 'loading'] as const;
 type MessageType = typeof messageTypes[number];
 
-export interface IShowMessageArguments {
+interface IShowMessageArguments {
   message: string;
   // note: use internal MessageType instead of antd NoticeType to force manual update of the Shesha part after modification of antd type
   type: MessageType;

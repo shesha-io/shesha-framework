@@ -60,8 +60,3 @@ export interface IYoutubeVideoComponentProps extends IConfigurableFormComponent 
 export interface IYoutubeVideoCalculatedValues {
   formMode: FormMode;
 }
-
-export interface IYouTubeEventData {
-  event: string;
-  info?: number;
-}

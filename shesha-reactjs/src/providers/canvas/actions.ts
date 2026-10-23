@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { ICanvasWidthProps, DeviceTypes } from './contexts';
 
-export enum CanvasConfigActionEnums {
+enum CanvasConfigActionEnums {
   SetCanvasWidth = 'SET_FORM_WIDTH',
   SetCanvasZoom = 'SET_FORM_ZOOM',
   SetDesignerDevice = 'SET_DESIGNER_DEVICE',

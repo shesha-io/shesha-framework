@@ -8,7 +8,7 @@ import { getStringEnumOrDefault } from "@/utils/object";
 import { SizeType } from "antd/es/config-provider/SizeContext";
 
 const VALID_PLACEMENTS = ["bottomLeft", "bottomRight", "topLeft", "topRight"] as const;
-export type Placements = StringSubtype<typeof VALID_PLACEMENTS>;
+type Placements = StringSubtype<typeof VALID_PLACEMENTS>;
 
 export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
   const onChange = (key: string | undefined): void => {

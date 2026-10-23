@@ -20,11 +20,7 @@ import { LayerGroupItemProps } from './models';
 import { getItemById } from './utils';
 import { throwError } from '@/utils/errors';
 
-export interface ILayerGroupConfiguratorProviderPropsBase {
-  baseUrl?: string;
-}
-
-export interface ILayerGroupConfiguratorProviderProps {
+interface ILayerGroupConfiguratorProviderProps {
   items?: LayerGroupItemProps[];
   value?: unknown;
   onChange?: (value: unknown) => void;

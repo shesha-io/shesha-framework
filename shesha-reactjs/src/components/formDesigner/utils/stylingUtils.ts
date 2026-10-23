@@ -3,7 +3,7 @@ import { DEFAULT_MARGINS } from './designerConstants';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { addPx, DIMENSION_VALUES } from '@/utils/style';
 import { getCalculatedDimension } from '@/designer-components/_settings/utils/dimensions/utils';
-import { IStyleValue, IWrapperStyle, StyleBoxValue } from '@/interfaces';
+import { IStyleValue, IWrapperStyle } from '@/interfaces';
 import { IDimensionsValue } from '@/designer-components/_settings/utils';
 
 export const DEFAULT_DESIGNER_PADDING: IStyleValue = { stylingBoxJson: { _type: 'styleBox', paddingLeft: 5, paddingRight: 3, paddingTop: 5, paddingBottom: 3 } };
@@ -13,7 +13,7 @@ export const isExactDimensionValue = (value: string | number | undefined): boole
   isDefined(value) && !(typeof value === 'string' && (value.includes('calc') || value.includes('%') || DIMENSION_VALUES.includes(value)));
 
 /** Check if the value is a percentage */
-export const isPercentDimensionValue = (value: string | number | undefined): boolean =>
+const isPercentDimensionValue = (value: string | number | undefined): boolean =>
   typeof value === 'string' && value.includes('%');
 
 const getFullSizeComponentDimensionsValue = (value: string | number | undefined): string | number | undefined =>
@@ -57,7 +57,7 @@ const getFullSizeWrapperDimensionsValue = (value: string | number | undefined): 
  * @param dimensions dimensions of the component
  * @returns dimensions of the wrapper for component
  */
-export const getFullSizeWrapperDimensions = (dimensions: IDimensionsValue | undefined): IDimensionsValue => ({
+const getFullSizeWrapperDimensions = (dimensions: IDimensionsValue | undefined): IDimensionsValue => ({
   height: getFullSizeWrapperDimensionsValue(dimensions?.height),
   minHeight: dimensions?.minHeight,
   maxHeight: dimensions?.maxHeight,
@@ -66,7 +66,7 @@ export const getFullSizeWrapperDimensions = (dimensions: IDimensionsValue | unde
   maxWidth: dimensions?.maxWidth,
 });
 
-export const getFullSizeWrapperStyle = (model: IStyleValue): IStyleValue => ({
+const getFullSizeWrapperStyle = (model: IStyleValue): IStyleValue => ({
   dimensions: getFullSizeWrapperDimensions(model.dimensions),
   // stylingBoxJson: getMarginStyle(model.stylingBoxJson),
 });
@@ -99,14 +99,6 @@ export const getFullSizeWrapperDesignerStyle = (model: IStyleValue): IWrapperSty
       paddingTop: getDesignerPadding(model.stylingBoxJson?.marginTop, DEFAULT_DESIGNER_PADDING.stylingBoxJson?.paddingTop),
     },
   },
-});
-
-export const getMarginStyle = (model: StyleBoxValue | undefined): StyleBoxValue => ({
-  _type: 'styleBox',
-  marginBottom: model?.marginBottom,
-  marginLeft: model?.marginLeft,
-  marginRight: model?.marginRight,
-  marginTop: model?.marginTop,
 });
 
 /** Margin values extracted from various style sources */
@@ -144,20 +136,6 @@ const DEFAULT_MARGIN_VALUES = {
   left: DEFAULT_MARGINS.horizontal,
   right: DEFAULT_MARGINS.horizontal,
 };
-
-export const DEFAULT_ROOT_CONTAINER_STYLE: CSSProperties = { boxSizing: 'border-box' };
-
-// ToDo: AS - remove all unused commented code afer review and migration to the new styles
-
-/* const getExpandedDimensions = (value: string | number, marginTop: string | number, marginBottom: string | number): string | undefined => {
-  if (!isDefined(value) || value === '') {
-    // When no explicit dimension is provided, don't set a CSS value at all.
-    // This avoids producing invalid CSS like `calc(undefined + ...)`.
-    return undefined;
-  }
-
-  return `calc(${addPx(value)} + (${addPx(marginTop)} + ${addPx(marginBottom)}))`;
-};*/
 
 /**
  * Styling utility functions for form designer components.
@@ -355,11 +333,6 @@ export const stylingUtils = {
 
 // Re-export individual functions for backward compatibility and tree-shaking
 export const {
-  getDefaultMargins,
-  createRootContainerStyle,
-  removeMarginsFromStylingBox,
-  createMarginsFromStylingBox,
-  createPaddingOnlyStylingBox,
-  stripMargins,
-  extractMargins,
+
+
 } = stylingUtils;

@@ -5,7 +5,7 @@ import { useHttpClient } from '../sheshaApplication/publicApi';
 import { useEntityMetadataFetcher } from './entities/provider';
 import { createNamedContext } from '@/utils/react';
 
-export const MetadataDispatcherContext = createNamedContext<IMetadataDispatcher | undefined>(undefined, "MetadataDispatcherContext");
+const MetadataDispatcherContext = createNamedContext<IMetadataDispatcher | undefined>(undefined, "MetadataDispatcherContext");
 
 export const MetadataDispatcherProvider: FC<PropsWithChildren> = ({ children }) => {
   const entityMetaFetcher = useEntityMetadataFetcher();

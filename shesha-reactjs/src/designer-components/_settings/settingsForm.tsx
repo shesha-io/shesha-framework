@@ -19,15 +19,15 @@ interface ISettingsFormActions<TModel extends object = object> {
 }
 
 /** initial state */
-export const DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE: SettingsFormState<object> = {
+const DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE: SettingsFormState<object> = {
   model: {},
 };
 
-export const SettingsFormStateContext = createNamedContext<SettingsFormState<object> | undefined>(DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE, "SettingsFormStateContext");
+const SettingsFormStateContext = createNamedContext<SettingsFormState<object> | undefined>(DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE, "SettingsFormStateContext");
 
-export const SettingsFormActionsContext = createNamedContext<ISettingsFormActions<object> | undefined>(undefined, "SettingsFormActionsContext");
+const SettingsFormActionsContext = createNamedContext<ISettingsFormActions<object> | undefined>(undefined, "SettingsFormActionsContext");
 
-export type SettingsFormProps<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = IComponentSettingsFormFactoryArgs<TModel>;
+type SettingsFormProps<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = IComponentSettingsFormFactoryArgs<TModel>;
 
 const SettingsForm = <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(props: PropsWithChildren<SettingsFormProps<TModel>>): ReactElement => {
   const {

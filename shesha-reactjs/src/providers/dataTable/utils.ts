@@ -11,7 +11,6 @@ import {
 import { camelcaseDotNotation, firstNonEmptyStringOrUndefined } from '@/utils/string';
 import { DEFAULT_ACTION_COLUMN_WIDTH, IDataTableStateContext, IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
 import {
-  ColumnSorting,
   DataTableColumnDto,
   IColumnSorting,
   IndexColumnFilterOption,
@@ -26,7 +25,6 @@ import {
   ITableFormColumn,
   ITableRendererColumn,
   JsonLogicFilter,
-  SortDirection,
 } from './interfaces';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { isNonEmptyArray } from '@/utils/array';
@@ -48,27 +46,6 @@ export const hasDynamicFilter = (filters: IStoredFilter[]): boolean => {
   return found;
 };
 
-export const sortDirection2ColumnSorting = (value?: SortDirection): ColumnSorting | null => {
-  switch (value) {
-    case 0:
-      return 'asc';
-    case 1:
-      return 'desc';
-    default:
-      return null;
-  }
-};
-export const columnSorting2SortDirection = (value?: ColumnSorting): SortDirection | null => {
-  switch (value) {
-    case 'asc':
-      return 0;
-    case 'desc':
-      return 1;
-    default:
-      return null;
-  }
-};
-
 export const ADVANCEDFILTER_DATE_FORMAT = 'DD/MM/YYYY';
 export const ADVANCEDFILTER_DATETIME_FORMAT = 'DD/MM/YYYY HH:mm';
 export const ADVANCEDFILTER_TIME_FORMAT = 'HH:mm';
@@ -81,7 +58,7 @@ export const getMoment = (value: unknown, format: string): Moment | undefined =>
   return moment(value as string, format).isValid() ? moment.utc(value as string, format) : undefined;
 };
 
-export const getDuration = (value: unknown): Duration | undefined => {
+const getDuration = (value: unknown): Duration | undefined => {
   if (value === null || value === undefined) return undefined;
 
   if (isDuration(value)) return value;
@@ -360,10 +337,6 @@ export const getTableFormColumns = (columns: ITableColumn[]): ITableDataColumn[]
 export const getTableDataColumn = (columns: ITableColumn[], id: string): ITableDataColumn | undefined => {
   const column = columns.find((c) => c.id === id);
   return isDataColumn(column) ? column : undefined;
-};
-
-export const isStandardSortingUsed = (state: IDataTableStateContext): boolean => {
-  return state.sortMode === 'standard' && (!state.grouping || state.grouping.length === 0);
 };
 
 /**

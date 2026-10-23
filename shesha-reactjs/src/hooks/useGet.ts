@@ -9,7 +9,7 @@ export interface GetDataError<TError> {
   data: TError | string;
   status?: number;
 }
-export interface GetState<TData, TError> {
+interface GetState<TData, TError> {
   data: TData | null;
   response: Response | null;
   error: GetDataError<TError> | null;
@@ -63,7 +63,7 @@ export interface UseGetReturn<TData, TError, TQueryParams = IQueryParams, TPathP
   refetch: (options?: RefetchOptions<TData, /* TError,*/ TQueryParams, TPathParams> & { signal?: AbortSignal }) => Promise<TData | null>;
 }
 
-export const useGetInternal = <TData = unknown, TError = unknown, TQueryParams = IQueryParams, TPathParams = unknown>(
+const useGetInternal = <TData = unknown, TError = unknown, TQueryParams = IQueryParams, TPathParams = unknown>(
   props: UseGetProps<TData, /* TError,*/ TQueryParams, TPathParams>,
 ): UseGetReturn<TData, TError, TQueryParams, TPathParams> => {
   const { backendUrl, httpHeaders } = useSheshaApplication();

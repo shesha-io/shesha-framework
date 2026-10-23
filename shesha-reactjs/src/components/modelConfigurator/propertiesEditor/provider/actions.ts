@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { IAddItemPayload, IUpdateChildItemsPayload, IUpdateItemSettingsPayload } from './contexts';
 
-export enum ModelActionEnums {
+enum ModelActionEnums {
   AddItem = 'ADD_ITEM',
   DeleteItem = 'DELETE_ITEM',
   UpdateItem = 'UPDATE_ITEM',

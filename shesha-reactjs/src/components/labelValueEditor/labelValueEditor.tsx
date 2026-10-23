@@ -47,7 +47,7 @@ interface InputPropertyEditorProps<TItem> {
   placeholder?: string | undefined;
   propertyName: string;
 }
-export const InputPropertyEditor = <TItem extends object>(props: InputPropertyEditorProps<TItem>): ReactElement => {
+const InputPropertyEditor = <TItem extends object>(props: InputPropertyEditorProps<TItem>): ReactElement => {
   const { item, propertyName, itemOnChange, placeholder } = props;
   return (
     <Input

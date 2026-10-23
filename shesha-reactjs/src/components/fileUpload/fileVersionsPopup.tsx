@@ -14,7 +14,7 @@ interface IProps {
   readonly popupClassName?: string | undefined;
 }
 
-export const FileVersionsPopup: FC<IProps> = ({ fileId, popupClassName }) => {
+const FileVersionsPopup: FC<IProps> = ({ fileId, popupClassName }) => {
   const {
     loading: loading,
     refetch: fetchHistory,

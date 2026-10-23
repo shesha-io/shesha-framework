@@ -60,7 +60,7 @@ export const getListTypeAndLayout = (
 };
 
 /** Default thumbnail dimension (px) used when no concrete size is configured. */
-export const DEFAULT_THUMBNAIL_SIZE = 160;
+const DEFAULT_THUMBNAIL_SIZE = 160;
 
 /**
  * Parses a CSS size value (e.g. "54px", "160", 54) into a positive integer pixel value for the

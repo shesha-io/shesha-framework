@@ -11,7 +11,7 @@ import { ITableContextComponentProps } from '../../tableContext/models';
 
 type ExpandIconPlacement = ComponentProps<typeof Collapse>['expandIconPlacement'];
 
-export interface IPanelContent {
+interface IPanelContent {
   id: string;
   components?: IConfigurableFormComponent[];
 }

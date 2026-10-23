@@ -3,15 +3,14 @@ import { evaluateComplexString, IMatchData, removeZeroWidthCharsFromString } fro
 import { IApiEndpoint, isEntityMetadata, StandardEntityActions } from '@/interfaces/metadata';
 import { IFormSettings } from '@/providers/form/models';
 import { useMetadataDispatcher } from '@/providers';
-import { useDeepCompareEffect } from 'react-use';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
-export interface GetDefaultActionUrlPayload {
+interface GetDefaultActionUrlPayload {
   actionName: string;
   modelType: string | IEntityTypeIdentifier;
 }
-export interface GetFormActionUrlPayload {
+interface GetFormActionUrlPayload {
   actionName: string;
   formSettings: IFormSettings;
   mappings: IMatchData[];
@@ -89,30 +88,4 @@ export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
     getFormActionUrl,
   }), [getDefaultActionUrl, getFormActionUrl]);
   return result;
-};
-
-export interface UseEntityEndpointArguments {
-  actionName: string;
-  formSettings: IFormSettings;
-  mappings: IMatchData[];
-}
-
-export const useModelApiEndpoint = (args: UseEntityEndpointArguments): IApiEndpoint | undefined => {
-  const [endpoint, setEndpoint] = useState<IApiEndpoint | undefined>(undefined);
-
-  const { actionName, formSettings, mappings } = args;
-  const endpointsHelper = useModelApiHelper();
-
-  useDeepCompareEffect(() => {
-    endpointsHelper.getFormActionUrl({ actionName, formSettings, mappings })
-      .then((e) => {
-        setEndpoint(e);
-      })
-      .catch((error) => {
-        setEndpoint(undefined);
-        console.error('Failed to get endpoint', error);
-      });
-  }, [args]);
-
-  return endpoint;
 };

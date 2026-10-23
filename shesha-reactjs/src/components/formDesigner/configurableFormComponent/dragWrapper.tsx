@@ -18,7 +18,7 @@ const DRAG_WRAPPER_MARKER = 'data-sha-drag-wrapper';
 /** Width of the anchor, which is what keeps the tooltip clear of the cursor it sits next to. */
 const CURSOR_GAP = 14;
 
-export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => {
+const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => {
   const selectedComponentId = useFormDesignerSelectedComponentId();
   const isDebug = useFormDesignerIsDebug();
   const { setSelectedComponent } = useFormDesigner();

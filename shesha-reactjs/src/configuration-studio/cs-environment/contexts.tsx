@@ -5,7 +5,7 @@ import { isDefined } from "@/utils/nullables";
 import { createNamedContext } from "@/utils/react";
 import { useHttpClient } from "@/providers";
 
-export const useConfigurationStudioEnvironmentSingletone = (): [IConfigurationStudioEnvironment] => {
+const useConfigurationStudioEnvironmentSingletone = (): [IConfigurationStudioEnvironment] => {
   const httpClient = useHttpClient();
   const [configurationStudioEnvironment] = useState<IConfigurationStudioEnvironment>(() => {
     // Create a new FormStore if not provided
@@ -18,7 +18,7 @@ export const useConfigurationStudioEnvironmentSingletone = (): [IConfigurationSt
   return [configurationStudioEnvironment];
 };
 
-export const ConfigurationStudioEnvironmentContext = createNamedContext<IConfigurationStudioEnvironment | undefined>(undefined, "ConfigurationStudioEnvironmentContext");
+const ConfigurationStudioEnvironmentContext = createNamedContext<IConfigurationStudioEnvironment | undefined>(undefined, "ConfigurationStudioEnvironmentContext");
 
 export const ConfigurationStudioEnvironmentProvider: FC<PropsWithChildren> = ({ children }) => {
   const [csEnvironment] = useConfigurationStudioEnvironmentSingletone();
@@ -30,7 +30,7 @@ export const ConfigurationStudioEnvironmentProvider: FC<PropsWithChildren> = ({ 
   );
 };
 
-export const useConfigurationStudioEnvironmentIfAvailable = (): IConfigurationStudioEnvironment | undefined => {
+const useConfigurationStudioEnvironmentIfAvailable = (): IConfigurationStudioEnvironment | undefined => {
   return useContext(ConfigurationStudioEnvironmentContext);
 };
 

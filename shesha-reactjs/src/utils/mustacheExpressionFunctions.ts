@@ -1,6 +1,6 @@
-export type MustacheFunctionCategory = 'String' | 'Date' | 'Number' | 'Logic';
+type MustacheFunctionCategory = 'String' | 'Date' | 'Number' | 'Logic';
 
-export interface MustacheFunctionArg {
+interface MustacheFunctionArg {
   name: string;
   description: string;
   optional?: boolean;
@@ -493,11 +493,5 @@ register({
 });
 
 const functionDefinitions = Array.from(registry.values());
-const runtimeScope = functionDefinitions.reduce<Record<string, (...args: unknown[]) => unknown>>((acc, definition) => {
-  acc[definition.name] = (...args: unknown[]) => definition.evaluate(...args);
-  return acc;
-}, {});
 
 export const getMustacheFunctionDefinitions = (): MustacheFunctionDefinition[] => functionDefinitions;
-
-export const getMustacheRuntimeScope = (): Record<string, (...args: unknown[]) => unknown> => runtimeScope;

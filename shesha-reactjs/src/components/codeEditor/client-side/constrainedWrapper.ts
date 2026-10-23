@@ -10,17 +10,17 @@ export interface ValueInEditableRanges {
   [key: string]: string;
 };
 
-export interface EditableRange {
+interface EditableRange {
   allowMultiline: boolean;
   range: MonacoRange;
   originalRange: number[];
 };
 
-export interface EditableRangesDictionary {
+interface EditableRangesDictionary {
   [key: string]: EditableRange;
 };
 
-export type onChangeCallback = (currentlyChangedContent: ValueInEditableRanges, allValuesInEditableRanges: ValueInEditableRanges, currentEditableRangeObject: EditableRangesDictionary) => void;
+type onChangeCallback = (currentlyChangedContent: ValueInEditableRanges, allValuesInEditableRanges: ValueInEditableRanges, currentEditableRangeObject: EditableRangesDictionary) => void;
 
 export interface ConstrainedTextModel extends editor.ITextModel {
   onDidChangeContentInEditableRange: (callback: onChangeCallback) => void;

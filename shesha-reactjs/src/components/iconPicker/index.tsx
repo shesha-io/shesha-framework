@@ -15,7 +15,7 @@ import { Grid, type CellComponentProps } from 'react-window';
 import { useStyles } from './styles/styles';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
-export type ShaIconTypes = FilledIconTypes | OutlinedIconTypes | TwoToneIconTypes;
+type ShaIconTypes = FilledIconTypes | OutlinedIconTypes | TwoToneIconTypes;
 type IconsGroupType = Record<string, readonly ShaIconTypes[]>;
 
 // Superseded by a newer family already in REACT_ICON_FAMILIES (e.g. Font Awesome 6 replaces 5); ShaIcon can still resolve stored values from these.

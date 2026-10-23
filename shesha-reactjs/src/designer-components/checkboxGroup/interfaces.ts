@@ -14,7 +14,7 @@ export interface CheckboxGroupFocusHandle {
 
 // Extends IInputStyles so the Appearance style model (font, dimensions, border,
 // background, shadow, stylingBox) is typed and available to styles.ts.
-export type CheckboxGroupCommonProps = IInputStyles & INestedStyleValue<'checkbox'> & {
+type CheckboxGroupCommonProps = IInputStyles & INestedStyleValue<'checkbox'> & {
   items?: ILabelValue[] | undefined;
   /**
    * @deprecated - use referenceListId instead

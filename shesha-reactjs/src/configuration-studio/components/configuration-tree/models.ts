@@ -1,4 +1,4 @@
-export const DropPositions = {
+const DropPositions = {
   Before: -1,
   Inside: 0,
   After: 1,

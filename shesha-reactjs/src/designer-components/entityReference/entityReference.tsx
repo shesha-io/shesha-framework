@@ -30,7 +30,7 @@ import { EntityReferenceApi } from '@/componentsApi/componentApi';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
 
-export type { IActionParameters, IEntityReferenceControlProps } from './interfaces';
+;
 
 /** Reduce any of the accepted value shapes to the referenced entity's id. */
 const normalizeEntityReferenceValue = (

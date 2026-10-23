@@ -1,6 +1,3 @@
-import { useGet, UseGetProps } from '@/hooks/useGet';
-import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
-
 export interface PermissionedObjectDto {
   id?: string;
   object?: string | null;
@@ -21,24 +18,3 @@ export interface PermissionedObjectDto {
   hidden?: boolean;
   hardcoded?: boolean | null;
 }
-
-export type PermissionedObjectDtoListAjaxResponse = IAjaxResponse<PermissionedObjectDto[] | null>;
-
-export interface PermissionedObjectGetAllTreeQueryParams {
-  type?: string | undefined;
-  showHidden?: boolean | undefined;
-}
-
-export type UsePermissionedObjectGetAllTreeProps = Omit<
-  UseGetProps<PermissionedObjectDtoListAjaxResponse, PermissionedObjectGetAllTreeQueryParams, void>,
-  'path'
->;
-
-/**
- * Get hierarchical list of protected objects
- */
-export const usePermissionedObjectGetAllTree = (props: UsePermissionedObjectGetAllTreeProps) =>
-  useGet<PermissionedObjectDtoListAjaxResponse, IAjaxResponseBase, PermissionedObjectGetAllTreeQueryParams, void>(
-    `/api/services/app/PermissionedObject/GetAllTree`,
-    props
-  );

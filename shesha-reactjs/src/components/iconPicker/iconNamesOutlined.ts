@@ -431,17 +431,17 @@ export const OUTLINED_ICON_GROUPS = {
   ] as const,
 };
 
-export type DirectionalOutlinedIconTypes = typeof OUTLINED_ICON_GROUPS.directional[number];
+type DirectionalOutlinedIconTypes = typeof OUTLINED_ICON_GROUPS.directional[number];
 
-export type SuggestedOutlinedIconTypes = typeof OUTLINED_ICON_GROUPS.suggested[number];
+type SuggestedOutlinedIconTypes = typeof OUTLINED_ICON_GROUPS.suggested[number];
 
-export type EditorOutlinedIconTypes = typeof OUTLINED_ICON_GROUPS.editor[number];
+type EditorOutlinedIconTypes = typeof OUTLINED_ICON_GROUPS.editor[number];
 
-export type DataOutlinedIconTypes = typeof OUTLINED_ICON_GROUPS.data[number];
+type DataOutlinedIconTypes = typeof OUTLINED_ICON_GROUPS.data[number];
 
-export type BrandAndLogosOutlinedIconTypes = typeof OUTLINED_ICON_GROUPS.brandAndLogos[number];
+type BrandAndLogosOutlinedIconTypes = typeof OUTLINED_ICON_GROUPS.brandAndLogos[number];
 
-export type ApplicationOutlinedIconTypes = typeof OUTLINED_ICON_GROUPS.application[number];
+type ApplicationOutlinedIconTypes = typeof OUTLINED_ICON_GROUPS.application[number];
 
 export type OutlinedIconTypes =
   | DirectionalOutlinedIconTypes |

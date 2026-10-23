@@ -18,10 +18,6 @@ export interface IFormPersisterStateContext {
   saveError?: IErrorInfo | undefined;
 }
 
-export interface ILoadRequestPayload {
-  formId: FormIdentifier;
-}
-
 export interface ILoadFormPayload {
   skipCache: boolean;
 }

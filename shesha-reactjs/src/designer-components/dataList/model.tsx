@@ -1,8 +1,7 @@
 import { IDataListBaseProps, InlineEditMode } from "@/components/dataList/models";
 import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
-import { IConfigurableFormComponent, ITableColumn, UnwrapCodeEvaluators, YesNoInherit } from "@/interfaces";
+import { IConfigurableFormComponent, YesNoInherit } from "@/interfaces";
 import { DataTableFullInstance } from "@/providers/dataTable/contexts";
-import { DeepDiff } from "@/interfaces/utilityTypes";
 
 export interface IDataListComponentProps extends IDataListBaseProps, IDataListInlineEditableProps, IConfigurableFormComponent {
 }
@@ -11,13 +10,8 @@ export interface IDataListWithDataSourceProps extends IDataListComponentProps {
   dataSourceInstance: DataTableFullInstance;
 }
 
-export type TestDiff = DeepDiff<DataTableFullInstance, UnwrapCodeEvaluators<DataTableFullInstance>>;
-export type TestDiff2 = DeepDiff<DataTableFullInstance["columns"], UnwrapCodeEvaluators<DataTableFullInstance["columns"]>>;
-export type TestDiff3 = DeepDiff<ITableColumn, UnwrapCodeEvaluators<ITableColumn>>;
-export type BC = ITableColumn["backgroundColor"];
 
-
-export interface IDataListInlineEditableProps {
+interface IDataListInlineEditableProps {
   canDeleteInline?: YesNoInherit | undefined;
   customDeleteUrl?: string | undefined;
   canEditInline?: YesNoInherit | undefined;

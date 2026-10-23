@@ -23,7 +23,7 @@ export type DeleteNoteArgs = {
   id: string;
 };
 
-export type OwnerEntityReference = {
+type OwnerEntityReference = {
   /**
    * Id of the owner entity
    */
@@ -44,7 +44,7 @@ export type NotesReference = OwnerEntityReference & {
   category?: string | undefined;
 };
 
-export type NoteEditingStatus = 'error' | 'done' | 'uploading';
+type NoteEditingStatus = 'error' | 'done' | 'uploading';
 
 export type NoteModel = {
   id: string;

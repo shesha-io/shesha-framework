@@ -1,5 +1,3 @@
-export type OnFileChanged = (value: string | File | null) => void;
-
 export type FileUploadMode = 'async' | 'sync';
 
 export type DownloadFileArgs = {

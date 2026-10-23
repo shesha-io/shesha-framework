@@ -5,7 +5,7 @@ import { Show } from '@/components/show';
 import { Space, Tooltip } from 'antd';
 import { useStyles } from './styles/styles';
 
-export interface IProps {
+interface IProps {
   component: IToolboxComponentBase;
   index: number;
 }

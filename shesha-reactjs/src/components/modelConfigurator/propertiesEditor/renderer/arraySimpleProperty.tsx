@@ -7,7 +7,7 @@ import { DataTypes, NumberFormats } from '@/interfaces/dataTypes';
 import PropertyWrapper from './propertyWrapper';
 import { getIconByDataType } from '@/utils/metadata/helpers';
 
-export interface IProps extends IModelItem {
+interface IProps extends IModelItem {
   index: number[];
   parent?: IModelItem | undefined;
 }
@@ -36,7 +36,7 @@ const getListType = (itemsType: IModelItem | undefined): string => {
   return 'undefined';
 };
 
-export const ArraySimpleProperty: FC<IProps> = (props) => {
+const ArraySimpleProperty: FC<IProps> = (props) => {
   const { styles } = useStyles();
 
   const icon = getIconByDataType(props.dataType, props.dataFormat);

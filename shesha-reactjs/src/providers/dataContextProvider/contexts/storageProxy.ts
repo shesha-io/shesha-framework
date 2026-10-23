@@ -11,13 +11,13 @@ export interface IStorageProxy<TData = unknown> {
   updateOnChange: (onChange: () => void) => void;
 }
 
-export interface IHasAccessor<TData = unknown> {
+interface IHasAccessor<TData = unknown> {
   readonly accessor: IStorageProxy<TData>;
 }
 
-export type IStorageProxyWithAccessor<TData = unknown> = IStorageProxy<TData> & IHasAccessor<TData>;
+type IStorageProxyWithAccessor<TData = unknown> = IStorageProxy<TData> & IHasAccessor<TData>;
 
-export const CreateStorageProperty = <TData extends object = object>(onChange: () => void, data?: TData): IStorageProxy<TData> => {
+const CreateStorageProperty = <TData extends object = object>(onChange: () => void, data?: TData): IStorageProxy<TData> => {
   const property = (Array.isArray(data))
     ? new StorageArrayProperty(onChange, data) as IStorageProxyWithAccessor<TData>
     : new StorageProperty(onChange, data);

@@ -5,7 +5,7 @@ import { useIsDrawingForm } from '@/providers/form';
 import { ComponentsContainerLive } from './componentsContainerLive';
 import { ComponentsContainerDynamic } from './componentsContainerDynamic';
 
-export const ComponentsContainerFormInner: FC<IComponentsContainerProps> = (props) => {
+const ComponentsContainerFormInner: FC<IComponentsContainerProps> = (props) => {
   const isDrawing = useIsDrawingForm();
 
   return props.dynamicComponents && props.dynamicComponents.length > 0

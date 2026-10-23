@@ -7,7 +7,7 @@ import ActionButton, { IActionButtonProps } from '../actionButton/index';
 import ValidationErrors from '../validationErrors';
 import { useStyles } from './styles/styles';
 
-export const CrudActionButtons = (): React.JSX.Element => {
+const CrudActionButtons = (): React.JSX.Element => {
   const {
     mode,
     switchMode,

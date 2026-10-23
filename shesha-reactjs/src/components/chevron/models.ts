@@ -4,20 +4,20 @@ import { IButtonGroupItem, IButtonItem, IConfigurableFormComponent, IStyleValue 
 import { RefListGroupItemProps as ConfiguredRefListItem, isIRefListItemGroup as isConfiguredRefListGroup } from "@/components/refListSelectorDisplay/provider/models";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
-export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
+type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
 
-export interface IRefListGroupItemBase extends IButtonItem {
+interface IRefListGroupItemBase extends IButtonItem {
   referenceList?: IReferenceListIdentifier | undefined;
   item?: string | undefined;
 }
 
-export type IRefListItemFormModel = IRefListGroupItemBase;
+type IRefListItemFormModel = IRefListGroupItemBase;
 
-export interface IRefListItemGroup extends IRefListGroupItemBase {
+interface IRefListItemGroup extends IRefListGroupItemBase {
   childItems?: RefListGroupItemProps[];
 }
 
-export interface IChevronStyleProps extends IStyleValue {
+interface IChevronStyleProps extends IStyleValue {
   activeColor?: string | undefined;
   showIcons?: boolean | undefined;
   colorSource?: 'primary' | 'custom' | 'reflist' | undefined;

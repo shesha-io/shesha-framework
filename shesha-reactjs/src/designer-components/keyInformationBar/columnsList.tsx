@@ -6,7 +6,7 @@ import { ColumnsEditor } from './columnsEditor';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { strings } from '@/components/keyInformationBar/utils';
 
-export interface IProps {
+interface IProps {
   readOnly: boolean;
   value: KeyInfomationBarItemProps[] | undefined;
   onChange: ((newValue: KeyInfomationBarItemProps[]) => void) | undefined;
@@ -24,7 +24,7 @@ const EMPTY_ON_CHANGE = (_: KeyInfomationBarItemProps[]): void => {
   // noop
 };
 
-export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly, size }) => {
+const ColumnsList: FC<IProps> = ({ value, onChange, readOnly, size }) => {
   const [showDialog, setShowDialog] = useState(false);
 
   const toggleModal = (): void => setShowDialog((prevVisible) => !prevVisible);

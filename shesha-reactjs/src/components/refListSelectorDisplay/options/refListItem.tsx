@@ -8,12 +8,12 @@ import { IRefListItemFormModel } from '../provider/models';
 import { useRefListItemGroupConfigurator } from '../provider';
 import { ShaIcon, IconType } from '@/components/shaIcon';
 
-export interface IRefListGroupItemProps extends IRefListItemFormModel {
+interface IRefListGroupItemProps extends IRefListItemFormModel {
   index: number[];
   onConfigClick?: ((selectedItemId: string) => void) | undefined;
 }
 
-export const RefListItem: FC<IRefListGroupItemProps> = (props) => {
+const RefListItem: FC<IRefListGroupItemProps> = (props) => {
   const { styles } = useStyles();
   const { selectedItemId } = useRefListItemGroupConfigurator();
 

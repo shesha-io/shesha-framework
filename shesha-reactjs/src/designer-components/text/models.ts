@@ -8,7 +8,7 @@ import { IShadowValue } from '../_settings/utils/shadow/interfaces';
 export type LevelType = 0 | 1 | 2 | 3 | 4 | 5;
 
 export type ContentType = 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'danger' | 'custom' | '';
-export type ContentDisplay = 'content' | 'name';
+type ContentDisplay = 'content' | 'name';
 
 export type FontSizeProps = Pick<CSSProperties, 'fontSize' | 'lineHeight'>;
 
@@ -29,9 +29,9 @@ export const FONT_SIZES: Record<string, FontSizeProps> = {
   'text-9xl': { fontSize: '8rem', lineHeight: 1 },
 };
 
-export type PaddingProps = Pick<CSSProperties, 'padding'>;
+type PaddingProps = Pick<CSSProperties, 'padding'>;
 
-export const PADDING_SIZES: Record<string, PaddingProps> = {
+const _PADDING_SIZES: Record<string, PaddingProps> = {
   "none": { padding: '0' },
   'padding-xxs': { padding: '0.6rem' },
   'padding-xs': { padding: '0.75rem' },
@@ -49,8 +49,8 @@ export const PADDING_SIZES: Record<string, PaddingProps> = {
   'padding-9xl': { padding: '8rem' },
 };
 
-export type TypographyFontSize = keyof typeof FONT_SIZES;
-export type TypographyPaddingSize = keyof typeof PADDING_SIZES;
+type TypographyFontSize = keyof typeof FONT_SIZES;
+type TypographyPaddingSize = keyof typeof _PADDING_SIZES;
 
 export interface ITypographyProps {
   code?: boolean;

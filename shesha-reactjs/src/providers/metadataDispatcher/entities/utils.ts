@@ -197,30 +197,6 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
     });
 };
 
-const getEntityCacheItem = (key: string, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> =>
-  context.cacheProvider.getCache(ENTITY_CACHE.ENTITIES).getItem<IConfigurationItemDto<IEntityMetadata>>(key).then((item) => item?.configuration);
-
-export const getEntityMetadata = async (accessor: IEntityTypeIdentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> => {
-  await syncEntities(context);
-
-  const key = getEntityMetadataCacheKey(accessor);
-  return getEntityCacheItem(key, context);
-};
-
-export const getCachedMetadataByTypeId = (typeId: IEntityTypeIdentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> => {
-  const key = getEntityMetadataCacheKey(typeId);
-  return getEntityCacheItem(key, context);
-};
-
-export const getCachedMetadataByClassName = (className: string, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> => {
-  const typeId = context.typesMap.resolve(className);
-  if (!typeId) {
-    throw new Error(`Failed to resolve type id for class ${className}`);
-  }
-  const key = getEntityMetadataCacheKey(typeId);
-  return getEntityCacheItem(key, context);
-};
-
 export const isEntityTypeIdentifier = (modelType: string | IEntityTypeIdentifier | null | undefined): modelType is IEntityTypeIdentifier =>
   modelType !== null && modelType !== undefined &&
   typeof modelType === 'object' &&

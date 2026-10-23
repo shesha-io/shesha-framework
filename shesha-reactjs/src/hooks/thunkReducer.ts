@@ -13,7 +13,7 @@ import { Reducer, useCallback, useRef, useState } from 'react';
  * @returns {void|*}
  */
 
-export interface ThunkDispatch<S, A> {
+interface ThunkDispatch<S, A> {
   <Action extends (dispatch: ThunkDispatch<S, A>, getState: () => S) => unknown>(action: Action): ReturnType<Action>;
   (value: A): void;
 }
@@ -27,7 +27,7 @@ export interface ThunkDispatch<S, A> {
  * @param {Function} [init]
  * @returns {[*, Dispatch]}
  */
-export function useThunkReducer<S, A>(
+function useThunkReducer<S, A>(
   reducer: Reducer<S, A>,
   initialArg: S,
   init?: (s: S) => S,

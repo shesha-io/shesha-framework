@@ -7,7 +7,7 @@ import { PermissionAutocomplete } from '../../components/permissionAutocomplete/
 import { ConfigurableFormItem } from '../../components/formDesigner/components/formItem';
 import { IPropertySetting } from '../../providers/form/models';
 
-export interface IPermissionsControlProps {
+interface IPermissionsControlProps {
   enabled?: boolean;
   propertyName: string;
   readOnly?: boolean;
@@ -95,7 +95,7 @@ const PermissionsControlInner = (props: IPermissionsControlProps): ReactElement 
   );
 };
 
-export const PermissionsControl = (props: IPermissionsControlProps): ReactElement => {
+const PermissionsControl = (props: IPermissionsControlProps): ReactElement => {
   return Boolean(props.enabled) ? <PermissionsControlInner {...props} /> : props.children;
 };
 

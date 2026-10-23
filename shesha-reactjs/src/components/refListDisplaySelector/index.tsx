@@ -4,7 +4,7 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FC } from 'react';
 import { isRefListDisplayMode, RefListDisplayMode, RefListDisplayValue, toRefListDisplayMode } from './models';
 
-export interface IRefListDisplaySelectorProps {
+interface IRefListDisplaySelectorProps {
   value?: RefListDisplayValue | undefined;
   readOnly?: boolean | undefined;
   onChange?: ((value: RefListDisplayMode) => void) | undefined;

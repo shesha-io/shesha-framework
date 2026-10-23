@@ -1,7 +1,7 @@
 import { IChartsProps } from '@/designer-components/charts/model';
 import { createAction } from '@reduxjs/toolkit';
 
-export enum ChartDataActionsEnum {
+enum ChartDataActionsEnum {
   SetData = "SET_DATA",
   SetIsLoaded = "SET_IS_LOADED",
   SetIsFilterVisible = "SET_IS_FILTER_VISIBLE",

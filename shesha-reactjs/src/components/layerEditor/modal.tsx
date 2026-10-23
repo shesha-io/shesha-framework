@@ -36,7 +36,7 @@ const LayersListInner: FC<Omit<IFiltersListProps, 'layers'>> = ({ showModal, rea
   );
 };
 
-export interface ITableViewSelectorSettingsModal {
+interface ITableViewSelectorSettingsModal {
   visible: boolean;
   hideModal: () => void;
   value?: ILayerFormModel[] | undefined;
@@ -45,7 +45,7 @@ export interface ITableViewSelectorSettingsModal {
   settings: FormMarkup;
 }
 
-export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsModal> = ({
+const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsModal> = ({
   visible,
   onChange,
   hideModal,
@@ -77,7 +77,7 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
   );
 };
 
-export const LayerSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsModal, 'visible' | 'hideModal'>> = (
+const LayerSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsModal, 'visible' | 'hideModal'>> = (
   props,
 ) => {
   const [modalVisible, setModalVisible] = useState(false);

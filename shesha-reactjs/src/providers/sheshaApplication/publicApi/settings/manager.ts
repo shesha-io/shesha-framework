@@ -16,7 +16,7 @@ interface ModuleSettingsMap {
   categories: Map<string, CategorySettingsMap>;
 }
 
-export const SETTINGS_URLS = {
+const SETTINGS_URLS = {
   GET_CONFIGURATIONS: '/api/services/app/Settings/GetConfigurations',
   GET_VALUE: '/api/services/app/Settings/GetValue',
   SET_VALUE: '/api/services/app/Settings/UpdateValue',

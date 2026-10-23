@@ -9,7 +9,7 @@ import { useStyles } from '@/designer-components/_common/styles/listConfigurator
 import { MetadataSourceType } from '@/interfaces/metadata';
 import { ItemChangeDetails } from '@/components/listEditor';
 
-export interface IContainerRenderArgs {
+interface IContainerRenderArgs {
   index?: number[] | undefined;
   items: IModelItem[];
   onChange?: ((items: IModelItem[], changeDetails?: ItemChangeDetails) => void) | undefined;

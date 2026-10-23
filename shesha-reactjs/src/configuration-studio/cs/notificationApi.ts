@@ -2,7 +2,7 @@ import { App } from "antd";
 import { useRef } from "react";
 import { NotificationInstance } from "antd/lib/notification/interface";
 
-export interface ArgsProps {
+interface ArgsProps {
   message: React.ReactNode;
   description?: React.ReactNode;
   /*
@@ -37,7 +37,7 @@ type NotificationApiArguments = {
   antdApi: NotificationInstance;
 };
 
-export class NotificationApi implements INotificationApi {
+class NotificationApi implements INotificationApi {
   private _antdApi: NotificationInstance;
 
   constructor(args: NotificationApiArguments) {

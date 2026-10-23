@@ -1,14 +1,13 @@
 import { CellProps } from 'react-table';
-import { FormMode, ITableColumn } from '@/interfaces';
+import { ITableColumn } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { ITableDataColumn, ITableFormColumn } from '@/providers/dataTable/interfaces';
 import { IFieldComponentProps } from '@/providers/datatableColumnsConfigurator/models';
-import { InlineEditMode } from '@/components/reactTable/interfaces';
 
-export interface IHasColumnConfig<TConfig extends ITableColumn> {
+interface IHasColumnConfig<TConfig extends ITableColumn> {
   columnConfig: TConfig;
 }
-export interface IHasPropertyMetadata {
+interface IHasPropertyMetadata {
   propertyMeta?: IPropertyMetadata | undefined;
 }
 export interface IConfigurableCellProps<TConfig extends ITableColumn>
@@ -37,26 +36,4 @@ export interface IComponentWrapperProps {
   defaultRow?: { [key in string]?: unknown };
   defaultValue?: unknown | undefined;
   readOnly?: boolean | undefined;
-}
-
-export interface ITableCrudOptions {
-  canDelete?: boolean;
-  canEdit?: boolean;
-  inlineEditMode?: InlineEditMode;
-  canAdd?: boolean;
-  formMode: FormMode;
-}
-export interface IChangeProps {
-  add?: boolean;
-  edit?: boolean;
-  delete?: boolean;
-  inlineEditMode?: boolean;
-}
-
-export interface ICrudOptions {
-  canDivideWidth?: boolean;
-  canDoubleWidth?: boolean;
-  canTripleWidth?: boolean;
-  canDivideByThreeWidth?: boolean;
-  columnsChanged?: boolean;
 }

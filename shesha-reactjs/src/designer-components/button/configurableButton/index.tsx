@@ -29,7 +29,7 @@ export interface IConfigurableButtonProps extends Omit<IButtonItem, 'itemSubType
   onBeforeClick?: ((event: React.MouseEvent<HTMLElement>) => void) | undefined;
 }
 
-export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
+const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
   const { actionConfiguration, dynamicItem } = props;
   const { getUrlFromNavigationRequest } = useShaRouting();
   const { executeAction, useActionDynamicContext, prepareArguments } = useConfigurableActionDispatcher();

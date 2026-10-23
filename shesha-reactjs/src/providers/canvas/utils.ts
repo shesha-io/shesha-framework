@@ -1,5 +1,4 @@
-import { deepMergeValues } from "@/utils/object";
-import { DeviceTypes, ICanvasStateContext } from "./contexts";
+import { DeviceTypes } from "./contexts";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 
@@ -7,22 +6,6 @@ export const getDeviceTypeByWidth = (width: number): DeviceTypes => {
   return width > 724
     ? 'desktop'
     : width > 599
-      ? 'tablet'
-      : 'mobile';
-};
-
-export const getWidthByDeviceType = (deviceType: DeviceTypes): string => {
-  return deviceType === 'desktop'
-    ? '1024px'
-    : deviceType === 'tablet'
-      ? '724px'
-      : '599px';
-};
-
-export const getBiggerDevice = (a: DeviceTypes, b: DeviceTypes): DeviceTypes => {
-  return a === 'desktop' || b === 'desktop'
-    ? 'desktop'
-    : a === 'tablet' || b === 'tablet'
       ? 'tablet'
       : 'mobile';
 };
@@ -82,7 +65,7 @@ export interface IAutoZoomParams {
  * Direct numeric entry in the zoom input is free-form within [minZoom, maxZoom]
  * and is not restricted to these levels.
  */
-export const ZOOM_LEVELS = [25, 50, 75, 80, 100, 125, 150, 200] as const;
+const ZOOM_LEVELS = [25, 50, 75, 80, 100, 125, 150, 200] as const;
 
 export const DEFAULT_OPTIONS = {
   minZoom: 10,
@@ -238,19 +221,3 @@ export const screenSizeOptions = [
     label: 'Canvas', value: CANVAS_PRESET_SENTINEL, icon: DesktopOutlined,
   },
 ];
-
-export const getDeviceStyle = (data: Record<string, object | undefined> | undefined, device: DeviceTypes | undefined, defaultDevice: DeviceTypes = 'desktop'): object | undefined => {
-  if (!data) return {};
-  if (!device) return data[defaultDevice] ?? {};
-  return deepMergeValues(data[defaultDevice] ?? {}, data[device] ?? {});
-};
-
-
-export const applyCanvasSize = (state: ICanvasStateContext, width: number | string, deviceType: DeviceTypes): ICanvasStateContext => {
-  return {
-    ...state,
-    designerWidth: typeof width === 'string' ? width : `${width}px`,
-    designerDevice: deviceType,
-    activeDevice: getSmallerDevice(deviceType, state.physicalDevice ?? "desktop"),
-  };
-};

@@ -47,7 +47,7 @@ export interface LogViewerProps {
   showHeader?: boolean | undefined;
 }
 
-export interface LogStatistics {
+interface LogStatistics {
   total: number;
   errors: number;
   warnings: number;

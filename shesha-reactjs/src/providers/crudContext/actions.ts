@@ -2,7 +2,7 @@ import { createAction } from '@reduxjs/toolkit';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { CrudMode } from './models';
 
-export enum CrudActionEnums {
+enum CrudActionEnums {
   /* NEW_ACTION_TYPE_GOES_HERE */
   SwitchMode = 'SWITCH_MODE',
   SetAllowEdit = 'SET_ALLOW_EDIT',

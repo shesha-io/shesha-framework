@@ -20,7 +20,7 @@ export interface IHasHideForCompare {
   hideForCompare: boolean;
 }
 
-export interface IQueryBuilderColumn extends ITableColumn {
+interface IQueryBuilderColumn extends ITableColumn {
   fieldSettings?: FieldSettings;
   preferWidgets?: Widgets[];
 }

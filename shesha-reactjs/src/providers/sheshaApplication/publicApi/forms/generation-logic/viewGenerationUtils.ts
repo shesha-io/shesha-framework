@@ -14,7 +14,7 @@ import { EditMode, IComponentsContainer, IConfigurableFormComponent, IPropertyMe
 import { FormBuilderFactory } from "@/form-factory/interfaces";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
-export function findContainersWithPlaceholderRecursive(
+function findContainersWithPlaceholderRecursive(
   token: unknown,
   placeholder: string,
   results: IComponentsContainer[],

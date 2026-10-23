@@ -6,7 +6,7 @@ import { IEntityMetadataFetcher } from './models';
 import { createNamedContext } from '@/utils/react';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 
-export const EntityMetadataFetcherContext = createNamedContext<IEntityMetadataFetcher | undefined>(undefined, "EntityMetadataFetcherContext");
+const EntityMetadataFetcherContext = createNamedContext<IEntityMetadataFetcher | undefined>(undefined, "EntityMetadataFetcherContext");
 
 export const EntityMetadataFetcherProvider: FC<PropsWithChildren> = ({ children }) => {
   const httpClient = useHttpClient();

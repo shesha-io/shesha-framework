@@ -3,7 +3,7 @@ import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IPropertyErrors } from './contexts';
 import { createAction } from '@reduxjs/toolkit';
 
-export enum ModelActionEnums {
+enum ModelActionEnums {
   LoadRequest = 'LOAD_REQUEST',
   LoadSuccess = 'LOAD_SUCCESS',
   LoadError = 'LOAD_ERROR',

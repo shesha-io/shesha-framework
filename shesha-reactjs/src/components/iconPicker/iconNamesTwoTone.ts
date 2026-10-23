@@ -155,17 +155,17 @@ export const TWO_FACED_ICON_GROUPS = {
   ] as const,
 };
 
-export type DirectionalTwoToneIconTypes = typeof TWO_FACED_ICON_GROUPS.directional[number];
+type DirectionalTwoToneIconTypes = typeof TWO_FACED_ICON_GROUPS.directional[number];
 
-export type SuggestedTwoToneIconTypes = typeof TWO_FACED_ICON_GROUPS.suggested[number];
+type SuggestedTwoToneIconTypes = typeof TWO_FACED_ICON_GROUPS.suggested[number];
 
-export type EditorTwoToneIconTypes = typeof TWO_FACED_ICON_GROUPS.editor[number];
+type EditorTwoToneIconTypes = typeof TWO_FACED_ICON_GROUPS.editor[number];
 
-export type DataTwoToneIconTypes = typeof TWO_FACED_ICON_GROUPS.data[number];
+type DataTwoToneIconTypes = typeof TWO_FACED_ICON_GROUPS.data[number];
 
-export type BrandAndLogosTwoToneIconTypes = typeof TWO_FACED_ICON_GROUPS.brandAndLogos[number];
+type BrandAndLogosTwoToneIconTypes = typeof TWO_FACED_ICON_GROUPS.brandAndLogos[number];
 
-export type ApplicationTwoToneIconTypes = typeof TWO_FACED_ICON_GROUPS.application[number];
+type ApplicationTwoToneIconTypes = typeof TWO_FACED_ICON_GROUPS.application[number];
 
 export type TwoToneIconTypes =
   | DirectionalTwoToneIconTypes |

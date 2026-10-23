@@ -5,17 +5,17 @@ import { App } from "antd";
 import { ReactNode, useState } from "react";
 import { HookAPI as ModalHookAPI } from 'antd/lib/modal/useModal';
 
-export interface ShowModalArgs {
+interface ShowModalArgs {
   title?: string | undefined;
 };
 
-export interface ShowModalFormArgs extends ShowModalArgs {
+interface ShowModalFormArgs extends ShowModalArgs {
   formId: FormFullName;
   formArguments?: object;
   footerButtons?: ModalFooterButtons;
 };
 
-export interface ShowModalContentArgs extends ShowModalArgs {
+interface ShowModalContentArgs extends ShowModalArgs {
   footer?: ReactNode;
   content: ReactNode;
 };
@@ -25,7 +25,7 @@ type ShowModalContentExecutorArgs<T> = {
   reject: (reason?: unknown) => void;
   removeModal: () => void;
 };
-export type ShowModalContentExecutor<T> = (args: ShowModalContentExecutorArgs<T>) => ShowModalContentArgs;
+type ShowModalContentExecutor<T> = (args: ShowModalContentExecutorArgs<T>) => ShowModalContentArgs;
 
 interface ConfirmArgs {
   title: string;
@@ -52,9 +52,9 @@ type ModalApiArguments = {
   antdApi: ModalHookAPI;
 };
 
-export type ModalSettings = Partial<Pick<IModalWithContentProps, 'width' | 'showCloseIcon'>>;
+type ModalSettings = Partial<Pick<IModalWithContentProps, 'width' | 'showCloseIcon'>>;
 
-export class ModalApi implements IModalApi {
+class ModalApi implements IModalApi {
   private _createModal: CreateModalType;
 
   private _removeModal: RemoveModalType;

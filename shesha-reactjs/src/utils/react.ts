@@ -14,7 +14,7 @@ export const createNamedContext = <T>(defaultValue: T, displayName: string): Con
   return context;
 };
 
-export const getDisplayName = <TProps = unknown>(WrappedComponent: React.FC<TProps>): string => {
+const getDisplayName = <TProps = unknown>(WrappedComponent: React.FC<TProps>): string => {
   return WrappedComponent.displayName || WrappedComponent.name || 'Component';
 };
 

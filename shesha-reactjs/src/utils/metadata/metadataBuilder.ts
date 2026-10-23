@@ -35,13 +35,13 @@ export type WellKnownConstantDescriptor = {
   buildAction: MetadataBuilderAction;
 };
 
-export interface IMetadataBuilderInternal extends IMetadataBuilder {
+interface IMetadataBuilderInternal extends IMetadataBuilder {
   readonly environment: Environment;
   readonly metadataFetcher: MetadataFetcher;
   readonly standardProperties: Map<string, WellKnownConstantDescriptor>;
 }
 
-export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
+class ObjectMetadataBuilder implements IObjectMetadataBuilder {
   #metadataBuilder: IMetadataBuilderInternal;
 
   private metadata: IObjectMetadata = {

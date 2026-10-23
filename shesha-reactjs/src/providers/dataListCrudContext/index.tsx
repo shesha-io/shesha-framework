@@ -42,7 +42,7 @@ import { isDefined } from '@/utils/nullables';
 
 export type DataProcessor<TData extends object = object> = (data: TData) => Promise<TData>;
 
-export interface ICrudProviderProps<TValue extends object = object> {
+interface ICrudProviderProps<TValue extends object = object> {
   id?: string | undefined;
   isNewObject: boolean;
   allowEdit: boolean;

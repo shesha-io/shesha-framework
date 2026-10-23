@@ -10,7 +10,7 @@ import {
   SaveStatus,
 } from './contexts';
 
-export enum SettingsEditorActionEnums {
+enum SettingsEditorActionEnums {
   /* NEW_ACTION_TYPE_GOES_HERE */
   FetchConfigurations = 'FETCH_CONFIGURATIONS',
   FetchConfigurationsSuccess = 'FETCH_CONFIGURATIONS_SUCCEESS',

@@ -4,12 +4,8 @@ import { FormInstance } from "antd";
 import { SubmitRelatedEvents } from "../store/interfaces";
 import { isDefined } from "@/utils/nullables";
 
-export type SubmitOperation = 'create' | 'update'/* | 'delete'*/;
-
 export type ExpressionExecuter<TArguments = unknown, TResult = unknown> = (expression: string, args: TArguments) => Promise<TResult>;
 export type ExpressionCaller<TArguments = unknown, TResult = unknown> = (args: TArguments) => TResult;
-export type ExpressionFactory<TArguments extends object = object, TResult = unknown> = (expression: string) => ExpressionCaller<TArguments, TResult>;
-export type AsyncExpressionFactory<TArguments extends object = object, TResult = unknown> = ExpressionFactory<TArguments, Promise<TResult>>;
 
 export interface IDataArguments<Values> {
   data: Values;
@@ -29,7 +25,7 @@ export interface IFormDataSubmitter<Values extends object = object> {
   submitAsync: (payload: FormDataSubmitPayload<Values>) => Promise<unknown>;
 }
 
-export type SubmitterEndpointType = 'default' | 'static' | 'dynamic';
+type SubmitterEndpointType = 'default' | 'static' | 'dynamic';
 
 export interface GqlSubmitterSettings {
   excludeFormFields?: boolean | undefined;

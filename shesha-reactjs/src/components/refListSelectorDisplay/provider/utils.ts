@@ -1,18 +1,5 @@
-import { FetcherOptions } from '@/utils/fetchers';
 import { isIRefListItemGroup, RefListGroupItemProps } from './models';
 import { isDefined } from '@/utils/nullables';
-
-export const getRefListItems = (referenceList: string): FetcherOptions => {
-  return {
-    path: `/api/services/app/Entities/GetAll`,
-    queryParams: {
-      skipCount: 0,
-      entityType: 'Shesha.Framework.ReferenceListItem',
-      maxResultCount: -1,
-      filter: JSON.stringify({ and: [{ "==": [{ var: "referenceList" }, referenceList] }] }),
-    },
-  };
-};
 
 export interface IItemPosition {
   ownerArray: RefListGroupItemProps[];

@@ -45,7 +45,7 @@ const InputRowInput = (props: IInputRowInputProps): React.JSX.Element => {
   );
 };
 
-export const InputRow: FC<UnwrappedInputRowProps> = ({ inputs, readOnly, children, inline = false, hidden = false }) => {
+const InputRow: FC<UnwrappedInputRowProps> = ({ inputs, readOnly, children, inline = false, hidden = false }) => {
   const { styles } = useStyles();
   const { formData } = useShaFormInstance();
 

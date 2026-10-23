@@ -7,7 +7,7 @@ import { ITableRowData } from '@/providers/dataTable/interfaces';
 import { RowDataInitializer } from './interfaces';
 import { isNonEmptyArray } from '@/utils/array';
 
-export interface INewRowEditorProps<TData extends ITableRowData = ITableRowData> {
+interface INewRowEditorProps<TData extends ITableRowData = ITableRowData> {
   columns: ColumnInstance<TData>[];
   headerGroups: HeaderGroup<TData>[];
   creater: (data: TData) => Promise<TData>;
@@ -16,7 +16,7 @@ export interface INewRowEditorProps<TData extends ITableRowData = ITableRowData>
   parentFormId?: FormIdentifier | undefined;
 }
 
-export const NewTableRowEditor = <TData extends ITableRowData = ITableRowData>(props: INewRowEditorProps<TData>): ReactNode => {
+const NewTableRowEditor = <TData extends ITableRowData = ITableRowData>(props: INewRowEditorProps<TData>): ReactNode => {
   const { creater, columns, headerGroups, onInitData, components, parentFormId } = props;
 
   const { key, ...headerGroupProps } = isNonEmptyArray(headerGroups)

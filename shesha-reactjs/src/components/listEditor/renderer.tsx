@@ -18,7 +18,7 @@ export interface IListEditorRendererProps<TItem extends ListItem> {
   maxItemsCount?: number | undefined;
 }
 
-export interface MakeListContextArgs<TItem extends ListItem> {
+interface MakeListContextArgs<TItem extends ListItem> {
   value: TItem[];
   onChange: (value: TItem[]) => void;
   onReorder: (value: TItem[], prevValue: TItem[]) => void;
@@ -27,7 +27,7 @@ export interface MakeListContextArgs<TItem extends ListItem> {
   setSelectedItem?: ((item: TItem | undefined) => void) | undefined;
 }
 
-export const makeListContext = <TItem extends ListItem>({ value, onChange, initNewItem, selectedItem, setSelectedItem, onReorder }: MakeListContextArgs<TItem>): IListEditor<TItem> => {
+const makeListContext = <TItem extends ListItem>({ value, onChange, initNewItem, selectedItem, setSelectedItem, onReorder }: MakeListContextArgs<TItem>): IListEditor<TItem> => {
   const context: IListEditor<TItem> = {
     value,
     deleteItem: function (index: number): void {

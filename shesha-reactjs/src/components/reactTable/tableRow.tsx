@@ -11,7 +11,7 @@ import { useDataTableStore } from '@/providers/index';
 import { useStyles } from './styles/styles';
 import { ITableRowData } from '@/providers/dataTable/interfaces';
 
-export type RowEditMode = 'read' | 'edit';
+type RowEditMode = 'read' | 'edit';
 
 export interface ISortableRowProps<TData extends ITableRowData = ITableRowData> {
   prepareRow: (row: Row<TData>) => void;

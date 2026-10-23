@@ -9,7 +9,7 @@ import settingsFormJson from './settingsForm.json';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
-export interface ISpaceProps extends IConfigurableFormComponent {
+interface ISpaceProps extends IConfigurableFormComponent {
   align?: 'start' | 'end' | 'center' | 'baseline';
   direction?: 'vertical' | 'horizontal';
   size?: SizeType;

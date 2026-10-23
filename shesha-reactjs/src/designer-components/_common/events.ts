@@ -19,10 +19,10 @@ import { SyntheticEvent } from "react";
  * `onChange` is absent from the runtime list because each component wires it inline
  * (it also updates the component's value, which `getComponentEvents` does not do).
  */
-export const ALL_INPUT_EVENTS = ['onChange', 'onFocus', 'onBlur', 'onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'] as const;
+const ALL_INPUT_EVENTS = ['onChange', 'onFocus', 'onBlur', 'onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'] as const;
 
 export type StandardEventHandler = typeof ALL_INPUT_EVENTS[number];
-export type CustomEventHandler = `${StandardEventHandler}Custom`;
+type CustomEventHandler = `${StandardEventHandler}Custom`;
 
 export type StandardEventHandlerWithoutChange = Exclude<StandardEventHandler, 'onChange'>;
 

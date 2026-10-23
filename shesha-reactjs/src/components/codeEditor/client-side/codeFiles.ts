@@ -7,7 +7,7 @@ import { DTS_EXTENSION, TypesImporter } from "@/utils/metadata/typesImporter";
 import { Environment } from "@/publicJsApis/apis/metadataBuilder";
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from "@/utils/nullables";
 
-export interface ISourceCodeFile {
+interface ISourceCodeFile {
   content: string;
   filePath: string;
 }

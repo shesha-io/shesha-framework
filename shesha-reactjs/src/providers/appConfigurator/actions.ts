@@ -1,7 +1,7 @@
 import { ApplicationMode } from './models';
 import { createAction } from '@reduxjs/toolkit';
 
-export enum AppConfiguratorActionEnums {
+enum AppConfiguratorActionEnums {
   SwitchMode = 'SWITCH_MODE',
   ToggleEditModeConfirmation = 'TOGGLE_EDIT_MODE_CONFIRMATION',
   ToggleCloseEditModeConfirmation = 'TOGGLE_CLOSE_EDIT_MODE_CONFIRMATION',

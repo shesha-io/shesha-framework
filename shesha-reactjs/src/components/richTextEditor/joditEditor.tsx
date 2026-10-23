@@ -75,4 +75,4 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
   );
 };
 
-export default JoditEditorWrapper;
+

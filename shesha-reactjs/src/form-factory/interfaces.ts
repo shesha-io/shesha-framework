@@ -105,18 +105,15 @@ type AllComponentDefinitions =
   EditModeSelectorComponentDefinition |
   KeyInformationBarComponentDefinition;
 
-export type ComponentTypes = AllComponentDefinitions["type"];
+type ComponentTypes = AllComponentDefinitions["type"];
 
 /** Convertto camelCase */
-export type ToCamelCase<T> =
+type ToCamelCase<T> =
   T extends `${infer First}.${infer Rest}`
     ? `${First}${Capitalize<ToCamelCase<Rest>>}`
     : T;
 /** Convert to PascalCase */
-export type ToPascalCase<T> = T extends string ? Capitalize<ToCamelCase<T>> : never;
-
-/** Make property optional */
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+type ToPascalCase<T> = T extends string ? Capitalize<ToCamelCase<T>> : never;
 
 /** Omit property and keep union type properties */
 type CustomOmit<T, K extends keyof T> = {
@@ -133,9 +130,6 @@ export type FluentSettings<T extends IConfigurableFormComponent> = CustomOmit<T,
   visibleJs?: string | undefined;
   readOnly?: boolean | IPropertySetting<boolean> | undefined;
 };
-
-/** Extract settings from component definition */
-export type ExtractComponentSettings<TDef extends ComponentDefinition> = TDef extends ComponentDefinition<infer _TType, infer TSettings> ? FluentSettings<TSettings> : never;
 
 /** Extract config for all components */
 export type AllComponentsConfig<T extends AllComponentDefinitions = AllComponentDefinitions> = {
@@ -184,7 +178,7 @@ export type StandardFormBuilderMethods<TConfig extends Record<ComponentTypes, ob
 };
 
 /** Fluent form builder */
-export type FluentFormBuilder<TConfig extends Record<ComponentTypes, object>> = {
+type FluentFormBuilder<TConfig extends Record<ComponentTypes, object>> = {
   [K in keyof TConfig as `add${ToPascalCase<K>}`]: K extends string
     ? (props: TConfig[K], metadata?: IPropertyMetadata) => FluentFormBuilder<TConfig>
     : never;

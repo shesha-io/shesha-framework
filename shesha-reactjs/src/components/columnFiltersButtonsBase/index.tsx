@@ -8,7 +8,7 @@ export interface IColumnFiltersButtonsBaseProps {
   isFetchingTableData: boolean;
 }
 
-export const ColumnFiltersButtonsBase: FC<IColumnFiltersButtonsBaseProps> = ({
+const ColumnFiltersButtonsBase: FC<IColumnFiltersButtonsBaseProps> = ({
   applyFilters,
   clearFilters,
   isFetchingTableData,
