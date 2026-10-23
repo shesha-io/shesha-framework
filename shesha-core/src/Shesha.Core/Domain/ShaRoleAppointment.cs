@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
 using Shesha.EntityReferences;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
@@ -33,12 +32,5 @@ namespace Shesha.Domain
                 if (PermissionedEntity3 != null) yield return PermissionedEntity3;
             }
         }
-
-        public virtual DateTime? FromDate { get; set; }
-        public virtual DateTime? ToDate { get; set; }
-
-        [ReferenceList("Shesha.Core", "RoleAppointmentStatus")]
-        public virtual int? Status { get; set; }
-
     }
 }

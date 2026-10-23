@@ -6,8 +6,8 @@ namespace Shesha.ShaRoleAppointedPersons.Dto
 {
     public interface IShaRoleAppointedPersonDto
     {
-        Guid RoleId { get; }
-        EntityReferenceDto<Guid?> Person { get; }
-        List<EntityReferenceDto<Guid>> Regions { get; }
+        Guid RoleId { get; set; }
+        Guid PersonId { get; set; }
+        List<EntityReferenceDto<string>> PermissionedEntities { get; set; }
     }
 }

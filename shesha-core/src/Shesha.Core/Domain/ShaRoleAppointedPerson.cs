@@ -6,7 +6,7 @@ namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Core.ShaRoleAppointedPerson", 
         FriendlyName = "Appointed Person", 
-        CrudActions = CrudActions.All, 
+        CrudActions = CrudActions.Read, 
         CrudActionsAccess = CrudActionsAccess.RequiresPermissions, 
         CrudActionsPermissions = [PermissionNames.Role_Manage],
         IsConfigurable = false
