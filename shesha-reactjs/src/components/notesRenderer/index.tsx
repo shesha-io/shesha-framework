@@ -108,5 +108,3 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
     </div>
   );
 };
-
-export default NotesRenderer;

@@ -1,4 +1,4 @@
-import HelpTextPopover from '@/components/helpTextPopover';
+import { HelpTextPopover } from '@/components/helpTextPopover';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { extractAjaxResponse, IAjaxResponse, IErrorInfo } from '@/interfaces';
 import { GetAllResponse, IGenericGetAllPayload } from '@/interfaces/gql';

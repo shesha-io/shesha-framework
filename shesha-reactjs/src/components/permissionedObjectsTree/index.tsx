@@ -11,7 +11,7 @@ import { IUpdateItemArguments } from './update-item-arguments';
 import { ISetSearchTextArguments } from './set-search-text-arguments';
 import { extractAjaxResponse, IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { useAvailableConstantsData } from '@/providers/form/utils';
-import ShaSpin from '../shaSpin';
+import { ShaSpin } from '../shaSpin';
 import { isDefined } from '@/utils/nullables';
 import { buildUrl } from '@/utils';
 import { SetGroupingAction, SetSearchTextAction, UpdateItemAction } from './configurableActions';

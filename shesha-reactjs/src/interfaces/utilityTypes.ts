@@ -11,6 +11,7 @@ export type WithRequiredStrict<T, K extends keyof T> = Omit<T, K> & {
 };
 
 // Optional: A more detailed diff that also goes deep recursively
+/** @public */
 export type DeepDiff<T, U> = {
   onlyInT?: {
     [K in Exclude<keyof T, keyof U>]: T[K];

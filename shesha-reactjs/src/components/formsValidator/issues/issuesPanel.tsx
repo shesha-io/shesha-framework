@@ -3,7 +3,7 @@ import { Tabs } from 'antd';
 import { IssuesList } from './issuesList';
 import { IssuesTree } from './issuesTree';
 import { useAllValidationResults } from '@/providers/validator/hooks';
-import CustomErrorBoundary from '@/components/customErrorBoundary';
+import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { FieldValidationError } from '@/interfaces';
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { useFormDesigner } from '@/providers/formDesigner';

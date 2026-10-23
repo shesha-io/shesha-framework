@@ -1,6 +1,6 @@
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { FC, Fragment, ReactElement, useState } from 'react';
-import Show from '@/components/show';
+import { Show } from '@/components/show';
 import {
   Alert,
   Button,

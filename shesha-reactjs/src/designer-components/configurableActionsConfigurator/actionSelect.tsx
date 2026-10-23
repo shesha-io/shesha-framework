@@ -1,7 +1,7 @@
 import { FC, ReactNode, useMemo } from 'react';
 import { TreeSelect } from 'antd';
 import { IConfigurableActionGroupDictionary } from '@/providers/configurableActionsDispatcher/models';
-import HelpTextPopover from '@/components/helpTextPopover';
+import { HelpTextPopover } from '@/components/helpTextPopover';
 
 const getConfigurableActionFullName = (owner: string, name: string): string => {
   return owner

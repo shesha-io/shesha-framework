@@ -14,7 +14,7 @@ export {
   mergeExpressionContexts,
   type ExpressionContextTree,
 } from './expressionEditor/contextMetadata';
-export { default as FileUpload, type IFileUploadProps } from './fileUpload';
+export { FileUpload, type IFileUploadProps } from './fileUpload';
 export { ConfigurableFormRenderer } from './configurableForm/configurableFormRenderer';
 export { default as MultiCheckBoxRefList, type IMultiCheckBoxRefListProps } from './multiCheckBoxRefList';
 export { ReactTable } from './reactTable';
@@ -32,29 +32,29 @@ export { FormAutocomplete } from './configurableItemAutocomplete/formAutocomplet
 export { NotificationAutocomplete } from './configurableItemAutocomplete/notificationAutocomplete';
 export { default as CustomFile } from './customFile';
 export { default as ErrorBoundary } from './errorBoundary/errorBoundary';
-export { default as CustomErrorBoundary } from './customErrorBoundary';
-export { default as ErrorIconPopover, type IErrorIconPopoverProps } from './componentErrors/errorIconPopover';
-export { default as CollapsiblePanel, type ICollapsiblePanelProps } from './panel';
+export { CustomErrorBoundary } from './customErrorBoundary';
+export { ErrorIconPopover, type IErrorIconPopoverProps } from './componentErrors/errorIconPopover';
+export { CollapsiblePanel, type ICollapsiblePanelProps } from './panel';
 export { default as ColumnFilters } from './columnFilters';
 export { default as ColumnFiltersBase, type IColumnFiltersBaseProps } from './columnFiltersBase';
 export { default as ColumnFiltersButtons } from './columnFiltersButtons';
 export { default as ColumnFiltersButtonsBase, type IColumnFiltersButtonsBaseProps } from './columnFiltersButtonsBase';
-export { default as ColumnItemFilter, type IColumnItemFilterProps } from './columnItemFilter';
+export { ColumnItemFilter, type IColumnItemFilterProps } from './columnItemFilter';
 export { default as columnsFilterSelect } from './columnsFilterSelect';
 export { default as columnsFilterSelectBase, type IColumnsFilterSelectBaseProps } from './columnsFilterSelectBase';
-export { default as DateDisplay, type IDateDisplayProps } from './dateDisplay';
-export { default as EntityPicker } from './entityPicker';
-export { default as GlobalTableFilter, type IGlobalTableFilterProps } from './globalTableFilter';
+export { DateDisplay, type IDateDisplayProps } from './dateDisplay';
+export { EntityPicker } from './entityPicker';
+export { GlobalTableFilter, type IGlobalTableFilterProps } from './globalTableFilter';
 export { default as GlobalTableFilterBase, type IGlobalTableFilterBaseProps } from './globalTableFilterBase';
 export { default as GooglePlacesAutocomplete, type IGooglePlacesAutocompleteProps } from './googlePlacesAutocomplete';
 export { default as HtmlHead, type IHtmlHeadProps } from './htmlHead';
-export { default as IdleTimerRenderer } from './idleTimerRenderer';
+export { IdleTimerRenderer } from './idleTimerRenderer';
 export { DataTable, type IIndexTableProps, type IExtendedModalProps } from './dataTable';
 export {
-  default as DatatableAdvancedFilter,
+  DatatableAdvancedFilter,
 } from './dataTable/advancedFilter';
 export {
-  default as DatatableColumnsSelector,
+  DatatableColumnsSelector,
 } from './dataTable/columnsSelector';
 export { default as IndexToolbar, type IIndexToolbarProps } from './indexToolbar';
 export { default as LayoutHeading, type ILayoutHeadingProps } from './layoutHeading';
@@ -62,22 +62,22 @@ export { default as MainLayout, type IMainLayoutProps } from './mainLayout';
 export { default as HorizontalLayout, type IHorizontalLayoutProps } from './horizontalLayout';
 export { default as NodeOrFuncRenderer, type ReactNodeOrFunc } from './nodeOrFuncRenderer';
 export { default as NotAuthorized } from './notAuthorized';
-export { default as NotesRenderer, type INotesRendererProps } from './notesRenderer';
+export { NotesRenderer, type INotesRendererProps } from './notesRenderer';
 export { default as NotesRendererBase, type INotesRendererBaseProps } from './notesRendererBase';
 export { default as ProtectedContent, type IProtectedContentProps } from './protectedContent';
 export { default as RefListRadioButtons, type IRefListRadioButtonsProps } from './refListRadioButtons';
-export { default as SectionSeparator, type ISectionSeparatorProps } from './sectionSeparator';
+export { SectionSeparator, type ISectionSeparatorProps } from './sectionSeparator';
 export { default as ShaDivider } from './shaDivider';
 export { default as ShaLink, type IShaLinkProps } from './shaLink';
-export { default as ShaSpin, type IShaSpin } from './shaSpin';
+export { ShaSpin, type IShaSpin } from './shaSpin';
 export { SidebarMenu, type ISidebarMenuProps } from './sidebarMenu';
 export { sidebarMenuItemToMenuItem } from './sidebarMenu/utils';
 export { default as StoredFilesRenderer, type IStoredFilesRendererProps } from './storedFilesRenderer';
-export { default as StoredFilesRendererBase, type IStoredFilesRendererBaseProps } from './storedFilesRendererBase';
-export { default as TablePager, type ITablePagerProps } from './tablePager';
+export { StoredFilesRendererBase, type IStoredFilesRendererBaseProps } from './storedFilesRendererBase';
+export { TablePager, type ITablePagerProps } from './tablePager';
 export { default as TablePaging, type ITablePagerBaseProps } from './tablePager/tablePaging';
 export { default as StatusLabel, type IStatusLabelProps } from './statusLabel';
-export { default as ValidationErrors, type IValidationErrorsProps } from './validationErrors';
+export { ValidationErrors, type IValidationErrorsProps } from './validationErrors';
 export { ShaIcon, type IShaIconProps, type IconType } from './shaIcon';
 export { default as IconPicker, type IIconPickerProps } from './iconPicker';
 export { default as EmptyState, type IEmptyStateProps } from './emptyState';
@@ -91,21 +91,21 @@ export { type JsonLogicResult } from '@react-awesome-query-builder/antd';
 export { ConfigurableForm } from './configurableForm';
 export { FormWithFlatMarkup, type IFormWithFlatMarkupProps } from './configurableForm/formWithFlatMarkup';
 export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from './configurableForm/models';
-export { default as Show, type IShowProps } from './show';
+export { Show, type IShowProps } from './show';
 export { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 export { type ICodeEditorProps, type GetResultTypeFunc, type GetAvailableConstantsFunc } from '@/designer-components/codeEditor/interfaces';
 export { Autocomplete, type IAutocompleteProps } from './autocomplete';
 export { Page } from './page';
-export { default as EditableTagGroup, type IEditableTagGroupProps } from './editableTagGroup';
+export { EditableTagGroup, type IEditableTagGroupProps } from './editableTagGroup';
 export { default as QuickView, type IQuickViewProps } from './quickView';
 export { SidebarConfigurator } from './configurableSidebarMenu/configurator';
 export { ConfigurableSidebarMenu } from './configurableSidebarMenu';
 export { ComponentSettingsModal } from './configurableSidebarMenu/settingsModal';
 export { LabelValueEditor } from './labelValueEditor/labelValueEditor';
 export { default as RichTextEditor, type IRichTextEditorProps } from './richTextEditor';
-export { default as SettingsEditor } from './settingsEditor';
+export { SettingsEditor } from './settingsEditor';
 export { FormComponentSelector, type IFormComponentSelectorProps } from './formComponentSelector';
-export { default as PropertyAutocomplete } from './propertyAutocomplete/propertyAutocomplete';
+export { PropertyAutocomplete } from './propertyAutocomplete/propertyAutocomplete';
 export { ColorPicker } from './colorPicker';
 export { default as ComponentsContainer } from './formDesigner/containers/componentsContainer';
 export { HelpTextPopover } from './helpTextPopover';

@@ -26,5 +26,3 @@ export const HelpTextPopover: FC<PropsWithChildren<IHelpTextPopoverProps>> = ({ 
     )
     : <>{children}</>;
 };
-
-export default HelpTextPopover;

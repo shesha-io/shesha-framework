@@ -4,7 +4,7 @@ import { Empty, Select, SelectProps, Spin, Typography } from 'antd';
 import { useGet } from '@/hooks';
 import { AbpWrappedResponse } from '@/interfaces/gql';
 import { useDebouncedCallback } from 'use-debounce';
-import HelpTextPopover from '../helpTextPopover';
+import { HelpTextPopover } from '../helpTextPopover';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
 import { isDefined } from '@/utils/nullables';

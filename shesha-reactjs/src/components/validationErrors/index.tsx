@@ -126,5 +126,3 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
 
   return renderValidationErrors({ title: parsedError.message ?? defaultMessage, ...rest });
 };
-
-export default ValidationErrors;

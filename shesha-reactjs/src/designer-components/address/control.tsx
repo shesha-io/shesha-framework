@@ -1,7 +1,7 @@
 import GooglePlacesAutocomplete, { GooglePlacesAutocompleteInputProps, IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import { CSSProperties, FC, Fragment, useEffect, useState } from 'react';
 import * as React from 'react';
-import ValidationErrors from '@/components/validationErrors';
+import { ValidationErrors } from '@/components/validationErrors';
 import { getAddressValue, getSearchOptions, loadGooglePlaces } from './utils';
 import { IAddressCompomentBaseProps } from './models';
 import { useGet } from '@/hooks';

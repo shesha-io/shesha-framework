@@ -82,5 +82,3 @@ export const TablePager: FC<ITablePagerProps> = (props) => {
     <TableNoPaging totalRows={totalRows} style={style} font={props.font} stylingBoxJson={props.stylingBoxJson} />
   );
 };
-
-export default TablePager;

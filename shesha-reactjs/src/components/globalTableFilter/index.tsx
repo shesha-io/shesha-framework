@@ -22,5 +22,3 @@ export const GlobalTableFilter: FC<IGlobalTableFilterProps> = ({ searchProps, st
     />
   );
 };
-
-export default GlobalTableFilter;

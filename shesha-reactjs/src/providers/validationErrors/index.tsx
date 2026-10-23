@@ -201,8 +201,5 @@ export const useValidationErrorsOrDefault = (): IValidationErrorsStateContext & 
   };
 };
 
-// Backward compatibility: export with old name
-export const ValidationErrorsProvider = FormComponentValidationProvider;
-
 // Export the component validation hook
 export { useComponentValidation } from './useComponentValidation';

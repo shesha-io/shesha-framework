@@ -43,5 +43,3 @@ export const DatatableColumnsSelector: FC = () => {
     </div>
   );
 };
-
-export default DatatableColumnsSelector;

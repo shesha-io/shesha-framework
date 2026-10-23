@@ -2,7 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Input, InputProps, Tag, type InputRef } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import * as React from 'react';
-import Show from '@/components/show';
+import { Show } from '@/components/show';
 import { isDefined } from '@/utils/nullables';
 
 export interface IEditableTagGroupProps extends Omit<InputProps, 'value' | 'onChange'> {
@@ -129,5 +129,3 @@ export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onCha
     </>
   );
 };
-
-export default EditableTagGroup;

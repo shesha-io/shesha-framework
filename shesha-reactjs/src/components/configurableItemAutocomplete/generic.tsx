@@ -4,7 +4,7 @@ import { useGet } from '@/hooks';
 import { useDebouncedCallback } from 'use-debounce';
 import { GENERIC_ENTITIES_ENDPOINT, LEGACY_ITEMS_MODULE_NAME } from '@/shesha-constants';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
-import HelpTextPopover from '@/components/helpTextPopover';
+import { HelpTextPopover } from '@/components/helpTextPopover';
 import { ConfigurableItemFullName, isEntityMetadata } from '@/interfaces';
 import { MetadataProvider, useMetadata } from '@/providers';
 import { StandardEntityActions } from '@/interfaces/metadata';

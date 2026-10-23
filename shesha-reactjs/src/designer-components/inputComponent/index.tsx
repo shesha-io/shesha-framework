@@ -8,7 +8,7 @@ import { useDefaultModelActionsOrUndefined, useDefaultModelPropertyUpdateSubscri
 import { getValueByPropertyName } from '@/utils/object';
 import { renderValueForDisplay } from './utils';
 import { isNotNullOrWhiteSpace } from '@/utils';
-import CustomErrorBoundary from '@/components/customErrorBoundary';
+import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 
 /** Stable reference so the Popover does not see a new array on every render. */
 const POPOVER_TRIGGERS: ('hover' | 'focus' | 'click')[] = ['hover', 'focus', 'click'];

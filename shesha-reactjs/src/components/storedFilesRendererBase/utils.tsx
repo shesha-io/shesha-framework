@@ -8,7 +8,7 @@ import { FormIdentifier } from '@/providers/form/models';
 import { ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { StoredFileModel } from '@/utils/storedFile/models';
 import { ConfigurableForm } from '../configurableForm';
-import DateDisplay from '../dateDisplay';
+import { DateDisplay } from '../dateDisplay';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { HttpClientApi } from '@/publicJsApis/apis/httpClient';
 

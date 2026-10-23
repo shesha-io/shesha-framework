@@ -4,7 +4,7 @@ import { App } from 'antd';
 import * as React from 'react';
 import { extractErrorInfo } from '@/utils/errors';
 import ActionButton, { IActionButtonProps } from '../actionButton/index';
-import ValidationErrors from '../validationErrors';
+import { ValidationErrors } from '../validationErrors';
 import { useStyles } from './styles/styles';
 
 const CrudActionButtons = (): React.JSX.Element => {

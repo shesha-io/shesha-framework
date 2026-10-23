@@ -1,7 +1,7 @@
 import { cloneElement, FC, ReactElement, useState, isValidElement, SyntheticEvent } from 'react';
 import * as React from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import SettingsControl, { SettingsControlChildrenFunc } from '../settingsControl';
+import { SettingsControl, SettingsControlChildrenFunc } from '../settingsControl';
 import { ISettingsFormItemProps } from '../settingsFormItem';
 import { useStyles } from '../styles/styles';
 import { useDefaultModelPropertyUpdateSubscription, useDefaultModelActionsOrUndefined } from '../defaultModelProvider/defaultModelProvider';

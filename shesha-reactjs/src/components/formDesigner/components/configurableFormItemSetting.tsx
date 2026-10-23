@@ -8,7 +8,7 @@ import { ConfigurableFormItemLive } from './configurableFormItemLive';
 import { useStyles } from './styles';
 import classNames from 'classnames';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
-import SettingsControl, { SettingsControlChildrenFunc } from '@/designer-components/_settings/settingsControl';
+import { SettingsControl, SettingsControlChildrenFunc } from '@/designer-components/_settings/settingsControl';
 import { IPropertySetting, UnwrapCodeEvaluators } from '@/providers';
 import { IAnyObject } from '@/interfaces';
 import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';

@@ -1065,5 +1065,3 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       )
   );
 };
-
-export default StoredFilesRendererBase;

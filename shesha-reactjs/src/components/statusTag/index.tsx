@@ -96,5 +96,3 @@ export const StatusTag: FC<IStatusTagProps> = ({
     </Tag>
   );
 };
-
-export default StatusTag;

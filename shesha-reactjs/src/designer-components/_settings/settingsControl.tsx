@@ -116,5 +116,3 @@ export const SettingsControl = <Value = unknown>(props: ISettingsControlProps<Va
     </div>
   );
 };
-
-export default SettingsControl;

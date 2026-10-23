@@ -9,7 +9,7 @@ import { IConfigurableFormComponent, MetadataProvider, useFormDesignerComponents
 import { MetadataType } from '@/providers/metadata/contexts';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { useFormDesignerSettings } from '@/providers/formDesigner';
-import SettingsControl from '../_settings/settingsControl';
+import { SettingsControl } from '../_settings/settingsControl';
 import { getValueFromPropertySettings } from '../_settings/utils/utils';
 import { useStyles } from '../_settings/styles/styles';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';

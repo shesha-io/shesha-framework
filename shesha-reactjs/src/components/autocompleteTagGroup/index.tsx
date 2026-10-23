@@ -3,7 +3,7 @@ import { InputProps, Tag } from 'antd';
 import { FC, useState } from 'react';
 import * as React from 'react';
 import { Autocomplete } from '@/components/autocomplete';
-import Show from '@/components/show';
+import { Show } from '@/components/show';
 import { isDefined } from '@/utils/nullables';
 
 interface IAutocompleteTagGroupProps extends Omit<InputProps, 'value' | 'onChange'> {

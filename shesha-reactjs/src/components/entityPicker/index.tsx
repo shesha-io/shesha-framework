@@ -293,7 +293,3 @@ export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }
     <EntityPickerEditable {...restProps} displayEntityKey={displayEntityKey} />
   );
 };
-
-;
-
-export default EntityPicker;

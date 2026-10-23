@@ -1,6 +1,6 @@
 import { CSSProperties, FC, ReactNode } from 'react';
 import { useStyles } from './styles/styles';
-import Show from '../show';
+import { Show } from '../show';
 import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { ISectionSeparatorComponentProps } from '@/designer-components/sectionSeprator/interfaces';
@@ -59,5 +59,3 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = (props) => {
       </div>
     );
 };
-
-export default SectionSeparator;

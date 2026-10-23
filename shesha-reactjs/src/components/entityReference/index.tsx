@@ -26,7 +26,7 @@ import { buildUrl } from '@/utils';
 import { extractAjaxResponse, IAjaxResponse, IAnyObject } from '@/interfaces';
 import { ShaIcon } from '../shaIcon';
 import ShaLink from '../shaLink';
-import ValidationErrors from '../validationErrors';
+import { ValidationErrors } from '../validationErrors';
 import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { extractErrorInfo } from '@/utils/errors';

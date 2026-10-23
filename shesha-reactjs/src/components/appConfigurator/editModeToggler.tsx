@@ -62,5 +62,3 @@ export const AppEditModeToggler: FC = () => {
     </Space>
   );
 };
-
-export default AppEditModeToggler;

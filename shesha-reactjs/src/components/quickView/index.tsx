@@ -1,5 +1,5 @@
 import { ConfigurableForm, ShaIcon } from '@/components/';
-import ValidationErrors from '@/components/validationErrors';
+import { ValidationErrors } from '@/components/validationErrors';
 import { ConditionalMetadataProvider, DEFAULT_FORM_SETTINGS, FormItemProvider, FormMarkupWithSettings, useHttpClient, useSheshaApplication } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { FormIdentifier } from '@/providers/form/models';

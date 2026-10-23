@@ -24,5 +24,3 @@ export const DatatableAdvancedFilter: FC = () => {
     </div>
   );
 };
-
-export default DatatableAdvancedFilter;

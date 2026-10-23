@@ -1,6 +1,6 @@
 import { IAjaxResponse } from '@/interfaces/ajaxResponse';
 
-export interface FormIdFullNameDto {
+interface FormIdFullNameDto {
   name: string;
   module: string;
 }

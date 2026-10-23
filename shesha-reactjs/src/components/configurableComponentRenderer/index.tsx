@@ -129,5 +129,3 @@ export const ConfigurableComponentRenderer = <TSettings extends object>({
     </>
   );
 };
-
-export default ConfigurableComponentRenderer;

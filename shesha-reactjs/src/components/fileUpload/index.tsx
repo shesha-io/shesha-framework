@@ -618,5 +618,3 @@ export const FileUpload: FC<IFileUploadProps> = ({
     </>
   );
 };
-
-export default FileUpload;
