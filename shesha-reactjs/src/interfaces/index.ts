@@ -1,6 +1,5 @@
 export { type IComment } from './comment';
 export { type ILoadable } from './loadable';
-export { type IDispatchable } from './dispatchable';
 export { type IItem } from './item';
 export { type IToastData } from './toastData';
 export { type ITokenData } from './tokenData';

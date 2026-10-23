@@ -8,7 +8,7 @@ import { IGenericGetAllPayload, IHasEntityTypeIdPayload } from '@/interfaces/gql
 import { isDefined } from '@/utils/nullables';
 import { Row, SortingRule } from 'react-table';
 
-export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean | null | undefined;
+export type ColumnFilter = [string, string] | [number, number] | string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean | null | undefined;
 
 export type IndexColumnFilterOption =
   | 'contains' |
