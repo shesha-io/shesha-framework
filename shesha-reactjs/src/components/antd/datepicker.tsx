@@ -1,6 +1,6 @@
 import { DatePicker } from 'antd';
 import type { Moment } from 'moment';
-import momentGenerateConfig from 'rc-picker/lib/generate/moment';
+import momentGenerateConfig from '@rc-component/picker/generate/moment';
 import { ComponentProps } from 'react';
 
 const MomentDatePicker = DatePicker.generatePicker<Moment>(momentGenerateConfig);
