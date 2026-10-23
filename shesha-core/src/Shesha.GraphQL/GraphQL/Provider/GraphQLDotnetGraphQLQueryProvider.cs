@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using GraphQL;
 using GraphQL.SystemTextJson;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,18 +29,18 @@ namespace Shesha.GraphQL.Provider
             _serviceProvider = serviceProvider;
         }
 
-        public virtual async Task<ExecutionResult> ExecuteAsync(string operationName, string query,
-            Dictionary<string, object> variables, string defaultSchemaName = null)
+        public virtual async Task<ExecutionResult> ExecuteAsync(string? operationName, string query,
+            Dictionary<string, object?>? variables, string? defaultSchemaName = null)
         {
             var schema = await _schemaContainer.GetOrDefaultAsync(operationName, defaultSchemaName);
 
-            variables ??= new Dictionary<string, object>();
+            variables ??= new Dictionary<string, object?>();
 
             foreach (var pair in variables)
             {
                 if (pair.Value is JsonElement)
                 {
-                    variables[pair.Key] = pair.Value;//.ToString().ToInputs();
+                    variables[pair.Key] = pair.Value;
                 }
             }
 
@@ -67,7 +68,7 @@ namespace Shesha.GraphQL.Provider
             memoryStream.Seek(0, SeekOrigin.Begin);
 
             var deserializedResult = await _writer.ReadAsync<ExecutionResult>(memoryStream);
-            return deserializedResult;
+            return deserializedResult.NotNull();
         }
     }
 }

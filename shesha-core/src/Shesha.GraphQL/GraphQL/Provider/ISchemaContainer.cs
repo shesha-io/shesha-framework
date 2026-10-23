@@ -14,7 +14,7 @@ namespace Shesha.GraphQL.Provider
         /// <param name="schemaName"></param>
         /// <param name="defaultSchemaName"></param>
         /// <returns></returns>
-        Task<ISchema> GetOrDefaultAsync(string schemaName, string defaultSchemaName = null);
+        Task<ISchema> GetOrDefaultAsync(string? schemaName, string? defaultSchemaName = null);
 
         /// <summary>
         /// Register custom schema

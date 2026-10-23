@@ -18,7 +18,7 @@ namespace Shesha.GraphQL.Provider
         Task<ExecutionResult> ExecuteAsync(
             [CanBeNull] string? operationName,
             [NotNull] string query,
-            [CanBeNull] Dictionary<string, object>? variables,
+            [CanBeNull] Dictionary<string, object?>? variables,
             [CanBeNull] string? defaultSchemaName = null);
     }
 }

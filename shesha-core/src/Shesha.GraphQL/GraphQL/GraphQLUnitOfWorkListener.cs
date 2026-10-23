@@ -8,7 +8,7 @@ namespace Shesha.GraphQL.UnitOfWork
 {
     public sealed class GraphQLUnitOfWorkListener : IDocumentExecutionListener, IDisposable
     {
-        private IUnitOfWorkCompleteHandle _unitOfWorkCompleteHandle;
+        private IUnitOfWorkCompleteHandle? _unitOfWorkCompleteHandle;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private bool _disposed;
 
@@ -21,7 +21,8 @@ namespace Shesha.GraphQL.UnitOfWork
 
         public async Task AfterExecutionAsync(IExecutionContext context)
         {
-            await _unitOfWorkCompleteHandle?.CompleteAsync();
+            if (_unitOfWorkCompleteHandle != null)
+                await _unitOfWorkCompleteHandle.CompleteAsync();
         }
 
         public Task AfterValidationAsync(IExecutionContext context, IValidationResult validationResult)

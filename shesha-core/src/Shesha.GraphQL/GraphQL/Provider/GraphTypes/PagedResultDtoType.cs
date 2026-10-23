@@ -1,7 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
-using GraphQL;
 using GraphQL.Types;
-using System;
 
 namespace Shesha.GraphQL.Provider.GraphTypes
 {
@@ -17,9 +15,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
 
         private static string MakeName()
         {
-            var genericTypeName = GraphTypeMapper.BuiltInScalarMappings.ContainsKey(typeof(T))
-                ? ((IGraphType)Activator.CreateInstance(GraphTypeMapper.BuiltInScalarMappings[typeof(T)])).Name
-                : typeof(T).GetNamedType().Name;
+            var genericTypeName = GraphTypeMapper.GetTypeName<T>();
 
             return $"PagedResultDto_{genericTypeName}";
         }

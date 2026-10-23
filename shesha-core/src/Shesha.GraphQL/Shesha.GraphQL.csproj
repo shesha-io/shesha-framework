@@ -6,7 +6,6 @@
     <Title>Shesha.GraphQL</Title>
     <Authors>Shesha</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Nullable>annotations</Nullable>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 

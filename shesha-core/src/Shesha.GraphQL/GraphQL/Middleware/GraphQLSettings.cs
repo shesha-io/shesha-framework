@@ -11,7 +11,7 @@ namespace Shesha.GraphQL.Middleware
     {
         public PathString Path { get; set; } = "/graphql";
 
-        public Func<HttpContext, IDictionary<string, object>> BuildUserContext { get; set; }
+        public Func<HttpContext, IDictionary<string, object?>> BuildUserContext { get; set; }
 
         public bool EnableMetrics { get; set; }
     }

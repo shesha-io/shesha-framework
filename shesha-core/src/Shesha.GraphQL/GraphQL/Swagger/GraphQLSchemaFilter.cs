@@ -37,18 +37,18 @@ namespace Shesha.GraphQL.Swagger
             if (!context.Type.IsSubtypeOfGeneric(typeof(GraphQLDataResult<>)))
                 return;
 
-            var genericArg = context.Type.GetGenericArguments().FirstOrDefault();
+            var genericArg = context.Type.GetGenericArguments().First();
 
             var isPagedResult = genericArg.IsSubtypeOfGeneric(typeof(PagedResultDto<>));
 
             var entityType = isPagedResult
-                ? genericArg.GetGenericArguments().FirstOrDefault()
+                ? genericArg.GetGenericArguments().First()
                 : genericArg;
 
             if (!entityType.IsEntityType())
                 return;
 
-            schema.Properties.Clear();
+            schema.Properties?.Clear();
 
             if (isPagedResult) 
             {
@@ -59,7 +59,7 @@ namespace Shesha.GraphQL.Swagger
                 foreach (var property in pagedResultProps)
                 {
                     var propertySchema = context.SchemaGenerator.GenerateSchema(property.PropertyType, context.SchemaRepository, memberInfo: property);
-                    schema.Properties.Add(property.Name.ToCamelCase(), propertySchema);
+                    schema.Properties?.Add(property.Name.ToCamelCase(), propertySchema);
                 }
                 schema.Description = "NOTE: shape of the response depends on the `properties` argument";
             } else 
@@ -85,7 +85,7 @@ namespace Shesha.GraphQL.Swagger
             var dtoType = GetDtoType(entityType);
 
             // build list of properties for case-insensitive search
-            var propNames = schema.Properties.Select(p => p.Key.ToLower()).ToList();
+            var propNames = schema.Properties?.Select(p => p.Key.ToLower()).ToList() ?? new();
 
             context.SchemaGenerator.GenerateSchema(dtoType, context.SchemaRepository);
 
@@ -100,7 +100,7 @@ namespace Shesha.GraphQL.Swagger
                 // note: Nullable is not processed by GenerateSchema
                 propertySchema.SetNullable(property.PropertyType.IsNullableType());
 
-                schema.Properties.Add(property.Name.ToCamelCase(), propertySchema);
+                schema.Properties?.Add(property.Name.ToCamelCase(), propertySchema);
             }
         }
     }
