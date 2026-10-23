@@ -32,7 +32,6 @@ namespace Shesha.Authorization
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [AllowAnonymous]
     public class TokenAuthController : SheshaControllerBase
     {
         private readonly LogInManager _logInManager;
@@ -86,7 +85,8 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
-        [EnableRateLimiting(SheshaRateLimitingPolicies.Auth)]
+        [AllowAnonymous]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Auth)]        
         public async Task<AuthenticateResultModel> AuthenticateAsync([FromBody] AuthenticateModel model)
         {
             // Check for user registration status
@@ -151,6 +151,7 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated, IsConfigurable = false)]
         public async Task<bool> SignOffAsync()
         {
             var jti = User.GetTokenId();
@@ -248,6 +249,7 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<AuthenticateResultModel> OtpAuthenticateAsync([FromBody] OtpAuthenticateModel model)
         {
             var tenancyName = GetTenancyNameOrNull();
@@ -265,12 +267,14 @@ namespace Shesha.Authorization
         #endregion
 
         [HttpGet]
+        [AllowAnonymous]
         public List<ExternalLoginProviderInfoModel> GetExternalAuthenticationProviders()
         {
             return ObjectMapper.Map<List<ExternalLoginProviderInfoModel>>(_externalAuthConfiguration.Providers);
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ExternalAuthenticateResultModel> ExternalAuthenticateAsync([FromBody] ExternalAuthenticateModel model)
         {
             var externalUser = await GetExternalUserInfoAsync(model);
