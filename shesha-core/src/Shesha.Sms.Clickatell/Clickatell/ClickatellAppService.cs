@@ -17,8 +17,12 @@ namespace Shesha.Sms.Clickatell
         private readonly IClickatellSmsGateway _gateway;
 
         /// <summary>
-        /// Default constructor
+        /// Creates the service.
         /// </summary>
+        /// <param name="clickatellSmsGateway">
+        /// Gateway injected by Windsor. It is not obtained from ISmsGatewayFactory.GetSmsGatewayAsync,
+        /// so this service must not pass it to ISmsGatewayFactory.ReleaseGateway.
+        /// </param>
         public ClickatellAppService(IClickatellSmsGateway clickatellSmsGateway)
         {
             _gateway = clickatellSmsGateway;
