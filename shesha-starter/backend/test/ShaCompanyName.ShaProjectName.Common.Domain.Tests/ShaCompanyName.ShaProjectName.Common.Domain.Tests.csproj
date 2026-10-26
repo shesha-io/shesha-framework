@@ -7,14 +7,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abp.Castle.Log4Net" Version="10.3.0" />
-		<PackageReference Include="Hangfire.SqlServer" Version="1.8.23" />
+		<PackageReference Include="Abp.Castle.Log4Net" Version="10.5.1" />
+		<PackageReference Include="Hangfire.SqlServer" Version="1.8.25" />
 		<PackageReference Include="Shesha.Application" Version="$(SheshaVersion)" />
 		<PackageReference Include="Shesha.Core" Version="$(SheshaVersion)" />
 		<PackageReference Include="Shesha.Framework" Version="$(SheshaVersion)" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Identity.Client" Version="4.54.1" />
+		<PackageReference Include="Microsoft.Identity.Client" Version="4.91.1" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
 		<PackageReference Include="Moq" Version="4.20.70" />
 		<PackageReference Include="NSubstitute" Version="5.1.0" />
@@ -26,7 +26,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Abp.TestBase" Version="10.3.0" />
+		<PackageReference Include="Abp.TestBase" Version="10.5.1" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\..\src\Module\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj" />

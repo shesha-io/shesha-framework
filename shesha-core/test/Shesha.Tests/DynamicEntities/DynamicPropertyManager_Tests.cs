@@ -147,7 +147,7 @@ namespace Shesha.Tests.DynamicEntities
                     }
                 }
 
-                session.Flush();
+                await session.FlushAsync();
 
                 try
                 {
@@ -168,7 +168,7 @@ namespace Shesha.Tests.DynamicEntities
                         // Save dynamic properties to DB
                         await dynamicPropertyManager.MapDtoToEntityAsync<DynamicDto<Person, Guid>, Person, Guid>(dto,
                             entity);
-                        session.Flush();
+                        await session.FlushAsync();
 
                         session.Clear();
 
@@ -205,7 +205,7 @@ namespace Shesha.Tests.DynamicEntities
                     finally
                     {
                         // delete temporary entity
-                        session.CreateSQLQuery($"delete from Core_Persons where id = '{id}'").ExecuteUpdate();
+                        await session.CreateSQLQuery($"delete from Core_Persons where id = '{id}'").ExecuteUpdateAsync();
                     }
                 }
                 finally

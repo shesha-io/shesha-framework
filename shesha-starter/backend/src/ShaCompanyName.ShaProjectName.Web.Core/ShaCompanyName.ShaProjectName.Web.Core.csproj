@@ -26,13 +26,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Abp.AspNetCore.SignalR" Version="10.3.0" />
-    <PackageReference Include="Abp.HangFire.AspNetCore" Version="10.3.0" />
-    <PackageReference Include="Abp.AspNetCore" Version="10.3.0" />
-    <PackageReference Include="Abp.ZeroCore" Version="10.3.0" />
-    <PackageReference Include="Hangfire.Core" Version="1.8.23" />
+    <PackageReference Include="Abp.AspNetCore.SignalR" Version="10.5.1" />
+    <PackageReference Include="Abp.HangFire.AspNetCore" Version="10.5.1" />
+    <PackageReference Include="Abp.AspNetCore" Version="10.5.1" />
+    <PackageReference Include="Abp.ZeroCore" Version="10.5.1" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.25" />
     <PackageReference Include="System.ValueTuple" Version="4.6.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.14" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.1" />
   </ItemGroup>
 

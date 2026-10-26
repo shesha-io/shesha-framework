@@ -87,7 +87,7 @@ namespace Shesha.GraphQL.Provider.Queries
                         query = quickSearcher.ApplyQuickSearch(query, input.QuickSearch, input.QuickSearchProperties);
 
                     // calculate total count
-                    var totalCount = query.Count();
+                    var totalCount = await query.CountAsync();
 
                     // apply sorting
                     query = ApplySorting(query, input.Sorting);

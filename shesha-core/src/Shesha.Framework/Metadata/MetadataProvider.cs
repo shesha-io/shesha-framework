@@ -391,7 +391,6 @@ namespace Shesha.Metadata
             if (type == null)
                 throw new MetadataOfTypeNotFoundException(container);
             return type;
-            //return await GetContainerTypeOrNullAsync(moduleName, container) ?? 
         }
 
         public async Task<List<ModelDto>> GetAllModelsAsync()
