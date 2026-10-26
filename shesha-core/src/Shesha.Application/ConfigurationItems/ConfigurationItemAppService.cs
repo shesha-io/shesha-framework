@@ -111,7 +111,7 @@ namespace Shesha.ConfigurationItems
             await _clientSideCache.ClearAsync();
         }
 
-        public Task TriggerConfigurationChangedEventAsync(TriggerConfigurationChangedEventRequest  request)
+        public async Task TriggerConfigurationChangedEventAsync(TriggerConfigurationChangedEventRequest  request)
         {
             var bus = IocManager.Resolve<IEventBus>();
             var data = new ConfigurationStateUpdatedEventData(
@@ -119,9 +119,7 @@ namespace Shesha.ConfigurationItems
                 request.ModuleName,
                 request.ItemName
             );
-            bus.Trigger(data);
-
-            return Task.CompletedTask;
+            await bus.TriggerAsync(data);
         }
         public class TriggerConfigurationChangedEventRequest 
         {

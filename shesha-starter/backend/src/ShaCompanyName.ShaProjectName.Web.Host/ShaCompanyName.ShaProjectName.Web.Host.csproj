@@ -45,17 +45,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Abp" Version="10.3.0" />
-    <PackageReference Include="Abp.Castle.Log4Net" Version="10.3.0" />
-    <PackageReference Include="Abp.TestBase" Version="10.3.0" />
+    <PackageReference Include="Abp" Version="10.5.1" />
+    <PackageReference Include="Abp.Castle.Log4Net" Version="10.5.1" />
+    <PackageReference Include="Abp.TestBase" Version="10.5.1" />
     <PackageReference Include="ElmahCore" Version="2.1.2" />
-    <PackageReference Include="Hangfire.Core" Version="1.8.23" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.25" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.21.1" />
 	<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Hangfire.SqlServer" Version="1.8.23" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.25" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
     <PackageReference Include="Castle.LoggingFacility.MsLogging" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.2.1" />

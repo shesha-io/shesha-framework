@@ -114,8 +114,8 @@ namespace Shesha.Tests.DynamicEntities
                 }
                 finally
                 {
-                    if (newTestOrg1 != null) testOrgRepo.HardDelete(newTestOrg1);
-                    if (newTestPerson1 != null) _personRepo.HardDelete(newTestPerson1);
+                    if (newTestOrg1 != null) await testOrgRepo.HardDeleteAsync(newTestOrg1);
+                    if (newTestPerson1 != null) await _personRepo.HardDeleteAsync(newTestPerson1);
                     await uow.SaveChangesAsync();
                 }
             }
@@ -142,7 +142,7 @@ namespace Shesha.Tests.DynamicEntities
                 newEnt = f.FindEntity(new CascadeRuleEntityFinderInfo(checkEnt) { _Repository = _personRepo });
                 Assert.Null(newEnt);
 
-                _personRepo.HardDelete(ent);
+                await _personRepo.HardDeleteAsync(ent);
                 await uow.SaveChangesAsync();
             }
         }
@@ -295,16 +295,16 @@ namespace Shesha.Tests.DynamicEntities
                 }
                 finally
                 {
-                    if (newTestOrg1 != null) testOrgRepo.HardDelete(newTestOrg1);
-                    if (newTestOrg2 != null) testOrgRepo.HardDelete(newTestOrg2);
-                    if (newTestOrg3 != null) testOrgRepo.HardDelete(newTestOrg3);
-                    if (newTestOrg4 != null) testOrgRepo.HardDelete(newTestOrg4);
-                    if (newTestOrg5 != null) testOrgRepo.HardDelete(newTestOrg5);
-                    if (newTestOrg6 != null) testOrgRepo.HardDelete(newTestOrg6);
-                    if (newTestOrg7 != null) testOrgRepo.HardDelete(newTestOrg7);
-                    if (newTestOrg8 != null) testOrgRepo.HardDelete(newTestOrg8);
-                    if (newTestPerson1 != null) _personRepo.HardDelete(newTestPerson1);
-                    if (newTestPerson2 != null) _personRepo.HardDelete(newTestPerson2);
+                    if (newTestOrg1 != null) await testOrgRepo.HardDeleteAsync(newTestOrg1);
+                    if (newTestOrg2 != null) await testOrgRepo.HardDeleteAsync(newTestOrg2);
+                    if (newTestOrg3 != null) await testOrgRepo.HardDeleteAsync(newTestOrg3);
+                    if (newTestOrg4 != null) await testOrgRepo.HardDeleteAsync(newTestOrg4);
+                    if (newTestOrg5 != null) await testOrgRepo.HardDeleteAsync(newTestOrg5);
+                    if (newTestOrg6 != null) await testOrgRepo.HardDeleteAsync(newTestOrg6);
+                    if (newTestOrg7 != null) await testOrgRepo.HardDeleteAsync(newTestOrg7);
+                    if (newTestOrg8 != null) await testOrgRepo.HardDeleteAsync(newTestOrg8);
+                    if (newTestPerson1 != null) await _personRepo.HardDeleteAsync(newTestPerson1);
+                    if (newTestPerson2 != null) await _personRepo.HardDeleteAsync(newTestPerson2);
                     await uow.SaveChangesAsync();
                 }
             }
