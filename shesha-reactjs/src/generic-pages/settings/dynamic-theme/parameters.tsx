@@ -57,13 +57,13 @@ const ColorCircle: FC<ColorCircleProps> = ({ color, onChange, label, readOnly })
   );
 };
 
-/** Update empty properties to undefined. This is necessary for base theme values bucause there is no way to reset them */
-export const setUndefinedForEmptyProperties = (data: Record<string, unknown | undefined>): Record<string, unknown | undefined> => {
+/** Update empty/null properties to undefined so cleared values drop out of the saved JSON instead of null-overriding component defaults in the style merge. */
+export const setUndefinedForEmptyProperties = (data: Record<string, unknown | undefined | null>): Record<string, unknown | undefined> => {
   for (const key in data) {
     if (!data.hasOwnProperty(key)) continue;
-    if (typeof data[key] === 'object')
+    if (typeof data[key] === 'object' && data[key] !== null)
       setUndefinedForEmptyProperties(data[key] as Record<string, unknown>);
-    if (data[key] === '')
+    if (data[key] === '' || data[key] === null)
       data[key] = undefined;
   }
   return data;
