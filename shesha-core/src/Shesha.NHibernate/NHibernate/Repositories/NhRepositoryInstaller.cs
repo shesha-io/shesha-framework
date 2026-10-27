@@ -29,7 +29,7 @@ namespace Shesha.NHibernate.Repositories
 
         private readonly ShaNHibernateInitializer _initializer;
 
-        public NhRepositoryInstaller( ShaNHibernateInitializer initializer)
+        public NhRepositoryInstaller(ShaNHibernateInitializer initializer)
         {
             _initializer = initializer;
         }

@@ -21,7 +21,7 @@ namespace Shesha.Testing.Fixtures
         public SqlServerFixture()
         {
             _mssqlContainer = new MsSqlBuilder()
-                .WithImage("iilyichev/shesha-framework-mssql:0.43") // Specify the SQL Server image
+                .WithImage("iilyichev/shesha-framework-mssql:0.47") // Specify the SQL Server image
                 .WithPassword(Password) // Set the SA password
                 .WithExposedPort(1433) // Expose the default SQL Server port
                 .Build();
