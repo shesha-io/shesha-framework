@@ -23,7 +23,7 @@ namespace Shesha.Testing.Fixtures
         public PostgreSqlFixture()
         {
             _postgresContainer = new PostgreSqlBuilder()
-                .WithImage("iilyichev/shesha-framework-postgresql:0.43") // Use the latest PostgreSQL image
+                .WithImage("iilyichev/shesha-framework-postgresql:0.47") // Use the latest PostgreSQL image
                 .WithDatabase(DbName) // Set the database name
                 .WithUsername(Login) // Set the username
                 .WithPassword(Password) // Set the password

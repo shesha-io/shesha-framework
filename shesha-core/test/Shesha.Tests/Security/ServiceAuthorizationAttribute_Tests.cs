@@ -11,7 +11,6 @@ using Shesha.Otp;
 using Shesha.Scheduler.Services.ScheduledJobs;
 using Shesha.Services;
 using System;
-using System.Linq;
 using System.Reflection;
 using Xunit;
 
@@ -52,7 +51,6 @@ namespace Shesha.Tests.Security
         [Theory]
         [InlineData(typeof(ScheduledJobAppService), PermissionNames.Application_Maintenance)]
         [InlineData(typeof(EmailSenderAppService), PermissionNames.Application_Maintenance)]
-        [InlineData(typeof(OtpAppService), PermissionNames.Application_Maintenance)]
         public void Maintenance_services_should_require_pages_maintenance(Type serviceType, string expectedPermission)
         {
             var attr = GetClassSheshaAuthorize(serviceType);

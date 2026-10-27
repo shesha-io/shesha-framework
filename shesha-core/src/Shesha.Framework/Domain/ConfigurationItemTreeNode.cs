@@ -22,7 +22,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Application Id
         /// </summary>
-        public Guid? ApplicationId { get; set; }
+        public virtual Guid? ApplicationId { get; set; }
         /// <summary>
         /// Item name
         /// </summary>

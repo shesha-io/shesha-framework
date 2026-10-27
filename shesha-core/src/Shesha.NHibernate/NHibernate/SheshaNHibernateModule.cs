@@ -122,8 +122,10 @@ namespace Shesha.NHibernate
                 Component.For<SheshaAutoDbMigrator>().ImplementedBy<SheshaAutoDbMigrator>().LifestyleTransient()
             );
 
-            // Firs initialization
-            _sessionFactory = IocManager.IocContainer.Resolve<ISessionFactory>();
+            // First initialization
+            _sessionFactory = !SkipDbContextRegistration
+                ? IocManager.IocContainer.Resolve<ISessionFactory>()
+                : null;
 
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
 
