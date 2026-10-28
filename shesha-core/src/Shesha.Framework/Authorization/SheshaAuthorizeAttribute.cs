@@ -4,7 +4,7 @@ using System;
 namespace Shesha.Authorization
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-    public class SheshaAuthorizeAttribute: Attribute
+    public class SheshaAuthorizeAttribute : Attribute
     {
 
         /// <summary>

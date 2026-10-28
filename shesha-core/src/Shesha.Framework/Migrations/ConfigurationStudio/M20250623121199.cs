@@ -11,7 +11,7 @@ namespace Shesha.Migrations.ConfigurationStudio
             Execute.Sql(@"update frwk.entity_properties set min_length = null where min_length = 0");
             Execute.Sql(@"update frwk.entity_config_revisions set properties_md5 = null");
 
-			IfDatabase("SqlServer").Execute.Sql(@"create or alter view frwk.vw_configuration_items_to_expose as
+            IfDatabase("SqlServer").Execute.Sql(@"create or alter view frwk.vw_configuration_items_to_expose as
 select 
 	ci.id,
 	m.name as origin_module_name, 
@@ -43,7 +43,7 @@ where
 	ci.is_deleted = 0
 	and m.is_enabled = 1");
 
-			IfDatabase("PostgreSql").Execute.Sql(@"create or replace view frwk.vw_configuration_items_to_expose as
+            IfDatabase("PostgreSql").Execute.Sql(@"create or replace view frwk.vw_configuration_items_to_expose as
 select 
 	ci.id,
 	m.name as origin_module_name, 

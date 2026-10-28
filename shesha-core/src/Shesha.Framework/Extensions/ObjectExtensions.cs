@@ -128,7 +128,7 @@ namespace Shesha.Extensions
         /// <summary>
         /// Get type of the `Id` property. Applicable for entity types
         /// </summary>
-        public static Type GetEntityIdType(this Type type) 
+        public static Type GetEntityIdType(this Type type)
         {
             return type.GetRequiredProperty(SheshaDatabaseConsts.IdColumn).PropertyType;
         }

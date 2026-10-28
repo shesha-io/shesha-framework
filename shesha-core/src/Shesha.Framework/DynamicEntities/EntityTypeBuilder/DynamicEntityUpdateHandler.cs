@@ -1,12 +1,12 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Uow;
 using Abp.Reflection;
+using Shesha.Attributes;
 using Shesha.Reflection;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Shesha.Attributes;
 
 namespace Shesha.DynamicEntities.EntityTypeBuilder
 {

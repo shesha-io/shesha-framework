@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
 
 namespace Shesha.Scheduler.SignalR
 {
@@ -10,7 +10,7 @@ namespace Shesha.Scheduler.SignalR
     {
         public SignalrAppenderHub()
         {
-            
+
         }
         /// <summary>
         /// Join group

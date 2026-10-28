@@ -7,7 +7,7 @@ namespace Shesha.Authorization
     public enum ShaLoginResultType : int
     {
         Success = 1,
-        
+
         [Description("Invalid username or email")]
         InvalidUserNameOrEmailAddress = 2,
 
@@ -16,7 +16,7 @@ namespace Shesha.Authorization
 
         [Description("User is not active")]
         UserIsNotActive = 4,
-        
+
         [Description("Invalid tenant name")]
         InvalidTenancyName = 5,
 

@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Core.QuestionAssignment", CrudActions = CrudActions.None, IsConfigurable = false)]
-    public class QuestionAssignment: FullAuditedEntity<Guid>
+    public class QuestionAssignment : FullAuditedEntity<Guid>
     {
         /// <summary>
         /// 

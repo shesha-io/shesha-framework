@@ -61,7 +61,7 @@ namespace Shesha.Migrations.Abp
                 .WithCreationTimeColumn()
                 .WithLastModificationTimeColumn()
                 .WithTenantIdAsNullable()
-                
+
                 .WithColumn("WebhookEventId").AsGuid().NotNullable()
                 .WithColumn("WebhookSubscriptionId").AsGuid().NotNullable();
 
@@ -136,7 +136,7 @@ namespace Shesha.Migrations.Abp
 
             Execute.Sql($"CREATE UNIQUE INDEX IX_AbpEntityDynamicParameters_EntityFullName_DynamicParameterId_TenantId ON AbpEntityDynamicParameters(EntityFullName, DynamicParameterId, TenantId) WHERE EntityFullName IS NOT NULL and TenantId IS NOT NULL");
             */
-            
+
             #endregion
 
             #region Upgraded_To_Abp_5_9

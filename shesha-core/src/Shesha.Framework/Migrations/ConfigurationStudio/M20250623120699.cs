@@ -14,7 +14,7 @@ AS
 BEGIN
 	EXEC sp_set_session_context 'app.ci_mode', @mode, @read_only = 0;
 END");
-			IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE PROCEDURE frwk.set_ci_mode(
+            IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE PROCEDURE frwk.set_ci_mode(
     mode varchar(20)
 )
 LANGUAGE plpgsql
@@ -35,7 +35,7 @@ BEGIN
 	RETURN @result;
 END");
 
-			IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE FUNCTION frwk.get_ci_mode()
+            IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE FUNCTION frwk.get_ci_mode()
 RETURNS varchar(20)
 LANGUAGE plpgsql
 AS $$

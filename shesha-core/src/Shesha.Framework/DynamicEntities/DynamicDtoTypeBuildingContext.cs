@@ -29,7 +29,7 @@ namespace Shesha.DynamicEntities
         /// Register .net type that created during the building process. This method updates classes dictionary <see cref="Classes"/>
         /// </summary>
         /// <param name="class"></param>
-        public void ClassCreated(Type @class) 
+        public void ClassCreated(Type @class)
         {
             Classes.Add(CurrentPrefix, @class);
         }
@@ -56,7 +56,7 @@ namespace Shesha.DynamicEntities
         public IDisposable OpenNamePrefix(string prefix)
         {
             _namePrefixStack.Push(prefix);
-            
+
             var currentPrefix = CurrentPrefix;
 
             return new DisposeAction(() => CloseNamePrefix(currentPrefix));
@@ -69,16 +69,18 @@ namespace Shesha.DynamicEntities
         {
             if (CurrentPrefix != fullPrefix)
                 throw new Exception($"Name prefix closed in a wrong order. Expected prefix value: '{CurrentPrefix}', actual: '{fullPrefix}'. Make sure that you use dispose results of the {nameof(OpenNamePrefix)} method");
-            
+
 
             var closedPrefix = _namePrefixStack.Pop();
         }
-        
+
         /// <summary>
         /// Current prefix in dot notation (e.g. 'prefix1.prefix2')
         /// </summary>
-        public string CurrentPrefix {
-            get {
+        public string CurrentPrefix
+        {
+            get
+            {
                 var value = _namePrefixStack.Any()
                     ? _namePrefixStack.Aggregate((next, current) => current + "." + next)
                     : string.Empty;

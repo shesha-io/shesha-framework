@@ -42,7 +42,8 @@ namespace Shesha.Sms.Clickatell
         {
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
 
-            IocManager.RegisterSettingAccessor<IClickatellSettings>(s => {
+            IocManager.RegisterSettingAccessor<IClickatellSettings>(s =>
+            {
                 s.ClickatellGateway.WithDefaultValue(new GatewaySettings
                 {
                     Host = "api.clickatell.com",

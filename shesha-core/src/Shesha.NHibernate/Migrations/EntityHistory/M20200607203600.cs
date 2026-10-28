@@ -1,6 +1,6 @@
-﻿using System;
-using FluentMigrator;
+﻿using FluentMigrator;
 using Shesha.FluentMigrator;
+using System;
 
 namespace Shesha.Migrations
 {
@@ -28,7 +28,7 @@ FROM     dbo.AbpEntityChanges AS ec INNER JOIN
                   dbo.Core_EntityHistoryEvents AS ehe ON ehe.EntityChangeId = ec.Id LEFT OUTER JOIN
                   dbo.Core_Persons AS p ON p.UserId = ecs.UserId
 ");
-		}
+        }
 
         public override void Down()
         {

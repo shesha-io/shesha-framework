@@ -59,7 +59,8 @@ namespace Shesha.NHibernate.UserTypes
                     case 0: return entityRef.Id;
                     case 1: return entityRef._className;
                     case 2: return entityRef._displayName;
-                };
+                }
+                ;
             }
             return null;
         }

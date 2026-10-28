@@ -11,7 +11,7 @@ namespace Shesha.ConfigurationStudio.Dtos
         /// Folder Id
         /// </summary>
         public Guid FolderId { get; set; }
-        
+
         /// <summary>
         /// Name
         /// </summary>

@@ -2,7 +2,7 @@
 
 namespace Shesha.FluentMigrator.Notifications
 {
-    public abstract class NotificationExpressionBase: SheshaMigrationExpressionBase
+    public abstract class NotificationExpressionBase : SheshaMigrationExpressionBase
     {
         public string Name { get; private set; }
         public string Namespace { get; private set; }

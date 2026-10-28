@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Shesha.Configuration.Security
 {
     [Category("Security")]
-    public interface ISecuritySettings: ISettingAccessors
+    public interface ISecuritySettings : ISettingAccessors
     {
         /// <summary>
         /// Is user lockout enabled

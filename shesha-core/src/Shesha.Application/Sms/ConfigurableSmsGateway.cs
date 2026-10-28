@@ -20,7 +20,7 @@ namespace Shesha.Sms
         /// Get gateway settings
         /// </summary>
         /// <returns></returns>
-        public async Task<object> GetSettingsAsync() 
+        public async Task<object> GetSettingsAsync()
         {
             return await GetTypedSettingsAsync();
         }

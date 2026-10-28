@@ -3,9 +3,9 @@
     /// <summary>
     /// Common exceptions class for Shesha migrations
     /// </summary>
-    public class SheshaMigrationException: Exception
+    public class SheshaMigrationException : Exception
     {
-        public SheshaMigrationException(string? message): base(message)
+        public SheshaMigrationException(string? message) : base(message)
         {
 
         }

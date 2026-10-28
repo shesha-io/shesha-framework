@@ -75,21 +75,21 @@ namespace Shesha.Domain
         /// <param name="id"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static async Task<T> SaveOrUpdateEntityAsync<T, TId>(this DomainService service, TId? id, Func<T, Task> action) where T : class, IEntity<TId> where TId: struct
+        public static async Task<T> SaveOrUpdateEntityAsync<T, TId>(this DomainService service, TId? id, Func<T, Task> action) where T : class, IEntity<TId> where TId : struct
         {
             var item = id != null
                 ? (await GetEntityAsync<T, TId>(service, id.Value)).NotNull()
                 : ActivatorHelper.CreateNotNullInstance<T>();
 
-			await action.Invoke(item);
+            await action.Invoke(item);
 
-			var dynamicRepo = StaticContext.IocManager.Resolve<IDynamicRepository>();
-			await dynamicRepo.SaveOrUpdateAsync(item);
+            var dynamicRepo = StaticContext.IocManager.Resolve<IDynamicRepository>();
+            await dynamicRepo.SaveOrUpdateAsync(item);
 
-			return item;
-		}
+            return item;
+        }
 
-		/// <summary>
+        /// <summary>
         /// 
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
@@ -97,23 +97,23 @@ namespace Shesha.Domain
         /// <param name="entity"></param>
         /// <param name="validationResults"></param>
         /// <returns></returns>
-		public static async Task FluentValidationsOnEntityAsync<TEntity>(this DomainService service, TEntity entity, List<ValidationResult> validationResults)
-		{
-			if (StaticContext.IocManager.IsRegistered(typeof(IValidator<TEntity>)))
-			{
-				var validator = StaticContext.IocManager.Resolve<IValidator<TEntity>>();
-				FluentValidationResult fluentValidationResults = await validator.ValidateAsync(entity);
+        public static async Task FluentValidationsOnEntityAsync<TEntity>(this DomainService service, TEntity entity, List<ValidationResult> validationResults)
+        {
+            if (StaticContext.IocManager.IsRegistered(typeof(IValidator<TEntity>)))
+            {
+                var validator = StaticContext.IocManager.Resolve<IValidator<TEntity>>();
+                FluentValidationResult fluentValidationResults = await validator.ValidateAsync(entity);
 
-				//Map FluentValidationResult to normal System.ComponentModel.DataAnnotations.ValidationResult,
-				//so to throw one same Validations Exceptions on AbpValidationException
-				if (!fluentValidationResults.IsValid)
-					fluentValidationResults.Errors.ForEach(err =>
-					{
-						var memberNames = new List<string>() { err.PropertyName };
-						var valResult = new ValidationResult(err.ErrorMessage, memberNames);
-						validationResults.Add(valResult);
-					});
-			}
-		}
-	}
+                //Map FluentValidationResult to normal System.ComponentModel.DataAnnotations.ValidationResult,
+                //so to throw one same Validations Exceptions on AbpValidationException
+                if (!fluentValidationResults.IsValid)
+                    fluentValidationResults.Errors.ForEach(err =>
+                    {
+                        var memberNames = new List<string>() { err.PropertyName };
+                        var valResult = new ValidationResult(err.ErrorMessage, memberNames);
+                        validationResults.Add(valResult);
+                    });
+            }
+        }
+    }
 }

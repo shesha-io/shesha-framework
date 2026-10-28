@@ -22,6 +22,6 @@ namespace Shesha.Configuration.Email
         /// </summary>
         [Display(Name = "SMTP Settings")]
         [Setting(SheshaSettingNames.SmtpSettings, EditorFormName = "smtp-settings")]
-        ISettingAccessor<SmtpSettings> SmtpSettings { get; }  
+        ISettingAccessor<SmtpSettings> SmtpSettings { get; }
     }
 }

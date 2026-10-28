@@ -23,13 +23,13 @@ using System.Threading.Tasks;
 namespace Shesha
 {
     [DynamicControllerNameConvention]
-    public class DynamicCrudAppService<TEntity, TDynamicDto, TCreateDynamicDto, TUpdateDynamicDto, TPrimaryKey> : 
+    public class DynamicCrudAppService<TEntity, TDynamicDto, TCreateDynamicDto, TUpdateDynamicDto, TPrimaryKey> :
         SheshaCrudServiceBase<TEntity, TDynamicDto, TPrimaryKey, PropsFilteredPagedAndSortedResultRequestDto, TCreateDynamicDto, TUpdateDynamicDto, GetDynamicEntityInput<TPrimaryKey>>,
         IDynamicCrudAppService<TEntity, TDynamicDto, TPrimaryKey>,
         ITransientDependency
         where TEntity : class, IEntity<TPrimaryKey>
         where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
-        where TCreateDynamicDto: class, TDynamicDto
+        where TCreateDynamicDto : class, TDynamicDto
         where TUpdateDynamicDto : class, TDynamicDto
         where TPrimaryKey : notnull
     {
@@ -63,10 +63,10 @@ namespace Shesha
 
             var method = PermissionedObjectManager.CrudAction2Method(crudAction);
             await ObjectPermissionChecker.AuthorizeAsync(
-                false, 
-                typeof(TEntity).GetRequiredFullName(), 
-                method, 
-                ShaPermissionedObjectsTypes.EntityAction, 
+                false,
+                typeof(TEntity).GetRequiredFullName(),
+                method,
+                ShaPermissionedObjectsTypes.EntityAction,
                 AbpSession.UserId.HasValue,
                 currentAccess.Access,
                 currentAccess.Permissions

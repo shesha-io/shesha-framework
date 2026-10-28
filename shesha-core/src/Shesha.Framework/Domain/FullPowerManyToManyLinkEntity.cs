@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Abp.Domain.Entities;
+using System;
 using System.ComponentModel.DataAnnotations;
-using Abp.Domain.Entities;
 
 namespace Shesha.Domain
 {

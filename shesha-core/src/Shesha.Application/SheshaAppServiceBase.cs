@@ -112,7 +112,7 @@ namespace Shesha
 
                     var actionDescriptor = endpoint.Metadata.GetMetadata<ActionDescriptor>();
                     if (actionDescriptor == null)
-                        throw new InvalidOperationException("No action descriptor available.");                    
+                        throw new InvalidOperationException("No action descriptor available.");
 
                     // Build an ActionContext
                     var actionContext = new ActionContext(httpContext, routeData, actionDescriptor);

@@ -65,7 +65,7 @@ namespace Boxfusion.SheshaFunctionalTests
         public override void PreInitialize()
         {
             var config = Configuration.Modules.ShaNHibernate();
-            
+
             config.UseDbms(c => c.GetDbmsType(), c => c.GetDefaultConnectionString());
 
             ConfigureTokenAuth();

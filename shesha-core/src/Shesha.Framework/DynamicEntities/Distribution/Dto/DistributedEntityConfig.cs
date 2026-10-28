@@ -9,11 +9,11 @@ namespace Shesha.DynamicEntities.Distribution.Dto
     /// <summary>
     /// Distributed entity config
     /// </summary>
-    public class DistributedEntityConfig: DistributedConfigurableItemBase
+    public class DistributedEntityConfig : DistributedConfigurableItemBase
     {
         public string? FriendlyName { get; set; }
         public string? TypeShortAlias { get; set; }
-        
+
         public string? SchemaName { get; set; }
         public string? TableName { get; set; }
         public string ClassName { get; set; }

@@ -54,7 +54,7 @@ namespace Shesha.Tests.Notifications
             viaStubble.ShouldBe(viaHelper);
         }
 
-        private TestNotificationData GetTestData() 
+        private TestNotificationData GetTestData()
         {
             return new TestNotificationData
             {
@@ -81,13 +81,13 @@ namespace Shesha.Tests.Notifications
                 : template;
         }
 
-        public class TestNotificationNestedData 
+        public class TestNotificationNestedData
         {
             public string Message { get; set; }
         }
 
-        public class TestNotificationData: NotificationData
-        { 
+        public class TestNotificationData : NotificationData
+        {
             public string FirstName { get; set; }
             public string LastName { get; set; }
             public string Organisation { get; set; }

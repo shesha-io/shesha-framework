@@ -10,7 +10,7 @@ namespace Shesha.DynamicEntities.ErrorHandler
         public EntityPropertyInitializationException(EntityProperty? entityProperty, Exception? exception = null, string? actionText = "initialize", string? message = null)
             : base
             (
-                message 
+                message
                 ?? (entityProperty != null
                     ? $"Failed to {actionText} Entity Property {entityProperty?.EntityConfig.Module?.Name} : {entityProperty?.EntityConfig.Name}.{entityProperty?.Name}"
                     : $"Failed to {actionText} Entity Property")

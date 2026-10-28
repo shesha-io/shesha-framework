@@ -8,7 +8,7 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-			IfDatabase("SqlServer").Execute.Sql(@"update
+            IfDatabase("SqlServer").Execute.Sql(@"update
 	Frwk_FormConfigurations 
 set
 	TemplateId = null
@@ -54,7 +54,7 @@ where
 			fc.Id = Frwk_ConfigurationItems.Id
 	)");
 
-			IfDatabase("PostgreSql").Execute.Sql(@"update
+            IfDatabase("PostgreSql").Execute.Sql(@"update
 	""Frwk_FormConfigurations"" 
 set
 	""TemplateId"" = null

@@ -66,7 +66,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
                 StringEauqls(Description, other.Description) &&
                 OrderIndex == other.OrderIndex &&
                 // HardLinkToApplication == other.HardLinkToApplication &&
-                StringEauqls(Color, other.Color ) &&
+                StringEauqls(Color, other.Color) &&
                 StringEauqls(Icon, other.Icon) &&
                 StringEauqls(ShortAlias, other.ShortAlias);
             if (!equals)

@@ -8,7 +8,7 @@ namespace Shesha.Migrations.Framework
     {
         public override void Up()
         {
-			Execute.Sql(
+            Execute.Sql(
 @"CREATE TRIGGER trg_Frwk_ConfigurationItems_UpdateIsLast_AD
    ON  Frwk_ConfigurationItems
    AFTER DELETE
@@ -44,7 +44,7 @@ BEGIN
 	end
 END");
 
-			Execute.Sql(
+            Execute.Sql(
 @"CREATE TRIGGER trg_Frwk_ConfigurationItems_UpdateIsLast_AI
    ON  Frwk_ConfigurationItems
    AFTER INSERT
@@ -101,7 +101,7 @@ BEGIN
 		)
 END");
 
-			Execute.Sql(
+            Execute.Sql(
 @"CREATE TRIGGER trg_Frwk_ConfigurationItems_UpdateIsLast_AU
    ON  Frwk_ConfigurationItems
    AFTER update
@@ -161,7 +161,7 @@ BEGIN
 	end
 END");
 
-			Execute.Sql(
+            Execute.Sql(
 @"update 
 	Frwk_ConfigurationItems 
 set 
@@ -179,6 +179,6 @@ set
 				and prev.VersionNo > Frwk_ConfigurationItems.VersionNo
 		) then 0 else 1 end
 	)");
-		}
-	}
+        }
+    }
 }

@@ -29,7 +29,7 @@ namespace Shesha.Authorization
             var person = await GetPersonAsync(userId);
             if (person == null)
                 return false;
-            
+
             // TODO: add caching
             var roles = await (await _rolePersonRepository.GetAllAsync()).Where(x => x.Person == person).Select(e => e.Role).ToListAsync();
             return roles.Any(r => r.Permissions.Any(x => x.Permission == permissionName && x.IsGranted));
@@ -41,8 +41,8 @@ namespace Shesha.Authorization
             if (person == null)
                 return false;
 
-            
-            
+
+
             var appointments = (await _rolePersonRepository.GetAllListAsync(x => x.Person == person))
                 .Where(x =>
                     !x.PermissionedEntities.Any()
@@ -57,7 +57,7 @@ namespace Shesha.Authorization
 
         public bool IsGranted(long userId, string permissionName)
         {
-            return AsyncHelper.RunSync(async() => await IsGrantedAsync(userId, permissionName));
+            return AsyncHelper.RunSync(async () => await IsGrantedAsync(userId, permissionName));
         }
 
 

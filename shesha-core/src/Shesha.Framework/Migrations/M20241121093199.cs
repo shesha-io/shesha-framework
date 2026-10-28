@@ -8,7 +8,7 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-			// clean-up referencelists which were deleted by a wrong way
+            // clean-up referencelists which were deleted by a wrong way
             Execute.Sql(@"delete from 
 	""Frwk_ReferenceListItems""
 where
@@ -40,7 +40,7 @@ where
 			ci.""Id"" = ""Frwk_ReferenceLists"".""Id""
 	)");
 
-			// add missing foreign key
+            // add missing foreign key
             Create.ForeignKey("FK_Frwk_ReferenceLists_Frwk_ConfigurationItems_Id")
                 .FromTable("Frwk_ReferenceLists")
                 .ForeignColumn("Id")

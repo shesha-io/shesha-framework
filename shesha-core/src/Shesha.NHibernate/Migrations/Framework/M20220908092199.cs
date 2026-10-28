@@ -42,7 +42,7 @@ BEGIN
 	end
 END");
 
-			Execute.Sql(
+            Execute.Sql(
 @"CREATE TRIGGER trg_Frwk_StoredFileVersions_UpdateIsLast_AI
    ON  Frwk_StoredFileVersions
    AFTER INSERT
@@ -89,7 +89,7 @@ BEGIN
 		)
 END");
 
-			Execute.Sql(
+            Execute.Sql(
 @"CREATE TRIGGER trg_Frwk_StoredFileVersions_UpdateIsLast_AU
    ON  Frwk_StoredFileVersions
    AFTER update
@@ -139,7 +139,7 @@ BEGIN
 	end
 END");
 
-			Execute.Sql(
+            Execute.Sql(
 @"with data as (
 	select
 		v.Id,
@@ -154,6 +154,6 @@ set
 from
 	Frwk_StoredFileVersions ver
 	inner join data on data.Id = ver.Id");
-		}
-	}
+        }
+    }
 }

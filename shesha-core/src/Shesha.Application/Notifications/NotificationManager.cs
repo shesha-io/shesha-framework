@@ -31,7 +31,7 @@ namespace Shesha.Notifications
             _notificationChannelRepository = notificationChannelRepository;
             _userNotificationPreference = userNotificationPreference;
             _templateRepository = templateRepository;
-            _notificationSettings = notificationSettings;            
+            _notificationSettings = notificationSettings;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Shesha.Notifications
                 var defaultChannels = await (await _userNotificationPreference.GetAllAsync()).Where(x => x.User.Id == recipientPerson.Id && x.NotificationType.Id == type.Id && x.DefaultChannel != null)
                     .Select(e => e.DefaultChannel)
                     .ToListAsync();
-                
+
                 // Return DefaultChannel from user preferences if available
                 if (defaultChannels.Any())
                     return defaultChannels;
@@ -60,7 +60,7 @@ namespace Shesha.Notifications
             if (type.OverrideChannels != null && type.OverrideChannels.Any())
             {
                 var overrideChannels = new List<NotificationChannelConfig>();
-                foreach (var channel in type.OverrideChannels) 
+                foreach (var channel in type.OverrideChannels)
                 {
                     // TODO: check versioned query
                     var dbChannel = await _notificationChannelRepository.FirstOrDefaultAsync(new ByNameAndModuleSpecification<NotificationChannelConfig>(channel.Name, channel.Module).ToExpression());

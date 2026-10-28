@@ -17,8 +17,8 @@ namespace Shesha.Migrations
                 { "Pages.Users", "User-Manage" },
                 { "users:resetPassword", "User-ResetPassword" },
                 { "Pages.Roles", "Role-Manage" },
-                { "pages:shaRoles", "Role-Manage" },                
-                { "pages:persons", "Person-View" },                
+                { "pages:shaRoles", "Role-Manage" },
+                { "pages:persons", "Person-View" },
             };
             var useLegacyTables = Schema.Table("Frwk_PermissionedObjects").Exists();
             foreach (var (oldName, newName) in newNames)

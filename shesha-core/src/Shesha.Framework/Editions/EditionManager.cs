@@ -10,7 +10,7 @@ namespace Shesha.Editions
         public const string DefaultEditionName = "Standard";
 
         public EditionManager(
-            IRepository<Edition> editionRepository, 
+            IRepository<Edition> editionRepository,
             IAbpZeroFeatureValueStore featureValueStore,
             IUnitOfWorkManager unitOfWorkManager
             )

@@ -11,7 +11,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
     {
         public List<FormConfigurationIssue> Issues { get; set; } = new();
 
-        public class FormConfigurationIssue 
+        public class FormConfigurationIssue
         {
             public string Severity { get; set; }
             public string Location { get; set; }

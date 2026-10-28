@@ -3,7 +3,7 @@
 namespace Shesha.EntityReferences
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class EntityReferenceAttribute: Attribute
+    public class EntityReferenceAttribute : Attribute
     {
         public string[] AllowableTypes { get; internal set; } = new string[0];
         public bool StoreDisplayName { get; internal set; } = false;

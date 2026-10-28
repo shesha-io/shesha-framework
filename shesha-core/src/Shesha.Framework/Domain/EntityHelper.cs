@@ -1,7 +1,7 @@
-﻿using System;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Shesha.Configuration.Runtime;
 using Shesha.Services;
+using System;
 
 namespace Shesha.Domain
 {

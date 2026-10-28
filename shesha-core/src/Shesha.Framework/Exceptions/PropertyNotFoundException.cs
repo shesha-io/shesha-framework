@@ -10,7 +10,7 @@ namespace Shesha.Exceptions
         public Type OwnerType { get; private set; }
         public string PropertyName { get; private set; }
 
-        public PropertyNotFoundException(Type type, string propertyName): base($"Property '{propertyName}' not found in type '{type.FullName}'")
+        public PropertyNotFoundException(Type type, string propertyName) : base($"Property '{propertyName}' not found in type '{type.FullName}'")
         {
             OwnerType = type;
             PropertyName = propertyName;

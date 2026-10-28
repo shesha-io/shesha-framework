@@ -9,7 +9,7 @@ namespace Shesha.Configuration.Runtime.Exceptions
     {
         public string ClassNameOrAlias { get; set; }
 
-        public EntityTypeNotFoundException (string classNameOrAlias): base($"Entity with class name or alias '{classNameOrAlias}' not found")
+        public EntityTypeNotFoundException(string classNameOrAlias) : base($"Entity with class name or alias '{classNameOrAlias}' not found")
         {
             ClassNameOrAlias = classNameOrAlias;
         }

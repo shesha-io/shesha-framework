@@ -33,7 +33,7 @@ namespace Shesha.Elmah
             catch
             {
                 // noop
-            }            
+            }
         }
 
         public void Dispose()

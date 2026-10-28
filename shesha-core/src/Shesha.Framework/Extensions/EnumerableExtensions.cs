@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Shesha.Extensions
 {
@@ -93,7 +93,7 @@ namespace Shesha.Extensions
         /// <summary>
         /// Returns the maximum value of the sequence or default if empty
         /// </summary>
-        public static TSource MaxOrDefault<TSource>(this IEnumerable<TSource> source, TSource defaultValue) 
+        public static TSource MaxOrDefault<TSource>(this IEnumerable<TSource> source, TSource defaultValue)
         {
             return source.Any()
                 ? source.Max() ?? defaultValue
@@ -146,7 +146,7 @@ namespace Shesha.Extensions
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static IEnumerable<string> WhereNotNullOrWhiteSpace(this IEnumerable<string?> source) 
+        public static IEnumerable<string> WhereNotNullOrWhiteSpace(this IEnumerable<string?> source)
         {
             return source.Where(x => !string.IsNullOrWhiteSpace(x)).OfType<string>();
         }

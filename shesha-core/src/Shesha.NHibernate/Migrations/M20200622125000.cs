@@ -3,7 +3,7 @@
 namespace Shesha.Migrations
 {
     [Migration(20200622125000), MsSqlOnly]
-    public class M20200622125000: Migration
+    public class M20200622125000 : Migration
     {
         public override void Up()
         {

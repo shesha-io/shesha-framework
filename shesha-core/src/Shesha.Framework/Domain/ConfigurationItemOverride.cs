@@ -8,7 +8,7 @@ namespace Shesha.Domain
     [SnakeCaseNaming]
     [Table("vw_configuration_items_overrides", Schema = "frwk")]
     [ImMutable]
-    public class ConfigurationItemOverride: Entity<Guid>
+    public class ConfigurationItemOverride : Entity<Guid>
     {
         public virtual string Name { get; set; }
         public virtual string ItemType { get; set; }

@@ -8,7 +8,7 @@ namespace Shesha.Domain
     [Table("vw_Core_AreasTreeItem")]
     [ImMutable]
     [Obsolete]
-    public class AreaTreeItem: Entity<Guid>, IMayHaveTenant
+    public class AreaTreeItem : Entity<Guid>, IMayHaveTenant
     {
         public virtual string Name { get; set; }
         public virtual Guid? ParentId { get; set; }

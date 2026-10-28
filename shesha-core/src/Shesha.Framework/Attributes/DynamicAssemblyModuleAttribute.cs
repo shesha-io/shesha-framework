@@ -13,7 +13,7 @@ namespace Shesha.Attributes
             string description, // Description
             string publisher, // Publisher name
             bool isEditable // Is editable
-        ) 
+        )
         {
             ModuleInfo = new SheshaModuleInfo(name)
             {

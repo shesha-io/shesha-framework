@@ -59,7 +59,8 @@ namespace Shesha.GraphQL.Provider.Queries
 
             Field<GraphQLGenericType<TEntity>>(entityName)
                 .Argument(MakeGetInputType(), nameof(IEntity.Id))
-                .ResolveAsync(async context => {
+                .ResolveAsync(async context =>
+                {
                     var id = context.GetArgument<TId>(nameof(IEntity.Id));
 
                     return await repository.GetAsync(id);
@@ -67,7 +68,8 @@ namespace Shesha.GraphQL.Provider.Queries
 
             Field<PagedResultDtoType<TEntity>>($"{entityName}List")
                 .Argument<GraphQLInputGenericType<ListRequestDto>>("input").DefaultValue(new ListRequestDto())
-                .ResolveAsync(async context => {
+                .ResolveAsync(async context =>
+                {
                     var input = context.GetArgument<ListRequestDto>("input");
 
                     var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
@@ -112,7 +114,8 @@ namespace Shesha.GraphQL.Provider.Queries
 
             Field<PagedResultDtoType<TEntity>>($"{entityName}Tree")
                 .Argument<GraphQLInputGenericType<TreeRequestDto>>("input").DefaultValue(new TreeRequestDto())
-                .ResolveAsync(async context => {
+                .ResolveAsync(async context =>
+                {
                     var input = context.GetArgument<TreeRequestDto>("input");
 
                     var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
@@ -153,7 +156,8 @@ namespace Shesha.GraphQL.Provider.Queries
 
                         return result;
                     }
-                    else {
+                    else
+                    {
                         var query = await repository.GetAllAsync();
                         query.SetReadOnly();
 
@@ -242,7 +246,7 @@ from
             return sql;
         }
 
-        private List<string> GetEntityPropertiesFromContext(IResolveFieldContext context) 
+        private List<string> GetEntityPropertiesFromContext(IResolveFieldContext context)
         {
             var itemsName = StringHelper.ToCamelCase(nameof(PagedResultDto<TEntity>.Items));
             if (context.SubFields != null && context.SubFields.ContainsKey(itemsName))
@@ -257,21 +261,22 @@ from
             return new List<string>();
         }
 
-        private List<string> GetDotNotationFieldsList(List<GraphQLField> fields) 
+        private List<string> GetDotNotationFieldsList(List<GraphQLField> fields)
         {
             var properties = new List<string>();
 
-            foreach (var field in fields) 
+            foreach (var field in fields)
             {
-                ProcessField(field, (nestedField, path) => {
+                ProcessField(field, (nestedField, path) =>
+                {
                     properties.Add(PrefixName(nestedField.Name.ToString(), path));
                 }, null);
-            }            
+            }
 
             return properties;
         }
 
-        private string PrefixName(string name, string? prefix) 
+        private string PrefixName(string name, string? prefix)
         {
             return string.IsNullOrWhiteSpace(prefix)
                 ? name
@@ -281,14 +286,14 @@ from
         private void ProcessField(GraphQLField field, Action<GraphQLField, string?> fieldAction, string? path)
         {
             fieldAction.Invoke(field, path);
-            if (field.SelectionSet != null) 
+            if (field.SelectionSet != null)
             {
-                foreach (var selection in field.SelectionSet.Selections) 
+                foreach (var selection in field.SelectionSet.Selections)
                 {
-                    if (selection is GraphQLField nestedField) 
+                    if (selection is GraphQLField nestedField)
                     {
                         var nestedPath = PrefixName(field.Name.ToString(), path);
-                        
+
                         ProcessField(nestedField, fieldAction, nestedPath);
                     }
                 }
@@ -301,7 +306,7 @@ from
         /// <param name="query">Queryable to be filtered</param>
         /// <param name="filter">String representation of JsonLogic filter</param>
         /// <returns></returns>
-        private IQueryable<TEntity> AddFilter(IQueryable<TEntity> query, string? filter) 
+        private IQueryable<TEntity> AddFilter(IQueryable<TEntity> query, string? filter)
         {
             if (string.IsNullOrWhiteSpace(filter))
                 return query;
@@ -351,14 +356,14 @@ from
 
                 // special handling for entities - sort them by display name if available
                 var property = ReflectionHelper.GetProperty(typeof(TEntity), column, useCamelCase: true);
-                if (property != null && property.PropertyType.IsEntityType()) 
+                if (property != null && property.PropertyType.IsEntityType())
                 {
                     var displayNameProperty = property.PropertyType.GetEntityConfiguration()?.DisplayNamePropertyInfo;
-                    if (displayNameProperty != null) 
+                    if (displayNameProperty != null)
                     {
                         column = $"{column}.{displayNameProperty.Name}";
                     }
-                }                    
+                }
 
                 if (sorted)
                 {
@@ -390,10 +395,10 @@ from
                 }
                 sorted = true;
             }
-            
+
             return query;
         }
-        
+
         private static Type MakeGetInputType()
         {
             return GraphTypeMapper.GetGraphType(typeof(TId), true, true);

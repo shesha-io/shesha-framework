@@ -11,7 +11,7 @@ namespace Shesha.Languages
     /// <summary>
     /// South Africa languages bootstrapper. Register this bootstrapper in the main module to automatically create south africa languages
     /// </summary>
-    public class SouthAfricaLanguagesCreator: IBootstrapper
+    public class SouthAfricaLanguagesCreator : IBootstrapper
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<ApplicationLanguage> _repository;

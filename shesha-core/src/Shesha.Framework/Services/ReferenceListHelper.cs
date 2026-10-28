@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Services
 {
-    public class ReferenceListHelper: IEventHandler<EntityChangedEventData<ReferenceListItem>>,
+    public class ReferenceListHelper : IEventHandler<EntityChangedEventData<ReferenceListItem>>,
         IEventHandler<EntityReorderedEventData<ReferenceListItem, Guid>>,
         IReferenceListHelper, ITransientDependency
     {
@@ -31,7 +31,7 @@ namespace Shesha.Services
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IConfigurationItemClientSideCache _clientSideCache;
         private readonly ITypedCache<Guid, List<ReferenceListItemDto>> _listItemsCache;
-        
+
         /// <summary>
         /// Cache of reference list ids
         /// </summary>
@@ -43,9 +43,9 @@ namespace Shesha.Services
         public IObjectMapper ObjectMapper { get; set; } = NullObjectMapper.Instance;
 
         public ReferenceListHelper(
-            IRepository<ReferenceList, Guid> listRepository, 
-            IRepository<ReferenceListItem, Guid> itemsRepository, 
-            IUnitOfWorkManager unitOfWorkManager, 
+            IRepository<ReferenceList, Guid> listRepository,
+            IRepository<ReferenceListItem, Guid> itemsRepository,
+            IUnitOfWorkManager unitOfWorkManager,
             IConfigurationItemClientSideCache clientSideCache,
             IReferenceListItemsCacheHolder listItemsCache,
             IReferenceListIdsCacheHolder listIdsCache
@@ -83,7 +83,7 @@ namespace Shesha.Services
 
             if (value == null)
                 return null;
-            
+
             // make sure that we have active session
             using (ExistingOrNewUnitOfWork())
             {
@@ -104,7 +104,7 @@ namespace Shesha.Services
             var selectedItems = GetItems(refListId)
                 .Where(i => values.Contains(i.ItemValue))
                 .ToList();
-            
+
             return selectedItems;
         }
 
@@ -113,9 +113,9 @@ namespace Shesha.Services
         {
             var listId = await GetListIdAsync(refListId);
 
-            return listId != null 
+            return listId != null
                 ? await _listItemsCache.GetAsync(listId.Value, GetItemsAsync)
-                : new ();
+                : new();
         }
 
         /// inheritedDoc
@@ -125,10 +125,10 @@ namespace Shesha.Services
 
             return listId != null
                 ? _listItemsCache.Get(listId.Value, GetItems)
-                : new ();
+                : new();
         }
 
-        public List<ReferenceListItemDto> GetItems(Guid listId) 
+        public List<ReferenceListItemDto> GetItems(Guid listId)
         {
             var items = _itemsRepository.GetAll()
                 .Where(e => e.ReferenceList.Id == listId)
@@ -163,7 +163,7 @@ namespace Shesha.Services
         }
 
         /// inheritedDoc
-        public async Task<ReferenceList> GetReferenceListAsync(ReferenceListIdentifier refListId) 
+        public async Task<ReferenceList> GetReferenceListAsync(ReferenceListIdentifier refListId)
         {
             var refList = await GetReferenceListQuery(refListId).FirstOrDefaultAsync();
 
@@ -193,24 +193,26 @@ namespace Shesha.Services
         public async Task<Guid?> GetListIdAsync(ReferenceListIdentifier refListId)
         {
             var idCacheKey = GetListIdCacheKey(refListId);
-            return await _listIdsCache.GetAsync(idCacheKey, async key => {
-                using (ExistingOrNewUnitOfWork()) 
+            return await _listIdsCache.GetAsync(idCacheKey, async key =>
+            {
+                using (ExistingOrNewUnitOfWork())
                 {
                     var list = await GetReferenceListAsync(refListId);
                     return list.Id;
-                }                    
+                }
             });
         }
 
         public Guid? GetListId(ReferenceListIdentifier refListId)
         {
             var idCacheKey = GetListIdCacheKey(refListId);
-            return _listIdsCache.Get(idCacheKey, key => {
+            return _listIdsCache.Get(idCacheKey, key =>
+            {
                 using (ExistingOrNewUnitOfWork())
                 {
                     var list = GetReferenceList(refListId);
                     return list.Id;
-                }                    
+                }
             });
         }
 
@@ -224,7 +226,7 @@ namespace Shesha.Services
                 ClearCacheForRefList(refList);
         }
 
-        private void ClearCacheForRefList(ReferenceList refList) 
+        private void ClearCacheForRefList(ReferenceList refList)
         {
             // clear items cache by Id
             _listItemsCache.Remove(refList.Id);
@@ -282,13 +284,13 @@ namespace Shesha.Services
             // Take first item id assuming that reordering is possible only within a list
             var itemId = eventData.Ids.FirstOrDefault();
 
-            using (var uow = _unitOfWorkManager.Begin()) 
+            using (var uow = _unitOfWorkManager.Begin())
             {
                 var item = _itemsRepository.FirstOrDefault(itemId);
 
                 if (item?.ReferenceList != null)
                     ClearCacheForRefList(item.ReferenceList);
-                
+
                 uow.Complete();
             }
         }
@@ -300,7 +302,8 @@ namespace Shesha.Services
 
             var uow = _unitOfWorkManager.Begin();
 
-            return new DisposeAction(() => {
+            return new DisposeAction(() =>
+            {
                 uow.Complete();
                 uow.Dispose();
             });

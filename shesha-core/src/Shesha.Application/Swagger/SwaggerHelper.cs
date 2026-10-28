@@ -131,7 +131,7 @@ namespace Shesha.Swagger
                 prefix = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault()?.GetGenericArguments().FirstOrDefault()?.Assembly.GetName().Name;
             // Add prefix for all EntityAppServices to process later in GroupInclusionPredicate
             prefix = prefix == null ? "" : prefix + ":";
-            
+
             var serviceName = prefix + MvcHelper.GetControllerName(service);
             return serviceName;
         }

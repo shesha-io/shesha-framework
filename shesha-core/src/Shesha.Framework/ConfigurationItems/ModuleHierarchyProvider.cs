@@ -16,7 +16,7 @@ namespace Shesha.ConfigurationItems
     {
         private readonly IIocResolver _iocResolver;
         private readonly ITypeFinder _typeFinder;
-        
+
         private readonly Dictionary<string, ModuleExtendedInfo> _modules;
 
         public ModuleHierarchyProvider(IIocResolver iocResolver, ITypeFinder typeFinder)
@@ -28,22 +28,24 @@ namespace Shesha.ConfigurationItems
         }
 
         private void AddMissingBaseModules(List<ModuleExtendedInfo> fullList, ModuleExtendedInfo module)
-        { 
+        {
             if (!fullList.Contains(module))
                 fullList.Add(module);
-            foreach (var baseModule in module.BaseModules) 
+            foreach (var baseModule in module.BaseModules)
             {
                 AddMissingBaseModules(fullList, baseModule);
             }
         }
 
-        private Dictionary<string, ModuleExtendedInfo> FillModules() 
+        private Dictionary<string, ModuleExtendedInfo> FillModules()
         {
             var moduleTypes = _typeFinder.FindModuleTypes().ToList();
 
-            var modules = moduleTypes.Select(t => {
+            var modules = moduleTypes.Select(t =>
+            {
                 var instance = _iocResolver.Resolve(t).ForceCastAs<SheshaModule>();
-                return new ModuleExtendedInfo { 
+                return new ModuleExtendedInfo
+                {
                     Name = instance.ModuleInfo.Name,
                     ModuleInfo = instance.ModuleInfo,
                     ModuleType = t,
@@ -51,7 +53,7 @@ namespace Shesha.ConfigurationItems
             }).ToList();
 
             // fill hierarchy
-            foreach (var module in modules) 
+            foreach (var module in modules)
             {
                 module.BaseModules = module.ModuleInfo.Hierarchy
                     .Select(t => modules.First(m => m.ModuleType == t))
@@ -59,13 +61,13 @@ namespace Shesha.ConfigurationItems
                     .ToList();
             }
 
-            foreach (var module in modules) 
+            foreach (var module in modules)
             {
                 var fullHierarchy = module.BaseModules.ToList();
                 foreach (var baseModule in module.BaseModules)
                 {
                     AddMissingBaseModules(fullHierarchy, baseModule);
-                }                
+                }
                 module.FullHierarchy = fullHierarchy;
             }
 
@@ -86,15 +88,15 @@ namespace Shesha.ConfigurationItems
                 : new List<string>();
         }
 
-        public class ModuleExtendedInfo 
+        public class ModuleExtendedInfo
         {
             public required string Name { get; set; }
             public required Type ModuleType { get; set; }
             public required SheshaModuleInfo ModuleInfo { get; set; }
 
-            
+
             public List<ModuleExtendedInfo> BaseModules { get; set; } = new();
             public List<ModuleExtendedInfo> FullHierarchy { get; set; } = new();
-        }        
+        }
     }
 }

@@ -104,7 +104,8 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
                 using var storedFileContent = new StreamReader(fileContentStream);
                 logFileContent = await storedFileContent.ReadToEndAsync();
 
-            } else
+            }
+            else
             {
                 var logfilePath = execution.LogFilePath;
                 if (!File.Exists(logfilePath))

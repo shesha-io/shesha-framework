@@ -54,7 +54,7 @@ namespace Shesha.NHibernate.Configuration
         /// </summary>
         /// <param name="connectionStringGetter">Connection string factory</param>
         void UseMsSql(Func<IConfigurationRoot, string> connectionStringGetter);
-        
+
         /// <summary>
         /// Use MS Sql with default connection string
         /// </summary>

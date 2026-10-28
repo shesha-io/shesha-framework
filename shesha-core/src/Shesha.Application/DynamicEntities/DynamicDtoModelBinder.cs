@@ -62,7 +62,7 @@ namespace Shesha.DynamicEntities
         public void SetDefaultSettings(IDynamicMappingSettings defaultSettings)
         {
             _defaultSettings = defaultSettings;
-        }        
+        }
 
         /// <summary>
         /// Creates a new <see cref="DynamicDtoModelBinder"/>.
@@ -292,8 +292,8 @@ namespace Shesha.DynamicEntities
                     {
                         var inter = new DynamicDtoInterceptor(prop.Name, parent);
                         MakeProxy(newObj, inter);
-                        prop.SetValue(obj,new ProxyGenerator().CreateClassProxyWithTarget(
-                            prop.PropertyType, new[] { typeof(IDynamicDtoInputProxy)}, newObj, inter));
+                        prop.SetValue(obj, new ProxyGenerator().CreateClassProxyWithTarget(
+                            prop.PropertyType, new[] { typeof(IDynamicDtoInputProxy) }, newObj, inter));
                     }
                 }
             }

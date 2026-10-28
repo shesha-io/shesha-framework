@@ -9,7 +9,7 @@ namespace Shesha.Configuration
     /// Password complexity settings
     /// </summary>
     [Category("Password complexity")]
-    public interface IPasswordComplexitySettings: ISettingAccessors
+    public interface IPasswordComplexitySettings : ISettingAccessors
     {
         /// <summary>
         /// Require digit

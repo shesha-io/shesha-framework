@@ -42,7 +42,8 @@ namespace Shesha.FluentMigrator.Settings
         {
             var exp = new PerformDBOperationExpression()
             {
-                Operation = (connection, transaction) => {
+                Operation = (connection, transaction) =>
+                {
                     var helper = new SettingsDbHelper(DbmsType, connection, transaction, QuerySchema);
 
                     var module = Module.IsSet ? Module.Value : _migrationModule;
@@ -76,11 +77,13 @@ namespace Shesha.FluentMigrator.Settings
                         {
                             var appId = helper.GetFrontEndAppId(ValueAppKey.Value) ?? throw new SheshaMigrationException($"Front-end application with appKey = `{ValueAppKey.Value}` not found");
                             helper.UpdateSettingValue(id.Value, appId, ValueUserId.Value, Value.Value);
-                        } if (ValueAppKey.IsSet && !string.IsNullOrEmpty(ValueAppKey.Value))
+                        }
+                        if (ValueAppKey.IsSet && !string.IsNullOrEmpty(ValueAppKey.Value))
                         {
                             var appId = helper.GetFrontEndAppId(ValueAppKey.Value) ?? throw new SheshaMigrationException($"Front-end application with appKey = `{ValueAppKey.Value}` not found");
                             helper.UpdateSettingValue(id.Value, appId, null, Value.Value);
-                        } if (ValueUserId.IsSet && (ValueUserId.Value) is not null)
+                        }
+                        if (ValueUserId.IsSet && (ValueUserId.Value) is not null)
                         {
                             helper.UpdateSettingValue(id.Value, null, ValueUserId.Value, Value.Value);
                         }

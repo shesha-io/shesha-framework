@@ -66,23 +66,24 @@ namespace Shesha.JsonLogic
             return new ExpressionParameterReplaceVisitor(parameter, newParameter).Visit(expression);
         }
 
-        public static string? ToInvariantString(this Expression expression) 
+        public static string? ToInvariantString(this Expression expression)
         {
-            using (UsingCulture(CultureInfo.InvariantCulture)) 
+            using (UsingCulture(CultureInfo.InvariantCulture))
             {
                 return expression.ToString();
-            }                
+            }
         }
 
-        private static IDisposable UsingCulture(CultureInfo culture) 
+        private static IDisposable UsingCulture(CultureInfo culture)
         {
             var prevCulture = Thread.CurrentThread.CurrentCulture;
 
             Thread.CurrentThread.CurrentCulture = culture;
 
-            return new DisposeAction(() => {
+            return new DisposeAction(() =>
+            {
                 Thread.CurrentThread.CurrentCulture = prevCulture;
-            });            
+            });
         }
     }
 }

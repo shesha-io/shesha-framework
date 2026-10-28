@@ -21,7 +21,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public virtual Task<bool> CanExportItemAsync(ConfigurationItem item) 
+        public virtual Task<bool> CanExportItemAsync(ConfigurationItem item)
         {
             return Task.FromResult(true);
         }
@@ -32,7 +32,7 @@ namespace Shesha.ConfigurationItems.Distribution
             return await ExportItemAsync(item);
         }
 
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item) 
+        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item)
         {
             var typedItem = CastItem<TItem, ConfigurationItem>(item);
 
@@ -42,8 +42,8 @@ namespace Shesha.ConfigurationItems.Distribution
             return distributedItem;
         }
 
-        public async Task<string> ExportItemToJsonAsync(ConfigurationItem item) 
-        { 
+        public async Task<string> ExportItemToJsonAsync(ConfigurationItem item)
+        {
             var dto = await ExportItemAsync(item);
             var json = JsonConvert.SerializeObject(dto, Formatting.Indented);
             return json;
@@ -53,7 +53,8 @@ namespace Shesha.ConfigurationItems.Distribution
 
         protected TDistributedItem GetBaseDistributedItem(TItem item, ConfigurationItem revision)
         {
-            return new TDistributedItem {
+            return new TDistributedItem
+            {
                 Id = item.Id,
                 Name = item.Name,
                 ModuleName = item.Module?.Name,
@@ -77,13 +78,13 @@ namespace Shesha.ConfigurationItems.Distribution
             }
         }
 
-        public virtual async Task WriteItemToJsonAsync(DistributedConfigurableItemBase item, Stream jsonStream) 
+        public virtual async Task WriteItemToJsonAsync(DistributedConfigurableItemBase item, Stream jsonStream)
         {
             var typed = CastItem<TDistributedItem, DistributedConfigurableItemBase>(item);
             await WriteToJsonAsync(typed, jsonStream);
         }
 
-        private TExpected CastItem<TExpected, T>(T item) where T: class
+        private TExpected CastItem<TExpected, T>(T item) where T : class
         {
             if (item is not TExpected typedItem)
                 throw new ArgumentException($"Unexpected type of item. Expected '{typeof(TItem).FullName}' actual '{item.GetType().FullName}'", nameof(item));

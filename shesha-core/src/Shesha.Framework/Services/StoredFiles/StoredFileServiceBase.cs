@@ -41,7 +41,7 @@ namespace Shesha.Services.StoredFiles
         {
             FileRepository = fileService;
             VersionRepository = versionService;
-            StoredFileVersionDownloadRepository = storedFileVersionDownloadService; 
+            StoredFileVersionDownloadRepository = storedFileVersionDownloadService;
         }
 
         #region  GetAttachmentsAsync
@@ -299,7 +299,7 @@ namespace Shesha.Services.StoredFiles
         /// </summary>
         /// <param name="file">file object</param>
         /// <returns>StoredFileVersion object (not saved to DB if file is version controlled)</returns>
-        public async Task<StoredFileVersion> GetNewOrDefaultVersionAsync([NotNull]StoredFile file)
+        public async Task<StoredFileVersion> GetNewOrDefaultVersionAsync([NotNull] StoredFile file)
         {
             if (file == null)
                 throw new Exception("file should not be null");
@@ -320,7 +320,8 @@ namespace Shesha.Services.StoredFiles
                 await VersionRepository.InsertAsync(newVersion);
 
                 return newVersion;
-            } else
+            }
+            else
                 return lastVersion;
         }
 
@@ -356,7 +357,7 @@ namespace Shesha.Services.StoredFiles
         /// </summary>
         /// <param name="fileId">File Id</param>
         /// <returns></returns>
-        protected async Task<StoredFileVersion> GetLastVersionAsync(Guid fileId) 
+        protected async Task<StoredFileVersion> GetLastVersionAsync(Guid fileId)
         {
             return await QueryLastVersion(fileId).FirstOrDefaultAsync();
         }
@@ -422,7 +423,8 @@ namespace Shesha.Services.StoredFiles
             var uniqueList = new Dictionary<string, StoredFile>();
 
             // make file names unique
-            var groups = files.GroupBy(f => f.FileName.ToLower(), f => f, (fileName, groupFiles) => new {
+            var groups = files.GroupBy(f => f.FileName.ToLower(), f => f, (fileName, groupFiles) => new
+            {
                 FileName = files.FirstOrDefault()?.FileName,
                 Files = groupFiles.ToList()
             }).ToList();
@@ -477,7 +479,7 @@ namespace Shesha.Services.StoredFiles
         public abstract Task UpdateVersionContentAsync(StoredFileVersion version, Stream stream);
 
         /// inheritedDoc
-        public async Task<StoredFileVersion> CreateFileAsync(Stream stream, string fileName, Action<StoredFile>? prepareFileAction = null) 
+        public async Task<StoredFileVersion> CreateFileAsync(Stream stream, string fileName, Action<StoredFile>? prepareFileAction = null)
         {
             if (stream == null)
                 throw new Exception($"{nameof(stream)} must not be null");
@@ -530,7 +532,7 @@ namespace Shesha.Services.StoredFiles
             return version;
         }
 
-        protected abstract void CopyFile(StoredFileVersion source, StoredFileVersion  destination);
+        protected abstract void CopyFile(StoredFileVersion source, StoredFileVersion destination);
 
         /// Delete physical file from the storage (disk/blob storage etc.)
         protected abstract Task DeleteFromStorageAsync(StoredFileVersion version);

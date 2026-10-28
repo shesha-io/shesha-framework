@@ -26,7 +26,7 @@ namespace Shesha.NHibernate.EntityHistory
         /// <param name="entity">Changed entity</param>
         /// <param name="description">Description of changes</param>
         /// <param name="property">Changed property</param>
-        public static void AddPropertyChangeDescription<TModel, TValue>(this TModel entity, string description, Expression<Func<TModel, TValue>> property) where TModel: notnull
+        public static void AddPropertyChangeDescription<TModel, TValue>(this TModel entity, string description, Expression<Func<TModel, TValue>> property) where TModel : notnull
         {
             try
             {

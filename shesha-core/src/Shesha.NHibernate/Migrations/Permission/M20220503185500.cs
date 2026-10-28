@@ -10,7 +10,7 @@ namespace Shesha.Migrations.Framework
             // Shesha.Domain.PermissionedObjects
             Alter.Table("Frwk_PermissionedObjects")
                 .AddColumn("AccessLkp").AsInt32().NotNullable().WithDefaultValue(2);
-                ;
+            ;
         }
     }
 }

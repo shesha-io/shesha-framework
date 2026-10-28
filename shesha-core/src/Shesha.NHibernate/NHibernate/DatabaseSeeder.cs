@@ -219,7 +219,7 @@ namespace Shesha.NHibernate
                     var allSkipped = true;
 
                     var cfRuntime = _ioc.Resolve<IConfigurationFrameworkRuntime>();
-                    using (cfRuntime.DisableConfigurationTracking()) 
+                    using (cfRuntime.DisableConfigurationTracking())
                     {
                         foreach (var bootstrapperType in bootstrapperTypes)
                         {
@@ -232,7 +232,7 @@ namespace Shesha.NHibernate
                                 _logger.Warn($"Run bootstrapper: {bootstrapperType.Name} - finished");
                             }
                         }
-                    }                        
+                    }
 
                     if (appStartup.AllAssembliesStayUnchanged && allSkipped)
                         _logger.Warn($"Bootstrappers skipped. Previous startup was full, successful and all assemblies stay unchanged");
@@ -300,7 +300,7 @@ namespace Shesha.NHibernate
         {
             var startupConfig = _ioc.Resolve<IAbpStartupConfiguration>();
             var nhConfig = startupConfig.Modules.ShaNHibernate();
-            
+
             var skipDbHealthChecks = _configuration.GetValue<bool>(SkipDbHealthChecksSetting);
 
             // Check DB health

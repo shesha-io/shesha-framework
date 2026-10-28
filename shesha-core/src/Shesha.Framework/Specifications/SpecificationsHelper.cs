@@ -17,7 +17,7 @@ namespace Shesha.Specifications
         /// </summary>
         /// <param name="specificationType">Type of specifications</param>
         /// <returns></returns>
-        public static List<SpecificationInfo> GetSpecificationsInfo(Type specificationType) 
+        public static List<SpecificationInfo> GetSpecificationsInfo(Type specificationType)
         {
             var entityTypes = specificationType.GetInterfaces()
                         .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ISpecification<>))
@@ -49,9 +49,9 @@ namespace Shesha.Specifications
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static bool IsGlobalSpecificationType(this Type type) 
+        public static bool IsGlobalSpecificationType(this Type type)
         {
             return type.HasAttribute<GlobalSpecificationAttribute>();
-        }        
+        }
     }
 }

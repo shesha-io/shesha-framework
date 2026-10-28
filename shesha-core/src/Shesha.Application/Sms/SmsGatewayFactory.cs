@@ -18,7 +18,7 @@ namespace Shesha.Sms
         private readonly ISmsSettings _smsSettings;
         private readonly IIocResolver _iocResolver;
         private readonly ITypeFinder _typeFinder;
-        
+
         public SmsGatewayFactory(ISmsSettings smsSettings, ITypeFinder typeFinder, IIocResolver iocResolver)
         {
             _smsSettings = smsSettings;
@@ -45,22 +45,23 @@ namespace Shesha.Sms
             return gateway ?? NullSmsGateway.Instance;
         }
 
-        public List<AvailableSmsGatewayInfo> GetSmsGatewayTypes() 
+        public List<AvailableSmsGatewayInfo> GetSmsGatewayTypes()
         {
             var result = new List<AvailableSmsGatewayInfo>();
             var gatewayTypes = _typeFinder.Find(t => typeof(ISmsGateway).IsAssignableFrom(t) && t.IsClass && _iocResolver.IsRegistered(t)).ToList();
-            foreach (var gatewayType in gatewayTypes) 
+            foreach (var gatewayType in gatewayTypes)
             {
                 var attribute = gatewayType.GetAttributeOrNull<ClassUidAttribute>();
                 if (attribute == null)
                     continue;
-                result.Add(new AvailableSmsGatewayInfo {
+                result.Add(new AvailableSmsGatewayInfo
+                {
                     Type = gatewayType,
                     Uid = attribute.Uid,
                     Alias = SmsUtils.GetGatewayAlias(gatewayType),
                     Name = ReflectionHelper.GetDisplayName(gatewayType),
                     Description = ReflectionHelper.GetDescription(gatewayType)
-                });                
+                });
             }
             return result;
         }

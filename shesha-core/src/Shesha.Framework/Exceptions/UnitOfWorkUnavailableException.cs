@@ -2,11 +2,11 @@
 
 namespace Shesha.Exceptions
 {
-    public class UnitOfWorkUnavailableException: Exception
+    public class UnitOfWorkUnavailableException : Exception
     {
-        public UnitOfWorkUnavailableException(): base("Unit Of Work is unavailable")
+        public UnitOfWorkUnavailableException() : base("Unit Of Work is unavailable")
         {
-            
+
         }
     }
 }

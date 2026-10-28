@@ -89,7 +89,8 @@ namespace Shesha.Tests.JsonLogic
 
         #region number
 
-        private static class NumberExpressions { 
+        private static class NumberExpressions
+        {
             public const string Equal = @"{
   ""and"": [
     {
@@ -388,7 +389,7 @@ namespace Shesha.Tests.JsonLogic
         [InlineData("LessOrEqual", DateTimeExpressions.LessOrEqual, "ent => (ent.LastModificationTime <= Convert(ent.CreationTime, Nullable`1))")]
         [InlineData("Between", DateTimeExpressions.Between, "ent => ((Convert(ent.CreationTime, Nullable`1) <= ent.LastModificationTime) AndAlso (ent.LastModificationTime <= ent.DeletionTime))")]
         [InlineData("NotBetween", DateTimeExpressions.NotBetween, "ent => Not(((Convert(ent.CreationTime, Nullable`1) <= ent.LastModificationTime) AndAlso (ent.LastModificationTime <= ent.DeletionTime)))")]
-        public void DateField_Convert(string name, string jsonLogicExpression, string expectation) 
+        public void DateField_Convert(string name, string jsonLogicExpression, string expectation)
         {
             Console.WriteLine($"Test: '{name}'");
 
@@ -433,7 +434,7 @@ namespace Shesha.Tests.JsonLogic
     }
   ]
 }";
-          
+
             public const string NotEqual = @"{
   ""and"": [
     {

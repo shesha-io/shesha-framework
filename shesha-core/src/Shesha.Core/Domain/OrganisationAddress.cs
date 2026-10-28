@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Shesha.Domain.Attributes;
+using System;
 using System.ComponentModel.DataAnnotations;
-using Shesha.Domain.Attributes;
 
 namespace Shesha.Domain
 {

@@ -43,7 +43,7 @@ namespace Shesha.GraphQL.Helpers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<GraphQLDataResult<TEntity>> QueryAsync<TEntity, TPrimaryKey>(GetDynamicEntityInput<TPrimaryKey> input) where TEntity : IEntity<TPrimaryKey> 
+        public async Task<GraphQLDataResult<TEntity>> QueryAsync<TEntity, TPrimaryKey>(GetDynamicEntityInput<TPrimaryKey> input) where TEntity : IEntity<TPrimaryKey>
         {
             var result = await GetQueryResultAsync(typeof(TEntity), input);
 
@@ -57,7 +57,7 @@ namespace Shesha.GraphQL.Helpers
             return new GraphQLDataResult(result);
         }
 
-        public async Task<ExecutionResult> GetQueryResultAsync<TPrimaryKey>(Type entityType, GetDynamicEntityInput<TPrimaryKey> input) 
+        public async Task<ExecutionResult> GetQueryResultAsync<TPrimaryKey>(Type entityType, GetDynamicEntityInput<TPrimaryKey> input)
         {
             var schemaName = StringHelper.ToCamelCase(entityType.Name);
 

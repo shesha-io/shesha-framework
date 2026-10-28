@@ -50,7 +50,7 @@ namespace Shesha.Startup
         /// <param name="assembly"></param>
         /// <returns></returns>
         bool AssemblyStaysUnchanged(Assembly assembly);
-        
+
         /// <summary>
         /// If true, indicates that all assemblies stays unchanged since previous startup
         /// </summary>

@@ -24,17 +24,17 @@ namespace Shesha.DynamicEntities.Distribution
             IRepository<FrontEndApp, Guid> frontEndAppRepo,
             IRepository<ShaRole, Guid> repository,
             IRepository<ShaRolePermission, Guid> rolePermissionRepo
-        ) : base (repository, moduleRepo, frontEndAppRepo)
+        ) : base(repository, moduleRepo, frontEndAppRepo)
         {
             _rolePermissionRepo = rolePermissionRepo;
         }
 
-        private async Task ImportPermissionsAsync(ShaRole item, DistributedShaRole distributedItem) 
+        private async Task ImportPermissionsAsync(ShaRole item, DistributedShaRole distributedItem)
         {
             var dbPermissions = await _rolePermissionRepo.GetAllListAsync(e => e.Role == item);
 
             var toDelete = dbPermissions.Where(e => !distributedItem.Permissions.Any(dp => dp.Permission == e.Permission)).ToList();
-            foreach (var permission in toDelete) 
+            foreach (var permission in toDelete)
             {
                 await _rolePermissionRepo.DeleteAsync(permission);
             }
@@ -47,14 +47,15 @@ namespace Shesha.DynamicEntities.Distribution
                     dbPermission.IsGranted = perm.IsGranted;
                     await _rolePermissionRepo.UpdateAsync(dbPermission);
                 }
-                else {
+                else
+                {
                     await _rolePermissionRepo.InsertAsync(new ShaRolePermission()
                     {
                         Role = item,
                         Permission = perm.Permission,
                         IsGranted = perm.IsGranted,
                     });
-                }                    
+                }
             }
         }
 
@@ -73,13 +74,13 @@ namespace Shesha.DynamicEntities.Distribution
         {
             var dbPermissions = await (await _rolePermissionRepo.GetAllAsync()).Where(e => e.Role == role && e.IsGranted)
                 .OrderBy(e => e.Permission)
-                .Select(e => e.Permission)                
+                .Select(e => e.Permission)
                 .ToListAsync();
 
             var distributedPermissions = distributedItem.Permissions
                 .Where(e => e.IsGranted)
                 .OrderBy(e => e.Permission)
-                .Select(e => e.Permission)                
+                .Select(e => e.Permission)
                 .ToList();
 
             return dbPermissions.Delimited(",") == distributedPermissions.Delimited(",");

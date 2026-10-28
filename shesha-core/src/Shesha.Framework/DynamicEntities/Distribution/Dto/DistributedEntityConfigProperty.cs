@@ -11,7 +11,7 @@ namespace Shesha.DynamicEntities.Distribution.Dto
     /// </summary>
     public class DistributedEntityConfigProperty
     {
-        public DistributedEntityConfigProperty() 
+        public DistributedEntityConfigProperty()
         {
             Properties = new List<DistributedEntityConfigProperty>();
         }

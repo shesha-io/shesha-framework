@@ -12,8 +12,8 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Specifications
     {
         public override Expression<Func<Employee, bool>> BuildExpression()
         {
-            return employee => employee.OrderIndex > 0 && 
-                             !string.IsNullOrEmpty(employee.FirstName) && 
+            return employee => employee.OrderIndex > 0 &&
+                             !string.IsNullOrEmpty(employee.FirstName) &&
                              !string.IsNullOrEmpty(employee.LastName) &&
                              employee.Company != null;
         }

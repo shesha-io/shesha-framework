@@ -169,18 +169,18 @@ namespace Shesha
 
         protected override IQueryable<TEntity> ApplyPaging(IQueryable<TEntity> query, TGetAllInput input)
         {
-            if (input is IPagedResultRequest pagedInput) 
+            if (input is IPagedResultRequest pagedInput)
             {
                 if (pagedInput.SkipCount > 0)
                     query = query.Skip(pagedInput.SkipCount);
             }
 
-            if (input is ILimitedResultRequest limitedInput) 
+            if (input is ILimitedResultRequest limitedInput)
             {
                 if (limitedInput.MaxResultCount > 0 && limitedInput.MaxResultCount < int.MaxValue)
                     query = query.Take(limitedInput.MaxResultCount);
             }
-                
+
             return query;
         }
     }

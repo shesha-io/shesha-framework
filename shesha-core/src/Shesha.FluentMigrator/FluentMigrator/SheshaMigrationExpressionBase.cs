@@ -6,7 +6,7 @@ namespace Shesha.FluentMigrator
     /// <summary>
     /// Shesha migration expression base class
     /// </summary>
-    public abstract class SheshaMigrationExpressionBase: MigrationExpressionBase
+    public abstract class SheshaMigrationExpressionBase : MigrationExpressionBase
     {
         protected IQuerySchema QuerySchema { get; private set; }
         protected DbmsType DbmsType { get; private set; }

@@ -18,7 +18,7 @@ namespace Shesha.Extensions
         /// <param name="key">Key to search for</param>
         /// <param name="factory">Factory method to create item if not exists</param>
         /// <returns>Existing item or item created by <paramref name="factory"/></returns>
-        public static async Task<TValue> GetAsync<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TKey, Task<TValue>> factory) 
+        public static async Task<TValue> GetAsync<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TKey, Task<TValue>> factory)
         {
             if (dictionary.TryGetValue(key, out var value))
                 return value;

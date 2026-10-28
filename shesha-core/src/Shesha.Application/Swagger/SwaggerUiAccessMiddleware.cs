@@ -1,9 +1,9 @@
+using Abp.Dependency;
+using Castle.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Shesha.Configuration.Security;
 using System;
 using System.Threading.Tasks;
-using Abp.Dependency;
-using Castle.Core.Logging;
 
 namespace Shesha.Swagger
 {
@@ -11,7 +11,7 @@ namespace Shesha.Swagger
     /// Blocks everything under /swagger with a 403 when the Swagger UI setting is disabled,
     /// including the generated JSON specification.
     /// </summary>
-    public class SwaggerUiAccessMiddleware: IMiddleware, ITransientDependency
+    public class SwaggerUiAccessMiddleware : IMiddleware, ITransientDependency
     {
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
@@ -29,19 +29,19 @@ namespace Shesha.Swagger
                         context.Response.StatusCode = StatusCodes.Status403Forbidden;
                         return;
                     }
-                    
+
                     var settings = await securitySettings.SecuritySettings.GetValueAsync();
                     if (!settings.SwaggerUiEnabled)
                     {
                         context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                        return;                                                               
+                        return;
                     }
                 }
                 catch (Exception e)
                 {
                     Logger.Error("An error occurred while processing request.", e);
                     context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    return;     
+                    return;
                 }
             }
 

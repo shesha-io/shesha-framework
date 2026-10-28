@@ -8,8 +8,8 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-			// update all entities configs
-			Execute.Sql(@"update ""Frwk_EntityConfigs"" set ""PropertiesMD5"" = null");
+            // update all entities configs
+            Execute.Sql(@"update ""Frwk_EntityConfigs"" set ""PropertiesMD5"" = null");
         }
     }
 }

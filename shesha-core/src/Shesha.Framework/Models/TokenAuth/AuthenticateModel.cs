@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Abp.Authorization.Users;
+﻿using Abp.Authorization.Users;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Models.TokenAuth
 {
@@ -14,7 +14,7 @@ namespace Shesha.Models.TokenAuth
         public required string Password { get; set; }
 
         //public bool RememberClient { get; set; }
-        
+
         /// <summary>
         /// Optional IMEI number. Is used for mobile applications
         /// </summary>

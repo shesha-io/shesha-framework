@@ -29,6 +29,6 @@ namespace Shesha.Authorization.Roles
         }
 
         [MaxLength(MaxDescriptionLength)]
-        public virtual string? Description {get; set;}
+        public virtual string? Description { get; set; }
     }
 }

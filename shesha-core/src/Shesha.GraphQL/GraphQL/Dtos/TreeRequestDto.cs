@@ -20,6 +20,6 @@ namespace Shesha.GraphQL.Dtos
         /// <summary>
         /// Parent Id
         /// </summary>
-        public Guid? ParentId { get; set; }        
+        public Guid? ParentId { get; set; }
     }
 }

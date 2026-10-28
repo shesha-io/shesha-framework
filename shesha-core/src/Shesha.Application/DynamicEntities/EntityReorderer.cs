@@ -27,10 +27,10 @@ namespace Shesha.DynamicEntities
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TId"></typeparam>
     /// <typeparam name="TOrderIndex"></typeparam>
-    public class EntityReorderer<T, TId, TOrderIndex> : IEntityReorderer<T, TId, TOrderIndex>, ITransientDependency 
-        where T : Entity<TId> 
-        where TId: IEquatable<TId>, IComparable<TId> 
-        where TOrderIndex: IComparable<TOrderIndex>, INumber<TOrderIndex>
+    public class EntityReorderer<T, TId, TOrderIndex> : IEntityReorderer<T, TId, TOrderIndex>, ITransientDependency
+        where T : Entity<TId>
+        where TId : IEquatable<TId>, IComparable<TId>
+        where TOrderIndex : IComparable<TOrderIndex>, INumber<TOrderIndex>
     {
         private readonly IRepository<T, TId> _repository;
         private readonly IEntityTypeConfigurationStore _entityConfigStore;
@@ -51,15 +51,15 @@ namespace Shesha.DynamicEntities
                 throw new ArgumentException("Items must use valid order indexes");
 
             var entityConfig = _entityConfigStore.Get(typeof(T));
-            
+
             var idConverter = System.ComponentModel.TypeDescriptor.GetConverter(typeof(TId));
             if (!idConverter.CanConvertFrom(typeof(string)))
                 throw new NotSupportedException($"Conversion of string to type `{typeof(TId).FullName}` is not supported");
 
-            var passedItems = input.Items.Select(item => 
+            var passedItems = input.Items.Select(item =>
                 {
                     var id = idConverter.ConvertFrom(item.Id);
-                
+
                     return new ReorderingItem<TId, TOrderIndex>
                     {
                         OrderIndex = convertOrderIndex(item.OrderIndex.GetValueOrDefault()),
@@ -67,13 +67,13 @@ namespace Shesha.DynamicEntities
                     };
                 })
                 .ToList();
-            
+
             var ids = passedItems.Select(item => item.Id).ToList();
 
             var result = new ReorderResponse<TId, TOrderIndex>();
 
             // Note: SoftDelete should be disabled to speed-up the query and to prevent wrong calculations. We load entitier by Id, so it's safe
-            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete)) 
+            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
                 var numbers = new Stack<TOrderIndex>(passedItems.Select(i => i.OrderIndex).OrderByDescending(o => o));
 
@@ -113,7 +113,7 @@ namespace Shesha.DynamicEntities
             throw new NotSupportedException($"Conversion of double to `{typeof(TOrderIndex).FullName}` type is not supported");
         }
 
-        private Expression<Func<T, bool>> GetFindByIdExpression(TId id) 
+        private Expression<Func<T, bool>> GetFindByIdExpression(TId id)
         {
             var entParam = Expression.Parameter(typeof(T), "ent");
             var equalityExpression = Expression.Equal(Expression.PropertyOrField(entParam, nameof(IEntity.Id)), Expression.Constant(id, typeof(TId)));
@@ -137,24 +137,25 @@ namespace Shesha.DynamicEntities
         }
 
         private static ModuleBuilder _moduleBuilder;
-        protected static ModuleBuilder ModuleBuilder { 
-            get 
+        protected static ModuleBuilder ModuleBuilder
+        {
+            get
             {
-                if (_moduleBuilder == null) 
+                if (_moduleBuilder == null)
                 {
                     var dynamicAssemblyName = new AssemblyName("Dynamic.EntityReordering");
                     var dynamicAssembly = AssemblyBuilder.DefineDynamicAssembly(dynamicAssemblyName, AssemblyBuilderAccess.Run);
                     _moduleBuilder = dynamicAssembly.DefineDynamicModule("DynamicModule");
                 }
                 return _moduleBuilder;
-            }  
+            }
         }
 
         public static Type CreatePartialType(string propertyName, Type propertyType)
         {
             var typeName = $"{typeof(T)}.{propertyName}";
             var type = ModuleBuilder.GetType(typeName);
-            if (type == null) 
+            if (type == null)
             {
                 var typeBuilder = ModuleBuilder.DefineType(typeName, TypeAttributes.Public | TypeAttributes.Class, typeof(object), new Type[] { typeof(IHasOrderIndex) });
                 typeBuilder.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);
@@ -185,8 +186,8 @@ namespace Shesha.DynamicEntities
             return type;
         }
 
-        public interface IHasOrderIndex 
-        { 
+        public interface IHasOrderIndex
+        {
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using System;
-using Abp.Application.Services.Dto;
+﻿using Abp.Application.Services.Dto;
 using AutoMapper;
 using Shesha.Domain;
+using System;
 
 namespace Shesha.Permissions.Dtos
 {

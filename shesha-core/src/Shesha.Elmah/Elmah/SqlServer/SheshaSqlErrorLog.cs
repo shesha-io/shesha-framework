@@ -60,7 +60,7 @@ namespace Shesha.Elmah.SqlServer
             error.Exception?.SetExceptionId(id.Value);
 
             Log(id.Value, error);
-                
+
             return id.ToString();
         }
 
@@ -73,7 +73,7 @@ namespace Shesha.Elmah.SqlServer
 
                 var errorXml = ErrorXml.EncodeString(error);
 
-                using (var connection = new SqlConnection(ConnectionString)) 
+                using (var connection = new SqlConnection(ConnectionString))
                 {
                     connection.Open();
 
@@ -89,7 +89,7 @@ namespace Shesha.Elmah.SqlServer
                         if (provider.CurrentState.AllExceptions != null)
                         {
                             var allRefs = provider.CurrentState.AllExceptions.Where(e => e.Exception == error.Exception).ToList();
-                            if (allRefs.Any()) 
+                            if (allRefs.Any())
                             {
                                 foreach (var item in allRefs)
                                 {

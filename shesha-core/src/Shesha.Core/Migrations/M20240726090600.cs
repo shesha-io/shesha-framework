@@ -8,7 +8,7 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-     
+
             Delete.Column("OperatingHoursStartTime").FromTable("Core_Sites");
             Delete.Column("OperatingHoursClosingTime").FromTable("Core_Sites");
 

@@ -53,7 +53,7 @@ namespace Shesha.Scheduler.Logging
             }
         }
 
-        private XmlElement GetLog4NetElement(XmlDocument log4NetConfig) 
+        private XmlElement GetLog4NetElement(XmlDocument log4NetConfig)
         {
             return log4NetConfig["log4net"].NotNull("log4net config not found");
         }

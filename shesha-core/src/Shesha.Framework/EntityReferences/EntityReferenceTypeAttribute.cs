@@ -4,7 +4,7 @@ using System;
 namespace Shesha.EntityReferences
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class EntityReferenceTypeAttribute: Attribute
+    public class EntityReferenceTypeAttribute : Attribute
     {
         public Type EntityType { get; }
 

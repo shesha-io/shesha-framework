@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Core.SecurityQuestion")]
-    public class SecurityQuestion: FullAuditedEntity<Guid>
+    public class SecurityQuestion : FullAuditedEntity<Guid>
     {
         /// <summary>
         /// 

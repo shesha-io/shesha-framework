@@ -15,7 +15,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
             this.Shesha().SettingUpdate("IsAllowedTo")
                         .OnModule("Shesha")
                         .SetValue(true.ToString());
-                 
+
         }
     }
 }

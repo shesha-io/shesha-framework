@@ -6,7 +6,7 @@ namespace Shesha.Otp.Exceptions
     {
         public Guid OperationId { get; private set; }
 
-        public OtpOperationNotFoundException(Guid operationId): base($"PIN for operation '{operationId}' not found")
+        public OtpOperationNotFoundException(Guid operationId) : base($"PIN for operation '{operationId}' not found")
         {
             OperationId = operationId;
         }

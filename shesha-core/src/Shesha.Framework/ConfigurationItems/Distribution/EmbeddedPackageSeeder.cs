@@ -27,9 +27,9 @@ namespace Shesha.ConfigurationItems.Distribution
         private readonly IApplicationStartupSession _startupSession;
         private IRepository<ApplicationStartupAssembly, Guid> _startupAssemblyRepository;
 
-        public EmbeddedPackageSeeder(IRepository<ConfigurationPackageImportResult, Guid> importResultRepository, 
-            IConfigurationPackageManager packageManager, 
-            IUnitOfWorkManager unitOfWorkManager, 
+        public EmbeddedPackageSeeder(IRepository<ConfigurationPackageImportResult, Guid> importResultRepository,
+            IConfigurationPackageManager packageManager,
+            IUnitOfWorkManager unitOfWorkManager,
             IApplicationStartupSession startupSession,
             IRepository<ApplicationStartupAssembly, Guid> startupAssemblyRepository
         )
@@ -48,7 +48,7 @@ namespace Shesha.ConfigurationItems.Distribution
             var resources = context.Assembly.GetManifestResourceNames();
             var embeddedPackages = resources.Select(r => TryGetPackageInfo(context.Assembly, r)).WhereNotNull().OrderBy(p => p.Date).ToList();
 
-            if (!embeddedPackages.Any()) 
+            if (!embeddedPackages.Any())
             {
                 context.Logger.Warn($"Embedded packages not found");
                 return false;
@@ -73,11 +73,11 @@ namespace Shesha.ConfigurationItems.Distribution
 
                 context.Logger.Info($"Check package '{embeddedPackage.ResourceName}'");
 
-                using (var stream = embeddedPackage.Assembly.GetEmbeddedResourceStream(embeddedPackage.ResourceName)) 
+                using (var stream = embeddedPackage.Assembly.GetEmbeddedResourceStream(embeddedPackage.ResourceName))
                 {
                     var md5 = FileHelper.GetMD5(stream);
 
-                    if (importedPackages.Any(r => r.FileName == embeddedPackage.ResourceName && r.MD5 == md5)) 
+                    if (importedPackages.Any(r => r.FileName == embeddedPackage.ResourceName && r.MD5 == md5))
                     {
                         context.Logger.Info($"Package '{embeddedPackage.ResourceName}' was successfully imported earlier - skipped");
                         continue;
@@ -85,7 +85,7 @@ namespace Shesha.ConfigurationItems.Distribution
 
                     context.Logger.Warn($"Importing package '{embeddedPackage.ResourceName}'");
 
-                    using (var uow = _unitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew)) 
+                    using (var uow = _unitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew))
                     {
                         var importResult = await _packageManager.CreateImportResultAsync(stream, embeddedPackage.ResourceName);
                         importResult.ApplicationStartupAssembly = await GetCurrentStartupAssemblyAsync(context);
@@ -101,7 +101,8 @@ namespace Shesha.ConfigurationItems.Distribution
                                 Logger = context.Logger,
                                 ImportResult = importResult,
                                 RevisionCreationMethod = Domain.Enums.ConfigurationItemRevisionCreationMethod.MigrationImport,
-                                ShouldImportItem = (item) => { 
+                                ShouldImportItem = (item) =>
+                                {
                                     return item.ModuleName == moduleName;
                                 }
                             };
@@ -126,7 +127,7 @@ namespace Shesha.ConfigurationItems.Distribution
             return imported;
         }
 
-        private async Task<ApplicationStartupAssembly?> GetCurrentStartupAssemblyAsync(EmbeddedPackageSeedingContext context) 
+        private async Task<ApplicationStartupAssembly?> GetCurrentStartupAssemblyAsync(EmbeddedPackageSeedingContext context)
         {
             if (_startupSession.CurrentStartup == null)
                 return null;

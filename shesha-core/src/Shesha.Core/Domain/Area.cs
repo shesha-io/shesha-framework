@@ -25,7 +25,7 @@ namespace Shesha.Domain
         public virtual string Comments { get; set; }
 
         public virtual Area? ParentArea { get; set; }
-        
+
         public virtual int? TenantId { get; set; }
 
         public virtual RefListAreaType? AreaType { get; set; }

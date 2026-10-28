@@ -51,15 +51,15 @@ namespace Shesha.Domain
         [Audited]
         public virtual string? LastName { get; set; }
 
-		[Display(Name = "Middle Name")]
-		[MaxLength(50)]
-		[Audited]
-		public virtual string? MiddleName { get; set; }
+        [Display(Name = "Middle Name")]
+        [MaxLength(50)]
+        [Audited]
+        public virtual string? MiddleName { get; set; }
 
-		/// <summary>
-		/// Initials override. If empty, the first letter of FirstName is taken.
-		/// </summary>
-		[MaxLength(10), Display(Name = "Initials")]
+        /// <summary>
+        /// Initials override. If empty, the first letter of FirstName is taken.
+        /// </summary>
+        [MaxLength(10), Display(Name = "Initials")]
         public virtual string? Initials { get; set; }
 
         /// <summary>
@@ -109,17 +109,17 @@ namespace Shesha.Domain
         [ReadonlyProperty]
         public virtual string? FullName { get; protected set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Display(Name = "Address")]
-		public virtual Address Address { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [Display(Name = "Address")]
+        public virtual Address Address { get; set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Display(Name = "Work Address")]
-		public virtual Address WorkAddress { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [Display(Name = "Work Address")]
+        public virtual Address WorkAddress { get; set; }
 
         /// <summary>
         /// User record, may be null for non registered users

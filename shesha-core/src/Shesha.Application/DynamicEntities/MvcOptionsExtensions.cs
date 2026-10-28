@@ -19,7 +19,7 @@ namespace Shesha.DynamicEntities
         /// Enable binding of the <see cref="DynamicDto{TEntity, TId}"/>
         /// </summary>
         /// <param name="options"></param>
-        public static void EnableDynamicDtoBinding(this MvcOptions options) 
+        public static void EnableDynamicDtoBinding(this MvcOptions options)
         {
             var bodyBuilder = options.ModelBinderProviders.FirstOrDefault(b => b.GetType() == typeof(BodyModelBinderProvider));
             var idx = bodyBuilder != null
@@ -34,7 +34,7 @@ namespace Shesha.DynamicEntities
         }
 
 
-        public static void AddDynamicAppServices(this MvcOptions options, IServiceCollection services) 
+        public static void AddDynamicAppServices(this MvcOptions options, IServiceCollection services)
         {
             var partManager = StaticContext.IocManager.Resolve<ApplicationPartManager>();
             var feature = partManager.FeatureProviders.OfType<DynamicEntityControllerFeatureProvider>().FirstOrDefault();

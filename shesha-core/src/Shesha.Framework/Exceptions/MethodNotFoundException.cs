@@ -10,7 +10,7 @@ namespace Shesha.Exceptions
         public Type OwnerType { get; private set; }
         public string MethodName { get; private set; }
 
-        public MethodNotFoundException(Type type, string methodName): base($"Method '{methodName}' not found in type '{type.FullName}'")
+        public MethodNotFoundException(Type type, string methodName) : base($"Method '{methodName}' not found in type '{type.FullName}'")
         {
             OwnerType = type;
             MethodName = methodName;

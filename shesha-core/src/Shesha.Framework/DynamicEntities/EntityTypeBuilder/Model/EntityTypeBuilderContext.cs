@@ -11,7 +11,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder.Model
         public EntityConfig EntityConfig { get; set; }
 
         public TypeBuilder TypeBuilder { get; set; }
-        
+
         public Type? Type { get; set; }
     }
 

@@ -72,9 +72,9 @@ namespace Shesha.Permissions
             if (objectType != null && !GetObjectTypes().Contains(objectType)) return new List<PermissionedObjectDto>();
 
             var apiDescriptors = new List<ApiDescriptor>();
-            foreach (var apiDescGroup in _apiDescriptionsProvider.ApiDescriptionGroups.Items) 
+            foreach (var apiDescGroup in _apiDescriptionsProvider.ApiDescriptionGroups.Items)
             {
-                foreach (var apiDesc in apiDescGroup.Items) 
+                foreach (var apiDesc in apiDescGroup.Items)
                 {
                     var descriptor = apiDesc.ActionDescriptor.AsControllerActionDescriptor();
                     var service = descriptor.ControllerTypeInfo.AsType();
@@ -86,7 +86,7 @@ namespace Shesha.Permissions
                         continue;
 
                     var module = await GetModuleOfAssemblyAsync(assembly);
-                    
+
                     apiDescriptors.Add(new ApiDescriptor()
                     {
                         Description = apiDesc,
@@ -96,7 +96,7 @@ namespace Shesha.Permissions
                         Endpoint = apiDesc.RelativePath,
                         Action = descriptor.MethodInfo,
                         Assembly = assembly,
-                    });                    
+                    });
                 }
             }
 

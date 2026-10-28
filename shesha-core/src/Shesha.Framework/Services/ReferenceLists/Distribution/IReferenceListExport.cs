@@ -6,7 +6,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
     /// <summary>
     /// Reference list export
     /// </summary>
-    public interface IReferenceListExport: IConfigurableItemExport<ReferenceList>
+    public interface IReferenceListExport : IConfigurableItemExport<ReferenceList>
     {
     }
 }

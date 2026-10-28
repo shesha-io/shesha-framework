@@ -27,7 +27,7 @@
             DataType = dataType;
         }
 
-        public DataTypeInfo(string dataType, string? dataFormat): this(dataType)
+        public DataTypeInfo(string dataType, string? dataFormat) : this(dataType)
         {
             DataFormat = dataFormat;
         }

@@ -8,7 +8,7 @@ namespace Shesha.ConfigurationItems.Distribution.Models
     /// <summary>
     /// Configuration Items Package. Describe export file
     /// </summary>
-    public class ConfigurationItemsPackage: IDisposable
+    public class ConfigurationItemsPackage : IDisposable
     {
         /// <summary>
         /// Packed items
@@ -33,7 +33,7 @@ namespace Shesha.ConfigurationItems.Distribution.Models
     /// Package item
     /// </summary>
     public class ConfigurationItemsPackageItem
-    { 
+    {
         /// <summary>
         /// Module name
         /// </summary>

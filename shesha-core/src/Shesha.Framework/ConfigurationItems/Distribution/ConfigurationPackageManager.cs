@@ -80,7 +80,7 @@ namespace Shesha.ConfigurationItems.Distribution
             {
                 var parts = entry.FullName.Split('\\', '/');
 
-                if (!parts.Any(x => string.IsNullOrEmpty(x)) && (parts.Length == 3 || parts.Length == 4)) 
+                if (!parts.Any(x => string.IsNullOrEmpty(x)) && (parts.Length == 3 || parts.Length == 4))
                 {
                     var containsAppKey = parts.Length == 4;
 
@@ -91,7 +91,7 @@ namespace Shesha.ConfigurationItems.Distribution
                         StreamGetter = () => entry.Open(),
                         FileName = containsAppKey ? parts[3] : parts[2],
                         ApplicationKey = containsAppKey ? parts[2] : null,
-                    };                    
+                    };
 
                     var importer = context.GetImporter(item.ItemType);
                     if (importer == null)
@@ -143,12 +143,12 @@ namespace Shesha.ConfigurationItems.Distribution
             if (context.ExportDependencies)
             {
                 var depsProviders = GetDependenciesProviders(item);
-                foreach (var depsProvider in depsProviders) 
+                foreach (var depsProvider in depsProviders)
                 {
                     var dependencies = await depsProvider.GetReferencedItemsAsync(item);
                     foreach (var dependency in dependencies)
                     {
-                        var query = (await _itemsRepository.GetAllAsync()).OfType(dependency.ItemType).Cast<ConfigurationItem>();                        
+                        var query = (await _itemsRepository.GetAllAsync()).OfType(dependency.ItemType).Cast<ConfigurationItem>();
 
                         var dependencyItem = await query.GetItemByIdAsync(dependency);
 
@@ -167,7 +167,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        private List<IDependenciesProvider> GetDependenciesProviders(ConfigurationItem item) 
+        private List<IDependenciesProvider> GetDependenciesProviders(ConfigurationItem item)
         {
             var requestedType = item.GetType().StripCastleProxyType();
 
@@ -177,7 +177,7 @@ namespace Shesha.ConfigurationItems.Distribution
             return _dependencyProviders[requestedType] = SearchClosestDependenciesProviders(requestedType) ?? new List<IDependenciesProvider>();
         }
 
-        private List<IDependenciesProvider>? SearchClosestDependenciesProviders(Type itemType) 
+        private List<IDependenciesProvider>? SearchClosestDependenciesProviders(Type itemType)
         {
             var type = itemType;
             while (type != null)
@@ -208,9 +208,9 @@ namespace Shesha.ConfigurationItems.Distribution
             return Path.Combine(folder, $"{item.Name.RemovePathIllegalCharacters()}.json");
         }
 
-        private async Task<DistributedConfigurableItemBase> ReadDtoAsync(IConfigurableItemImport importer, Func<Stream> streamGetter) 
+        private async Task<DistributedConfigurableItemBase> ReadDtoAsync(IConfigurableItemImport importer, Func<Stream> streamGetter)
         {
-            using (var jsonStream = streamGetter()) 
+            using (var jsonStream = streamGetter())
             {
                 return await importer.ReadFromJsonAsync(jsonStream);
             }
@@ -255,7 +255,7 @@ namespace Shesha.ConfigurationItems.Distribution
                             if (shouldImport)
                             {
                                 var subtypeImporter = mainImporter.GetSubtypeImporter(itemDto);
-                                
+
                                 // read DTO again using correct subtype importer to handle custom properties
                                 if (subtypeImporter != mainImporter)
                                     itemDto = await ReadDtoAsync(subtypeImporter, item.StreamGetter);
@@ -299,23 +299,26 @@ namespace Shesha.ConfigurationItems.Distribution
                             context.Logger.Info($"processed {rowNo} from {totalItems} ({(double)rowNo / totalItems * 100:0.#}%), estimated time = {estimated.Minutes:D2}:{estimated.Seconds:D2}:{estimated.Milliseconds:D3}, speed = {speed} row/sec");
                             rowNo++;
 
-                            await updateResultAsync(res => {
+                            await updateResultAsync(res =>
+                            {
                                 res.AvgSpeed = Convert.ToDecimal(speed);
                             });
                         }
-                    }                    
+                    }
                 }
 
                 context.Logger.Info($"Package imported successfully");
 
-                await updateResultAsync(res => {
+                await updateResultAsync(res =>
+                {
                     res.IsSuccess = true;
                     res.FinishedOn = Clock.Now;
                 });
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
-                await updateResultAsync(res => {
+                await updateResultAsync(res =>
+                {
                     res.IsSuccess = false;
                     res.ErrorMessage = e.FullMessage();
                 });
@@ -334,7 +337,7 @@ namespace Shesha.ConfigurationItems.Distribution
             {
                 StartedOn = Clock.Now,
                 ImportedFile = importedFile,
-                ImportedFileMD5 = md5,                
+                ImportedFileMD5 = md5,
             };
             await _importResultRepository.InsertAsync(result);
             return result;
@@ -392,15 +395,16 @@ namespace Shesha.ConfigurationItems.Distribution
             return result;
         }
 
-        
-        private Task<AnalyzePackageResponse.PackageItemStatus> GetItemStatusAsync(DistributedConfigurableItemBase distributedItem, ConfigurationItem? dbItem, out string? description) 
+
+        private Task<AnalyzePackageResponse.PackageItemStatus> GetItemStatusAsync(DistributedConfigurableItemBase distributedItem, ConfigurationItem? dbItem, out string? description)
         {
             if (dbItem == null)
             {
                 description = null;
                 return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.New);
             }
-            else {
+            else
+            {
                 var revision = dbItem.LatestRevision;
 
                 if (revision != null && !string.IsNullOrWhiteSpace(distributedItem.ConfigHash) && revision.ConfigHash == distributedItem.ConfigHash)
@@ -414,12 +418,13 @@ namespace Shesha.ConfigurationItems.Distribution
                     description = null;
                     return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Updated);
                 }
-            }                
+            }
         }
 
         public async Task MergePackagesAsync(IFormFile[] packages, Stream stream)
         {
-            var packageInfos = packages.Select(p => {
+            var packageInfos = packages.Select(p =>
+            {
                 var date = TryGetPackageDate(p.FileName);
                 return date.HasValue ? new { Date = date.Value, File = p } : null;
             })
@@ -427,7 +432,7 @@ namespace Shesha.ConfigurationItems.Distribution
             .OrderBy(p => p.Date)
             .ToList();
 
-            using (var tempFolder = new TempFolder()) 
+            using (var tempFolder = new TempFolder())
             {
                 foreach (var packageInfo in packageInfos)
                 {

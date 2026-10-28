@@ -17,7 +17,7 @@ namespace Shesha.Dto
         /// Folder id
         /// </summary>
         public Guid? FolderId { get; set; }
-        
+
         /// <summary>
         /// Front-end application id
         /// </summary>

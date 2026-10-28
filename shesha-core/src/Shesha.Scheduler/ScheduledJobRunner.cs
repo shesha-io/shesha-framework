@@ -120,10 +120,11 @@ namespace Shesha.Scheduler
                 // Mark repository as configured and notify that is has changed.  
                 repository.Configured = true;
                 repository.RaiseConfigurationChanged(EventArgs.Empty);
-            } else
+            }
+            else
                 logger = existingLogger;
 
-                log = LogManager.GetLogger(Assembly.GetCallingAssembly(), name);
+            log = LogManager.GetLogger(Assembly.GetCallingAssembly(), name);
         }
 
         private SignalrAppender AddSignalRAppender(string groupName, Logger logger)
@@ -314,11 +315,11 @@ namespace Shesha.Scheduler
 
                 log.InfoFormat("Job {0} started...", job.Name);
 
-                if (!string.IsNullOrWhiteSpace(envelope.ParametersJson)) 
+                if (!string.IsNullOrWhiteSpace(envelope.ParametersJson))
                 {
                     if (job is IParametrizedJob parametrizedJob)
                         await parametrizedJob.ReadParametersJsonAsync(envelope.ParametersJson);
-                }                    
+                }
 
                 await job.ExecuteAsync(executionId, startedById, cancellationToken, context);
 

@@ -3,7 +3,7 @@
     /// <summary>
     /// Exception that is used to indicate that there are migration with incorrect version numbers
     /// </summary>
-    public class WrongMigrationVersionsFoundException: Exception
+    public class WrongMigrationVersionsFoundException : Exception
     {
         /// <summary>
         /// List of incorrect versions
@@ -12,10 +12,10 @@
 
         public string CorrectFormat { get; private set; }
 
-        public WrongMigrationVersionsFoundException(string correctFormat, List<string> versions): base($"Found migrations with incorrect version numbers. Correct format of migration version is `{correctFormat}`. Invalid version numbers: {string.Join(',', versions)}")
+        public WrongMigrationVersionsFoundException(string correctFormat, List<string> versions) : base($"Found migrations with incorrect version numbers. Correct format of migration version is `{correctFormat}`. Invalid version numbers: {string.Join(',', versions)}")
         {
             CorrectFormat = correctFormat;
-            Versions = versions;            
+            Versions = versions;
         }
     }
 }

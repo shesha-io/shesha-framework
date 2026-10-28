@@ -7,7 +7,7 @@ namespace Shesha.Services.ReferenceLists.Dto
     /// <summary>
     /// Dto of the <see cref="ReferenceListItem"/>
     /// </summary>
-    public class ReferenceListItemDto: EntityDto<Guid>
+    public class ReferenceListItemDto : EntityDto<Guid>
     {
         /// <summary>
         /// Item name
@@ -46,7 +46,7 @@ namespace Shesha.Services.ReferenceLists.Dto
 
         public ReferenceListItemDto()
         {
-            
+
         }
 
         public ReferenceListItemDto(ReferenceListItem item)

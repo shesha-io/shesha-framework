@@ -3,7 +3,7 @@
     /// <summary>
     /// Stores basic information about specifications
     /// </summary>
-    public interface ISpecificationInfo: ISpecificationBaseInfo
+    public interface ISpecificationInfo : ISpecificationBaseInfo
     {
         /// <summary>
         /// If true, indicates that this specification is global

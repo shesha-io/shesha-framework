@@ -7,7 +7,7 @@ namespace Shesha.ConfigurationItems.Distribution.Exceptions
     /// </summary>
     public class ExporterNotFoundException : Exception
     {
-        public ExporterNotFoundException(string itemType): base($"Exporter for the item type '{itemType}' not found")
+        public ExporterNotFoundException(string itemType) : base($"Exporter for the item type '{itemType}' not found")
         {
             ItemType = itemType;
         }

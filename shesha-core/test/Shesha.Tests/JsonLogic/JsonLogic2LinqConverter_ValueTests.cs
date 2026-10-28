@@ -485,7 +485,7 @@ namespace Shesha.Tests.JsonLogic
             var expression = ConvertToExpression<User>(_booleanField_NotEquals_expression);
 
             Assert.Equal($@"ent => Not((ent.{nameof(User.OtpEnabled)} == True))", expression?.ToInvariantString());
-            
+
         }
 
         [Fact]
@@ -942,7 +942,7 @@ namespace Shesha.Tests.JsonLogic
         {
             var expression = ConvertToExpression<Person>(_entityReference_Equals_expression);
 
-            Assert.Equal($@"ent => (ent.{nameof(Person.Address)}.Id == ""852c4011-4e94-463a-9e0d-b0054ab88f7d"".ToGuid())", expression?.ToInvariantString());            
+            Assert.Equal($@"ent => (ent.{nameof(Person.Address)}.Id == ""852c4011-4e94-463a-9e0d-b0054ab88f7d"".ToGuid())", expression?.ToInvariantString());
         }
 
         [Fact]
@@ -952,7 +952,7 @@ namespace Shesha.Tests.JsonLogic
             Assert.NotNull(data);
         }
 
-        
+
         [Fact]
         public void EntityReference_Int_Id_Equals_Convert()
         {
@@ -1105,7 +1105,7 @@ namespace Shesha.Tests.JsonLogic
         [Fact]
         public async Task ComplexExpression_Fetch_SortBy_AscAsync()
         {
-            var data = await TryFetchDataAsync<Person, Guid>(_complex_expression, queryable => 
+            var data = await TryFetchDataAsync<Person, Guid>(_complex_expression, queryable =>
                 queryable.OrderBy(nameof(Person.FirstName))
             );
 
@@ -1129,11 +1129,12 @@ namespace Shesha.Tests.JsonLogic
         [Fact]
         public Task ComplexExpression_Fetch_SortBy_NestedEntity_Property_AscAsync()
         {
-            return TryFetchDataAsync<Person, Guid>(_complex_expression, 
+            return TryFetchDataAsync<Person, Guid>(_complex_expression,
                 queryable => queryable.OrderBy($"{nameof(Person.User)}.{nameof(Person.User.UserName)}"),
-                data => {
+                data =>
+                {
                     Assert.NotNull(data);
-                    
+
                     var names = data.Select(e => e.User?.UserName).ToList();
                     names.Should().BeInAscendingOrder(e => e);
                 }
@@ -1145,18 +1146,20 @@ namespace Shesha.Tests.JsonLogic
         {
             return TryFetchDataAsync<User, Int64>(_booleanField_NotEquals_expression,
                 queryable => queryable.OrderBy($"{nameof(User.TypeOfAccount)}"),
-                data => {
+                data =>
+                {
                     Assert.NotNull(data);
 
                     var refListHelper = Resolve<IReferenceListHelper>();
-                    
+
                     var titlesWithDisplayText = data.Select(e =>
                         {
                             var displayText = e.TypeOfAccount.HasValue
                                 ? refListHelper.GetItemDisplayText(new ReferenceListIdentifier("Shesha", "Shesha.Framework.TypeOfAccount"), (Int64)e.TypeOfAccount.Value)
                                 : null;
 
-                            return new { 
+                            return new
+                            {
                                 ItemValue = (Int64?)e.TypeOfAccount,
                                 ItemText = displayText
                             };
@@ -1260,7 +1263,7 @@ namespace Shesha.Tests.JsonLogic
         [Fact]
         public void Custom_Date_Funcs_Convert()
         {
-            using (FreezeTime()) 
+            using (FreezeTime())
             {
                 var expression = ConvertToExpression<Person>(_custom_date_funcs_Convert_expression);
 
@@ -1268,7 +1271,7 @@ namespace Shesha.Tests.JsonLogic
                 var now = Expression.Constant(Clock.Now).ToString();
                 // note: use end of minute because we skip seconds for datetime values
                 var nowEom = Expression.Constant(Clock.Now.EndOfTheMinute()).ToString();
-                
+
                 var expected = $@"ent => ((Convert({now}.Add(-5.00:00:00), Nullable`1) <= ent.User.LastLoginDate) AndAlso (ent.User.LastLoginDate <= Convert({nowEom}, Nullable`1)))";
                 Assert.Equal(expected, expression?.ToInvariantString());
             }

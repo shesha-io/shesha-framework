@@ -11,7 +11,7 @@ namespace Shesha.GraphQL.Helpers
     /// </summary>
     public interface IGraphQLQueryExecuter
     {
-        Task<GraphQLDataResult<TEntity>> QueryAsync<TEntity, TPrimaryKey>(GetDynamicEntityInput<TPrimaryKey> input) where TEntity: IEntity<TPrimaryKey>;
+        Task<GraphQLDataResult<TEntity>> QueryAsync<TEntity, TPrimaryKey>(GetDynamicEntityInput<TPrimaryKey> input) where TEntity : IEntity<TPrimaryKey>;
 
         Task<GraphQLDataResult> QueryAsync<TPrimaryKey>(Type entityType, GetDynamicEntityInput<TPrimaryKey> input);
     }

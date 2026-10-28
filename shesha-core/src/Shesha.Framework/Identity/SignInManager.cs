@@ -15,20 +15,20 @@ namespace Shesha.Identity
     public class SignInManager : AbpSignInManager<Tenant, Role, User>
     {
         public SignInManager(
-            UserManager userManager, 
+            UserManager userManager,
             IHttpContextAccessor contextAccessor,
-            UserClaimsPrincipalFactory claimsFactory, 
-            IOptions<IdentityOptions> optionsAccessor, 
+            UserClaimsPrincipalFactory claimsFactory,
+            IOptions<IdentityOptions> optionsAccessor,
             ILogger<SignInManager<User>> logger,
             IUnitOfWorkManager unitOfWorkManager,
             ISettingManager settingManager,
             IAuthenticationSchemeProvider schemes,
-            IUserConfirmation<User> userConfirmation) 
+            IUserConfirmation<User> userConfirmation)
             : base(
-                userManager, 
-                contextAccessor, 
-                claimsFactory, 
-                optionsAccessor, 
+                userManager,
+                contextAccessor,
+                claimsFactory,
+                optionsAccessor,
                 logger,
                 unitOfWorkManager,
                 settingManager,

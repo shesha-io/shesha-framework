@@ -101,7 +101,7 @@ namespace Shesha.Tests.Otp
             return await otp.VerifyPinAsync(verificationInput);
         }
 
-        private ISmsGatewayFactory MockISmsGatewayFactory() 
+        private ISmsGatewayFactory MockISmsGatewayFactory()
         {
             var smsGatewayFactoryMock = new Mock<ISmsGatewayFactory>();
             smsGatewayFactoryMock.Setup(s => s.GetSmsGatewayAsync()).Returns(() =>

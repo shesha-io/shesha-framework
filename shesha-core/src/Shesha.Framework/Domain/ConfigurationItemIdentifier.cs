@@ -8,7 +8,7 @@ namespace Shesha.Domain
     /// <summary>
     /// Identifier of the configuration item
     /// </summary>
-    public abstract class ConfigurationItemIdentifier: IEquatable<ConfigurationItemIdentifier>
+    public abstract class ConfigurationItemIdentifier : IEquatable<ConfigurationItemIdentifier>
     {
         [BindNever]
         [JsonIgnore]
@@ -36,7 +36,7 @@ namespace Shesha.Domain
 
         public bool Equals(ConfigurationItemIdentifier? other)
         {
-            return other != null && 
+            return other != null &&
                 ItemTypeName == other.ItemTypeName && Module == other.Module && Name == other.Name;
         }
 
@@ -73,7 +73,7 @@ namespace Shesha.Domain
         }
     }
 
-    public abstract class ConfigurationItemIdentifier<TItem>: ConfigurationItemIdentifier where TItem : ConfigurationItem
+    public abstract class ConfigurationItemIdentifier<TItem> : ConfigurationItemIdentifier where TItem : ConfigurationItem
     {
         protected ConfigurationItemIdentifier(string? module, string name) : base(module, name)
         {
@@ -85,11 +85,11 @@ namespace Shesha.Domain
         public override string ItemTypeName => ItemType.Name;
     }
 
-    public interface IIdentifierFactory 
-    { 
+    public interface IIdentifierFactory
+    {
     }
 
-    public interface IIdentifierFactory<TSelf>: IIdentifierFactory where TSelf : IIdentifierFactory<TSelf>
+    public interface IIdentifierFactory<TSelf> : IIdentifierFactory where TSelf : IIdentifierFactory<TSelf>
     {
         static abstract TSelf New(string? module, string name);
     }

@@ -19,16 +19,16 @@ namespace Shesha.Session
     {
         protected IRepository<Person, Guid> PersonRepository;
 
-        public ClaimsShaSession(IPrincipalAccessor principalAccessor, 
-            IMultiTenancyConfig multiTenancy, 
-            ITenantResolver tenantResolver, 
+        public ClaimsShaSession(IPrincipalAccessor principalAccessor,
+            IMultiTenancyConfig multiTenancy,
+            ITenantResolver tenantResolver,
             IAmbientScopeProvider<SessionOverride> sessionOverrideScopeProvider,
             IRepository<Person, Guid> personRepository) : base(principalAccessor, multiTenancy, tenantResolver, sessionOverrideScopeProvider)
         {
             PersonRepository = personRepository;
         }
 
-        public virtual Guid? PersonId 
+        public virtual Guid? PersonId
         {
             get
             {

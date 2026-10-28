@@ -8,11 +8,11 @@ namespace Shesha.DynamicEntities.Json
     /// <summary>
     /// Date JSON converter. Converts date without
     /// </summary>
-    public class DateConverter: IsoDateTimeConverter
+    public class DateConverter : IsoDateTimeConverter
     {
         private const string DefaultDateFormat = "yyyy'-'MM'-'dd";
 
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) 
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             string text;
 

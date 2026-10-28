@@ -9,7 +9,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     /// <summary>
     /// Distributed form
     /// </summary>
-    public class DistributedFormConfiguration: DistributedConfigurableItemBase
+    public class DistributedFormConfiguration : DistributedConfigurableItemBase
     {
         /// <summary>
         /// Form markup

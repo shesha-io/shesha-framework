@@ -18,7 +18,7 @@ namespace Shesha
     /// </summary>
     public static class EntityApiCrudHelper
     {
-        public static bool IsRelatedToObsoleteEntity(ApiDescription apiDescription) 
+        public static bool IsRelatedToObsoleteEntity(ApiDescription apiDescription)
         {
             if (apiDescription.ActionDescriptor is not ControllerActionDescriptor actionDescriptor)
                 return false;
@@ -57,7 +57,7 @@ namespace Shesha
             return !config.IsConfigurable && EntityCrudHelper.IsActionDisabled(config, crudAction.Value);
         }
 
-        public static async Task<bool> IsApiDisabledByConfigAsync(ApiDescription apiDescription) 
+        public static async Task<bool> IsApiDisabledByConfigAsync(ApiDescription apiDescription)
         {
             if (apiDescription.ActionDescriptor is not ControllerActionDescriptor actionDescriptor)
                 return false;
@@ -66,7 +66,7 @@ namespace Shesha
                 return false;
 
             var entityType = AppServiceHelper.GetEntityTypeFromDynamicAppService(actionDescriptor.ControllerTypeInfo);
-            
+
             var entityConfigManager = StaticContext.IocManager.Resolve<IModelConfigurationManager>();
             var model = await entityConfigManager.GetCachedModelConfigurationOrNullAsync(null, entityType.Namespace, entityType.Name, true);
             return model == null || !model.GenerateAppService;

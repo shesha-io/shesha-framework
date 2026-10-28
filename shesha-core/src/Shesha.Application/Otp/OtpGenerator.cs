@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace Shesha.Otp
 {
-    public class OtpGenerator: IOtpGenerator, ITransientDependency
+    public class OtpGenerator : IOtpGenerator, ITransientDependency
     {
         private readonly IOtpSettings _settings;
 

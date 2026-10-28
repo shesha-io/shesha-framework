@@ -8,15 +8,15 @@ namespace Shesha.EntityHistory
     {
         [Display(Name = "Date")]
         public DateTime? CreationTime { get; set; }
-        
+
         public int? HistoryItemType { get; set; }
-        
+
         public string? EntityId { get; set; }
-        
+
         public string? EntityTypeFullName { get; set; }
-        
+
         public string? EventType { get; set; }
-        
+
         [Display(Name = "User")]
         public string? UserFullName { get; set; }
 
@@ -31,7 +31,7 @@ namespace Shesha.EntityHistory
 
         public EntityHistoryItemDto()
         {
-            
+
         }
     }
 }

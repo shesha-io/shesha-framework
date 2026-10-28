@@ -5,9 +5,9 @@ namespace Shesha.ConfigurationItems.Distribution.Exceptions
     /// <summary>
     /// Importer not found exception
     /// </summary>
-    public class ImporterNotFoundException: Exception
+    public class ImporterNotFoundException : Exception
     {
-        public ImporterNotFoundException(string itemType): base($"Importer for the item type '{itemType}' not found")
+        public ImporterNotFoundException(string itemType) : base($"Importer for the item type '{itemType}' not found")
         {
             ItemType = itemType;
         }

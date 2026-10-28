@@ -7,13 +7,13 @@ namespace Shesha.Email
     /// <summary>
     /// Email Sender Application Service
     /// </summary>
-    public interface IEmailSenderAppService: IApplicationService
+    public interface IEmailSenderAppService : IApplicationService
     {
         /// <summary>
         /// Updates current SMTP settings
         /// </summary>
         Task<bool> UpdateSmtpSettingsAsync(SmtpSettingsDto input);
-        
+
         /// <summary>
         /// Returns current SMTP settings
         /// </summary>

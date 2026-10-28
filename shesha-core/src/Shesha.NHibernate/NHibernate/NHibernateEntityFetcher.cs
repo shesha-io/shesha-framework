@@ -31,15 +31,15 @@ namespace Shesha.NHibernate
 
         public Task<List<T>> ToListAsync<T>(IQueryable<T> queryable, List<string> properties) where T : class, new()
         {
-            if (TryGetPropertiesToFetch<T>(properties, out var propertiesToFetch)) 
-            { 
+            if (TryGetPropertiesToFetch<T>(properties, out var propertiesToFetch))
+            {
                 var partialQuery = queryable.SelectProperties(propertiesToFetch);
                 return _asyncExecuter.ToListAsync(partialQuery);
             }
             return _asyncExecuter.ToListAsync(queryable);
         }
 
-        private bool CanFetchProperty(PropertyInfo property) 
+        private bool CanFetchProperty(PropertyInfo property)
         {
             return property.CanWrite && (property.GetSetMethod(true)?.IsPublic ?? false);
         }
@@ -67,7 +67,7 @@ namespace Shesha.NHibernate
                                 {
                                     propertiesToFetch = null;
                                     return false;
-                                }                                
+                                }
 
                                 string[] nestedPath = [.. ownerProp.Path, displayNamePropInfo.Name];
                                 var nestedProp = nestedPath.Delimited(".");
@@ -90,49 +90,49 @@ namespace Shesha.NHibernate
                     }
                 }
                 else
-                if (propWithPath.PropName == EntityConstants.ClassNameField)
-                {
-                    // noop
-                }
-                else
-                {
-                    var propertyWithPath = GetPropertyWithPath(typeof(T), propName);
-                    if (propertyWithPath != null)
+                    if (propWithPath.PropName == EntityConstants.ClassNameField)
                     {
-                        if (!CanFetchProperty(propertyWithPath.PropertyInfo)) 
-                        {
-                            propertiesToFetch = null;
-                            return false;
-                        }
-                        
-                        var realPath = propertyWithPath.Path.Delimited(".");
-                        if (!result.Contains(realPath))
-                            result.Add(realPath);
+                        // noop
                     }
                     else
                     {
-                        if (propName.EndsWith("Id"))
+                        var propertyWithPath = GetPropertyWithPath(typeof(T), propName);
+                        if (propertyWithPath != null)
                         {
-                            var nestedEntityPropName = propName.RemovePostfix("Id");
-                            if (!string.IsNullOrWhiteSpace(nestedEntityPropName))
+                            if (!CanFetchProperty(propertyWithPath.PropertyInfo))
                             {
-                                var nestedEntityPropertyWithPath = GetPropertyWithPath(typeof(T), nestedEntityPropName);
-                                if (nestedEntityPropertyWithPath != null && nestedEntityPropertyWithPath.PropertyInfo.PropertyType.IsEntityType())
+                                propertiesToFetch = null;
+                                return false;
+                            }
+
+                            var realPath = propertyWithPath.Path.Delimited(".");
+                            if (!result.Contains(realPath))
+                                result.Add(realPath);
+                        }
+                        else
+                        {
+                            if (propName.EndsWith("Id"))
+                            {
+                                var nestedEntityPropName = propName.RemovePostfix("Id");
+                                if (!string.IsNullOrWhiteSpace(nestedEntityPropName))
                                 {
-                                    string[] nestedPath = [.. nestedEntityPropertyWithPath.Path, "Id"];
-                                    var nestedProp = nestedPath.Delimited(".");
-                                    result.Add(nestedProp);
+                                    var nestedEntityPropertyWithPath = GetPropertyWithPath(typeof(T), nestedEntityPropName);
+                                    if (nestedEntityPropertyWithPath != null && nestedEntityPropertyWithPath.PropertyInfo.PropertyType.IsEntityType())
+                                    {
+                                        string[] nestedPath = [.. nestedEntityPropertyWithPath.Path, "Id"];
+                                        var nestedProp = nestedPath.Delimited(".");
+                                        result.Add(nestedProp);
+                                    }
+                                    else
+                                        missingProperties.Add(propName);
                                 }
                                 else
                                     missingProperties.Add(propName);
                             }
-                            else
-                                missingProperties.Add(propName);
-                        }
 
-                        missingProperties.Add(propName);
+                            missingProperties.Add(propName);
+                        }
                     }
-                }
             }
             propertiesToFetch = result;
             return true;
@@ -184,13 +184,13 @@ namespace Shesha.NHibernate
             return null;
         }
 
-        private class PropWithPath 
-        { 
+        private class PropWithPath
+        {
             public string[] Path { get; set; }
             public string PropName { get; set; }
         }
 
-        private PropWithPath ExtractPropNameAndPath(string dotNotation) 
+        private PropWithPath ExtractPropNameAndPath(string dotNotation)
         {
             var fullPath = dotNotation.Split('.');
             return new PropWithPath { PropName = fullPath[^1], Path = fullPath[..^1] };
@@ -198,7 +198,8 @@ namespace Shesha.NHibernate
 
         public IQueryable<T> SetReadOnly<T>(IQueryable<T> queryable)
         {
-            return queryable.WithOptions((options) => {
+            return queryable.WithOptions((options) =>
+            {
                 options.SetReadOnly(true);
             });
         }

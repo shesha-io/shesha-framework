@@ -21,7 +21,7 @@ namespace Shesha.Swagger
 {
     public class SwaggerEndpointEnumerator : IEnumerable<UrlDescriptor>
     {
-        public SwaggerEndpointEnumerator() 
+        public SwaggerEndpointEnumerator()
         {
         }
 

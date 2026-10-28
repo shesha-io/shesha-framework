@@ -1,6 +1,6 @@
 ﻿namespace Shesha.Notifications.MessageParticipants
 {
-    public interface IMessageSender: IMessageParticipant
+    public interface IMessageSender : IMessageParticipant
     {
     }
 }

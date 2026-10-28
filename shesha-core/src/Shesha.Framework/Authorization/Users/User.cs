@@ -66,7 +66,7 @@ namespace Shesha.Authorization.Users
         /// Email address must be unique for it's tenant.
         /// </summary>
         [MaxLength(MaxEmailAddressLength)]
-        public override string? EmailAddress { get; set; }         
+        public override string? EmailAddress { get; set; }
 
         // overridden to drop the inherited [Required] - SetNormalizedNames populates it after validation
         [MaxLength(MaxEmailAddressLength)]

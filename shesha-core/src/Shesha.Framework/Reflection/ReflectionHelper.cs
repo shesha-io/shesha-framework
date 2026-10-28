@@ -104,7 +104,7 @@ namespace Shesha.Reflection
             return memberInfo.GetCustomAttributes(typeof(T), inherit).Cast<T>().FirstOrDefault();
         }
 
-        public static T GetAttribute<T>(this MemberInfo memberInfo, bool inherit = false) where T : Attribute 
+        public static T GetAttribute<T>(this MemberInfo memberInfo, bool inherit = false) where T : Attribute
         {
             return memberInfo.GetAttributeOrNull<T>(inherit) ?? throw new MemberHasNoAttributeException(memberInfo, typeof(T));
         }
@@ -114,7 +114,7 @@ namespace Shesha.Reflection
             return type.GetCustomAttributes(typeof(T), inherit).Cast<T>().FirstOrDefault();
         }
 
-        public static T GetAttribute<T>(this Type type, bool inherit = false) where T : Attribute 
+        public static T GetAttribute<T>(this Type type, bool inherit = false) where T : Attribute
         {
             return type.GetAttributeOrNull<T>(inherit) ?? throw new TypeHasNoAttributeException(type, typeof(T));
         }
@@ -124,7 +124,7 @@ namespace Shesha.Reflection
         /// </summary>
         /// <param name="obj">Object whose property value is to be retreived.</param>
         /// <param name="propertyName">Name of the property or property hierarchy </param>
-        public static PropertyValueAccessor GetPropertyValueAccessor(object obj, string propertyName) 
+        public static PropertyValueAccessor GetPropertyValueAccessor(object obj, string propertyName)
         {
             var propInfo = GetPropertyOrNull(obj, propertyName, out var parent);
             return new PropertyValueAccessor(propInfo, parent);
@@ -146,12 +146,12 @@ namespace Shesha.Reflection
             return GetPropertyOrNull(entity, propertyName, out var propertyEntity);
         }
 
-        public static PropertyInfo GetProperty(object entity, string propertyName, out object propertyEntity) 
+        public static PropertyInfo GetProperty(object entity, string propertyName, out object propertyEntity)
         {
             var property = GetPropertyOrNull(entity, propertyName, out var owner);
             if (property == null)
                 throw new PropertyNotFoundException(entity.GetType(), propertyName);
-            
+
             propertyEntity = owner.NotNull();
             return property;
         }
@@ -181,7 +181,7 @@ namespace Shesha.Reflection
                 var properties = entityType.GetProperties();
                 try
                 {
-                    propInfo = properties.FirstOrDefault(x => x.Name.ToCamelCase() ==  propTokens[i].ToCamelCase());
+                    propInfo = properties.FirstOrDefault(x => x.Name.ToCamelCase() == propTokens[i].ToCamelCase());
                 }
                 catch (AmbiguousMatchException)
                 {
@@ -207,8 +207,8 @@ namespace Shesha.Reflection
                     if (currentEntity != null)
                         currentEntity = propInfo.GetValue(currentEntity, null);
 
-                    currentType = currentEntity == null 
-                        ? propInfo.PropertyType 
+                    currentType = currentEntity == null
+                        ? propInfo.PropertyType
                         : currentEntity.GetType();
                 }
             }
@@ -216,7 +216,7 @@ namespace Shesha.Reflection
             throw new Exception($"Property '{propertyName}' does not exist on entity type '{currentType.FullName}'");
         }
 
-        private static PropertyInfo? GetHighestLevelPropertyOrNull(string propertyName, Type entityType) 
+        private static PropertyInfo? GetHighestLevelPropertyOrNull(string propertyName, Type entityType)
         {
             var propInfo = entityType.GetProperties()
                 .FirstOrDefault(prop => prop.Name.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase)
@@ -252,7 +252,7 @@ namespace Shesha.Reflection
         {
             var strippers = StaticContext.IocManager.ResolveAll<IProxyStripper>();
             var currentType = type;
-            foreach (var stripper in strippers) 
+            foreach (var stripper in strippers)
             {
                 currentType = stripper.StripProxy(currentType);
             }
@@ -330,7 +330,7 @@ namespace Shesha.Reflection
         /// <summary>
         /// Checks if a given property nullable
         /// </summary>
-        public static bool IsNullable(this PropertyInfo property) 
+        public static bool IsNullable(this PropertyInfo property)
         {
             return property.PropertyType.IsEntityType()
                 ? !property.HasAttribute<RequiredMemberAttribute>()
@@ -470,8 +470,8 @@ namespace Shesha.Reflection
         /// </summary>
         /// <param name="instance"></param>
         /// <returns></returns>
-        public static string GetFriendlyClassName(this object instance) 
-        { 
+        public static string GetFriendlyClassName(this object instance)
+        {
             // TODO: use metadata and entity attribute
             return instance.GetType().GetFriendlyClassName();
         }
@@ -599,7 +599,7 @@ namespace Shesha.Reflection
         /// <param name="propertyName">Name of property, supports dot notation</param>
         /// <param name="useCamelCase">Set to true to compare property names in camel case</param>
         /// <returns>Property info and relative path to property (without case conversion of name)</returns>
-        public static PropertyInfoWithPath? GetPropertyWithPath(this Type type, string propertyName, bool useCamelCase = false) 
+        public static PropertyInfoWithPath? GetPropertyWithPath(this Type type, string propertyName, bool useCamelCase = false)
         {
             var propTokens = propertyName.Split('.');
             var currentType = type;
@@ -631,7 +631,7 @@ namespace Shesha.Reflection
 
                 if (propInfo == null)
                     return null;
-                
+
                 path.Add(propInfo.Name);
 
                 if (i == propTokens.Length - 1)
@@ -647,7 +647,7 @@ namespace Shesha.Reflection
             return null;
         }
 
-        public static bool ImplementsGenericInterface(this Type type, Type interfaceType) 
+        public static bool ImplementsGenericInterface(this Type type, Type interfaceType)
         {
             return type.GetGenericInterfaces(interfaceType).Any();
         }
@@ -734,7 +734,7 @@ namespace Shesha.Reflection
             return result;
         }
 
-        public static List<MethodInfo> GetExtensionMethods(IAssemblyFinder assemblyFinder, Type extendedType) 
+        public static List<MethodInfo> GetExtensionMethods(IAssemblyFinder assemblyFinder, Type extendedType)
         {
             return assemblyFinder.GetAllAssemblies().SelectMany(a => GetExtensionMethods(a, extendedType)).ToList();
         }
@@ -752,12 +752,12 @@ namespace Shesha.Reflection
         /// <param name="source"></param>
         /// <returns></returns>
         /// <exception cref="InvalidCastException"></exception>
-        public static TDestination ForceCastAs<TDestination>(this object? source) where TDestination : class 
+        public static TDestination ForceCastAs<TDestination>(this object? source) where TDestination : class
         {
             if (source is TDestination dest)
                 return dest;
 
-            if (source != null && source.GetType().IsEntityType()) 
+            if (source != null && source.GetType().IsEntityType())
             {
                 var strippers = StaticContext.IocManager.ResolveAll<IProxyStripper>();
                 foreach (var stripper in strippers)
@@ -768,7 +768,8 @@ namespace Shesha.Reflection
                 }
             }
 
-            if (source is GenericEntityReference genericEntity && typeof(Entity<Guid>).IsAssignableFrom(typeof(TDestination))) {
+            if (source is GenericEntityReference genericEntity && typeof(Entity<Guid>).IsAssignableFrom(typeof(TDestination)))
+            {
                 var entity = (Entity<Guid>)genericEntity.NotNull();
                 return entity.ForceCastAs<TDestination>();
             }
@@ -788,7 +789,7 @@ namespace Shesha.Reflection
         /// <param name="parameters"></param>
         /// <returns></returns>
         public static TResult? Invoke<TResult>(this MethodBase method, object? obj, object?[]? parameters) where TResult : class
-        { 
+        {
             var result = method.Invoke(obj, parameters);
             return result != null
                 ? result.ForceCastAs<TResult>()
@@ -796,7 +797,7 @@ namespace Shesha.Reflection
         }
 
         [DebuggerStepThrough]
-        public static T NotNull<T>([NotNull]this T? value, string message = "Value must not be null")
+        public static T NotNull<T>([NotNull] this T? value, string message = "Value must not be null")
         {
             if ((typeof(T).Assembly.FullName ?? "").StartsWith("FluentMigrator"))
                 throw new ArgumentException($"{nameof(NotNull)} cannot be used for FluentMigrator types");
@@ -814,7 +815,7 @@ namespace Shesha.Reflection
         [DebuggerStepThrough]
         public static string NotNullOrWhiteSpace([NotNull] this string? value, string message = "String must not be null or empty")
         {
-            return !string.IsNullOrWhiteSpace(value) 
+            return !string.IsNullOrWhiteSpace(value)
                 ? value
                 : throw new Exception(message);
         }
@@ -829,7 +830,7 @@ namespace Shesha.Reflection
         /// <exception cref="MethodNotFoundException"></exception>
         [DebuggerStepThrough]
         public static MethodInfo GetRequiredMethod(this Type type, string name, Type[] types)
-        { 
+        {
             return type.GetMethod(name, types) ?? throw new MethodNotFoundException(type, name);
         }
 
@@ -868,7 +869,7 @@ namespace Shesha.Reflection
         /// <returns></returns>
         /// <exception cref="PropertyNotFoundException"></exception>
         [DebuggerStepThrough]
-        public static PropertyInfo GetRequiredProperty(this Type type, string propertyName) 
+        public static PropertyInfo GetRequiredProperty(this Type type, string propertyName)
         {
             return type.GetProperty(propertyName) ?? throw new PropertyNotFoundException(type, propertyName);
         }
@@ -903,10 +904,10 @@ namespace Shesha.Reflection
                 if (x == y) return 0;
                 if (x == null) return -1;
                 if (y == null) return 1;
-                
+
                 return x.IsAssignableFrom(y)
                     ? 1 // y is more derived
-                    :  -1;
+                    : -1;
             }
         }
 
@@ -921,7 +922,7 @@ namespace Shesha.Reflection
                 elementType = type.GetGenericArguments()[0];
                 return true;
             }
-            
+
             elementType = null;
             return false;
         }

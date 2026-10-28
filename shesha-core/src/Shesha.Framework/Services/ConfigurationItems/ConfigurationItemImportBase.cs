@@ -141,7 +141,7 @@ namespace Shesha.Services.ConfigurationItems
 
         protected ConfigurationItemImportBase(
             IRepository<TItem, Guid> repository,
-            IRepository<Module, Guid> moduleRepo, 
+            IRepository<Module, Guid> moduleRepo,
             IRepository<FrontEndApp, Guid> frontendAppRepo) : base(moduleRepo, frontendAppRepo)
         {
             Repository = repository;
@@ -152,7 +152,7 @@ namespace Shesha.Services.ConfigurationItems
         /// </summary>
         /// <param name="distributedItem"></param>
         /// <returns></returns>
-        public virtual IConfigurableItemImport GetSubtypeImporter(DistributedConfigurableItemBase distributedItem) 
+        public virtual IConfigurableItemImport GetSubtypeImporter(DistributedConfigurableItemBase distributedItem)
         {
             return this;
         }
@@ -177,7 +177,7 @@ namespace Shesha.Services.ConfigurationItems
         /// <summary>
         /// Reads configuration item from json
         /// </summary>
-        public virtual async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(string json) 
+        public virtual async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(string json)
         {
             return await ReadDistributedItemFromJsonAsync(json);
         }
@@ -223,9 +223,9 @@ namespace Shesha.Services.ConfigurationItems
 
         protected virtual TItem CreateNew(TDistributedItem distributedItem) => new TItem();
 
-        protected virtual async Task<TItem> ImportAsync(TDistributedItem distributedItem, IConfigurationItemsImportContext context, TItem? explicitItem = null) 
+        protected virtual async Task<TItem> ImportAsync(TDistributedItem distributedItem, IConfigurationItemsImportContext context, TItem? explicitItem = null)
         {
-            using (CfRuntime.DisableConfigurationTracking()) 
+            using (CfRuntime.DisableConfigurationTracking())
             {
                 // check if form exists
                 var item = explicitItem ?? await Repository.FirstOrDefaultAsync(f => f.Name == distributedItem.Name && (f.Module == null && distributedItem.ModuleName == null || f.Module != null && f.Module.Name == distributedItem.ModuleName));
@@ -277,7 +277,7 @@ namespace Shesha.Services.ConfigurationItems
             }
         }
 
-        protected virtual Task AfterImportAsync(TItem item, 
+        protected virtual Task AfterImportAsync(TItem item,
             TDistributedItem distributedItem,
             IConfigurationItemsImportContext context
         )
@@ -304,7 +304,7 @@ namespace Shesha.Services.ConfigurationItems
 
         protected abstract Task<bool> CustomPropsAreEqualAsync(TItem item, TDistributedItem distributedItem);
 
-        protected Task MapStandardPropsToItemAsync(TItem item, TDistributedItem distributedItem) 
+        protected Task MapStandardPropsToItemAsync(TItem item, TDistributedItem distributedItem)
         {
             item.Suppress = distributedItem.Suppress;
             item.Label = distributedItem.Label;
@@ -318,9 +318,9 @@ namespace Shesha.Services.ConfigurationItems
         /// <summary>
         /// Init related/attached items. Called after item is imported
         /// </summary>
-        protected virtual Task InitRelatedItemsAsync(TItem item, TDistributedItem distributedItem) 
+        protected virtual Task InitRelatedItemsAsync(TItem item, TDistributedItem distributedItem)
         {
             return Task.CompletedTask;
         }
-    }    
+    }
 }

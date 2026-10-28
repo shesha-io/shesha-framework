@@ -13,7 +13,7 @@ namespace Shesha.Application.Services
         public static bool IsDynamicAppService(Type controllerType)
         {
             var genericInterface = GetDynamicCrudAppServiceInterfaceOrNull(controllerType);
-            
+
             return genericInterface != null && controllerType.IsGenericType;
         }
 

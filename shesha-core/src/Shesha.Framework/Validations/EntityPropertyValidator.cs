@@ -1,4 +1,4 @@
-﻿﻿using Abp.Collections.Extensions;
+﻿using Abp.Collections.Extensions;
 using Abp.Dependency;
 using Abp.Domain.Entities;
 using Shesha.DynamicEntities;
@@ -58,7 +58,7 @@ namespace Shesha.Validations
         public virtual Task<bool> ValidateEntityPropertyAsync(TEntity entity, string propertyName, object? value, List<ValidationResult> validationResult, ModelConfigurationDto? modelConfig = null)
         {
             return Task.FromResult(true);
-        }    
+        }
     }
 
     public class EntityPropertyValidator : IPropertyValidator, ITransientDependency
@@ -97,7 +97,7 @@ namespace Shesha.Validations
 
         public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object? value, List<ValidationResult> validationResult, ModelConfigurationDto? modelConfig = null)
         {
-            if (!obj.GetType().IsEntityType() 
+            if (!obj.GetType().IsEntityType()
                 && !obj.GetType().IsJsonEntityType())
                 return true;
 
@@ -254,7 +254,7 @@ namespace Shesha.Validations
                         validationResult.Add(new ValidationResult($"Property '{friendlyName}' = {stringValue} should be in an Integer format"));
                         return false;
                     }
-                    else if(propConfig.DataFormat == NumberFormats.Decimal && !decimal.TryParse(stringValue, out decimal _))
+                    else if (propConfig.DataFormat == NumberFormats.Decimal && !decimal.TryParse(stringValue, out decimal _))
                     {
                         validationResult.Add(new ValidationResult($"Property '{friendlyName}' = {stringValue} should be in a Decimal format"));
                         return false;

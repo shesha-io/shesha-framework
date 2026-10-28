@@ -36,7 +36,7 @@ namespace Shesha.NHibernate.Filters
         /// </summary>
         /// <param name="columnName">Name of the `TenantId` column</param>
         /// <returns></returns>
-        public static string GetCondition(string columnName) 
+        public static string GetCondition(string columnName)
         {
             var escapedColumnName = columnName.EscapeDbObjectNameForNH();
             return $"({escapedColumnName} = :{AbpDataFilters.Parameters.TenantId} or {escapedColumnName} is null and :{AbpDataFilters.Parameters.TenantId} is null)";

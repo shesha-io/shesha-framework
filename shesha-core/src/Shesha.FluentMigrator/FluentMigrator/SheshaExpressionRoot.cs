@@ -31,7 +31,8 @@ namespace Shesha.FluentMigrator
 
         private DbmsType DbmsType
         {
-            get {
+            get
+            {
                 var dbType = _context.QuerySchema is IMigrationProcessor mp
                     ? mp.DatabaseType
                     : null;
@@ -44,11 +45,11 @@ namespace Shesha.FluentMigrator
 
         #region Reference Lists
 
-    [Obsolete]
-        public IAddReferenceListSyntax ReferenceListCreate(string @namespace, string name) 
+        [Obsolete]
+        public IAddReferenceListSyntax ReferenceListCreate(string @namespace, string name)
         {
             var expression = new AddReferenceListExpression(DbmsType, _context.QuerySchema, @namespace, name);
-            
+
             _context.Expressions.Add(expression);
 
             return new AddReferenceListExpressionBuilder(DbmsType, expression, _context);
@@ -106,7 +107,7 @@ namespace Shesha.FluentMigrator
             return new UpdateNotificationExpressionBuilder(DbmsType, _context.QuerySchema, expression, _context);
         }
 
-        
+
         public IAddNotificationTemplateSyntax NotificationTemplateCreate(string @namespace, string name)
         {
             var expression = new AddNotificationTemplateExpression(DbmsType, _context.QuerySchema, @namespace, name);
@@ -146,11 +147,11 @@ namespace Shesha.FluentMigrator
             var expression = new AddSettingConfigurationExpression(DbmsType, _context.QuerySchema, moduleName, name, displayName);
 
             _context.Expressions.Add(expression);
-            
+
             return new AddSettingConfigurationExpressionBuilder(expression, _context);
         }
 
-        public IUpdateSettingConfigurationSyntax SettingUpdate(string name) 
+        public IUpdateSettingConfigurationSyntax SettingUpdate(string name)
         {
             var moduleLocator = _context.ServiceProvider.GetRequiredService<IModuleLocator>();
             var moduleName = moduleLocator.GetModuleName(_migration.GetType());
@@ -200,13 +201,13 @@ namespace Shesha.FluentMigrator
 
         #endregion
 
-        public bool MigrationApplied(long version) 
+        public bool MigrationApplied(long version)
         {
             var runner = _context.ServiceProvider.GetRequiredService<IMigrationRunner>();
             if (runner is not MigrationRunner standardRunner)
                 throw new NotSupportedException($"Only {nameof(MigrationRunner)} is supported");
 
-            return standardRunner.VersionLoader.VersionInfo.HasAppliedMigration(version);            
+            return standardRunner.VersionLoader.VersionInfo.HasAppliedMigration(version);
         }
 
         #region Foreign keys

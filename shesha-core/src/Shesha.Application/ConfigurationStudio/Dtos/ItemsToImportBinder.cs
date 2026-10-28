@@ -25,12 +25,12 @@ namespace Shesha.ConfigurationStudio.Dtos
                 {
                     foreach (var value in valueProviderResult.Values)
                     {
-                        if (!string.IsNullOrWhiteSpace(value)) 
+                        if (!string.IsNullOrWhiteSpace(value))
                         {
                             var items = JsonConvert.DeserializeObject<List<Guid>>(value).NotNull();
                             foreach (var item in items)
                                 model.Add(item);
-                        }                        
+                        }
                     }
 
                     bindingContext.Result = ModelBindingResult.Success(model);

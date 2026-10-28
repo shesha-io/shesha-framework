@@ -7,12 +7,12 @@ namespace Shesha.Authorization
     public interface IObjectPermissionChecker
     {
         Task AuthorizeAsync(
-            bool requireAll, 
-            string permissionedObject, 
-            string method, 
-            string objectType, 
-            bool IsAuthenticated, 
-            RefListPermissionedAccess? defaultAccess = null, 
+            bool requireAll,
+            string permissionedObject,
+            string method,
+            string objectType,
+            bool IsAuthenticated,
+            RefListPermissionedAccess? defaultAccess = null,
             List<string>? defaultPermissions = null
         );
     }

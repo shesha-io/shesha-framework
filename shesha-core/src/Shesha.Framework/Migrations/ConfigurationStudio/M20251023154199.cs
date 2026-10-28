@@ -6,7 +6,7 @@ namespace Shesha.Migrations.ConfigurationStudio
     [Migration(20251023154199)]
     public class M20251023154199 : OneWayMigration
     {
-        private void MoveFks(string oldTable, string newTable) 
+        private void MoveFks(string oldTable, string newTable)
         {
             this.Shesha().MoveForeignKeys(oldTable, null, "Id", newTable, "frwk", "id");
         }
@@ -179,7 +179,7 @@ BEGIN
 			) then 0 else 1 end)
 	end
 END");
-			IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE FUNCTION frwk.log_stored_file_versions_update_is_last_ad()
+            IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE FUNCTION frwk.log_stored_file_versions_update_is_last_ad()
  RETURNS trigger
  LANGUAGE plpgsql
 AS $function$
@@ -358,7 +358,7 @@ update
     on
     frwk.stored_file_versions referencing old table as updated for each statement execute function frwk.log_stored_file_versions_update_is_last_au();");
 
-			IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE FUNCTION frwk.log_user_login_attempts_update_last_login_date_ai()
+            IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE FUNCTION frwk.log_user_login_attempts_update_last_login_date_ai()
  RETURNS trigger
  LANGUAGE plpgsql
 AS $function$
@@ -380,7 +380,7 @@ insert
     on
     frwk.user_login_attempts for each row execute function frwk.log_user_login_attempts_update_last_login_date_ai();");
 
-			IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE FUNCTION frwk.log_versioned_field_versions_update_is_last_ad()
+            IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE FUNCTION frwk.log_versioned_field_versions_update_is_last_ad()
  RETURNS trigger
  LANGUAGE plpgsql
 AS $function$

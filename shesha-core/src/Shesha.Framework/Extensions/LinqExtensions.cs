@@ -56,7 +56,7 @@ namespace Shesha.Extensions
             var parameter = Expression.Parameter(typeof(T), "x");
 
             Expression<Func<T, TKey>> property_access_expression =
-                Expression.Lambda<Func<T, TKey>>(Expression.Property(parameter, propertyName),parameter);
+                Expression.Lambda<Func<T, TKey>>(Expression.Property(parameter, propertyName), parameter);
 
             if (direction == "asc")
                 return items.OrderBy(property_access_expression.Compile());

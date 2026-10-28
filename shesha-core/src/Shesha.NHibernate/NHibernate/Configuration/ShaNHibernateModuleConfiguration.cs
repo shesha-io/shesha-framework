@@ -16,7 +16,7 @@ namespace Shesha.NHibernate.Configuration
     {
         private readonly IWebHostEnvironment _env;
         private readonly IAbpStartupConfiguration _startupConfig;
-        
+
         public Type? CustomDialect { get; private set; }
         public Type? CustomDriver { get; private set; }
         public Func<global::NHibernate.Cfg.Configuration, ISessionFactory>? SessionFactoryBuilder { get; private set; }
@@ -32,7 +32,7 @@ namespace Shesha.NHibernate.Configuration
         public global::NHibernate.Cfg.Configuration NhConfiguration { get; }
 
         private DbmsType _databaseType = DbmsType.NotSpecified;
-        private string? _connectionString;        
+        private string? _connectionString;
 
         /// inheritedDoc
         public DbmsType DatabaseType => _databaseType;
@@ -40,7 +40,7 @@ namespace Shesha.NHibernate.Configuration
         /// inheritedDoc
         public string ConnectionString => _connectionString.NotNullOrWhiteSpace("Connection string is unavailable");
 
-        private void SetConnectionOptions(DbmsType dbmsType, string connectionString) 
+        private void SetConnectionOptions(DbmsType dbmsType, string connectionString)
         {
             if (_databaseType != DbmsType.NotSpecified)
                 throw new DbmsTypeAlreadySpecified();
@@ -51,10 +51,10 @@ namespace Shesha.NHibernate.Configuration
             _startupConfig.DefaultNameOrConnectionString = connectionString;
         }
 
-        public void UseDbms(Func<IConfigurationRoot, DbmsType> dbmsTypeGetter, Func<IConfigurationRoot, string> connectionStringGetter) 
+        public void UseDbms(Func<IConfigurationRoot, DbmsType> dbmsTypeGetter, Func<IConfigurationRoot, string> connectionStringGetter)
         {
             var configuration = AppConfigurations.Get(_env.ContentRootPath, _env.EnvironmentName, _env.IsDevelopment());
-            
+
             var dbmsType = dbmsTypeGetter.Invoke(configuration);
             var connectionString = connectionStringGetter.Invoke(configuration);
 
@@ -113,12 +113,12 @@ namespace Shesha.NHibernate.Configuration
             return connectionStringGetter(configuration);
         }
 
-        public void UseDialect<TDialect>() where TDialect: Dialect
+        public void UseDialect<TDialect>() where TDialect : Dialect
         {
             CustomDialect = typeof(TDialect);
         }
 
-        public void UseDriver<TDriver>() where TDriver: IDriver
+        public void UseDriver<TDriver>() where TDriver : IDriver
         {
             CustomDriver = typeof(TDriver);
         }

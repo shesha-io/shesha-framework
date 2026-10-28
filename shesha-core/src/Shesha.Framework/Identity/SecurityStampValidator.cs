@@ -12,14 +12,14 @@ namespace Shesha.Identity
     public class SecurityStampValidator : AbpSecurityStampValidator<Tenant, Role, User>
     {
         public SecurityStampValidator(
-            IOptions<SecurityStampValidatorOptions> options, 
+            IOptions<SecurityStampValidatorOptions> options,
             SignInManager signInManager,
             ILoggerFactory loggerFactory,
             IUnitOfWorkManager unitOfWorkManager
-            ) 
+            )
             : base(
-                  options, 
-                  signInManager, 
+                  options,
+                  signInManager,
                   loggerFactory,
                   unitOfWorkManager
                   )

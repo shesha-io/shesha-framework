@@ -36,7 +36,7 @@ namespace Shesha.Utilities
         /// Returns first not empty string from the specified <paramref name="values"/>
         /// </summary>
         /// <param name="values">List of strings</param>
-        public static string? FirstNotEmpty(params string?[] values) 
+        public static string? FirstNotEmpty(params string?[] values)
         {
             return values.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v));
         }
@@ -176,8 +176,8 @@ namespace Shesha.Utilities
         /// <returns></returns>
         public static string ToFriendlyName(this string itemName)
         {
-            return itemName == null 
-                ? "" 
+            return itemName == null
+                ? ""
                 : Regex.Replace(itemName, "([a-z])([A-Z])", "$1 $2");
         }
 
@@ -570,7 +570,7 @@ namespace Shesha.Utilities
             return CamelCaseHelper.Convert(input, new CamelCaseHelper.ConvertOptions() { KeepLeadingSeparators = true });
         }
 
-        public static string? ToCamelCaseOrNull(this string? s) 
+        public static string? ToCamelCaseOrNull(this string? s)
         {
             return string.IsNullOrWhiteSpace(s)
                 ? s
@@ -842,7 +842,7 @@ namespace Shesha.Utilities
             return string.Join(" ", SplitUpperCase(source));
         }
 
-        public static bool IsValidEmail([NotNullWhen(true)]this string? inputEmail)
+        public static bool IsValidEmail([NotNullWhen(true)] this string? inputEmail)
         {
             return IsEmail(inputEmail);
         }
@@ -933,7 +933,7 @@ namespace Shesha.Utilities
         /// <summary>
         /// Adds double quotes to the specified <paramref name="value"/>
         /// </summary>
-        public static string DoubleQuote(this string value) 
+        public static string DoubleQuote(this string value)
         {
             return !string.IsNullOrWhiteSpace(value)
                 ? "\"" + value + "\""

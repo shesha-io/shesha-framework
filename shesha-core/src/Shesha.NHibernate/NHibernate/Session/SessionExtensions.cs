@@ -33,16 +33,16 @@ namespace Shesha.NHibernate.Session
 
             return dirtyProps != null
                 ? dirtyProps.Select(i => new DirtyPropertyInfo()
-                    {
-                        Name = persister.PropertyNames[i],
-                        OldValue = oldState[i],
-                        NewValue = currentState[i]
-                    })
+                {
+                    Name = persister.PropertyNames[i],
+                    OldValue = oldState[i],
+                    NewValue = currentState[i]
+                })
                     .ToList()
-                : new ();
+                : new();
         }
-        
-        public static EntityEntry? GetEntryOrNull(this ISession session, Object entity) 
+
+        public static EntityEntry? GetEntryOrNull(this ISession session, Object entity)
         {
             var sessionImpl = session.GetSessionImplementation();
             var oldEntry = sessionImpl.PersistenceContext.GetEntry(entity);
@@ -54,10 +54,10 @@ namespace Shesha.NHibernate.Session
             return oldEntry;
         }
 
-        public static EntityEntry GetEntry(this ISession session, Object entity) 
+        public static EntityEntry GetEntry(this ISession session, Object entity)
         {
             return session.GetEntryOrNull(entity) ?? throw new Exception("Entity was likely retrieved using an NHibernate session which is no longer available.");
-        }        
+        }
 
         public static bool IsEntityDeleted(this ISession session, Object entity)
         {

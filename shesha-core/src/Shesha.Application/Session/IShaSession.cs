@@ -8,7 +8,7 @@ namespace Shesha.Session
     /// <summary>
     /// Defines some session information that can be useful for Shesha applications.
     /// </summary>
-    public interface IShaSession: IAbpSession
+    public interface IShaSession : IAbpSession
     {
         /// <summary>
         /// Current person

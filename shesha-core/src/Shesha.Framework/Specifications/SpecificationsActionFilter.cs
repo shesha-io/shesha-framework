@@ -30,7 +30,7 @@ namespace Shesha.Specifications
             var disabled = attributes.OfType<DisableSpecificationsAttribute>().Any();
             if (disabled)
             {
-                using (_specificationsManager.DisableSpecifications()) 
+                using (_specificationsManager.DisableSpecifications())
                 {
                     await next();
                     return;
@@ -44,13 +44,14 @@ namespace Shesha.Specifications
 
             if (specifications.Any())
             {
-                using (_specificationsManager.Use(specifications)) 
+                using (_specificationsManager.Use(specifications))
                 {
                     await next();
                     return;
                 }
             }
-            else {
+            else
+            {
                 await next();
                 return;
             }

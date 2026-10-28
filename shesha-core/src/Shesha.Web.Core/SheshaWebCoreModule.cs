@@ -43,7 +43,7 @@ namespace Shesha
             FriendlyName = "Shesha Web (empty test project)",
             Publisher = "Boxfusion",
         };
-        
+
         private readonly IConfigurationRoot _appConfiguration;
 
         public SheshaWebCoreModule(IWebHostEnvironment env)

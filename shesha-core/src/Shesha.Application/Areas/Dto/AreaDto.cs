@@ -7,7 +7,7 @@ using System;
 namespace Shesha.Areas.Dto
 {
     [AutoMap(typeof(Area))]
-    public class AreaDto: EntityDto<Guid>
+    public class AreaDto : EntityDto<Guid>
     {
         public required string Name { get; set; }
         public string? ShortName { get; set; }

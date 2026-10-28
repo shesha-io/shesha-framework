@@ -8,13 +8,13 @@ namespace Shesha.Otp.Configuration
     /// One time pin Settings
     /// </summary>
     [Category("Security")]
-    public interface IOtpSettings: ISettingAccessors
+    public interface IOtpSettings : ISettingAccessors
     {
         /// <summary>
         ///
         /// </summary>
         [Display(Name = "One-Time-Pins")]
-        [Setting(OtpSettingsNames.OneTimePinSettings, editorFormName:"one-time-pin-settings")]
+        [Setting(OtpSettingsNames.OneTimePinSettings, editorFormName: "one-time-pin-settings")]
         ISettingAccessor<OtpSettings> OneTimePins { get; }
     }
 }

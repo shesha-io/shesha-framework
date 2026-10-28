@@ -11,9 +11,10 @@ namespace Shesha.MongoRepository.Utils
         /// <summary>
         /// Connection string with password
         /// </summary>
-        public static string? ConnectionString { 
-            get => _connectionString ?? GetConnectionString("MongoDBConnection"); 
-            set => _connectionString = value; 
+        public static string? ConnectionString
+        {
+            get => _connectionString ?? GetConnectionString("MongoDBConnection");
+            set => _connectionString = value;
         }
         private static string? _connectionString;
 

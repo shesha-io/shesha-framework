@@ -50,7 +50,7 @@ namespace Shesha.DeviceRegistrations
             {
                 ObjectMapper.Map(input, item);
                 item.Person = currentPerson;
-                
+
                 return Task.CompletedTask;
             });
 

@@ -3,7 +3,7 @@
 namespace Shesha.Domain.Enums
 {
     [ReferenceList("Shesha.Core", "PersonTitles")]
-    public enum RefListPersonTitle: int
+    public enum RefListPersonTitle : int
     {
         Unknown = 0,
         Mr = 1,

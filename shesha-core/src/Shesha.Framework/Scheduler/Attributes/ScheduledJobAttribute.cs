@@ -24,11 +24,11 @@ namespace Shesha.Scheduler.Attributes
         public string? LogFolder { get; set; }
 
         public ScheduledJobAttribute(
-            string uid, 
-            StartUpMode startupMode = StartUpMode.Automatic, 
-            string? cronString = null, 
+            string uid,
+            StartUpMode startupMode = StartUpMode.Automatic,
+            string? cronString = null,
             string? description = null,
-            LogMode logMode = LogMode.FileSystem, 
+            LogMode logMode = LogMode.FileSystem,
             string? logFolder = null)
         {
             Uid = uid.ToGuid();

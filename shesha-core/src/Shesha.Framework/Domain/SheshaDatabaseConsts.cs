@@ -16,9 +16,9 @@
         public static string IsDeletedColumn => "IsDeleted";
         public static string DeletionTimeColumn => "DeletionTime";
         public static string DeleterUserIdColumn => "DeleterUserId";
-        
+
         public static string TenantIdColumn => "TenantId";
-        
+
         /// <summary>
         /// Entity link columns (for many-to-many link tables). ID
         /// </summary>

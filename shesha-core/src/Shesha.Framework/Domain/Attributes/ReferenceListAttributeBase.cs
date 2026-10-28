@@ -7,21 +7,24 @@ namespace Shesha.Domain.Attributes
     /// <summary>
     /// Base class of reference list attributes
     /// </summary>
-    public abstract class ReferenceListAttributeBase: Attribute
+    public abstract class ReferenceListAttributeBase : Attribute
     {
         #region Properties
-        
+
         [Obsolete("Is used for backward compatibility only")]
         protected string? Namespace { get; set; }
 
         protected string ReferenceListName { get; set; }
 
         private string? _module;
-        public string Module {
-            get {
+        public string Module
+        {
+            get
+            {
                 throw new MemberAccessException($"Use `{nameof(GetReferenceListIdentifier)}` to read correct module name");
             }
-            set {
+            set
+            {
                 _module = value;
             }
         }
@@ -62,7 +65,7 @@ namespace Shesha.Domain.Attributes
         public bool IsLegacy { get; private set; }
 
         [Obsolete("Is used for backward compatibility only")]
-        public string? GetNamespace() 
+        public string? GetNamespace()
         {
             return Namespace;
         }
@@ -79,7 +82,7 @@ namespace Shesha.Domain.Attributes
         protected string? GetModuleName(Assembly? assembly)
         {
             return !string.IsNullOrWhiteSpace(_module)
-                ? _module 
+                ? _module
                 : assembly?.GetConfigurableModuleName();
         }
     }

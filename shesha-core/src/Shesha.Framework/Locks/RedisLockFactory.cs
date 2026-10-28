@@ -10,7 +10,7 @@ namespace Shesha.Locks
     /// <summary>
     /// Redis lock factory
     /// </summary>
-    public class RedisLockFactory: ILockFactory, IDisposable
+    public class RedisLockFactory : ILockFactory, IDisposable
     {
         private readonly RedLockFactory _redLockFactory;
 
@@ -73,6 +73,6 @@ namespace Shesha.Locks
             _redLockFactory.Dispose();
 
             GC.SuppressFinalize(this);
-        }        
+        }
     }
 }

@@ -59,7 +59,7 @@ namespace Shesha.Email
                     images.Add(image);
                     res = "cid:" + image.Name;
                 }
-                
+
                 return res;
             });
 

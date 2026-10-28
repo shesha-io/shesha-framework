@@ -1,6 +1,6 @@
-﻿using Shesha.Modules;
+﻿using Boxfusion.SheshaFunctionalTests.Common;
 using Shesha;
-using Boxfusion.SheshaFunctionalTests.Common;
+using Shesha.Modules;
 
 namespace Boxfusion.SheshaFunctionalTest.DisabledModule
 {

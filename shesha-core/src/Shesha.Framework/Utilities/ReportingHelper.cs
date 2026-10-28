@@ -21,7 +21,7 @@ namespace Shesha.Utilities
         {
             var result = new MemoryStream();
 
-            using (var resourceStream = assembly.GetEmbeddedResourceStream(resourceName)) 
+            using (var resourceStream = assembly.GetEmbeddedResourceStream(resourceName))
             {
                 var buffer = new byte[8 * 1024];
                 int len;
@@ -58,13 +58,13 @@ namespace Shesha.Utilities
         /// <param name="resourceName">Resource name</param>
         /// <returns></returns>
         /// <exception cref="ManifestResourceStreamNotFoundException"></exception>
-        public static Stream GetEmbeddedResourceStream(this Assembly assembly, string resourceName) 
+        public static Stream GetEmbeddedResourceStream(this Assembly assembly, string resourceName)
         {
             var stream = assembly.GetManifestResourceStream(resourceName);
             if (stream == null)
                 throw new ManifestResourceStreamNotFoundException(assembly, resourceName);
 
-            return stream;            
+            return stream;
         }
     }
 }

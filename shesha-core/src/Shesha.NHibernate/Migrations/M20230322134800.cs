@@ -42,14 +42,14 @@ namespace Shesha.Migrations
                 Alter.Table("Core_Persons")
                 .AddForeignKeyColumn("PrimarySiteId", "Core_Sites");
             }
-                if (!Schema.Table("Core_Persons").Column("PrimaryAccountId").Exists())
-                {
+            if (!Schema.Table("Core_Persons").Column("PrimaryAccountId").Exists())
+            {
                 Alter.Table("Core_Persons")
                    .AddForeignKeyColumn("PrimaryAccountId", "Core_Accounts");
 
             }
 
-                if (!Schema.Table("Core_Persons").Column("PrimaryOrganisationId").Exists())
+            if (!Schema.Table("Core_Persons").Column("PrimaryOrganisationId").Exists())
             {
                 Alter.Table("Core_Persons")
                    .AddForeignKeyColumn("PrimaryOrganisationId", "Core_Organisations");

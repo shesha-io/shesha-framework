@@ -292,7 +292,7 @@ namespace Shesha.Permissions
             var parent = !string.IsNullOrEmpty(dtoObj.Parent) && !string.IsNullOrWhiteSpace(parentType)
                     ? await GetOrDefaultAsync(dtoObj.Parent, parentType)
                     : null;
-            
+
             dtoObj.InheritedAccess = RefListPermissionedAccess.Inherited;
 
             // check parent
@@ -381,7 +381,7 @@ namespace Shesha.Permissions
                 var def = await GetDtoOrNullAsync(InternalDtoCreate(objectName, objectType), true, true);
                 item = new CacheItemWrapper<PermissionedObjectDto>(def.NotNull(), dto);
                 await SetCacheAsync(def, item);
-                
+
                 if (uow != null)
                     await uow.CompleteAsync();
             }
@@ -431,7 +431,7 @@ namespace Shesha.Permissions
                 obj.Access = permissionedObject.Access ?? RefListPermissionedAccess.Inherited;
 
                 await _permissionedObjectRepository.InsertOrUpdateAsync(obj);
-            }            
+            }
 
             var dto = obj != null
                 ? await GetDtoOrNullAsync(obj, true, true)

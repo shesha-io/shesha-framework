@@ -33,7 +33,7 @@ namespace Shesha.Domain
 
         public EntityCrudConfig()
         {
-            
+
         }
 
         public EntityCrudConfig(EntityAttribute source)
@@ -61,7 +61,7 @@ namespace Shesha.Domain
         {
             var result = new EntityCrudConfigWithCustomActions(config);
             result.CustomActionConfig[action] = actionConfig;
-            return result;            
+            return result;
         }
 
         public EntityCrudConfigWithCustomActions(IEntityCrudConfig config)

@@ -4,7 +4,7 @@ using Shesha.AutoMapper.Dto;
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto
 {
 
-    public class MembershipPaymentDto: EntityDto<Guid>
+    public class MembershipPaymentDto : EntityDto<Guid>
     {
         public virtual EntityReferenceDto<Guid> Member { get; set; }
         public virtual double Amount { get; set; }

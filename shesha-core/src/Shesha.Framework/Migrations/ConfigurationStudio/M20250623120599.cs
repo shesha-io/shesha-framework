@@ -8,7 +8,7 @@ namespace Shesha.Migrations.ConfigurationStudio
     {
         public override void Up()
         {
-			IfDatabase("SqlServer").Execute.Sql(@"CREATE OR ALTER VIEW frwk.vw_permissioned_objects_full
+            IfDatabase("SqlServer").Execute.Sql(@"CREATE OR ALTER VIEW frwk.vw_permissioned_objects_full
 AS
 with not_deleted as (
 	select 
@@ -139,7 +139,7 @@ from
 	all_data ad
 	left join frwk.modules m on m.id = ad.module_id");
 
-			IfDatabase("PostgreSql").Execute.Sql(@"create view frwk.vw_reference_list_item_values as
+            IfDatabase("PostgreSql").Execute.Sql(@"create view frwk.vw_reference_list_item_values as
 select
     m.name as module,
     ci.name,
@@ -157,7 +157,7 @@ where
             Execute.Sql(@"drop function ""Frwk_GetRefListItem""");
             Execute.Sql(@"drop function ""Frwk_GetMultiValueRefListItemNames""");
 
-			Execute.Sql(@"update 
+            Execute.Sql(@"update 
 	frwk.entity_properties 
 set 
 	entity_type = replace(entity_type, 'Shesha.Domain.ConfigurationItems.', 'Shesha.Domain.') 

@@ -11,7 +11,7 @@ namespace Shesha.Scheduler.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Scheduler.ScheduledJob", CrudActions = CrudActions.Read | CrudActions.Delete, CrudActionsPermissions = [PermissionNames.Application_Configure, PermissionNames.Application_Administer], IsConfigurable = false)]
     [Table("Core_ScheduledJobs")]
-    public class ScheduledJob: FullAuditedEntity<Guid>
+    public class ScheduledJob : FullAuditedEntity<Guid>
     {
         /// <summary>
         /// Name of the scheduled job

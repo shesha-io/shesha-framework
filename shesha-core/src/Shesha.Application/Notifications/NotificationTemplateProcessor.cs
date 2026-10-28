@@ -27,8 +27,8 @@ namespace Shesha.Notifications
             _stubbleRenderer = MakeStubbler();
         }
 
-        private StubbleVisitorRenderer MakeStubbler() 
-        { 
+        private StubbleVisitorRenderer MakeStubbler()
+        {
             return new StubbleBuilder().Configure(settings =>
             {
                 settings.SetIgnoreCaseOnKeyLookup(true);
@@ -96,7 +96,7 @@ namespace Shesha.Notifications
 
             public string? PublicUrl
             {
-                get 
+                get
                 {
                     var value = _frontendSettings.PublicUrl.GetValueOrNull(new Settings.SettingManagementContext { AppKey = _appKey });
                     return value;

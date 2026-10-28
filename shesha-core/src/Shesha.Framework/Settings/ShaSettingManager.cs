@@ -34,10 +34,10 @@ namespace Shesha.Settings
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
-        public ShaSettingManager(ISettingDefinitionManager settingDefinitionManager, 
-            IConfigurationFrameworkRuntime cfRuntime, 
-            IRepository<SettingValue, Guid> settingValueRepository, 
-            Services.Settings.ISettingStore settingStore, 
+        public ShaSettingManager(ISettingDefinitionManager settingDefinitionManager,
+            IConfigurationFrameworkRuntime cfRuntime,
+            IRepository<SettingValue, Guid> settingValueRepository,
+            Services.Settings.ISettingStore settingStore,
             IRepository<FrontEndApp, Guid> appRepository,
             IRepository<Module, Guid> moduleRepository,
             IRepository<User, long> userRepository)
@@ -62,7 +62,7 @@ namespace Shesha.Settings
                 : JObject.FromObject(JsonConvert.SerializeObject(setting.GetDefaultValue()));
         }
 
-        public async Task<object?> GetOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null) 
+        public async Task<object?> GetOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null)
         {
             var setting = _settingDefinitionManager.Get(module, name);
 
@@ -93,7 +93,7 @@ namespace Shesha.Settings
             return null;
         }
 
-        public async Task UpdateUserSettingAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType,[CanBeNull] TValue? value, SettingManagementContext? context = null)
+        public async Task UpdateUserSettingAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType, [CanBeNull] TValue? value, SettingManagementContext? context = null)
         {
             context = context ?? GetCurrentContext();
 
@@ -136,7 +136,7 @@ namespace Shesha.Settings
             await _settingValueRepository.InsertOrUpdateAsync(settingValue);
         }
 
-        public async Task<TValue?> GetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null) 
+        public async Task<TValue?> GetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null)
         {
             var setting = _settingDefinitionManager.Get(module, name);
 
@@ -155,14 +155,14 @@ namespace Shesha.Settings
             var setting = _settingDefinitionManager.Get(module, name);
 
             var settingValue = await _settingStore.GetSettingValueAsync(setting, context);
-            if (settingValue == null) 
+            if (settingValue == null)
             {
                 var configuration = await EnsureConfigurationAsync(setting);
-                settingValue = new SettingValue() 
-                { 
+                settingValue = new SettingValue()
+                {
                     SettingConfiguration = configuration,
                 };
-                if (setting.IsClientSpecific) 
+                if (setting.IsClientSpecific)
                 {
                     settingValue.Application = !string.IsNullOrWhiteSpace(context.AppKey)
                         ? await _appRepository.FirstOrDefaultAsync(a => a.AppKey == context.AppKey)
@@ -175,7 +175,7 @@ namespace Shesha.Settings
                         : null;
                 }
             }
-            
+
             settingValue.Value = JsonConvert.SerializeObject(value, setting.GetValueType(), Formatting.Indented, new JsonSerializerSettings());
             await _settingValueRepository.InsertOrUpdateAsync(settingValue);
         }
@@ -210,7 +210,8 @@ namespace Shesha.Settings
         [DebuggerStepThrough]
         private SettingManagementContext GetCurrentContext()
         {
-            return new SettingManagementContext {
+            return new SettingManagementContext
+            {
                 TenantId = AbpSession.TenantId,
                 AppKey = _cfRuntime.FrontEndApplication,
                 UserId = AbpSession.UserId
@@ -255,7 +256,7 @@ namespace Shesha.Settings
                 return To(value, targetType);
         }
 
-        private static T? To<T>(object obj) 
+        private static T? To<T>(object obj)
         {
             if (typeof(T) == typeof(Guid) || typeof(T) == typeof(TimeSpan))
             {

@@ -62,7 +62,7 @@ namespace Shesha.Modules
         public SheshaModuleInfo(string name, string versionNo)
         {
             Name = name;
-            VersionNo = versionNo;            
+            VersionNo = versionNo;
         }
     }
 }

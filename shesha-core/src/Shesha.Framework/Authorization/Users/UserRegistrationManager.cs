@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Abp.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using Abp.Domain.Services;
 using Abp.IdentityFramework;
 using Abp.Runtime.Session;
@@ -11,6 +7,10 @@ using Microsoft.AspNetCore.Identity;
 using Shesha.Authorization.Roles;
 using Shesha.Extensions;
 using Shesha.MultiTenancy;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Authorization.Users
 {

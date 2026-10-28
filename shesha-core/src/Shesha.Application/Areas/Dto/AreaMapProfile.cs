@@ -17,7 +17,7 @@ namespace Shesha.Areas.Dto
 
             CreateMap<Area, AreaDto>()
                 .ForMember(u => u.ParentArea, options =>
-                    options.MapFrom(e => e.ParentArea != null 
+                    options.MapFrom(e => e.ParentArea != null
                         ? new EntityReferenceDto<Guid>(e.ParentArea)
                         : null))
                 .MapReferenceListValuesToDto();

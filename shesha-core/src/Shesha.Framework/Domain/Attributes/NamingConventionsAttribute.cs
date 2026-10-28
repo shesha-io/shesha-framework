@@ -1,14 +1,14 @@
-﻿using System;
-using Shesha.Domain.Conventions;
+﻿using Shesha.Domain.Conventions;
+using System;
 
 namespace Shesha.Domain.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public class NamingConventionsAttribute: Attribute
+    public class NamingConventionsAttribute : Attribute
     {
         public Type ConventionsType { get; private set; }
 
-        public NamingConventionsAttribute(Type conventionsType) 
+        public NamingConventionsAttribute(Type conventionsType)
         {
             if (!typeof(INamingConventions).IsAssignableFrom(conventionsType))
                 throw new ArgumentException($"`{nameof(conventionsType)}` must implement `{nameof(INamingConventions)}` to be used as an argument of the `{nameof(NamingConventionsAttribute)}`");

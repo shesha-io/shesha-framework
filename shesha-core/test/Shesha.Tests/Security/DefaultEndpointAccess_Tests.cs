@@ -46,7 +46,7 @@ namespace Shesha.Tests.Security
                 authConfiguration,
                 permissionedObjectManager,
                 permissionChecker,
-                Substitute.For<ILocalizationManager>()                
+                Substitute.For<ILocalizationManager>()
             );
         }
 

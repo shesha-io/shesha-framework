@@ -2,7 +2,7 @@
 
 namespace Shesha.Metadata.Dtos
 {
-    public class EntityModelDto: ModelDto, IHasMD5
+    public class EntityModelDto : ModelDto, IHasMD5
     {
         public string? Accessor { get; set; }
         public string? ModuleAccessor { get; set; }

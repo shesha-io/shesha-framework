@@ -35,11 +35,12 @@ namespace Shesha.FluentMigrator.ReferenceLists
                     {
                         // delete all if filter is not specified
                         helper.DeleteReferenceListItems(Namespace, Name);
-                    } else 
-                    if (ItemValue.HasValue)
-                    {
-                        helper.DeleteReferenceListItem(Namespace, Name, ItemValue.Value);
                     }
+                    else
+                        if (ItemValue.HasValue)
+                        {
+                            helper.DeleteReferenceListItem(Namespace, Name, ItemValue.Value);
+                        }
                 }
             };
             processor.Process(exp);

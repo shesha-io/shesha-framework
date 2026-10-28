@@ -13,7 +13,7 @@ namespace Shesha.Otp
     {
         private readonly IOtpSettings _otpSettings;
         private readonly IOtpManager _otpManager;
-        
+
 
         public OtpAppService(IOtpManager otpManager, IOtpSettings otpSettings)
         {
@@ -83,7 +83,7 @@ namespace Shesha.Otp
                 EmailSubject = emailSettings.DefaultEmailSubjectTemplate,
                 EmailBodyTemplate = emailSettings.DefaultEmailBodyTemplate,
             };
-            
+
             return settings;
         }
     }

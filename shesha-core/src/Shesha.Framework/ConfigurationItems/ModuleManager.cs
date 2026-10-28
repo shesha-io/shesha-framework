@@ -38,7 +38,7 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         /// <param name="id">Module Id</param>
         /// <returns></returns>
-        public async Task<Module> GetModuleAsync(Guid id) 
+        public async Task<Module> GetModuleAsync(Guid id)
         {
             return await _moduleRepository.GetAsync(id);
         }
@@ -84,13 +84,13 @@ namespace Shesha.ConfigurationItems
         }
 
         /// inheritedDoc
-        public async Task<Module?> GetOrCreateModuleAsync(string moduleName) 
+        public async Task<Module?> GetOrCreateModuleAsync(string moduleName)
         {
             if (string.IsNullOrWhiteSpace(moduleName))
                 throw new ArgumentNullException(nameof(moduleName));
 
             var module = await _moduleRepository.FirstOrDefaultAsync(m => m.Name == moduleName);
-            if (module == null) 
+            if (module == null)
             {
                 module = new Module
                 {
@@ -105,7 +105,7 @@ namespace Shesha.ConfigurationItems
         }
 
         /// inheritedDoc
-        public async Task<Module?> GetOrCreateModuleAsync(Assembly assembly) 
+        public async Task<Module?> GetOrCreateModuleAsync(Assembly assembly)
         {
             var moduleName = assembly.GetConfigurableModuleName();
             return !string.IsNullOrWhiteSpace(moduleName)

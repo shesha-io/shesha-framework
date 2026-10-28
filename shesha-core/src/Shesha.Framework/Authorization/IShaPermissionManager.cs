@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Authorization
 {
-    public interface IShaPermissionManager: IPermissionManager
+    public interface IShaPermissionManager : IPermissionManager
     {
         Abp.Authorization.Permission CreatePermission(
             Abp.Authorization.Permission parent,

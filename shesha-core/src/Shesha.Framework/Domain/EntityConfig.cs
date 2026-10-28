@@ -14,8 +14,8 @@ namespace Shesha.Domain
     /// </summary>
     [Entity(
         FriendlyName = "Entity",
-        TypeShortAlias = "Shesha.Framework.EntityConfig", 
-        CrudActions = Enums.CrudActions.None, 
+        TypeShortAlias = "Shesha.Framework.EntityConfig",
+        CrudActions = Enums.CrudActions.None,
         IsConfigurable = false
     )]
     [JoinedProperty("entity_configs", Schema = "frwk")]
@@ -57,7 +57,7 @@ namespace Shesha.Domain
         public virtual EntityConfigTypes? EntityConfigType { get; set; } = EntityConfigTypes.Class;
 
         [ReadonlyProperty]
-        public virtual string FullClassName {  get; set; }
+        public virtual string FullClassName { get; set; }
 
         [MaxLength(100)]
         public virtual string? TypeShortAlias { get; set; }

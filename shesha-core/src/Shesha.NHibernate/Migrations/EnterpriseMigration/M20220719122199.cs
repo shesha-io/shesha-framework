@@ -23,9 +23,9 @@ namespace Shesha.Migrations.EnterpriseMigration
             SafeRenameTable("Core_ImportResults", "Frwk_ImportResults");
         }
 
-        private void SafeRenameTable(string oldName, string newName) 
+        private void SafeRenameTable(string oldName, string newName)
         {
-            if (Schema.Table(oldName).Exists() && !Schema.Table(newName).Exists()) 
+            if (Schema.Table(oldName).Exists() && !Schema.Table(newName).Exists())
             {
                 Rename.Table(oldName).To(newName);
             }

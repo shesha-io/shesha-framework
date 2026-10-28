@@ -69,7 +69,7 @@ set
                 .ToTable("configuration_item_revisions")
                 .InSchema("frwk")
                 .PrimaryColumn("id");
-                        
+
             Delete.ForeignKey("FK_Core_UserNotificationPreferences_NotificationTypeId_Core_NotificationTypeConfigs_Id").OnTable("Core_UserNotificationPreferences");
             Create.ForeignKey("FK_Core_UserNotificationPreferences_NotificationTypeId")
                 .FromTable("Core_UserNotificationPreferences")
@@ -80,7 +80,7 @@ set
 
             Delete.Table("Core_NotificationChannelConfigs");
             Delete.Table("Core_NotificationTypeConfigs");
-            Delete.Table("Core_ShaRoleAppointmentEntities");            
+            Delete.Table("Core_ShaRoleAppointmentEntities");
         }
     }
 }

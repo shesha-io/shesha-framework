@@ -44,12 +44,12 @@ namespace Shesha.Extensions
 
             var distinctIds = ids.Distinct().ToList();
             var batches = distinctIds.SplitList(batchSize);
-            foreach (var batch in batches) 
+            foreach (var batch in batches)
             {
                 var batchItems = await repository.GetAllListAsync(x => batch.Contains(x.Id));
                 result.AddRange(batchItems);
             }
-            
+
             return result;
         }
 
@@ -61,7 +61,7 @@ namespace Shesha.Extensions
         /// <param name="repository">Repository</param>
         /// <param name="predicate">Predicate to check</param>
         /// <returns></returns>
-        public static async Task<bool> AnyAsync<TEntity, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository, Expression<Func<TEntity, bool>> predicate) where TEntity : class, IEntity<TPrimaryKey> 
+        public static async Task<bool> AnyAsync<TEntity, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository, Expression<Func<TEntity, bool>> predicate) where TEntity : class, IEntity<TPrimaryKey>
         {
             var query = await repository.GetAllAsync();
             return await query.Where(predicate).AnyAsync();
@@ -88,7 +88,7 @@ namespace Shesha.Extensions
         /// <typeparam name="TPrimaryKey">Propary key type</typeparam>
         /// <param name="repository">Repository</param>
         /// <returns></returns>
-        public static async Task<TEntity?> FirstOrDefaultAsync<TEntity, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository) where TEntity : class, IEntity<TPrimaryKey> 
+        public static async Task<TEntity?> FirstOrDefaultAsync<TEntity, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository) where TEntity : class, IEntity<TPrimaryKey>
         {
             var query = await repository.GetAllAsync();
             return await query.FirstOrDefaultAsync();

@@ -99,7 +99,7 @@ namespace Shesha.DynamicEntities.Binder
         {
             if (formFields != null)
                 return formFields;
-            
+
             var _formFields = jobject.Property(nameof(IHasFormFieldsList._formFields));
             var formFieldsArray = _formFields?.Value as JArray;
             return formFieldsArray?.Select(f => f.Value<string>()).WhereNotNull().ToList() ?? new List<string>();
@@ -142,14 +142,15 @@ namespace Shesha.DynamicEntities.Binder
                             await DeleteUnreferencedEntityAsync(childEntity, entity);
                         }
                     }
-                    else {
+                    else
+                    {
                         var emptyValue = property.PropertyType == typeof(string) && !property.IsNullable()
                             ? string.Empty
                             : null;
 
                         if (await ValidateAsync(entity, string.IsNullOrWhiteSpace(propertyName) ? mprop : $"{propertyName}.{mprop}", emptyValue, context))
                             property.SetValue(entity, emptyValue);
-                    }                        
+                    }
                 }
             }
 
@@ -199,7 +200,7 @@ namespace Shesha.DynamicEntities.Binder
                             {
                                 var cascadeAttr = property.GetCustomAttribute<CascadeUpdateRulesAttribute>()
                                     ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>();
-                                
+
                                 if (dbValue != null && (cascadeAttr?.DeleteUnreferenced ?? false))
                                 {
                                     await DeleteUnreferencedEntityAsync(dbValue, entity);
@@ -207,7 +208,7 @@ namespace Shesha.DynamicEntities.Binder
                             }
                             else
                                 if (await ValidateAsync(entity, jFullName, null, context))
-                                property.SetValue(entity, null);
+                                    property.SetValue(entity, null);
                         }
                         else
                         {
@@ -535,7 +536,7 @@ namespace Shesha.DynamicEntities.Binder
                             context.LocalValidationResult.Add(new ValidationResult($"`{property.Name}` is not allowed to be updated."));
                             return;
                         }
-                        r = await BindPropertiesAsync(jEntity, newChildEntity.NotNull(), context, null, childFormFields); 
+                        r = await BindPropertiesAsync(jEntity, newChildEntity.NotNull(), context, null, childFormFields);
                         r = r && await _objectValidatorManager.ValidateObjectAsync(newChildEntity, context.LocalValidationResult);
                     }
 

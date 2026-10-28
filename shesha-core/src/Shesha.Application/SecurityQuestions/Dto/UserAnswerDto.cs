@@ -7,7 +7,7 @@ using System;
 namespace Shesha.SecurityQuestions.Dto
 {
     [AutoMap(typeof(QuestionAssignment))]
-    public class UserAnswerDto: EntityDto<Guid>
+    public class UserAnswerDto : EntityDto<Guid>
     {
         public EntityReferenceDto<Int64>? User { get; set; }
 

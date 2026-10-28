@@ -22,7 +22,7 @@ namespace Shesha.Permissions
         {
             _permissionedObjectManager = permissionedObjectManager;
         }
-        
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -88,8 +88,8 @@ namespace Shesha.Permissions
         public async Task<PermissionedObjectDto> GetApiPermissionsAsync(string serviceName, string actionName)
         {
             var action = string.IsNullOrEmpty(actionName) ? "" : "@" + actionName;
-            var type = string.IsNullOrEmpty(actionName) 
-                ? ShaPermissionedObjectsTypes.WebApi 
+            var type = string.IsNullOrEmpty(actionName)
+                ? ShaPermissionedObjectsTypes.WebApi
                 : ShaPermissionedObjectsTypes.WebApiAction;
             return await _permissionedObjectManager.GetOrDefaultAsync($"{serviceName}{action}", type);
         }

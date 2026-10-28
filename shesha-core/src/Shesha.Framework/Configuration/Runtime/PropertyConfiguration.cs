@@ -54,7 +54,7 @@ namespace Shesha.Configuration.Runtime
         public string? Category { get; set; }
 
         private bool? _isMapped;
-        
+
 
         public Type EntityType { get; set; }
 
@@ -85,7 +85,7 @@ namespace Shesha.Configuration.Runtime
             EntityType = entityType;
         }
 
-        public ReferenceListIdentifier GetRefListIdentifier() 
+        public ReferenceListIdentifier GetRefListIdentifier()
         {
             if (string.IsNullOrWhiteSpace(ReferenceListName))
                 throw new Exception($"{nameof(ReferenceListName)} must be specified");

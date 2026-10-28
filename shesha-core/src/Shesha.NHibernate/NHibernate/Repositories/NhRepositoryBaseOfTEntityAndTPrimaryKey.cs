@@ -50,7 +50,7 @@ namespace Shesha.NHibernate.Repositories
             CurrentUnitOfWorkProvider = default!;
         }
 
-        public IQueryable<TEntity> QueryAll() 
+        public IQueryable<TEntity> QueryAll()
         {
             var query = Session.Query<TEntity>();
 

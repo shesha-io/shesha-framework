@@ -2,7 +2,7 @@
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {
-    public class ImageAnnotationMark: JsonEntity
+    public class ImageAnnotationMark : JsonEntity
     {
         /// <summary>
         /// 

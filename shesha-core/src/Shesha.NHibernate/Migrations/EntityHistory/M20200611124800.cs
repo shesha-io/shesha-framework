@@ -1,5 +1,5 @@
-﻿using System;
-using FluentMigrator;
+﻿using FluentMigrator;
+using System;
 
 namespace Shesha.Migrations
 {
@@ -35,7 +35,7 @@ inner join AbpEntityPropertyChanges pc on pc.EntityChangeId = ec.id
 left outer join Core_Persons AS p ON p.UserId = ecs.UserId
 
 ");
-		}
+        }
 
         public override void Down()
         {

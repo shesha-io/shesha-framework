@@ -47,7 +47,7 @@ namespace Shesha.Import
 
                 if (input.File == null)
                     validationResults.Add(new ValidationResult("File not selected"));
-                    
+
                 if (validationResults.Any())
                     throw new AbpValidationException("Failed to start import", validationResults);
 
@@ -95,7 +95,7 @@ namespace Shesha.Import
                 importResult.ImportedFile = await _fileService.SaveFileAsync(stream, fileName);
                 importResult.ImportedFileMD5 = FileHelper.GetMD5(stream);
                 //importResult.LogFile = logFileName;
-                
+
                 await _importResultsRepository.InsertAsync(importResult);
                 await uow.CompleteAsync();
             }

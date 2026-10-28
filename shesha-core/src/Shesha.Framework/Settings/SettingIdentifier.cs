@@ -11,14 +11,14 @@ namespace Shesha.Settings
         public string Module { get; set; }
 
         [UsedImplicitly]
-        public SettingIdentifier() 
-        { 
+        public SettingIdentifier()
+        {
         }
 
         public SettingIdentifier(string name, string module)
         {
             Name = name;
-            Module = module;    
+            Module = module;
         }
 
         public string NormalizedFullName => $"{Module}:{Name}".ToLower();

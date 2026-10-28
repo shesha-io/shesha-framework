@@ -12,6 +12,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
         public override void Up()
         {
             Alter.Table("SheshaFunctionalTests_TestAccounts").AddForeignKeyColumn("CaptureFormId", "Frwk_FormConfigurations").Nullable();
-        }        
+        }
     }
 }

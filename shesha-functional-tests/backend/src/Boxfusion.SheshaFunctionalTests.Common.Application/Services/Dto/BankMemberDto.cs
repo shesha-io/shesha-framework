@@ -2,7 +2,7 @@
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto
 {
-    public class BankMemberDto: EntityDto<Guid>
+    public class BankMemberDto : EntityDto<Guid>
     {
         public string Name { get; set; }
 

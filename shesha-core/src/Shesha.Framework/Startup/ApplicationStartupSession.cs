@@ -61,7 +61,8 @@ namespace Shesha.Startup
 
             PreviousStartup = await GetPreviousStartupDetailsAsync();
 
-            var startup = new ApplicationStartup {
+            var startup = new ApplicationStartup
+            {
                 Status = Domain.Enums.ApplicationStartupStatus.InProgress,
                 StartedOn = DateTime.Now,
                 MachineName = Environment.MachineName,
@@ -81,7 +82,8 @@ namespace Shesha.Startup
             var assemblies = new List<ApplicationStartupAssembly>();
             foreach (var assemblyDto in assemblyDtos)
             {
-                var startupAssembly = new ApplicationStartupAssembly {
+                var startupAssembly = new ApplicationStartupAssembly
+                {
                     ApplicationStartup = startup,
                     FileName = assemblyDto.FileName,
                     FilePath = assemblyDto.FilePath,
@@ -153,25 +155,25 @@ namespace Shesha.Startup
             }
         }
 
-        private void FillUnchangedAssemblies(ApplicationStartupDto startup) 
+        private void FillUnchangedAssemblies(ApplicationStartupDto startup)
         {
             // don't fill the list if previous startup is missing or not full and successful
-            if (PreviousStartup == null || PreviousStartup.MigrationsDisabled || PreviousStartup.BootstrappersDisabled || PreviousStartup.Status != Domain.Enums.ApplicationStartupStatus.Success) 
+            if (PreviousStartup == null || PreviousStartup.MigrationsDisabled || PreviousStartup.BootstrappersDisabled || PreviousStartup.Status != Domain.Enums.ApplicationStartupStatus.Success)
             {
                 _unchangedAssemblies = new List<ApplicationStartupAssemblyDto>();
                 AllAssembliesStayUnchanged = false;
                 return;
             }
-                
-            _unchangedAssemblies = startup.Assemblies.Where(curr => 
-                PreviousStartup.Assemblies.Any(prev => prev.FileName == curr.FileName && 
-                    prev.FileVersion == curr.FileVersion && 
+
+            _unchangedAssemblies = startup.Assemblies.Where(curr =>
+                PreviousStartup.Assemblies.Any(prev => prev.FileName == curr.FileName &&
+                    prev.FileVersion == curr.FileVersion &&
                     prev.ProductVersion == curr.ProductVersion &&
                     prev.FileMD5 == curr.FileMD5
                     )
                 )
                 .ToList();
-            
+
             AllAssembliesStayUnchanged = _unchangedAssemblies.Count() == startup.Assemblies.Count() &&
                 startup.Assemblies.Count() == PreviousStartup.Assemblies.Count();
         }
@@ -179,22 +181,23 @@ namespace Shesha.Startup
         private ApplicationStartupDto MapStartupToDto(ApplicationStartup startup, List<ApplicationStartupAssembly> assemblies)
         {
             return new ApplicationStartupDto()
-                {
-                    Id = startup.Id,
-                    Status = startup.Status,
-                    MigrationsDisabled = startup.MigrationsDisabled,
-                    BootstrappersDisabled = startup.BootstrappersDisabled,
-                    Assemblies = assemblies.Select(a => MapAssemblyToDto(a)).ToList(),
-                };
+            {
+                Id = startup.Id,
+                Status = startup.Status,
+                MigrationsDisabled = startup.MigrationsDisabled,
+                BootstrappersDisabled = startup.BootstrappersDisabled,
+                Assemblies = assemblies.Select(a => MapAssemblyToDto(a)).ToList(),
+            };
         }
 
         private ApplicationStartupAssemblyDto MapAssemblyToDto(ApplicationStartupAssembly assembly)
         {
-            return new ApplicationStartupAssemblyDto {
+            return new ApplicationStartupAssemblyDto
+            {
                 Id = assembly.Id,
                 FileMD5 = assembly.FileMD5,
                 FileName = assembly.FileName,
-                FileVersion = assembly.FileVersion,                
+                FileVersion = assembly.FileVersion,
                 ProductVersion = assembly.ProductVersion,
             };
         }
@@ -203,7 +206,8 @@ namespace Shesha.Startup
         {
             using (var uow = _uowManager.Begin())
             {
-                await _startupRepository.UpdateAsync(id, startup => {
+                await _startupRepository.UpdateAsync(id, startup =>
+                {
                     startup.FinishedOn = DateTime.Now;
                     startup.Status = Domain.Enums.ApplicationStartupStatus.Success;
 
@@ -219,7 +223,8 @@ namespace Shesha.Startup
             {
                 using (var uow = _uowManager.Begin())
                 {
-                    await _startupRepository.UpdateAsync(id, startup => {
+                    await _startupRepository.UpdateAsync(id, startup =>
+                    {
                         startup.FinishedOn = DateTime.Now;
                         startup.Status = Domain.Enums.ApplicationStartupStatus.Failed;
                         startup.ErrorMessage = e.FullMessage();
@@ -238,10 +243,10 @@ namespace Shesha.Startup
         private async Task<ApplicationStartupDto?> GetPreviousStartupDetailsAsync()
         {
             ApplicationStartupDto? result = null;
-            using (var uow = _uowManager.Begin()) 
+            using (var uow = _uowManager.Begin())
             {
                 var prevStartup = await (await _startupRepository.GetAllAsync()).OrderByDescending(s => s.StartedOn).FirstOrDefaultAsync();
-                if (prevStartup != null) 
+                if (prevStartup != null)
                 {
                     var prevAssemblies = await (await _assemblyRepository.GetAllAsync()).Where(a => a.ApplicationStartup == prevStartup).OrderByDescending(s => s.FileName).ToListAsync();
                     result = MapStartupToDto(prevStartup, prevAssemblies);

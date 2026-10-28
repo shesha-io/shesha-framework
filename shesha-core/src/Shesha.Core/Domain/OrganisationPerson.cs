@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Shesha.Domain.Attributes;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Shesha.Domain.Attributes;
 
 namespace Shesha.Domain
 {
     [Discriminator(UseDiscriminator = true)]
-    public class OrganisationPersonBase<TOrganisation, TPerson> : RelationshipEntityBase<Guid> where TOrganisation: OrganisationBase where TPerson : Person
+    public class OrganisationPersonBase<TOrganisation, TPerson> : RelationshipEntityBase<Guid> where TOrganisation : OrganisationBase where TPerson : Person
     {
         public virtual Boolean IsPrimary { get; set; }
 

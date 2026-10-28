@@ -9,8 +9,8 @@ namespace Shesha.FluentMigrator.Modules
         {
         }
 
-        public Guid EnsureModuleExists(string name) 
-        { 
+        public Guid EnsureModuleExists(string name)
+        {
             return GetOrCreateModuleId(name);
         }
     }

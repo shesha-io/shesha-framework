@@ -1,10 +1,10 @@
-﻿using System;
-using FluentMigrator;
+﻿using FluentMigrator;
+using System;
 
 namespace Shesha.Migrations
 {
     [Migration(20200702144300), MsSqlOnly]
-    public class M20200702144300: Migration
+    public class M20200702144300 : Migration
     {
         public override void Up()
         {
@@ -52,11 +52,11 @@ where
 				and newList.CreationTime > Frwk_ReferenceLists.CreationTime
 		)");
 
-			// delete old index and create new unique index
-			if (Schema.Table("Frwk_ReferenceLists").Index("idx_Frwk_ReferenceLists_Name").Exists())
+            // delete old index and create new unique index
+            if (Schema.Table("Frwk_ReferenceLists").Index("idx_Frwk_ReferenceLists_Name").Exists())
                 Delete.Index("idx_Frwk_ReferenceLists_Name").OnTable("Frwk_ReferenceLists");
 
-			Execute.Sql("CREATE UNIQUE INDEX IX_Frwk_ReferenceLists_Namespace_Name_Tenant ON Frwk_ReferenceLists (Namespace, Name, TenantId)");
+            Execute.Sql("CREATE UNIQUE INDEX IX_Frwk_ReferenceLists_Namespace_Name_Tenant ON Frwk_ReferenceLists (Namespace, Name, TenantId)");
         }
 
         public override void Down()

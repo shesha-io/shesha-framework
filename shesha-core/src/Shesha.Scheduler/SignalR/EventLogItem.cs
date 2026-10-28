@@ -1,5 +1,5 @@
-﻿using System;
-using log4net.Core;
+﻿using log4net.Core;
+using System;
 
 namespace Shesha.Scheduler.SignalR
 {
@@ -12,7 +12,7 @@ namespace Shesha.Scheduler.SignalR
         /// Logged message
         /// </summary>
         public string Message { get; set; }
-        
+
         /// <summary>
         /// Event timestamp
         /// </summary>
@@ -25,7 +25,7 @@ namespace Shesha.Scheduler.SignalR
 
         public EventLogItem()
         {
-            
+
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Shesha.Scheduler.SignalR
             Message = loggingEvent.ExceptionObject != null
                 ? loggingEvent.ExceptionObject.Message
                 : loggingEvent.RenderedMessage ?? "";
-            
+
             TimeStamp = loggingEvent.TimeStamp;
 
             Level = (loggingEvent.Level ?? log4net.Core.Level.Info).Name;

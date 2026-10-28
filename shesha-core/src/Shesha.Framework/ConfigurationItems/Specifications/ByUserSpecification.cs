@@ -26,8 +26,8 @@ namespace Shesha.ConfigurationItems.Specifications
 
         public Expression<Func<TItem, bool>> ToExpression()
         {
-            return UserId == null 
-                ? item => item.User == null 
+            return UserId == null
+                ? item => item.User == null
                 : item => item.User != null && item.User.Id == UserId;
         }
     }

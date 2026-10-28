@@ -43,11 +43,11 @@ namespace Shesha.Scheduler.ProcessMonitor
                 if (fileVersion == null)
                     throw new Exception("File version not found");
 
-                using (var fileContentStream = await _storedFileService.GetStreamAsync(fileVersion)) 
+                using (var fileContentStream = await _storedFileService.GetStreamAsync(fileVersion))
                 {
                     using var storedFileContent = new StreamReader(fileContentStream);
                     logFileContent = await storedFileContent.ReadToEndAsync();
-                }                
+                }
             }
             else
             {
@@ -64,14 +64,14 @@ namespace Shesha.Scheduler.ProcessMonitor
         public async Task<LogFileInfo> GetLogFileInfoAsync(string processId)
         {
             var execution = await GetExecutionAsync(processId);
-            
+
             if (execution.Job.LogMode == Domain.Enums.LogMode.StoredFile)
             {
                 var fileVersion = execution.LogFile?.LastVersion();
-                
-                    return fileVersion != null
-                        ? LogFileInfo.Available(fileVersion.FileName, () => _storedFileService.GetStreamAsync(fileVersion))
-                        : LogFileInfo.Unavailable();
+
+                return fileVersion != null
+                    ? LogFileInfo.Available(fileVersion.FileName, () => _storedFileService.GetStreamAsync(fileVersion))
+                    : LogFileInfo.Unavailable();
             }
             else
             {
@@ -91,10 +91,10 @@ namespace Shesha.Scheduler.ProcessMonitor
                 ExecutionStatus.Failed => ProcessStatus.Failed,
                 ExecutionStatus.Cancelled => ProcessStatus.Cancelled,
                 _ => ProcessStatus.Idle
-            };            
+            };
         }
 
-        private async Task<ScheduledJobExecution> GetExecutionAsync(string processId) 
+        private async Task<ScheduledJobExecution> GetExecutionAsync(string processId)
         {
             var id = processId.ToGuid();
 

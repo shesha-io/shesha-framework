@@ -8,7 +8,7 @@ namespace Shesha.Web.FormsDesigner.Migrations
     {
         public override void Up()
         {
-                IfDatabase("sqlserver").Execute.Sql(@"
+            IfDatabase("sqlserver").Execute.Sql(@"
 update fc set Markup = 
 	REPLACE(
 		REPLACE(

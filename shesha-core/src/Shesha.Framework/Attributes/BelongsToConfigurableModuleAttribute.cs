@@ -19,7 +19,7 @@ namespace Shesha.Attributes
             ModuleName = moduleName;
         }
 
-        public BelongsToConfigurableModuleAttribute(Type moduleType) 
+        public BelongsToConfigurableModuleAttribute(Type moduleType)
         {
             ModuleType = moduleType;
             if (!typeof(SheshaModule).IsAssignableFrom(moduleType))

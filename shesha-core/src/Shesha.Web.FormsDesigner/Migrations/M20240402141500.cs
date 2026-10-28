@@ -9,7 +9,7 @@ namespace Shesha.Web.FormsDesigner.Migrations
         public override void Up()
         {
 
-                IfDatabase("sqlserver").Execute.Sql(@"
+            IfDatabase("sqlserver").Execute.Sql(@"
 DECLARE @a TABLE (id uniqueidentifier);
 INSERT INTO @a 
 select fc.id
@@ -56,8 +56,8 @@ from Frwk_FormConfigurations fc
 inner join Frwk_ConfigurationItems cii on cii.id = fc.id and cii.IsLast = 1 and cii.IsDeleted = 0
 ");
 
-                // Execute sql only on PostgreSql
-                IfDatabase("PostgreSQL").Execute.Sql(@"
+            // Execute sql only on PostgreSql
+            IfDatabase("PostgreSQL").Execute.Sql(@"
 CREATE TEMP TABLE ""aa"" (""Id"" uuid);
 INSERT INTO ""aa""
 select fc.""Id""

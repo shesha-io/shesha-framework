@@ -51,7 +51,7 @@ namespace Shesha.ShaRoles
 
             role.Label = input.Label;
             role.Description = input.Description;
-            role.MapPermissions(input.Permissions);            
+            role.MapPermissions(input.Permissions);
 
             await _shaPermissionChecker.ClearPermissionsCacheAsync();
 
@@ -66,7 +66,7 @@ namespace Shesha.ShaRoles
             CheckDeletePermission();
 
             var role = await Repository.GetAsync(input.Id);
-            
+
             await Repository.DeleteAsync(role);
         }
 

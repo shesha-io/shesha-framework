@@ -35,7 +35,7 @@ namespace Shesha.GraphQL.Provider
             IEnumerable<ISchema> customSchemas,
             ITypeFinder typeFinder,
             IShaTypeFinder shaTypeFinder,
-            ICacheManager cacheManager): base($"{nameof(SchemaContainer)}Cache", cacheManager)
+            ICacheManager cacheManager) : base($"{nameof(SchemaContainer)}Cache", cacheManager)
         {
             _defaultSchema = new Schema();
             _defaultSchema.Query = new EmptyQuery();
@@ -56,7 +56,7 @@ namespace Shesha.GraphQL.Provider
             return Cache.Get(schemaName, sn => GetEntitySchema(entityType, _serviceProvider));
         }
 
-        private static ISchema GetEntitySchema(Type entityType, IServiceProvider serviceProvider) 
+        private static ISchema GetEntitySchema(Type entityType, IServiceProvider serviceProvider)
         {
             var idType = entityType.GetEntityIdType();
             var schemaType = typeof(EntitySchema<,>).MakeGenericType(entityType, idType);
@@ -71,7 +71,7 @@ namespace Shesha.GraphQL.Provider
         /// </summary>
         /// <param name="entityType">Type of entity</param>
         /// <returns></returns>
-        public static string GetEntitySchemaName(Type entityType) 
+        public static string GetEntitySchemaName(Type entityType)
         {
             return GetEntitySchemaName(entityType.Name);
         }
@@ -95,7 +95,7 @@ namespace Shesha.GraphQL.Provider
                     ? CustomSchemas[schemaName]
                     : GetEntitySchema(schemaName);
             }
-            
+
             if (schema == null)
                 schema = defaultSchemaName != null ? CustomSchemas[defaultSchemaName] : _defaultSchema;
 

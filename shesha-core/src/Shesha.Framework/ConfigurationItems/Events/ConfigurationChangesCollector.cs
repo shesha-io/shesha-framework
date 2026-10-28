@@ -18,7 +18,7 @@ namespace Shesha.ConfigurationItems.Events
         private readonly IEventBus _eventBus;
         private readonly IConfigurationItemHelper _ciHelper;
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
-        
+
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
@@ -33,8 +33,8 @@ namespace Shesha.ConfigurationItems.Events
         /// <summary>
         /// Add configuration change
         /// </summary>
-        public void AddUpdate(ConfigurationItemIdentifier identifier) 
-        { 
+        public void AddUpdate(ConfigurationItemIdentifier identifier)
+        {
             AddUpdate(identifier.ItemTypeName, identifier.Module ?? "", identifier.Name);
         }
 
@@ -50,7 +50,8 @@ namespace Shesha.ConfigurationItems.Events
             if (uow == null)
                 return;
 
-            var updates = uow.GetOrAdd(ConfigUpdatesKey, () => {
+            var updates = uow.GetOrAdd(ConfigUpdatesKey, () =>
+            {
                 var eventData = new ConfigurationChangesCollectedEventData { Updates = new List<ConfigurationChangesCollectedEventData.ConfigIdentifier>() };
                 uow.DoAfterTransaction(() =>
                 {
@@ -81,8 +82,8 @@ namespace Shesha.ConfigurationItems.Events
         /// Try add configuration change. Is used for simplification purposes. It calls <see cref="AddUpdate(ConfigurationItem)"/> when <see cref="ConfigurationItem"/> is not null.
         /// </summary>
         /// <param name="configurationItem"></param>
-        public void TryAddUpdate(ConfigurationItem? configurationItem) 
-        { 
+        public void TryAddUpdate(ConfigurationItem? configurationItem)
+        {
             if (configurationItem is not null)
                 AddUpdate(configurationItem);
         }

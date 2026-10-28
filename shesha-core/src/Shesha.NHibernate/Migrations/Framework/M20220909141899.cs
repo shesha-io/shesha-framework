@@ -8,8 +8,8 @@ namespace Shesha.Migrations.Framework
     {
         public override void Up()
         {
-			Execute.Sql(@"delete from Frwk_FormConfigurations"); // tables should be empty before this delete, it used for debug only
-			Execute.Sql(@"delete from Frwk_ConfigurationItems"); 
+            Execute.Sql(@"delete from Frwk_FormConfigurations"); // tables should be empty before this delete, it used for debug only
+            Execute.Sql(@"delete from Frwk_ConfigurationItems");
 
             Create.Table("tmp_ConfigurationItems")
                 .WithColumn("id").AsGuid()
@@ -83,15 +83,15 @@ select
 from
 	data;");
 
-			Execute.Sql(
+            Execute.Sql(
 @"update 
 	tmp_ConfigurationItems 
 set 
 	versionNo = coalesce((select max(VersionNo) from tmp_ConfigurationItems t where t.Path = tmp_ConfigurationItems.Path and t.Id <> tmp_ConfigurationItems.Id), 0) + 1
 where
 	versionNo = -1");
-			
-			Execute.Sql(
+
+            Execute.Sql(
 @"insert into 
 	Frwk_ConfigurationItems
 (
@@ -143,7 +143,7 @@ from
 where
 	Frwk_Discriminator = 'Shesha.Framework.Form'");
 
-			Execute.Sql(
+            Execute.Sql(
 @"insert into
 	Frwk_FormConfigurations
 (
@@ -167,6 +167,6 @@ where
 	)");
 
             Delete.Table("tmp_ConfigurationItems");
-		}
-	}
+        }
+    }
 }

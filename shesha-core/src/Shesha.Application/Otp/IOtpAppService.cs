@@ -7,7 +7,7 @@ namespace Shesha.Otp
     /// <summary>
     /// Interface of the one-time-pin service
     /// </summary>
-    public interface IOtpAppService: IApplicationService
+    public interface IOtpAppService : IApplicationService
     {
         /// <summary>
         /// Send one-time-pin

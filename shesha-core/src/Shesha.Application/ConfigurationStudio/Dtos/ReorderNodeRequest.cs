@@ -13,7 +13,7 @@ namespace Shesha.ConfigurationStudio.Dtos
         public DropPositionType DropPosition { get; set; }
 
         public enum DropPositionType
-        { 
+        {
             Before = -1,
             After = 1
         }

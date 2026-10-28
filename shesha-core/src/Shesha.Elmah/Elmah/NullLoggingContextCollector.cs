@@ -40,7 +40,8 @@ namespace Shesha.Elmah
 
         private IDisposable NewEmptyAction()
         {
-            return new DisposeAction(() => {
+            return new DisposeAction(() =>
+            {
                 // empty action
             });
         }

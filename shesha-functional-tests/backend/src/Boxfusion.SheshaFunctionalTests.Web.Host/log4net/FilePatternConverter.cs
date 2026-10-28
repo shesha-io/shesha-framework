@@ -1,6 +1,6 @@
+using log4net.Util;
 using System;
 using System.IO;
-using log4net.Util;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.log4net
 {

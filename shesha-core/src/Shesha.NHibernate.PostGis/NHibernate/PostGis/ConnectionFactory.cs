@@ -17,7 +17,7 @@ namespace Shesha.NHibernate.PostGis
             var dataSource = DataSources.TryGetValue(connectionString, out var ds)
                 ? ds
                 : null;
-            if (dataSource == null) 
+            if (dataSource == null)
             {
                 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 

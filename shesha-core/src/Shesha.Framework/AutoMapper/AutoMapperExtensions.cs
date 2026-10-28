@@ -193,7 +193,7 @@ namespace Shesha.AutoMapper
                 )
                 .WhereNotNull()
                 .ToList();
-            
+
             foreach (var item in refListProperties)
             {
                 expression.ForMember(item.DstProperty.Name, m => m.MapFrom(e => e != null ? GetRefListItemValue(item.SrcProperty.GetValue(e) as ReferenceListItemValueDto, item.SrcProperty.PropertyType, item.DstProperty.PropertyType) : null));
@@ -311,7 +311,7 @@ namespace Shesha.AutoMapper
             if (listValue is IList list)
             {
                 Int64 value = 0;
-                foreach (var item in list) 
+                foreach (var item in list)
                 {
                     var intValue = item as Int64?;
 
@@ -336,12 +336,13 @@ namespace Shesha.AutoMapper
 
             var dstType = dstPropType.GetUnderlyingTypeIfNullable();
 
-            if (dstType.IsEnum) {
+            if (dstType.IsEnum)
+            {
                 var enumUnderlayingType = dstType.GetEnumUnderlyingType();
                 var numericValue = System.Convert.ChangeType(dto.ItemValue, enumUnderlayingType);
                 return Enum.ToObject(dstType, numericValue);
             }
-                        
+
             return System.Convert.ChangeType(dto.ItemValue, dstType);
         }
     }

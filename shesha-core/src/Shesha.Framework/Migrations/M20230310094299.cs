@@ -16,7 +16,7 @@ namespace Shesha.Migrations
             Delete.ForeignKey("FK_Frwk_SettingValues_SettingConfigurationId_Frwk_SettingConfigurations_Id").OnTable("Frwk_SettingValues");
 
             Alter.Column("SettingConfigurationId").OnTable("Frwk_SettingValues").AsGuid().NotNullable();
-            
+
             Create.Index("IX_Frwk_SettingValues_SettingConfigurationId").OnTable("Frwk_SettingValues").OnColumn("SettingConfigurationId");
             Create.ForeignKey("FK_Frwk_SettingValues_SettingConfigurationId_Frwk_SettingConfigurations_Id").FromTable("Frwk_SettingValues")
                 .ForeignColumn("SettingConfigurationId")

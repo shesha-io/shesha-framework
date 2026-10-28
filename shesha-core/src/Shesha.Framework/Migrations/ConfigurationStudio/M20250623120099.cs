@@ -244,7 +244,7 @@ namespace Shesha.Migrations.ConfigurationStudio
                 .WithColumn("permissioned_entity3_display_name").AsString(1000).Nullable()
                 .WithColumn("from_date").AsDateTime().Nullable()
                 .WithColumn("to_date").AsDateTime().Nullable()
-                .WithColumn("status_lkp").AsInt64().Nullable()                
+                .WithColumn("status_lkp").AsInt64().Nullable()
                 .WithColumn("role_id").AsGuid().Nullable().ForeignKey("fk_role_appointments_role_id", "frwk", "configuration_items", "id").Indexed();
 
             // Shesha.Domain.ShaRolePermission
@@ -254,7 +254,7 @@ namespace Shesha.Migrations.ConfigurationStudio
             // Shesha.Domain.ShaRoleAppointedPerson
             Alter.Table("role_appointments").InSchema("frwk")
                 .AddColumn("person_id").AsGuid().Nullable().ForeignKey("fk_role_appointments_person_id", "", "Core_Persons", "Id").Indexed();
-            
+
             var headerTables = new List<string>{
                 "entity_configs",
             };

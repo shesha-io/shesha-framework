@@ -62,7 +62,7 @@ namespace Shesha.Scheduler.Bootstrappers
                 {
                     Class = e,
                     Attribute = e.GetAttribute<ScheduledJobAttribute>()
-                })                
+                })
                 .ToList();
 
             // deactivate all jobs which are missing in the code

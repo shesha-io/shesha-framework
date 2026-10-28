@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Newtonsoft.Json.Linq;
 using Shesha.DynamicEntities.Dtos;
+using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
 {

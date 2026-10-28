@@ -17,7 +17,7 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
             IRepository<Module, Guid> moduleRepo,
             IRepository<FrontEndApp, Guid> frontEndAppRepo,
             IRepository<NotificationChannelConfig, Guid> repository
-        ) : base (repository, moduleRepo, frontEndAppRepo)
+        ) : base(repository, moduleRepo, frontEndAppRepo)
         {
         }
 

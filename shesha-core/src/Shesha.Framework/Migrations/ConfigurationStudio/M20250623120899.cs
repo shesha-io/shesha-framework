@@ -51,7 +51,7 @@ BEGIN
 
 	RETURN @result;
 END");
-			IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE FUNCTION frwk.get_module_id()
+            IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE FUNCTION frwk.get_module_id()
 RETURNS uuid
 LANGUAGE plpgsql
 AS $$

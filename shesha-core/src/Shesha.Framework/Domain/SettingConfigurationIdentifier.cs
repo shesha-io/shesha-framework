@@ -13,5 +13,5 @@
         {
             return new SettingConfigurationIdentifier(module, name);
         }
-    }    
+    }
 }

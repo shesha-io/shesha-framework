@@ -6,7 +6,7 @@ namespace Shesha.FluentMigrator.Conventions
     /// <summary>
     /// PostgreSql conventions set
     /// </summary>
-    public class PostgreSqlConventionsSet: IConventionSet
+    public class PostgreSqlConventionsSet : IConventionSet
     {
         public PostgreSqlConventionsSet()
             : this(new DefaultConventionSet())

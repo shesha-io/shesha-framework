@@ -19,12 +19,14 @@ namespace Shesha.FluentMigrator.ReferenceLists
 
         public override void ExecuteWith(IMigrationProcessor processor)
         {
-            var exp = new PerformDBOperationExpression() { Operation = (connection, transaction) => 
+            var exp = new PerformDBOperationExpression()
+            {
+                Operation = (connection, transaction) =>
                 {
                     var helper = new ReferenceListDbHelper(DbmsType, connection, transaction, QuerySchema);
                     helper.DeleteReferenceListItems(Namespace, Name);
                     helper.DeleteReferenceList(Namespace, Name);
-                } 
+                }
             };
             processor.Process(exp);
         }

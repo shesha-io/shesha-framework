@@ -8,7 +8,7 @@ namespace Shesha.Specifications
     {
         public override Expression<Func<Person, bool>> BuildExpression()
         {
-            return p => p.DateOfBirth != null && p.DateOfBirth <= DateTime.Now.AddYears(-18); 
+            return p => p.DateOfBirth != null && p.DateOfBirth <= DateTime.Now.AddYears(-18);
         }
     }
 

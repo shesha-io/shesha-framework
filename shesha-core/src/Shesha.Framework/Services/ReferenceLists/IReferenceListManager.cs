@@ -6,7 +6,7 @@ namespace Shesha.Services.ReferenceLists
     /// <summary>
     /// Reference list manager. Performs management operations (create/update/delete/copy etc)
     /// </summary>
-    public interface IReferenceListManager: IConfigurationItemManager<ReferenceList>
+    public interface IReferenceListManager : IConfigurationItemManager<ReferenceList>
     {
     }
 }

@@ -58,7 +58,8 @@ namespace Shesha.Settings
                 // check for duplicated settings names
                 var duplicates = definitionsInCode.GroupBy(d => d.FullName,
                     d => d,
-                    (name, items) => new {
+                    (name, items) => new
+                    {
                         Name = name,
                         Items = items
                     })
@@ -67,7 +68,8 @@ namespace Shesha.Settings
                 if (duplicates.Any())
                     throw new AmbiguousSettingsException(duplicates);
 
-                var consolidated = definitionsInCode.Select(d => new {
+                var consolidated = definitionsInCode.Select(d => new
+                {
                     Code = d,
                     Db = configurationsInDb.FirstOrDefault(c => new ByNameAndModuleSpecification<SettingConfiguration>(d.Name, d.ModuleName).IsSatisfiedBy(c))
                 })
@@ -117,7 +119,7 @@ namespace Shesha.Settings
                     config.EditorFormModule = definition.EditForm?.Module;
                     config.EditorFormName = definition.EditForm?.Name;
 
-                    await _settingConfigurationRepository.UpdateAsync(config);                    
+                    await _settingConfigurationRepository.UpdateAsync(config);
                 }
             }
         }

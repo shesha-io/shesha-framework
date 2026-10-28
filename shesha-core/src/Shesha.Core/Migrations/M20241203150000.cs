@@ -257,7 +257,7 @@ namespace Shesha.Migrations
 
             Alter.Table("Core_NotificationMessages")
                   .AddTenantIdColumnAsNullable();
-            
+
             // Data migration
             IfDatabase("SqlServer").Execute.Sql(@"
                 INSERT INTO Core_Notifications (Id, CreationTime, Name, ToPersonId, FromPersonId, TriggeringEntityId, TriggeringEntityClassName, TriggeringEntityDisplayName, IsDeleted) 

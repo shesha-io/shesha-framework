@@ -21,7 +21,7 @@ namespace Shesha.QuickSearch
     /// <summary>
     /// Entity quick searcher
     /// </summary>
-    public class QuickSearcher: IQuickSearcher, ITransientDependency
+    public class QuickSearcher : IQuickSearcher, ITransientDependency
     {
         private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
         private readonly ICacheManager _cacheManager;
@@ -36,9 +36,9 @@ namespace Shesha.QuickSearch
         private readonly MethodInfo queryableAnyMethod = typeof(Queryable).GetMethods().FirstOrDefault(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Count() == 2) ?? throw new Exception($"Method {nameof(Queryable.Any)} not found in type '{typeof(Queryable).FullName}'");
 
         public QuickSearcher(
-            IEntityTypeConfigurationStore entityConfigurationStore, 
-            IRepository<ReferenceListItem, Guid> refListItemRepository, 
-            ICacheManager cacheManager, 
+            IEntityTypeConfigurationStore entityConfigurationStore,
+            IRepository<ReferenceListItem, Guid> refListItemRepository,
+            ICacheManager cacheManager,
             IReferenceListHelper refListHelper,
             IQuickSearchPropertiesCacheHolder quickSearchPropertiesCacheHolder)
         {
@@ -56,7 +56,7 @@ namespace Shesha.QuickSearch
         /// <param name="quickSearch">Quick search text</param>
         /// <param name="properties">List of properties in dot notation (e.g. FirstName, User.Username, AccountType)</param>
         /// <returns></returns>
-        public Expression<Func<T, bool>> GetQuickSearchExpression<T>(string quickSearch, List<string> properties) 
+        public Expression<Func<T, bool>> GetQuickSearchExpression<T>(string quickSearch, List<string> properties)
         {
             var itemExpression = Expression.Parameter(typeof(T), "ent");
             var conditions = GetQuickSearchExpression<T>(quickSearch, properties, itemExpression).NotNull();
@@ -89,7 +89,7 @@ namespace Shesha.QuickSearch
         /// <param name="properties">List of properties in dot notation (e.g. FirstName, User.Username, AccountType)</param>
         /// <param name="parameter">Parameter expression</param>
         /// <returns></returns>
-        public Expression? GetQuickSearchExpression<T>(string quickSearch, List<string> properties, ParameterExpression parameter) 
+        public Expression? GetQuickSearchExpression<T>(string quickSearch, List<string> properties, ParameterExpression parameter)
         {
             if (string.IsNullOrWhiteSpace(quickSearch))
                 return null;
@@ -99,7 +99,7 @@ namespace Shesha.QuickSearch
             }
 
             var subExpressions = new List<Expression>();
-            
+
             // get list of properties existing in the table configuration
             var props = GetPropertiesForSqlQuickSearch<T>(properties, null);
 
@@ -134,7 +134,7 @@ namespace Shesha.QuickSearch
                                     var nestedPropertyDisplayName = nestedEntityConfig.DisplayNamePropertyInfo.Name;
 
                                     var propConfig = nestedEntityConfig.Properties[nestedPropertyDisplayName];
-                                    if (propConfig != null && propConfig.IsMapped) 
+                                    if (propConfig != null && propConfig.IsMapped)
                                     {
                                         var propExpression = ExpressionExtensions.GetMemberExpression(parameter, $"{prop.Name}.{nestedPropertyDisplayName}");
                                         var constExpression = Expression.Constant(quickSearch);
@@ -183,12 +183,13 @@ namespace Shesha.QuickSearch
                             if (!string.IsNullOrWhiteSpace(prop.ReferenceListName))
                             {
                                 var reflistExpression = GetCommonRefListExpression(
-                                    prop.ReferenceListModule, 
-                                    prop.ReferenceListName, 
-                                    prop.Name, 
-                                    quickSearch, 
-                                    parameter, 
-                                    (propValue, itemValue) => {
+                                    prop.ReferenceListModule,
+                                    prop.ReferenceListName,
+                                    prop.Name,
+                                    quickSearch,
+                                    parameter,
+                                    (propValue, itemValue) =>
+                                    {
                                         var bitwiseExpression = Expression.And(propValue, itemValue);
                                         return Expression.GreaterThan(bitwiseExpression, Expression.Convert(Expression.Constant(0), typeof(Int64?)));
                                     }
@@ -210,7 +211,7 @@ namespace Shesha.QuickSearch
                         }
                 }
             }
-            
+
             if (!subExpressions.Any())
                 return null;
 
@@ -225,7 +226,7 @@ namespace Shesha.QuickSearch
         /// <param name="quickSearch">Quick search text</param>
         /// <param name="properties">List of properties to search. Supports dot notation (e.g. User.Username)</param>
         /// <returns></returns>
-        public IQueryable<TEntity> ApplyQuickSearch<TEntity>(IQueryable<TEntity> queryable, string quickSearch, List<string> properties) 
+        public IQueryable<TEntity> ApplyQuickSearch<TEntity>(IQueryable<TEntity> queryable, string quickSearch, List<string> properties)
         {
             var expression = GetQuickSearchExpression<TEntity>(quickSearch, properties);
             return queryable.Where(expression);
@@ -345,9 +346,9 @@ namespace Shesha.QuickSearch
             return _quickSearchPropertiesCache.Get(cacheKey, (s) => DoGetPropertiesForSqlQuickSearch<TEntity>(properties));
         }
 
-        private bool TryGetProperty(EntityTypeConfiguration entityConfig, string name, [NotNullWhen(true)] out PropertyConfiguration? propConfig) 
+        private bool TryGetProperty(EntityTypeConfiguration entityConfig, string name, [NotNullWhen(true)] out PropertyConfiguration? propConfig)
         {
-            if (name == EntityConstants.DisplayNameField) 
+            if (name == EntityConstants.DisplayNameField)
             {
                 propConfig = null;
 
@@ -401,12 +402,13 @@ namespace Shesha.QuickSearch
                             }
                             else
                                 if (i != parts.Length - 1)
-                                return null; // only last part can be not an entity reference
+                                    return null; // only last part can be not an entity reference
 
                             effectivePathParts.Add(property.PropertyInfo.Name);
                         }
                     }
-                    else {
+                    else
+                    {
                         if (TryGetProperty(currentEntityConfig, propName, out property))
                             effectivePathParts.Add(property.PropertyInfo.Name);
                     }
@@ -416,7 +418,7 @@ namespace Shesha.QuickSearch
 
                     if (!property.IsMapped)
                         return null;
-                    
+
                     return new
                     {
                         Path = effectivePathParts.Delimited("."),
@@ -443,7 +445,7 @@ namespace Shesha.QuickSearch
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public List<string> GetTopLevelProperties<TEntity>() 
+        public List<string> GetTopLevelProperties<TEntity>()
         {
             var entityConfig = _entityConfigurationStore.Get(typeof(TEntity));
             return entityConfig.Properties.Select(p => p.Key).ToList();

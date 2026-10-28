@@ -1,15 +1,15 @@
 ﻿using Abp.Runtime.Validation;
+using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.ConfigurationItems.Distribution;
 using Shesha.ConfigurationItems.Distribution.Models;
+using Shesha.ConfigurationStudio.Dtos;
 using Shesha.Extensions;
 using Shesha.Mvc;
-using System.IO;
-using System.Threading.Tasks;
 using System;
-using Shesha.ConfigurationItems.Distribution;
-using Abp.UI;
+using System.IO;
 using System.Linq;
-using Shesha.ConfigurationStudio.Dtos;
+using System.Threading.Tasks;
 
 namespace Shesha.ConfigurationStudio
 {
@@ -94,7 +94,7 @@ namespace Shesha.ConfigurationStudio
 
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<FileStreamResult> MergePackagesAsync([FromForm] MergePackagesInput input) 
+        public async Task<FileStreamResult> MergePackagesAsync([FromForm] MergePackagesInput input)
         {
             if (input.Packages == null || input.Packages.Length == 0)
                 throw new UserFriendlyException("Please upload at least one package (.shaconfig).");

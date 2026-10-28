@@ -14,10 +14,10 @@ namespace Shesha.Tests.Metadata
         }
 
         [Fact]
-        public async Task ShouldInclude_NotMappedProperties_TestAsync() 
+        public async Task ShouldInclude_NotMappedProperties_TestAsync()
         {
             var metadataProvider = Resolve<MetadataProvider>();
-            
+
             var properties = await metadataProvider.GetPropertiesAsync(typeof(EntityWithReadonlyProp));
 
             var includesCalculatedReadonly = properties.Any(p => p.Path == nameof(EntityWithReadonlyProp.CalculatedReadonly));

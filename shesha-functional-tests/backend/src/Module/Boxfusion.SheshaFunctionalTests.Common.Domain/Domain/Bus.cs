@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {
     public class Bus : Organisation
-    { 
+    {
         [Audited]
         [ManyToMany(true)]
         public virtual IList<Person> People { get; set; } = new List<Person>();

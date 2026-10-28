@@ -8,7 +8,7 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-			// Delete old sms gateways settings (converted to objects). We do it here just because these settings were not used before
+            // Delete old sms gateways settings (converted to objects). We do it here just because these settings were not used before
 
             Execute.Sql(@"delete from Frwk_SettingValues where SettingConfigurationId in (
 	select 

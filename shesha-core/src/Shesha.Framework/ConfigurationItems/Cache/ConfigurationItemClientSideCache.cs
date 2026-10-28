@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 namespace Shesha.ConfigurationItems.Cache
 {
     /// inhertiedDoc
-    public sealed class ConfigurationItemClientSideCache : IConfigurationItemClientSideCache, 
-        IAsyncEventHandler<EntityChangedEventData<ConfigurationItem>>, 
-        ISingletonDependency, 
+    public sealed class ConfigurationItemClientSideCache : IConfigurationItemClientSideCache,
+        IAsyncEventHandler<EntityChangedEventData<ConfigurationItem>>,
+        ISingletonDependency,
         IDisposable
     {
         private readonly ICacheManager _cacheManager;
@@ -51,7 +51,7 @@ namespace Shesha.ConfigurationItems.Cache
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP001:Dispose created", Justification = "Caches are disposed as part of main Dispose() mathod")]
-        private Task<TResult> UsingCacheAsync<TResult>(string itemType, Func<ITypedCache<string, ConfigurationItemCacheItem>, Task<TResult>> actionAsync) 
+        private Task<TResult> UsingCacheAsync<TResult>(string itemType, Func<ITypedCache<string, ConfigurationItemCacheItem>, Task<TResult>> actionAsync)
         {
             var cache = GetCache(itemType);
             return actionAsync.Invoke(cache);
@@ -69,7 +69,8 @@ namespace Shesha.ConfigurationItems.Cache
         {
             var key = GetCacheKey(name);
 
-            return UsingCacheAsync(itemType, async(cache) => {
+            return UsingCacheAsync(itemType, async (cache) =>
+            {
                 var value = await cache.TryGetValueAsync(key);
                 var subKey = GetSubKey(applicationKey, module);
 
@@ -78,13 +79,14 @@ namespace Shesha.ConfigurationItems.Cache
                     : null;
             });
         }
-        
+
         /// inhertiedDoc
         public Task<string?> GetCachedMd5Async(string itemType, Guid id)
         {
             var key = GetCacheKey(id);
 
-            return UsingCacheAsync(itemType, async (cache) => {
+            return UsingCacheAsync(itemType, async (cache) =>
+            {
                 var value = await cache.TryGetValueAsync(key);
                 return value.HasValue ? value.Value.Md5 : null;
             });
@@ -93,7 +95,8 @@ namespace Shesha.ConfigurationItems.Cache
         /// inhertiedDoc
         public Task SetCachedMd5Async(string itemType, string? applicationKey, string? module, string name, string? md5)
         {
-            return UsingCacheAsync(itemType, async (cache) => {
+            return UsingCacheAsync(itemType, async (cache) =>
+            {
                 var key = GetCacheKey(name);
                 var subKey = GetSubKey(applicationKey, module);
                 var cacheItem = await cache.GetOrDefaultAsync(key) ?? new ConfigurationItemCacheItem();
@@ -104,17 +107,18 @@ namespace Shesha.ConfigurationItems.Cache
             });
         }
 
-        private string GetSubKey(string? applicationKey, string? module) 
-        { 
-            return string.IsNullOrWhiteSpace(applicationKey) && string.IsNullOrWhiteSpace(module) 
-                ? "" 
+        private string GetSubKey(string? applicationKey, string? module)
+        {
+            return string.IsNullOrWhiteSpace(applicationKey) && string.IsNullOrWhiteSpace(module)
+                ? ""
                 : $"{applicationKey}/{module}";
         }
 
         /// inhertiedDoc
         public Task SetCachedMd5Async(string itemType, Guid id, string md5)
         {
-            return UsingCacheAsync(itemType, async (cache) => {
+            return UsingCacheAsync(itemType, async (cache) =>
+            {
                 var key = GetCacheKey(id);
                 var cacheItem = await cache.GetOrDefaultAsync(key) ?? new ConfigurationItemCacheItem();
 
@@ -126,10 +130,10 @@ namespace Shesha.ConfigurationItems.Cache
 
         private string GetCacheKey(ConfigurationItem configItem)
         {
-            return GetCacheKey(configItem.Name); 
+            return GetCacheKey(configItem.Name);
         }
 
-        private string GetCacheKey(string itemName) 
+        private string GetCacheKey(string itemName)
         {
             return itemName.ToLower();
         }
@@ -142,7 +146,7 @@ namespace Shesha.ConfigurationItems.Cache
         public async Task ClearAsync()
         {
             var caches = _cacheManager.GetAllCaches();
-            foreach (var cache in caches) 
+            foreach (var cache in caches)
             {
                 if (cache.Name.StartsWith(CachePrefix))
                     await cache.ClearAsync();
@@ -167,10 +171,11 @@ namespace Shesha.ConfigurationItems.Cache
             await ClearCacheForItemAsync(configItem);
         }
 
-        public async Task ClearCacheForItemAsync(ConfigurationItem configItem) 
+        public async Task ClearCacheForItemAsync(ConfigurationItem configItem)
         {
-            await UsingCacheAsync(configItem.ItemType, async (cache) => {
-                
+            await UsingCacheAsync(configItem.ItemType, async (cache) =>
+            {
+
                 await cache.RemoveAsync(GetCacheKey(configItem.Id));
                 await cache.RemoveAsync(GetCacheKey(configItem));
             });

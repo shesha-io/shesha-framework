@@ -22,27 +22,29 @@ namespace Shesha.Elmah
 
         public LoggingContextState CurrentState => _scopeProvider.GetValue(ScopeKey);
 
-        public IDisposable MakeEntityWatchDog<TId>(IEntity<TId> entity) where TId: notnull
+        public IDisposable MakeEntityWatchDog<TId>(IEntity<TId> entity) where TId : notnull
         {
             var errorRef = WatchDogExtensions.GetEntityErrorRef(entity);
             return MakeWatchDog(errorRef.Type, errorRef.Id);
         }
 
-        private IDisposable NewEmptyAction() 
+        private IDisposable NewEmptyAction()
         {
-            return new DisposeAction(() => {
+            return new DisposeAction(() =>
+            {
                 // empty action
             });
         }
 
-        public IDisposable MakeWatchDog(ErrorReference errorRef) 
+        public IDisposable MakeWatchDog(ErrorReference errorRef)
         {
             // todo: register watchdog in the list and check uncompleted ones on finish if the context
             var state = CurrentState;
             if (state == null)
                 return NewEmptyAction();
 
-            var watchDog = new ExceptionWatchDog((exception) => {
+            var watchDog = new ExceptionWatchDog((exception) =>
+            {
 
                 // note 1: this handled fires for any exception rethrow
                 // note 2: handle AggregateException to cover AsyncHelper logic
@@ -67,7 +69,7 @@ namespace Shesha.Elmah
             };
 
             return watchDog;
-        }        
+        }
 
         public IDisposable MakeWatchDog(string type, string id)
         {
@@ -81,7 +83,7 @@ namespace Shesha.Elmah
             initAction?.Invoke(state);
 
             var scope = _scopeProvider.BeginScope(ScopeKey, state);
-            return new DisposeAction(() => 
+            return new DisposeAction(() =>
             {
                 var uncompletedWatchDogs = state.ActiveWatchDogs.ToList();
                 var hasUncompleted = uncompletedWatchDogs.Any();
@@ -101,12 +103,13 @@ namespace Shesha.Elmah
                 return NewEmptyAction();
 
             var prevLocation = state.CurrentLocation;
-            
+
             var watchDog = state.TopWatchDog;
             if (watchDog != null)
                 watchDog.Location = location;
 
-            return new DisposeAction(() => {
+            return new DisposeAction(() =>
+            {
                 if (watchDog != null)
                     watchDog.Location = prevLocation;
             });

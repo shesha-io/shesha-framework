@@ -9,11 +9,11 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-			Alter.Table("Core_Accounts")
-				.AddColumn("ContactEmail").AsString(50).Nullable()
-				.AddColumn("ContactTelephone").AsString(50).Nullable()
-				.AddColumn("FreeTextBillingAddress").AsString(400).Nullable()
-				.AddForeignKeyColumn("BillingAddressId", "Core_Addresses").Nullable();
-		}
+            Alter.Table("Core_Accounts")
+                .AddColumn("ContactEmail").AsString(50).Nullable()
+                .AddColumn("ContactTelephone").AsString(50).Nullable()
+                .AddColumn("FreeTextBillingAddress").AsString(400).Nullable()
+                .AddForeignKeyColumn("BillingAddressId", "Core_Addresses").Nullable();
+        }
     }
 }

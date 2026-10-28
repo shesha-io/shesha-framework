@@ -27,7 +27,7 @@ namespace Shesha.Extensions
     /// </summary>
     public static class EntityExtensions
     {
-        public static bool IsAuditedProperty(this PropertyInfo property) 
+        public static bool IsAuditedProperty(this PropertyInfo property)
         {
             return property.HasAttribute<AuditedAttribute>()
                 || property.HasAttribute<AuditedAsEventAttribute>()
@@ -119,7 +119,8 @@ namespace Shesha.Extensions
                     if (prop != null)
                         return prop;
                 }
-            };
+            }
+            ;
             return prop;
         }
 
@@ -131,7 +132,7 @@ namespace Shesha.Extensions
                 : att.TypeShortAlias;
         }
 
-        public static string GetTypeShortAlias(this Type entityType) 
+        public static string GetTypeShortAlias(this Type entityType)
         {
             return entityType.GetTypeShortAliasOrNull() ?? throw new Exception($"Entity type '{entityType.FullName}' has no {nameof(EntityAttribute.TypeShortAlias)}");
         }
@@ -202,8 +203,8 @@ namespace Shesha.Extensions
                 var value = propValue.Value;
 
                 var propConfig = entity.GetType().GetEntityConfiguration()[propertyName];
-                var generalDataType = propConfig.GeneralType;               
-                
+                var generalDataType = propConfig.GeneralType;
+
 
                 switch (generalDataType)
                 {
@@ -482,7 +483,7 @@ namespace Shesha.Extensions
         /// <summary>
         /// Returns true if the specified <paramref name="entity"/> is dirty (has any of changed properties)
         /// </summary>
-        public static bool IsDirty<T>(this IEntity<T> entity) 
+        public static bool IsDirty<T>(this IEntity<T> entity)
         {
             var informer = StaticContext.IocManager.Resolve<IEntityPersistanceInformer>();
             return informer.IsDirty(entity);

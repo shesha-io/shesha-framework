@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Shesha.Domain.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
-using Shesha.Domain.Enums;
 
 namespace Shesha.Otp.Dto
 {
-    public class SendPinInput: ISendPinInput
+    public class SendPinInput : ISendPinInput
     {
         /// <summary>
         /// Mobile number/email address (depending on the `send type`) to which the OTP should be sent

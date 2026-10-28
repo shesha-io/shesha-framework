@@ -17,9 +17,9 @@ namespace Shesha.Modules
         {
             var seeder = IocManager.Resolve<IEmbeddedPackageSeeder>();
 
-            var context = new EmbeddedPackageSeedingContext(this.GetType().Assembly) 
-            { 
-                Logger = this.Logger,                
+            var context = new EmbeddedPackageSeedingContext(this.GetType().Assembly)
+            {
+                Logger = this.Logger,
             };
             return seeder != null
                 ? await seeder.SeedEmbeddedPackagesAsync(context)

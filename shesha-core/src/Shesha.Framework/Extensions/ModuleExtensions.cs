@@ -16,7 +16,7 @@ namespace Shesha.Extensions
         /// Get startup module name or default (<see cref="SheshaFrameworkModule"/>)
         /// </summary>
         /// <param name="moduleManager">Module manager</param>
-        public static string GetStartupModuleNameOrDefault(this IAbpModuleManager moduleManager) 
+        public static string GetStartupModuleNameOrDefault(this IAbpModuleManager moduleManager)
         {
             return moduleManager.GetStartupModuleNameOrNull() ?? SheshaFrameworkModule.ModuleName;
         }

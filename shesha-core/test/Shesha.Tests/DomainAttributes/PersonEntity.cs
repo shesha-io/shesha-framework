@@ -4,7 +4,7 @@ using System;
 
 namespace Shesha.Tests.DomainAttributes
 {
-    public class PersonEntity: Entity<Guid>
+    public class PersonEntity : Entity<Guid>
     {
         public virtual string Name { get; set; }
 

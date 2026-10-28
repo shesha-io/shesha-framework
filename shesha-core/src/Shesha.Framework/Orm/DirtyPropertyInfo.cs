@@ -9,7 +9,7 @@
         /// Property name
         /// </summary>
         public required string Name { get; init; }
-        
+
         /// <summary>
         /// Old value
         /// </summary>

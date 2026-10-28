@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.DeviceForceUpdate
 {
-    public class DeviceForceUpdateAppService  : SheshaCrudServiceBase<Shesha.Domain.DeviceForceUpdate, DeviceForceUpdateDto, Guid> , IDeviceForceUpdateAppService
+    public class DeviceForceUpdateAppService : SheshaCrudServiceBase<Shesha.Domain.DeviceForceUpdate, DeviceForceUpdateDto, Guid>, IDeviceForceUpdateAppService
     {
         //private readonly 
         public DeviceForceUpdateAppService(IRepository<Shesha.Domain.DeviceForceUpdate, Guid> repository) : base(repository)
@@ -18,7 +18,7 @@ namespace Shesha.DeviceForceUpdate
         {
             var activeForceUpdates = await Repository.GetAllListAsync(r => r.OSType == input.OSType);
             foreach (var item in activeForceUpdates)
-               await Repository.DeleteAsync(item);
+                await Repository.DeleteAsync(item);
 
             var itemToSave = ObjectMapper.Map<Shesha.Domain.DeviceForceUpdate>(input);
             await Repository.InsertAsync(itemToSave);

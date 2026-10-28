@@ -20,7 +20,7 @@ namespace Shesha.Configuration.Runtime
     /// </summary>
     public class EntityConfigurationLoaderByReflection
     {
-        public void LoadConfiguration([NotNull]EntityTypeConfiguration config)
+        public void LoadConfiguration([NotNull] EntityTypeConfiguration config)
         {
             LoadEntityConfiguration(config);
 
@@ -72,7 +72,8 @@ namespace Shesha.Configuration.Runtime
 
         private static PropertyConfiguration LoadPropertyConfiguration(PropertyInfo prop, Type entityType)
         {
-            var propConfig = new PropertyConfiguration(entityType) {
+            var propConfig = new PropertyConfiguration(entityType)
+            {
                 PropertyInfo = prop,
                 GeneralType = GetGeneralDataType(prop),
                 Category = prop.GetAttributeOrNull<CategoryAttribute>()?.Category,
@@ -112,7 +113,7 @@ namespace Shesha.Configuration.Runtime
                     var enumType = prop.PropertyType.GetUnderlyingTypeIfNullable();
                     propConfig.EnumType = enumType;
                     break;
-                case GeneralDataType.MultiValueReferenceList: 
+                case GeneralDataType.MultiValueReferenceList:
                     {
                         var mvRefListAtt = prop.GetAttribute<MultiValueReferenceListAttribute>(true);
                         var refListId = mvRefListAtt.GetReferenceListIdentifier(prop);
@@ -128,7 +129,7 @@ namespace Shesha.Configuration.Runtime
             }
 
             LoadChangeLoggingPropertyConfiguration(prop, propConfig);
-            
+
             return propConfig;
         }
 
@@ -238,12 +239,12 @@ namespace Shesha.Configuration.Runtime
             {
                 return GeneralDataType.Numeric;
             }
-            else if (underlyingPropType.IsSubtypeOfGeneric(typeof(IList<>)) 
-					|| underlyingPropType.IsSubtypeOfGeneric(typeof(ICollection<>)))
+            else if (underlyingPropType.IsSubtypeOfGeneric(typeof(IList<>))
+                    || underlyingPropType.IsSubtypeOfGeneric(typeof(ICollection<>)))
             {
                 return GeneralDataType.List;
-            } 
-			else if (underlyingPropType.IsAssignableTo(typeof(IGenericEntityReference)))
+            }
+            else if (underlyingPropType.IsAssignableTo(typeof(IGenericEntityReference)))
                 return GeneralDataType.GenericEntityReference;
             else if (underlyingPropType == typeof(string))
                 return GeneralDataType.Text;

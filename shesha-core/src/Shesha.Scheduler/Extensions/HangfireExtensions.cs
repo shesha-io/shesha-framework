@@ -14,7 +14,7 @@ namespace Shesha.Scheduler.Extensions
         /// </summary>
         /// <param name="app">Application builder</param>
         /// <param name="path">Dashboard path</param>
-        public static void UseSheshaHangfireDashboard(this IApplicationBuilder app, string path = "/hangfire") 
+        public static void UseSheshaHangfireDashboard(this IApplicationBuilder app, string path = "/hangfire")
         {
             HangfireDashboardInfo.Path = path;
             app.UseHangfireDashboard(path,
@@ -22,7 +22,7 @@ namespace Shesha.Scheduler.Extensions
                 {
                     AsyncAuthorization = [new HangfireAsyncAuthorizationFilter()]
                 });
-            
+
         }
     }
 }

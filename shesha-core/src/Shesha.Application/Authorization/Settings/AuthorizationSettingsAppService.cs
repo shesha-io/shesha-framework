@@ -10,7 +10,7 @@ namespace Shesha.Authorization.Settings
 {
     [Obsolete("To be removed, is used for backward compatibility only")]
     [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, IsConfigurable = false)]
-    public class AuthorizationSettingsAppService: ApplicationService
+    public class AuthorizationSettingsAppService : ApplicationService
     {
         private readonly IPasswordComplexitySettings _passwordComplexitySettings;
         private readonly ISecuritySettings _securitySettings;
@@ -27,8 +27,8 @@ namespace Shesha.Authorization.Settings
             await _securitySettings.UserLockOutEnabled.SetValueAsync(dto.IsLockoutEnabled);
             await _securitySettings.DefaultAccountLockoutSeconds.SetValueAsync(dto.DefaultAccountLockoutSeconds);
             await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.SetValueAsync(dto.MaxFailedAccessAttemptsBeforeLockout);
-            await _securitySettings.SecuritySettings.SetValueAsync(new SecuritySettings 
-            { 
+            await _securitySettings.SecuritySettings.SetValueAsync(new SecuritySettings
+            {
                 AutoLogoffTimeout = dto.AutoLogoffTimeout,
 
                 // Password reset
@@ -54,7 +54,7 @@ namespace Shesha.Authorization.Settings
         {
             var settings = await _securitySettings.SecuritySettings.GetValueAsync();
             var dto = new AuthorizationSettingsDto();
-            
+
             //Lockout
             dto.IsLockoutEnabled = await _securitySettings.UserLockOutEnabled.GetValueOrNullAsync();
             dto.DefaultAccountLockoutSeconds = await _securitySettings.DefaultAccountLockoutSeconds.GetValueOrNullAsync();
@@ -69,7 +69,7 @@ namespace Shesha.Authorization.Settings
             dto.RequiredLength = await _passwordComplexitySettings.RequiredLength.GetValueOrNullAsync();
 
             // Password reset
-            dto.ResetPasswordWithEmailLinkIsSupported =  settings.UseResetPasswordViaEmailLink;
+            dto.ResetPasswordWithEmailLinkIsSupported = settings.UseResetPasswordViaEmailLink;
             dto.ResetPasswordWithEmailLinkExpiryDelay = settings.ResetPasswordEmailLinkLifetime;
             dto.ResetPasswordWithSmsOtpIsSupported = settings.UseResetPasswordViaSmsOtp;
             dto.ResetPasswordWithSmsOtpExpiryDelay = settings.ResetPasswordSmsOtpLifetime;

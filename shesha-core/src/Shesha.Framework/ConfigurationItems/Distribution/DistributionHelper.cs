@@ -12,7 +12,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// </summary>
         /// <param name="iocManager">IoC manager</param>
         /// <returns></returns>
-        public static Dictionary<string, IConfigurableItemImport> GetRegisteredImportersDictionary(IIocManager iocManager) 
+        public static Dictionary<string, IConfigurableItemImport> GetRegisteredImportersDictionary(IIocManager iocManager)
         {
             return iocManager.ResolveAll<IConfigurableItemImport>().ToImportersDictionary();
         }
@@ -23,7 +23,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <param name="importers"></param>
         /// <returns></returns>
         /// <exception cref="AmbiguousConfigurableItemException"></exception>
-        public static Dictionary<string, IConfigurableItemImport> ToImportersDictionary(this IEnumerable<IConfigurableItemImport> importers) 
+        public static Dictionary<string, IConfigurableItemImport> ToImportersDictionary(this IEnumerable<IConfigurableItemImport> importers)
         {
             var importerGroups = importers
                 .GroupBy(i => i.ItemType, (it, groupItems) => new { ItemType = it, Importers = groupItems })
@@ -31,7 +31,7 @@ namespace Shesha.ConfigurationItems.Distribution
             var duplicates = importerGroups.Where(ig => ig.Importers.Count() > 1).ToDictionary(g => g.ItemType, g => g.Importers.Select(i => i.GetType()).ToList());
             if (duplicates.Any())
                 throw new AmbiguousConfigurableItemException(duplicates);
-            
+
             return importerGroups.ToDictionary(g => g.ItemType, g => g.Importers.First());
         }
 

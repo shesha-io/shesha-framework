@@ -47,8 +47,8 @@ namespace Shesha.Permissions
                 throw new ArgumentNullException(nameof(id));
 
             var dto = ObjectMapper.Map<PermissionDto>(PermissionManager.GetPermission(id));
-            dto.Module = dto.ModuleId != null 
-                ? new EntityReferenceDto<Guid>(await _moduleRepository.GetAsync(dto.ModuleId.Value)) 
+            dto.Module = dto.ModuleId != null
+                ? new EntityReferenceDto<Guid>(await _moduleRepository.GetAsync(dto.ModuleId.Value))
                 : null;
             return dto;
         }
@@ -58,7 +58,7 @@ namespace Shesha.Permissions
             var permissions = await PermissionManager.GetAllPermissionsAsync();
 
             var dtos = ObjectMapper.Map<List<PermissionDto>>(permissions);
-            var finalDtos = (await dtos.SelectAsync(async x => 
+            var finalDtos = (await dtos.SelectAsync(async x =>
                 {
                     x.Child = null;
                     // TODO: Alex why should we fetch module for each permission?
@@ -123,7 +123,7 @@ namespace Shesha.Permissions
                 Name = permission.Name,
                 Module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null,
             };
-            
+
             dbp.Parent = permission.ParentName ?? permission.Parent?.Name;
             dbp.Label = permission.DisplayName;
             dbp.Description = permission.Description;
@@ -176,7 +176,7 @@ namespace Shesha.Permissions
         public async Task<List<AutocompleteItemDto>> AutocompleteAsync(string? term)
         {
             term = (term ?? "").ToLower();
-            
+
             var permissions = (await PermissionManager.GetAllPermissionsAsync())
                 .Where(p => (p.Name ?? "").ToLower().Contains(term)
                             || (p.Description?.Localize(_localizationContext) ?? "").ToLower().Contains(term)
@@ -199,7 +199,7 @@ namespace Shesha.Permissions
         /// </summary>
         [HttpGet]
         [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
-        public Task<bool> IsPermissionGrantedAsync(IsPermissionGrantedInput input) 
+        public Task<bool> IsPermissionGrantedAsync(IsPermissionGrantedInput input)
         {
             if (input.PermissionedEntityId.IsNullOrEmpty() || input.PermissionedEntityClass.IsNullOrEmpty())
                 return _permissionChecker.IsGrantedAsync(input.PermissionName);

@@ -40,7 +40,7 @@ namespace Shesha.Migrations
             foreach (var property in mtmProperties)
             {
                 var (parentType, parentIdType, childType, childIdType) = MappingHelper.GetManyToManyTableData(property);
-                var(tableName, parentTableName, childTableName, parentColumnName, childColumnName) = _nameGenerator.GetAutoManyToManyTableNames(property);
+                var (tableName, parentTableName, childTableName, parentColumnName, childColumnName) = _nameGenerator.GetAutoManyToManyTableNames(property);
                 if (!Schema.Schema(_nameGenerator.AutoGeneratorDbSchema).Table(tableName).Exists())
                 {
                     var table = Create.Table(tableName).InSchema(_nameGenerator.AutoGeneratorDbSchema)

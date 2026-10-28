@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum
 {
     [ReferenceList("Boxfusion.SheshaFunctionalTests.Domain.Enum", "TestItem")]
-    public enum RefListTestItem: long
+    public enum RefListTestItem : long
     {
         [Display(Name = "01 - Red"), Description("Red item")]
         Red = 1,

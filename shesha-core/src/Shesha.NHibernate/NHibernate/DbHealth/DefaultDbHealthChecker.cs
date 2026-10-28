@@ -30,7 +30,7 @@ namespace Shesha.NHibernate.DbHealth
                 throw new DbHealthFailedException(issues.ToList());
         }
 
-        private async Task<IList<string>> GetHealthIssuesAsync(DbmsType dbmsType) 
+        private async Task<IList<string>> GetHealthIssuesAsync(DbmsType dbmsType)
         {
             using (var session = _sessionFactory.OpenSession())
             {
@@ -49,15 +49,15 @@ namespace Shesha.NHibernate.DbHealth
 
         private static string GetSqlForDbms(DbmsType dbmsType)
         {
-            switch (dbmsType) 
-            { 
+            switch (dbmsType)
+            {
                 case DbmsType.SQLServer:
                     return "EXEC frwk.check_db_health";
                 case DbmsType.PostgreSQL:
                     return "SELECT * FROM frwk.check_db_health()";
                 default:
                     throw new NotSupportedException($"DBMS of type '{dbmsType}' is not supported.");
-            }            
+            }
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Shesha.Domain.Enums
 {
     [ReferenceList("Shesha.Framework", "PasswordResetMethods")]
     [Flags]
-    public enum RefListPasswordResetMethods: long
+    public enum RefListPasswordResetMethods : long
     {
         [Display(Name = "None")]
         None = 0,

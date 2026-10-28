@@ -28,7 +28,7 @@ namespace Shesha.Services.Settings
         private readonly IRepository<SettingValue, Guid> _settingValueRepository;
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly ISettingCacheHolder _cacheHolder;
-        
+
 
         /// <summary>
         /// Default constructor
@@ -79,7 +79,7 @@ namespace Shesha.Services.Settings
             definition.Category = input.Category;
             definition.IsUserSpecific = input.IsUserSpecific;
             definition.ClientAccess = input.ClientAccess;
-            
+
             definition.Normalize();
 
             await Repository.InsertAsync(definition);
@@ -98,7 +98,8 @@ namespace Shesha.Services.Settings
         /// inheritedDoc
         public Task<SettingValue?> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
         {
-            return WithUnitOfWorkAsync(async () => {
+            return WithUnitOfWorkAsync(async () =>
+            {
                 var settingConfiguration = await GetSettingConfigurationAsync(setting);
                 if (settingConfiguration == null)
                     return null;
@@ -121,7 +122,7 @@ namespace Shesha.Services.Settings
             });
         }
 
-        private Task<SettingConfiguration> GetSettingConfigurationAsync(SettingDefinition setting) 
+        private Task<SettingConfiguration> GetSettingConfigurationAsync(SettingDefinition setting)
         {
             return GetSettingConfigurationAsync(new SettingConfigurationIdentifier(setting.ModuleName, setting.Name));
         }
@@ -131,11 +132,11 @@ namespace Shesha.Services.Settings
             if (UnitOfWorkManager.Current != null)
                 return await action.Invoke();
 
-            using (var uow = UnitOfWorkManager.Begin()) 
+            using (var uow = UnitOfWorkManager.Begin())
             {
                 var result = await action.Invoke();
                 await uow.CompleteAsync();
-                
+
                 return result;
             }
         }
@@ -149,14 +150,15 @@ namespace Shesha.Services.Settings
             }.WhereNotNull();
 
             return parts.Delimited("|");
-        }       
+        }
 
         /// inheritedDoc
         public async Task<string?> GetValueAsync(SettingDefinition setting, SettingManagementContext context)
         {
             var cacheKey = GetCacheKey(new CacheKeyArgs(setting, context));
 
-            var result = await _cacheHolder.Cache.GetAsync(cacheKey, async(key) => {
+            var result = await _cacheHolder.Cache.GetAsync(cacheKey, async (key) =>
+            {
                 var value = await GetSettingValueAsync(setting, context);
                 return new CachedSettingValue(value?.Value);
             });
@@ -197,7 +199,7 @@ namespace Shesha.Services.Settings
             destination.AccessMode = source.AccessMode;
             destination.IsUserSpecific = source.IsUserSpecific;
             destination.ClientAccess = source.ClientAccess;
-            
+
             return Task.CompletedTask;
         }
 

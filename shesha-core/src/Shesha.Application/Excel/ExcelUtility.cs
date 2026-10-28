@@ -19,7 +19,7 @@ using System.Xml;
 namespace Shesha.Excel
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
-    public class ExcelUtility: IExcelUtility, ITransientDependency
+    public class ExcelUtility : IExcelUtility, ITransientDependency
     {
         #region Constants
         public const string DefaultSheetName = "Sheet1";
@@ -45,16 +45,17 @@ namespace Shesha.Excel
         }
 
 
-        private static WorkbookPart GetWorkbookPart(SpreadsheetDocument spreadSheet) 
+        private static WorkbookPart GetWorkbookPart(SpreadsheetDocument spreadSheet)
         {
-            if (spreadSheet.WorkbookPart == null) 
+            if (spreadSheet.WorkbookPart == null)
             {
                 return spreadSheet.AddWorkbookPart();
-            } else
+            }
+            else
                 return spreadSheet.WorkbookPart;
         }
 
-        private static Stylesheet GetStyleSheet(SpreadsheetDocument spreadSheet) 
+        private static Stylesheet GetStyleSheet(SpreadsheetDocument spreadSheet)
         {
             var workbookPart = GetWorkbookPart(spreadSheet);
 
@@ -135,7 +136,7 @@ namespace Shesha.Excel
             CellFormat cellFormat = (CellFormat)cellFormats.ElementAt(0);
 
             CellFormat cf = new CellFormat(cellFormat.OuterXml);
-            
+
             styleSheet.Fonts ??= new();
             styleSheet.Fills ??= new();
 
@@ -279,7 +280,8 @@ namespace Shesha.Excel
                 .Select(t => ReplaceSpecialCharacters(t.Label))
                 .ToList();
 
-            var colProcessing = columns.Select(c => {
+            var colProcessing = columns.Select(c =>
+            {
                 return new ExcelColumnProcessing
                 {
                     PropertyName = c.PropertyName,
@@ -326,7 +328,7 @@ namespace Shesha.Excel
 
 
             var underlyingType = ReflectionHelper.GetUnderlyingTypeIfNullable(property.PropertyType);
-            
+
             var dataTypeAttr = property.GetAttributeOrNull<DataTypeAttribute>();
             var formatAttr = property.GetAttributeOrNull<DisplayFormatAttribute>();
 
@@ -350,82 +352,86 @@ namespace Shesha.Excel
                 });
             }
             else
-            if (underlyingType == typeof(TimeSpan))
-            {
-                var format = !string.IsNullOrWhiteSpace(formatAttr?.DataFormatString)
-                    ? formatAttr.DataFormatString
-                    : @"hh\:mm";
-                return new Func<object?, string?>(val =>
+                if (underlyingType == typeof(TimeSpan))
                 {
-                    if (val == null)
-                        return null;
-
-                    var timeValue = val is Int64 seconds
-                        ? TimeSpan.FromSeconds(seconds)
-                        : (TimeSpan)val;
-
-                    return timeValue.ToString(format);
-                });
-            }
-            else
-            if (ReflectionHelper.IsReferenceListProperty(property))
-            {
-                var refListIdentifier = ReflectionHelper.GetReferenceListIdentifierOrNull(property).NotNull();
-                var list = _refListHelper.GetItems(refListIdentifier);
-                var isMultiValue = ReflectionHelper.IsMultiValueReferenceListProperty(property);
-
-                if (isMultiValue)
-                {
+                    var format = !string.IsNullOrWhiteSpace(formatAttr?.DataFormatString)
+                        ? formatAttr.DataFormatString
+                        : @"hh\:mm";
                     return new Func<object?, string?>(val =>
                     {
                         if (val == null)
                             return null;
 
-                        if (val is IList valList) 
-                        {
-                            return valList.Cast<object>().Select(item =>
-                            {
-                                return list.FirstOrDefault(i => i.ItemValue.ToString() == item.ToString())?.Item;
-                            }).Where(i => i != null).Delimited(", ");
-                        }
+                        var timeValue = val is Int64 seconds
+                            ? TimeSpan.FromSeconds(seconds)
+                            : (TimeSpan)val;
 
-                        if (Int64.TryParse(val.ToString(), out var int64Value)) 
-                        {
-                            var items = _refListHelper.DecomposeMultiValueIntoItems(refListIdentifier, int64Value);
-                            return items.Select(i => i.Item).Delimited(", ");
-                        }
-
-                        return null;                        
+                        return timeValue.ToString(format);
                     });
                 }
                 else
-                    return new Func<object?, string?>(val =>
+                    if (ReflectionHelper.IsReferenceListProperty(property))
                     {
-                        if (val == null)
-                            return null;
+                        var refListIdentifier = ReflectionHelper.GetReferenceListIdentifierOrNull(property).NotNull();
+                        var list = _refListHelper.GetItems(refListIdentifier);
+                        var isMultiValue = ReflectionHelper.IsMultiValueReferenceListProperty(property);
 
-                        return list.FirstOrDefault(i => i.ItemValue.ToString() == val.ToString())?.Item;
-                    });
-            }
-            else
-            if (property.PropertyType.IsEntityType()) {
-                return new Func<object?, string?>(val => {
-                    if (val == null)
-                        return null;
+                        if (isMultiValue)
+                        {
+                            return new Func<object?, string?>(val =>
+                            {
+                                if (val == null)
+                                    return null;
 
-                    if (!(val is Dictionary<string, object> dict))
-                        throw new NotSupportedException("Nested entities must be presented as `Dictionaty<string, object>`");
-                    return dict[EntityConstants.DisplayNameField]?.ToString();
-                });
-            } else
-                return new Func<object?, string?>(val => val?.ToString());
+                                if (val is IList valList)
+                                {
+                                    return valList.Cast<object>().Select(item =>
+                                    {
+                                        return list.FirstOrDefault(i => i.ItemValue.ToString() == item.ToString())?.Item;
+                                    }).Where(i => i != null).Delimited(", ");
+                                }
+
+                                if (Int64.TryParse(val.ToString(), out var int64Value))
+                                {
+                                    var items = _refListHelper.DecomposeMultiValueIntoItems(refListIdentifier, int64Value);
+                                    return items.Select(i => i.Item).Delimited(", ");
+                                }
+
+                                return null;
+                            });
+                        }
+                        else
+                            return new Func<object?, string?>(val =>
+                            {
+                                if (val == null)
+                                    return null;
+
+                                return list.FirstOrDefault(i => i.ItemValue.ToString() == val.ToString())?.Item;
+                            });
+                    }
+                    else
+                        if (property.PropertyType.IsEntityType())
+                        {
+                            return new Func<object?, string?>(val =>
+                            {
+                                if (val == null)
+                                    return null;
+
+                                if (!(val is Dictionary<string, object> dict))
+                                    throw new NotSupportedException("Nested entities must be presented as `Dictionaty<string, object>`");
+                                return dict[EntityConstants.DisplayNameField]?.ToString();
+                            });
+                        }
+                        else
+                            return new Func<object?, string?>(val => val?.ToString());
         }
 
         private static GetValueDelegate CalculateColumnValueGetter(ExcelColumn column)
         {
             var parts = column.PropertyName.Split(".").Select(p => p.ToCamelCase()).Reverse().ToList();
 
-            var getterFactory = new Func<string, GetValueDelegate?, GetValueDelegate>((name, getter) => {
+            var getterFactory = new Func<string, GetValueDelegate?, GetValueDelegate>((name, getter) =>
+            {
                 if (getter == null)
                 {
                     return new GetValueDelegate(row => row == null
@@ -435,8 +441,10 @@ namespace Shesha.Excel
                             : null
                     );
                 }
-                else {
-                    return new GetValueDelegate(row => {
+                else
+                {
+                    return new GetValueDelegate(row =>
+                    {
                         var container = row == null
                             ? null
                             : row.TryGetValue(name, out var partValue)
@@ -450,7 +458,7 @@ namespace Shesha.Excel
             });
 
             GetValueDelegate? result = null;
-            foreach (var part in parts) 
+            foreach (var part in parts)
             {
                 result = getterFactory(part, result);
             }

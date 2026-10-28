@@ -20,16 +20,16 @@ namespace Shesha.DynamicEntities
         /// inheritedDoc
         public string SerializeProperty(EntityPropertyDto propertyDto, object? value)
         {
-            switch (propertyDto.DataType) 
+            switch (propertyDto.DataType)
             {
                 case DataTypes.Date:
-                {
-                    var settings = new JsonSerializerSettings()
                     {
-                        Converters = new List<JsonConverter>() { new IsoDateTimeConverter() { DateTimeFormat = "yyyy'-'MM'-'dd" } },
-                    };
-                    return JsonConvert.SerializeObject(value, settings);
-                }
+                        var settings = new JsonSerializerSettings()
+                        {
+                            Converters = new List<JsonConverter>() { new IsoDateTimeConverter() { DateTimeFormat = "yyyy'-'MM'-'dd" } },
+                        };
+                        return JsonConvert.SerializeObject(value, settings);
+                    }
                 default:
                     return JsonConvert.SerializeObject(value);
             }

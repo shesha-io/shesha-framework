@@ -22,7 +22,7 @@ namespace Shesha.UserManagements
     /// User Management Application Service
     /// </summary>
     [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.User_Manage, IsConfigurable = false)]
-    public class UserManagementAppService: SheshaAppServiceBase
+    public class UserManagementAppService : SheshaAppServiceBase
     {
         private readonly UserManager _userManager;
         private readonly IRepository<Person, Guid> _repository;
@@ -31,8 +31,8 @@ namespace Shesha.UserManagements
         private readonly IUserManagementSettings _userManagementSettings;
 
         public UserManagementAppService(
-            IRepository<Person, Guid> repository, 
-            UserManager userManager, 
+            IRepository<Person, Guid> repository,
+            UserManager userManager,
             ISecuritySettings securitySettings,
             IUserManagementSettings userManagementSettings,
             IRepository<ShaUserRegistration, Guid> userRegistration)
@@ -113,7 +113,7 @@ namespace Shesha.UserManagements
 
             // Creating Person entity
             var person = ObjectMapper.Map<Person>(input);
-           
+
             // manual map for now
             person.EmailAddress1 = input.EmailAddress;
             person.MobileNumber1 = input.MobileNumber;
@@ -131,11 +131,11 @@ namespace Shesha.UserManagements
                 UserNameOrEmailAddress = user.UserName,
                 GoToUrlAfterRegistration = registrationSettings.GoToUrlAfterRegistration,
                 AdditionalRegistrationInfoForm = !string.IsNullOrWhiteSpace(registrationSettings.AdditionalRegistrationInfoFormModule) && !string.IsNullOrWhiteSpace(registrationSettings.AdditionalRegistrationInfoFormName)
-                    ? new FormIdentifier(registrationSettings.AdditionalRegistrationInfoFormModule,registrationSettings.AdditionalRegistrationInfoFormName) 
+                    ? new FormIdentifier(registrationSettings.AdditionalRegistrationInfoFormModule, registrationSettings.AdditionalRegistrationInfoFormName)
                     : null,
                 IsComplete = registrationSettings.AdditionalRegistrationInfo ? false : true
             };
-          
+
             await _userRegistration.InsertAsync(userRegistration);
 
             await CurrentUnitOfWork.SaveChangesAsync();

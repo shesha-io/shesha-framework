@@ -7,12 +7,13 @@ namespace Shesha.NHibernate.PostGis
 {
     public static class SheshaPostGisExtensions
     {
-        public static IShaNHibernateModuleConfiguration UsePostGis(this IShaNHibernateModuleConfiguration nhConfig) 
+        public static IShaNHibernateModuleConfiguration UsePostGis(this IShaNHibernateModuleConfiguration nhConfig)
         {
             // todo: check current DBMS type
             nhConfig.UseDialect<PostGis20Dialect>();
 
-            nhConfig.UseCustomSessionFactoryBuilder(cfg => {
+            nhConfig.UseCustomSessionFactoryBuilder(cfg =>
+            {
 
                 var sessionFactory = cfg.BuildSessionFactory();
                 var spatialDialect = (ISpatialDialect)((ISessionFactoryImplementor)sessionFactory).Dialect;
@@ -25,11 +26,11 @@ namespace Shesha.NHibernate.PostGis
                     }
 
                     // rebuild session factory if mapping were changed
-                    if (supportedMetadataClasses.Any()) 
+                    if (supportedMetadataClasses.Any())
                     {
                         sessionFactory.Dispose();
                         sessionFactory = cfg.BuildSessionFactory();
-                    }                        
+                    }
                 }
 
                 return sessionFactory;

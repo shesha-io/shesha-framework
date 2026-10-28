@@ -17,7 +17,7 @@ namespace Shesha.FluentMigrator.Modules
 
             var currentSchema = GetSchemaName();
 
-            foreach (var key in keys) 
+            foreach (var key in keys)
             {
                 DropFk(key.ForeignSchema, key.ForeignTable, key.ForeignKeyName);
 
@@ -25,7 +25,7 @@ namespace Shesha.FluentMigrator.Modules
             }
         }
 
-        private string GetSchemaName() 
+        private string GetSchemaName()
         {
             var sql = DbmsType switch
             {
@@ -44,8 +44,8 @@ namespace Shesha.FluentMigrator.Modules
                 DbmsType.PostgreSQL => $@"ALTER TABLE ""{schema}"".""{table}"" DROP CONSTRAINT ""{fkName}"";",
                 _ => throw new NotSupportedException($"{DbmsType} is not supported")
             };
-            
-            ExecuteNonQuery(sql);            
+
+            ExecuteNonQuery(sql);
         }
 
         private void CreateFk(ConstraintInfo key, string primarySchema, string primaryTable, string primaryColumn)
@@ -152,12 +152,13 @@ ORDER BY foreign_schema, foreign_table, foreign_key_name",
 
             var keys = new List<ConstraintInfo>();
 
-            ExecuteCommand(sql, cmd => {
+            ExecuteCommand(sql, cmd =>
+            {
                 cmd.AddParameter("primary_schema", oldSchema);
                 cmd.AddParameter("primary_table", oldTable);
                 cmd.AddParameter("primary_column", oldColumn);
 
-                using (var reader = cmd.ExecuteReader()) 
+                using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {

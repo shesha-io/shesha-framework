@@ -23,8 +23,8 @@ namespace Shesha.GraphQL.Provider
             [typeof(bool)] = typeof(BooleanGraphType),
             [typeof(DateTime)] = typeof(DateTimeGraphType),
 #if NET6_0_OR_GREATER
-        [typeof(DateOnly)] = typeof(DateOnlyGraphType),
-        [typeof(TimeOnly)] = typeof(TimeOnlyGraphType),
+            [typeof(DateOnly)] = typeof(DateOnlyGraphType),
+            [typeof(TimeOnly)] = typeof(TimeOnlyGraphType),
 #endif
             [typeof(DateTimeOffset)] = typeof(DateTimeOffsetGraphType),
             [typeof(TimeSpan)] = typeof(TimeSpanSecondsGraphType),
@@ -38,7 +38,7 @@ namespace Shesha.GraphQL.Provider
             [typeof(Uri)] = typeof(UriGraphType),
             // 
             [typeof(RawJson)] = typeof(RawJsonType),
-            
+
             // ToDo: AS - need to decide how to return GenericEntityReference - as object or as scalar
             //[typeof(GenericEntityReference)] = typeof(GenericEntityReferenceType),
         };

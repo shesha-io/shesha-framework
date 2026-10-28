@@ -65,9 +65,10 @@ namespace Shesha.DynamicEntities
                         var arrayValue = val != null
                             ? EntityExtensions.DecomposeIntoBitFlagComponents((Int64)System.Convert.ChangeType(val, typeof(Int64)))
                             : new Int64[0];
-                            
+
                         jprop.Value = ValueToJson(arrayValue.GetType(), arrayValue, jprop.Value, addMissedProperties);
-                    } else
+                    }
+                    else
                         jprop.Value = ValueToJson(prop.PropertyType, val, jprop.Value, addMissedProperties);
                 }
                 catch (Exception e)
@@ -90,7 +91,7 @@ namespace Shesha.DynamicEntities
 
         public static JToken ValueToJson(Type propType, object? val, JToken? jval, bool addMissedProperties = true)
         {
-            if (val == null || !val.GetType().IsAssignableTo(propType)) 
+            if (val == null || !val.GetType().IsAssignableTo(propType))
                 return JValue.CreateNull();
 
             if (ObjectExtensions.IsListType(propType)
@@ -148,7 +149,7 @@ namespace Shesha.DynamicEntities
             return jval ?? JValue.CreateNull();
         }
 
-        private static JToken ConvertGeometry(Geometry geometry) 
+        private static JToken ConvertGeometry(Geometry geometry)
         {
             var serializer = GeoJsonSerializer.Create();
             using (var stringWriter = new StringWriter())

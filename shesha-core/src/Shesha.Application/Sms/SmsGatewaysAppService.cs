@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Sms
 {
-    public class SmsGatewaysAppService: ApplicationService
+    public class SmsGatewaysAppService : ApplicationService
     {
         private readonly ISmsGatewayFactory _smsGatewayFactory;
 
@@ -23,7 +23,8 @@ namespace Shesha.Sms
         public List<SmsGatewayDto> GetAll()
         {
             return _smsGatewayFactory.GetSmsGatewayTypes()
-                .Select(t => new SmsGatewayDto { 
+                .Select(t => new SmsGatewayDto
+                {
                     Uid = t.Uid,
                     Alias = t.Alias,
                     Name = t.Name,

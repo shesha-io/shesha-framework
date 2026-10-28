@@ -9,7 +9,7 @@ namespace Shesha.Web.FormsDesigner.Services
     /// <summary>
     /// Form manager
     /// </summary>
-    public interface IFormManager: IConfigurationItemManager
+    public interface IFormManager : IConfigurationItemManager
     {
         /// <summary>
         /// Get All forms

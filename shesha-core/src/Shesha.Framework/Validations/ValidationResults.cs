@@ -6,7 +6,7 @@ namespace Shesha.Validations
     /// <summary>
     /// List of <see cref="ValidationResult"/>. Is used for simplification of coding
     /// </summary>
-    public class ValidationResults: List<ValidationResult>
+    public class ValidationResults : List<ValidationResult>
     {
         public void Add(string errorMessage)
         {

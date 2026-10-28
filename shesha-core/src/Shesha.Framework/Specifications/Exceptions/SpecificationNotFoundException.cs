@@ -17,7 +17,7 @@ namespace Shesha.Specifications.Exceptions
         /// </summary>
         public string SpecificationName { get; private set; }
 
-        public SpecificationNotFoundException(Type entityType, string specificationName): base($"Specification with name `{specificationName}` not found for entity type `{entityType.FullName}`")
+        public SpecificationNotFoundException(Type entityType, string specificationName) : base($"Specification with name `{specificationName}` not found for entity type `{entityType.FullName}`")
         {
             EntityType = entityType;
             SpecificationName = specificationName;

@@ -17,11 +17,11 @@ namespace Shesha.Elmah
         public ExceptionWatchDog? TopWatchDog => ActiveWatchDogs.LastOrDefault();
 
         public string? CurrentLocation => TopWatchDog?.Location;
-        
+
     }
 
-    public class ExceptionDetails 
-    { 
+    public class ExceptionDetails
+    {
         public Exception Exception { get; set; }
         public ErrorReference ErrorReference { get; set; }
         public string? Location { get; set; }

@@ -44,7 +44,7 @@ namespace Shesha.Scheduler.SignalR
                         await _hub.Clients.Group(GroupName).SendAsync("LogEvent", item);
                     else
                         await _hub.Clients.All.SendAsync("LogEvent", item);
-                });                
+                });
             }
         }
     }

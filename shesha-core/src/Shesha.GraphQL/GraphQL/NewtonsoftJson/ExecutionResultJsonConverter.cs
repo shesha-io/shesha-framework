@@ -68,7 +68,7 @@ namespace Shesha.GraphQL.NewtonsoftJson
                         writer.WriteStartObject();
                     foreach (var childNode in objectExecutionNode.SubFields)
                     {
-                        if (!isRoot) 
+                        if (!isRoot)
                         {
                             var propName = childNode.Name!;
                             if (_namingStrategy != null)

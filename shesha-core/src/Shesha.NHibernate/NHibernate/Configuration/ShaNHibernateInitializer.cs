@@ -60,8 +60,8 @@ namespace Shesha.NHibernate.Configuration
             .SetProperty("hbm2ddl.keywords", "auto-quote")
                 .CurrentSessionContext<UnitOfWorkSessionContext>();
 
-            var customDriverType = _configuration.CustomDriver != null 
-                ? _configuration.CustomDriver.GetType() 
+            var customDriverType = _configuration.CustomDriver != null
+                ? _configuration.CustomDriver.GetType()
                 : _configuration.DatabaseType == DbmsType.SQLServer
                     ? typeof(MicrosoftDataSqlClientDriver)
                     : null;

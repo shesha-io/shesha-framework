@@ -11,7 +11,7 @@ namespace Shesha.QuickSearch
         /// Property name
         /// </summary>
         public string Name { get; set; }
-        
+
         /// <summary>
         /// General datatype
         /// </summary>

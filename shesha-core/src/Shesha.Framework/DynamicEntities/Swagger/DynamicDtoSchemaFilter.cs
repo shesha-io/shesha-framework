@@ -20,10 +20,10 @@ namespace Shesha.DynamicEntities.Swagger
     {
 
         private readonly IEntityConfigCache _entityConfigCache;
-            
+
         public DynamicDtoSchemaFilter(
             IEntityConfigCache entityConfigCache
-        ) 
+        )
         {
             _entityConfigCache = entityConfigCache;
         }
@@ -37,14 +37,14 @@ namespace Shesha.DynamicEntities.Swagger
             if (schema is not OpenApiSchema openApiSchema)
                 return;
 
-                var isProxy = typeof(IDynamicDtoProxy).IsAssignableFrom(context.Type);
+            var isProxy = typeof(IDynamicDtoProxy).IsAssignableFrom(context.Type);
             var isGeneric = context.Type.IsGenericType;
 
             if (!context.Type.IsDynamicDto() || isProxy)
                 return;
 
-            var modelType = isGeneric 
-                ? context.Type 
+            var modelType = isGeneric
+                ? context.Type
                 : context.Type.FindBaseGenericType(typeof(DynamicDto<,>)).NotNull();
 
             var isCreateDto = modelType.GetGenericTypeDefinition().IsAssignableTo(typeof(CreateDynamicDto<,>));
@@ -54,7 +54,7 @@ namespace Shesha.DynamicEntities.Swagger
             var srcProperties = srcType?.GetProperties().ToList();
             var entityReferenceProperties = srcProperties?.Where(x => x.PropertyType.IsEntityType()).Select(x => x.Name).ToList();
 
-            var propertiesConfigs = srcType != null 
+            var propertiesConfigs = srcType != null
                 ? AsyncHelper.RunSync(async () => await _entityConfigCache.GetEntityPropertiesAsync(srcType))
                 : null;
 
@@ -77,7 +77,7 @@ namespace Shesha.DynamicEntities.Swagger
             {
                 var propertyName = property.Name;
                 var srcProperty = srcProperties?.FirstOrDefault(x => x.Name == propertyName);
-                
+
                 if (
                     // skip already added
                     propNames.Contains(propertyName.ToLower())
@@ -101,21 +101,22 @@ namespace Shesha.DynamicEntities.Swagger
 
                 if (entityReferenceProperties?.Contains(property.Name) ?? false)
                 {
-                    propertySchema = new OpenApiSchema() { 
+                    propertySchema = new OpenApiSchema()
+                    {
                         AnyOf = new List<IOpenApiSchema>()
                         {
                             propertySchema,
                             context.SchemaGenerator.GenerateSchema(typeof(GenericEntityReference), context.SchemaRepository, memberInfo: property)
                         }
-                    };                    
+                    };
                 }
 
                 // note: Nullable is not processed by GenerateSchema
                 propertySchema.SetNullable(property.PropertyType.IsNullableType());
-              
-                if(!schemaProperties.Keys.Contains(property.Name.ToCamelCase()))
+
+                if (!schemaProperties.Keys.Contains(property.Name.ToCamelCase()))
                     schemaProperties.Add(property.Name.ToCamelCase(), propertySchema);
-    
+
             }
 
             if (schemaProperties.ContainsKey(nameof(IHasJObjectField._jObject).ToCamelCase()))

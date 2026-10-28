@@ -27,22 +27,23 @@ namespace Shesha.ConfigurationItems
 
             var topLevelModule = context.Request.Headers.ContainsKey(TopLevelModuleHeader)
                 ? context.Request.Headers[TopLevelModuleHeader].ToString()
-                : null;            
+                : null;
 
             if (!string.IsNullOrEmpty(frontEndApp) || !string.IsNullOrWhiteSpace(topLevelModule))
             {
-                using (_cfRuntime.BeginScope(a => 
+                using (_cfRuntime.BeginScope(a =>
                 {
 
                     a.FrontEndApplication = string.IsNullOrWhiteSpace(frontEndApp)
-                        ? FrontEndAppKeyConsts.SheshaDefaultFrontend 
+                        ? FrontEndAppKeyConsts.SheshaDefaultFrontend
                         : frontEndApp;
                     a.CurrentModule = topLevelModule;
                 }))
                 {
                     await next(context);
                 }
-            } else
+            }
+            else
                 await next(context);
         }
     }

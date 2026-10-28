@@ -36,7 +36,7 @@ namespace Shesha.Extensions
         /// <param name="manager"></param>
         /// <returns></returns>
         /// <exception cref="UnitOfWorkUnavailableException"></exception>
-        public static IActiveUnitOfWork GetCurrent(this IUnitOfWorkManager manager) 
+        public static IActiveUnitOfWork GetCurrent(this IUnitOfWorkManager manager)
         {
             return manager.Current ?? throw new UnitOfWorkUnavailableException();
         }
@@ -46,7 +46,7 @@ namespace Shesha.Extensions
         /// </summary>
         /// <param name="manager"></param>
         /// <returns></returns>
-        public static IActiveUnitOfWork? GetCurrentOrNull(this IUnitOfWorkManager manager) 
+        public static IActiveUnitOfWork? GetCurrentOrNull(this IUnitOfWorkManager manager)
         {
             return manager.Current;
         }
@@ -58,7 +58,7 @@ namespace Shesha.Extensions
         /// <param name="uow">Unit of work</param>
         /// <param name="key">Item key</param>
         /// <returns></returns>
-        public static T? GetItemOrDefault<T>(this IActiveUnitOfWork uow, string key) 
+        public static T? GetItemOrDefault<T>(this IActiveUnitOfWork uow, string key)
         {
             return uow.Items.TryGetValue(key, out var item) && item is T typedItem
                 ? typedItem
@@ -91,16 +91,16 @@ namespace Shesha.Extensions
         /// <param name="uow">Unit of work</param>
         /// <param name="key">Item key</param>
         /// <param name="value">Item value</param>
-        public static void SetItem<T>(this IActiveUnitOfWork uow, string key, T value) 
-        { 
+        public static void SetItem<T>(this IActiveUnitOfWork uow, string key, T value)
+        {
             uow.Items[key] = value;
         }
 
         /// <summary>
         /// Add an action that should be executed after successful completion of the current transaction
         /// </summary>
-        public static void DoAfterTransaction(this IActiveUnitOfWork unitOfWork, Action action) 
-        { 
+        public static void DoAfterTransaction(this IActiveUnitOfWork unitOfWork, Action action)
+        {
             if (unitOfWork is not IUnitOfWorkHasAfterTransactionHandler uow)
                 throw new NotSupportedException($"Unit of work {unitOfWork.GetType().FullName} does not support {nameof(DoAfterTransaction)} method.");
 

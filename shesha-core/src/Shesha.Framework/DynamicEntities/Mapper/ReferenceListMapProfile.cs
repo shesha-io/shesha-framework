@@ -16,7 +16,7 @@ namespace Shesha.DynamicEntities.Mapper
     {
         private static List<ConverterDefinition> Converters;
 
-        static ReferenceListMapProfile() 
+        static ReferenceListMapProfile()
         {
             Converters = new List<ConverterDefinition>();
 

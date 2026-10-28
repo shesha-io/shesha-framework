@@ -65,7 +65,7 @@ namespace Shesha.Scheduler
 
     public abstract class ScheduledJobBase<T> : ScheduledJobBase<T, object>
         where T : ScheduledJobStatistic, new()
-    { 
+    {
     }
 
     public abstract class ScheduledJobBase
@@ -236,7 +236,7 @@ namespace Shesha.Scheduler
             await task;
             CancellationToken = null;
         }
-        
+
         protected ScheduledJobExecution GetExecutionRecord()
         {
             return JobExecutionRepository.Get(JobExecutionId);

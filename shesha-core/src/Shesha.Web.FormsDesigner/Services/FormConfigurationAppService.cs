@@ -40,7 +40,7 @@ namespace Shesha.Web.FormsDesigner.Services
         private readonly IFormManager _formManager;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IVersionedFieldManager _versionedFieldManager;
-        
+
 
         public FormConfigurationAppService(
             IRepository<FormConfiguration, Guid> repository,
@@ -118,7 +118,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var form = await _formManager.CreateFormAsync(formInput);
             return await MapToEntityDtoAsync(form);
         }
-        
+
         protected async Task<FormConfigurationDto> MapToEntityDtoAsync(FormConfiguration entity)
         {
             var dto = base.MapToEntityDto(entity);
@@ -202,7 +202,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task UpdateValidationResultsAsync(FormUpdateValidationResultsInput input) 
+        public async Task UpdateValidationResultsAsync(FormUpdateValidationResultsInput input)
         {
             var form = await Repository.GetAsync(input.Id);
             form.Module?.EnsureEditable();
@@ -246,11 +246,12 @@ namespace Shesha.Web.FormsDesigner.Services
                         Module = inputDep.Module,
                         Name = inputDep.Name,
                         IsSatisfied = inputDep.IsSatisfied,
-                        HasIssues= inputDep.HasIssues,
+                        HasIssues = inputDep.HasIssues,
                     };
                     await _dependencyRepository.InsertAsync(dbDep);
                 }
-                else { 
+                else
+                {
                     dbDep.IsSatisfied = inputDep.IsSatisfied;
                     dbDep.HasIssues = inputDep.HasIssues;
                     await _dependencyRepository.UpdateAsync(dbDep);
@@ -269,7 +270,7 @@ namespace Shesha.Web.FormsDesigner.Services
         public async Task<FileContentResult> GetJsonAsync(Guid id)
         {
             var item = await Repository.GetAsync(id);
-            
+
             var bytes = Encoding.UTF8.GetBytes(item.Markup ?? "");
 
             return new ShaFileContentResult(bytes, "application/json") { FileDownloadName = $"{item.FullName}.json" };
@@ -284,24 +285,25 @@ namespace Shesha.Web.FormsDesigner.Services
         {
             var item = await Repository.GetAsync(input.ItemId);
             item.Module?.EnsureEditable();
-            
+
             var validationResults = new List<ValidationResult>();
 
             if (input.File == null || input.File.Length == 0)
                 validationResults.Add(new ValidationResult($"Please upload JSON file"));
-            else {
+            else
+            {
                 var extension = Path.GetExtension(input.File.FileName)?.ToLower();
                 if (extension != ".json")
-                    validationResults.Add(new ValidationResult($"Import supports only json files"));                 
+                    validationResults.Add(new ValidationResult($"Import supports only json files"));
             }
 
             if (validationResults.Any())
                 throw new AbpValidationException("Failed to import JSON", validationResults);
 
             input.File.NotNull();
-            using (var fileStream = input.File.OpenReadStream()) 
+            using (var fileStream = input.File.OpenReadStream())
             {
-                using (var reader = new StreamReader(fileStream)) 
+                using (var reader = new StreamReader(fileStream))
                 {
                     item.Markup = await reader.ReadToEndAsync();
                     item.UpdateMarkupMd5();
@@ -344,7 +346,7 @@ namespace Shesha.Web.FormsDesigner.Services
             entity.Markup = input.Markup;
             entity.UpdateMarkupMd5();
 
-            entity.ConfigurationForm =  new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!);
+            entity.ConfigurationForm = new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!);
             entity.ModelType = input.ModelType;
             entity.GenerationLogicTypeName = input.GenerationLogicTypeName;
             entity.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
@@ -361,7 +363,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// </summary>
         /// <param name="moduleName"></param>
         /// <returns></returns>
-        private async Task<Module?> GetModuleAsync(string? moduleName) 
+        private async Task<Module?> GetModuleAsync(string? moduleName)
         {
             return !string.IsNullOrWhiteSpace(moduleName)
                 ? await _moduleRepository.FirstOrDefaultAsync(m => m.Name == moduleName)
@@ -385,7 +387,8 @@ namespace Shesha.Web.FormsDesigner.Services
             var entities = await AsyncQueryableExecuter.ToListAsync(query);
 
             var dtos = new List<FormConfigurationDto>();
-            foreach (var entity in entities) {
+            foreach (var entity in entities)
+            {
                 var dto = await MapToEntityDtoAsync(entity);
                 dtos.Add(dto);
             }

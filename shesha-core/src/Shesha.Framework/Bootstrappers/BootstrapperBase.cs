@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Bootstrappers
 {
-    public abstract class BootstrapperBase: IBootstrapper
+    public abstract class BootstrapperBase : IBootstrapper
     {
         protected readonly IUnitOfWorkManager UnitOfWorkManager;
         protected readonly IApplicationStartupSession StartupSession;

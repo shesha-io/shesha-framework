@@ -1,9 +1,9 @@
-﻿using System;
-using Shesha.Domain.Enums;
+﻿using Shesha.Domain.Enums;
+using System;
 
 namespace Shesha.Otp.Dto
 {
-    public class OtpDto: IOtpDto
+    public class OtpDto : IOtpDto
     {
         public Guid OperationId { get; set; }
         public string Pin { get; set; }

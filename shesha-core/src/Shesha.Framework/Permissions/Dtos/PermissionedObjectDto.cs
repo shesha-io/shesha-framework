@@ -54,7 +54,7 @@ namespace Shesha.Permissions
         public RefListPermissionedAccess? InheritedAccess { get; set; }
 
         public string Parent { get; set; } = string.Empty;
-        
+
         public List<PermissionedObjectDto> Children { get; set; } = new List<PermissionedObjectDto>();
 
         public bool? Hidden { get; set; }
@@ -63,8 +63,8 @@ namespace Shesha.Permissions
 
         public override string ToString()
         {
-            var permissions = Hidden ?? false 
-                ? "Hidden" 
+            var permissions = Hidden ?? false
+                ? "Hidden"
                 : Access == RefListPermissionedAccess.RequiresPermissions
                     ? PermissionsDelimited
                     : Access.ToString();
@@ -75,6 +75,6 @@ namespace Shesha.Permissions
                         ? string.Join(", ", Permissions)
                         : string.Empty;
 
-        public string? Md5 { get; set; } 
+        public string? Md5 { get; set; }
     }
 }

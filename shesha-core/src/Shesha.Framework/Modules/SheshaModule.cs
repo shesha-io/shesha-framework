@@ -5,7 +5,7 @@ namespace Shesha.Modules
     /// <summary>
     /// Shesha module
     /// </summary>
-    public abstract class SheshaModule: SheshaBaseModule, IHasDataDrivenConfiguration
+    public abstract class SheshaModule : SheshaBaseModule, IHasDataDrivenConfiguration
     {
         /// <summary>
         /// Initialize module configuration. Gets executed on every application start

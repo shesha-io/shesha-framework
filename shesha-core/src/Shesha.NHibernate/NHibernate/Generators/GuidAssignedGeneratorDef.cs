@@ -1,6 +1,6 @@
-﻿using System;
-using NHibernate.Mapping.ByCode;
+﻿using NHibernate.Mapping.ByCode;
 using Shesha.Reflection;
+using System;
 
 namespace Shesha.NHibernate.Generators
 {

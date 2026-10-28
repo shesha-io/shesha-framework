@@ -236,10 +236,10 @@ namespace Shesha.Users
 
             // ensure that the user exists
             var user = await GetUniqueUserByMobileNoAsync(mobileNo);
-            
+
             if (user == null)
                 throw new UserFriendlyException("Your username is not recognised");
-            
+
             ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SmsOtp);
 
             await EnforceOtpCooldownAsync(user.PasswordResetCode, securitySettings.OtpCooldownSeconds);
@@ -260,7 +260,7 @@ namespace Shesha.Users
             };
         }
 
-    
+
         /// <summary>
         /// Retrieve the password reset options allowed for the user.
         /// </summary>
@@ -286,14 +286,14 @@ namespace Shesha.Users
             var isEmailLinkEnabled = securitySettings.UseResetPasswordViaEmailLink;
             var isSMSOTPEnabled = securitySettings.UseResetPasswordViaSmsOtp;
             var isSecurityQuestionsEnabled = securitySettings.UseResetPasswordViaSecurityQuestions;
-            
+
             var hasPhoneNumber = !string.IsNullOrEmpty(person.PhoneNumber);
             var hasEmail = !string.IsNullOrEmpty(person.EmailAddress);
             var hasQuestions = await (await _questionRepository.GetAllAsync()).Where(q => q.User == person).AnyAsync();
 
             if (supportedResetOptions.Length > 0)
             {
-                foreach(var option in supportedResetOptions)
+                foreach (var option in supportedResetOptions)
                 {
                     var reflistItem = (RefListPasswordResetMethods)option;
                     var methodOption = new ResetPasswordOptionDto();
@@ -306,17 +306,17 @@ namespace Shesha.Users
                         methodOption.Prompt = $"SMS an OTP to {maskedPhoneNumber}";
                         methodOption.MaskedIdentifier = maskedPhoneNumber;
                         isAllowed = true;
-                        
+
                     }
                     else if (reflistItem == RefListPasswordResetMethods.EmailLink && isEmailLinkEnabled && hasEmail)
                     {
-                        if (!string.IsNullOrWhiteSpace(person.EmailAddress)) 
+                        if (!string.IsNullOrWhiteSpace(person.EmailAddress))
                         {
                             var maskedEmail = person.EmailAddress.MaskEmail();
                             methodOption.Prompt = $"Email a link to {maskedEmail}";
                             methodOption.MaskedIdentifier = maskedEmail;
                             isAllowed = true;
-                        }                        
+                        }
                     }
                     else if (reflistItem == RefListPasswordResetMethods.SecurityQuestions && isSecurityQuestionsEnabled && hasQuestions)
                     {
@@ -605,7 +605,7 @@ namespace Shesha.Users
             {
                 user.SetNewPasswordResetCode();
                 await _userManager.UpdateAsync(user);
-                
+
                 // real password reset will be done using token
                 response.Token = user.PasswordResetCode!;
                 response.Username = user.UserName;
@@ -719,7 +719,7 @@ namespace Shesha.Users
             return true;
         }
 
-        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.User_Manage, PermissionNames.User_ResetPassword)]        
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.User_Manage, PermissionNames.User_ResetPassword)]
         public async Task ResetPasswordAsync(ResetPasswordDto input)
         {
             var user = await _userManager.GetUserByIdAsync(input.UserId);

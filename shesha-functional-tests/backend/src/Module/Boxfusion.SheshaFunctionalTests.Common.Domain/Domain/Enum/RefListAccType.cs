@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum
 {
     [ReferenceList("Boxfusion.SheshaFunctionalTests.Domain.Enum", "AccType")]
-    public enum RefListAccType: long
+    public enum RefListAccType : long
     {
         [Display(Name = "Savings Account")]
         Savings = 1,

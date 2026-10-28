@@ -1,10 +1,10 @@
-﻿using System;
-using FluentMigrator;
+﻿using FluentMigrator;
+using System;
 
 namespace Shesha.Migrations
 {
     [Migration(20200217122900), MsSqlOnly]
-    public class M20200217122900: Migration
+    public class M20200217122900 : Migration
     {
         public override void Up()
         {

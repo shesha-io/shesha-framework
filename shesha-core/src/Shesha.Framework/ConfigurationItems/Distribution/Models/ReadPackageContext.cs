@@ -25,12 +25,12 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         private readonly Dictionary<string, IConfigurableItemImport?> _importers = new Dictionary<string, IConfigurableItemImport?>();
         private readonly Dictionary<string, Type> _itemTypes = new Dictionary<string, Type>();
 
-        public IConfigurableItemImport? GetImporter(string itemType) 
+        public IConfigurableItemImport? GetImporter(string itemType)
         {
             if (_importers.TryGetValue(itemType, out var importer))
                 return importer;
 
-            
+
             importer = _itemTypes.TryGetValue(itemType, out var entityType)
                 ? _iocManager.GetItemImporter(entityType)
                 : null;
@@ -47,10 +47,10 @@ namespace Shesha.ConfigurationItems.Distribution.Models
             var entityConfigStore = iocManager.Resolve<IEntityTypeConfigurationStore>();
 
             var types = typeFinder.Find(t => t.IsAssignableTo(typeof(ConfigurationItem)) && !t.IsAbstract && !t.IsGenericType).ToList();
-            _itemTypes = types.Select(t => 
+            _itemTypes = types.Select(t =>
                 {
                     var discriminator = entityConfigStore.Get(t).DiscriminatorValue;
-                    return !string.IsNullOrWhiteSpace(discriminator) 
+                    return !string.IsNullOrWhiteSpace(discriminator)
                         ? new { Discriminator = discriminator, Type = t }
                         : null;
                 })

@@ -27,9 +27,10 @@ namespace Shesha.Tests.DynamicEntities
 
         #region
 
-        private IMapper GetMapper<TSrc, TDst>() where TDst: Enum
+        private IMapper GetMapper<TSrc, TDst>() where TDst : Enum
         {
-            var mapperConfiguration = new MapperConfiguration(c => {
+            var mapperConfiguration = new MapperConfiguration(c =>
+            {
                 c.CreateMap(typeof(TSrc), typeof(TDst)).ConvertUsing(typeof(NumericToEnumTypeConverter<TSrc, TDst>));
             });
             return new Mapper(mapperConfiguration);
@@ -42,7 +43,7 @@ namespace Shesha.Tests.DynamicEntities
         {
             Int64 source = 1;
             var mapper = GetMapper<Int64, IntItems>();
-            var destination  = mapper.Map<IntItems>(source);
+            var destination = mapper.Map<IntItems>(source);
 
             Assert.Equal(IntItems.Value1, destination);
         }
@@ -69,8 +70,8 @@ namespace Shesha.Tests.DynamicEntities
             Assert.Equal(ByteItems.Value1, destination);
         }
 
-        public enum IntItems : int 
-        { 
+        public enum IntItems : int
+        {
             Value1 = 1,
             Value2 = 2,
         }

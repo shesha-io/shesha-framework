@@ -7,7 +7,7 @@ namespace Shesha.Specifications
     /// This attribute is used to apply specifications automatically to any call of IRepository.GetAll()
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-    public class ApplySpecificationsAttribute: Attribute
+    public class ApplySpecificationsAttribute : Attribute
     {
         /// <summary>
         /// Types of specifications to apply.

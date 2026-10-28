@@ -41,7 +41,7 @@ namespace Shesha.Domain
 
         public virtual int? Area { get; set; }
 
-		[MaxLength(20)]
-		public virtual string ContactNumber { get; set; }
+        [MaxLength(20)]
+        public virtual string ContactNumber { get; set; }
     }
 }

@@ -45,7 +45,8 @@ namespace Shesha.Tests.JsonLogic
             var repository = LocalIocManager.Resolve<IRepository<T, TId>>();
             var asyncExecuter = LocalIocManager.Resolve<IAsyncQueryableExecuter>();
 
-            return WithUnitOfWorkAsync(async () => {
+            return WithUnitOfWorkAsync(async () =>
+            {
                 var query = (await repository.GetAllAsync()).Where(expression);
 
                 if (prepareQueryable != null)
@@ -68,7 +69,8 @@ namespace Shesha.Tests.JsonLogic
             Clock.Provider = new StaticClockProvider();
 
             // return compensation logic
-            return new DisposeAction(() => {
+            return new DisposeAction(() =>
+            {
                 Clock.Provider = prevProvider;
             });
         }

@@ -6,7 +6,7 @@ namespace Shesha.Domain.Attributes
     /// Is used to mark <see cref="ConfigurationItem"/> as application specific
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class ApplicationSpecificAttribute: Attribute
+    public class ApplicationSpecificAttribute : Attribute
     {
     }
 }

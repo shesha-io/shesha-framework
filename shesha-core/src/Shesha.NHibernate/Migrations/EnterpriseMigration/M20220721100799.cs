@@ -17,7 +17,7 @@ namespace Shesha.Migrations.EnterpriseMigration
             Delete.Table("Frwk_StoredFilterContainers");
             Delete.Table("Frwk_StoredFilters");
 
-            Delete.Table("Core_TeamMembers");            
+            Delete.Table("Core_TeamMembers");
         }
     }
 }

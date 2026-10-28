@@ -26,7 +26,7 @@ namespace Shesha.DynamicEntities.Mapper
             _iocManager = iocManager;
             _internalCache = mapperCacheHolder.Cache;
         }
-        
+
         private string GetCacheKey(Type sourceType, Type destinationType)
         {
             if (sourceType.IsEntityType())
@@ -58,7 +58,7 @@ namespace Shesha.DynamicEntities.Mapper
             _internalCache.Remove(cacheKey);
         }
 
-        private IMapper GetMapper(Type srcType, Type dstType) 
+        private IMapper GetMapper(Type srcType, Type dstType)
         {
             var modelConfigMapperConfig = new MapperConfiguration(cfg =>
             {
@@ -94,7 +94,8 @@ namespace Shesha.DynamicEntities.Mapper
         {
             var cacheKey = GetCacheKey(entityType, dtoType);
 
-            var itemFactory = new Func<MapperItem>(() => {
+            var itemFactory = new Func<MapperItem>(() =>
+            {
                 var autoMapper = direction == MappingDirection.Entity2Dto
                     ? GetMapper(entityType, dtoType)
                     : GetMapper(dtoType, entityType);
@@ -105,7 +106,8 @@ namespace Shesha.DynamicEntities.Mapper
             IMapper? mapper = null;
 
             // TODO: review cache usage and test
-            var mappers = await _internalCache.GetAsync(cacheKey, () => {
+            var mappers = await _internalCache.GetAsync(cacheKey, () =>
+            {
                 var cacheItem = itemFactory();
                 mapper = cacheItem.Mapper;
 
@@ -129,14 +131,14 @@ namespace Shesha.DynamicEntities.Mapper
             return cacheItem.Mapper;
         }
 
-        public enum MappingDirection 
-        { 
+        public enum MappingDirection
+        {
             Dto2Entity,
             Entity2Dto
         }
 
         public class MapperItem
-        { 
+        {
             public Type DtoType { get; set; }
             public MappingDirection Direction { get; set; }
             public IMapper Mapper { get; set; }

@@ -8,7 +8,7 @@ using System.Linq;
 namespace Shesha.Specifications
 {
     /// inheritedDoc
-    public class SpecificationsFinder: ISpecificationsFinder, ISingletonDependency
+    public class SpecificationsFinder : ISpecificationsFinder, ISingletonDependency
     {
         private readonly ITypeFinder _typeFinder;
         private readonly List<ISpecificationInfo> _specifications;
@@ -34,7 +34,7 @@ namespace Shesha.Specifications
             var specInfo = AllSpecifications.FirstOrDefault(s => s.Name == name && s.EntityType.IsAssignableFrom(entityType));
             if (specInfo == null)
                 throw new SpecificationNotFoundException(entityType, name);
-            
+
             return specInfo;
         }
     }

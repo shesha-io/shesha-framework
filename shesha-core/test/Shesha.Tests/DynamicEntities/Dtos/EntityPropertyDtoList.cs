@@ -9,13 +9,14 @@ namespace Shesha.Tests.DynamicEntities.Dtos
     /// </summary>
     public class EntityPropertyDtoList : List<EntityPropertyDto>
     {
-        public EntityPropertyDto AddString(string name, string label) 
+        public EntityPropertyDto AddString(string name, string label)
         {
-            var prop = new EntityPropertyDto { 
+            var prop = new EntityPropertyDto
+            {
                 DataType = DataTypes.String,
                 DataFormat = StringFormats.Singleline,
-                Name = name, 
-                Label = label 
+                Name = name,
+                Label = label
             };
             Add(prop);
 

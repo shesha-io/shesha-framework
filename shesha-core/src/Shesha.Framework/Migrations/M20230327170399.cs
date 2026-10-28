@@ -3,7 +3,7 @@ using Shesha.FluentMigrator;
 
 namespace Shesha.Migrations
 {
-	[Migration(20230327170399), MsSqlOnly]
+    [Migration(20230327170399), MsSqlOnly]
     public class M20230327170399 : OneWayMigration
     {
         public override void Up()
@@ -34,8 +34,8 @@ where
 				'Shesha.Sms.SmsGateway'
 			)	
 	)");
-            
-			Execute.Sql(@"delete 
+
+            Execute.Sql(@"delete 
 from 
 	Frwk_SettingConfigurations
 where

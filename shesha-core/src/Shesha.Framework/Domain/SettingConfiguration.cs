@@ -19,7 +19,7 @@ namespace Shesha.Domain
     [JoinedProperty("setting_configurations", Schema = "frwk")]
     [SnakeCaseNaming]
     [DiscriminatorValue(ItemTypeName)]
-    public class SettingConfiguration: ConfigurationItem
+    public class SettingConfiguration : ConfigurationItem
     {
         public const string ItemTypeName = "setting-configuration";
 

@@ -12,7 +12,7 @@ namespace Shesha.ConfigurationStudio.Dtos
         /// Tree node Id
         /// </summary>
         public Guid Id { get; set; }
-        
+
         /// <summary>
         /// Id of parent node
         /// </summary>
@@ -37,7 +37,7 @@ namespace Shesha.ConfigurationStudio.Dtos
         /// Node label
         /// </summary>
         public string Label { get; set; }
-        
+
         /// <summary>
         /// Item description
         /// </summary>

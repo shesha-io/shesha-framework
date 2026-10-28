@@ -20,7 +20,7 @@ on
 	Frwk_ConfigurationItems(Name, Namespace, ModuleId, ItemType, VersionNo)
 where 
 	IsDeleted = 0");
-            
+
             Execute.Sql("drop index Frwk_ConfigurationItems.uq_Frwk_ConfigurationItems_LiveVersion");
             Execute.Sql("create unique index uq_Frwk_ConfigurationItems_LiveVersion on Frwk_ConfigurationItems(Name, Namespace, ModuleId, TenantId) where IsDeleted=0 and VersionStatusLkp = 3");
 

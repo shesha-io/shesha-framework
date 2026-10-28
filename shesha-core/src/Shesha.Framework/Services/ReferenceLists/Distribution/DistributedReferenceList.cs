@@ -6,7 +6,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
     /// <summary>
     /// Distributed reference list
     /// </summary>
-    public class DistributedReferenceList: DistributedConfigurableItemBase
+    public class DistributedReferenceList : DistributedConfigurableItemBase
     {
         /// <summary>
         /// List items

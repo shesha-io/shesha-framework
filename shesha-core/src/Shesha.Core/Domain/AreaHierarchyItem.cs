@@ -9,7 +9,7 @@ namespace Shesha.Domain
     [Table("vw_Core_AreasHierarchyItems")]
     [ImMutable]
     [Obsolete]
-    public class AreaHierarchyItem: Entity<string>
+    public class AreaHierarchyItem : Entity<string>
     {
         public virtual Area Area { get; set; }
         public virtual Guid AncestorId { get; set; }

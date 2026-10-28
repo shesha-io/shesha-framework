@@ -1,6 +1,6 @@
 ﻿namespace Shesha.Otp.Dto
 {
-    public class VerifyPinResponse: IVerifyPinResponse
+    public class VerifyPinResponse : IVerifyPinResponse
     {
         /// <summary>
         /// Indicates that the OTP matches to the sent one
@@ -13,7 +13,7 @@
 
         public static VerifyPinResponse Success()
         {
-            return new VerifyPinResponse {IsSuccess = true};
+            return new VerifyPinResponse { IsSuccess = true };
         }
 
         public static VerifyPinResponse Failed(string errorMessage)

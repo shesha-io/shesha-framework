@@ -19,7 +19,7 @@ namespace Shesha.Utilities
         private static Regex SEPARATORS_AND_IDENTIFIER = new Regex(@"[_.\- ]+(?<identifier>[\p{L}\p{Nl}\p{N}_]|$)");
         private static Regex NUMBERS_AND_IDENTIFIER = new Regex(@"\d+([\p{L}\p{Nl}\p{N}_]|$)");
 
-        public static string Convert(string input) 
+        public static string Convert(string input)
         {
             return Convert(input, new ConvertOptions { PascalCase = false, PreserveConsecutiveUppercase = false, KeepLeadingSeparators = false });
         }
@@ -45,17 +45,18 @@ namespace Shesha.Utilities
 
             if (hasUpperCase)
                 input = PreserveCamelCase(input, options.PreserveConsecutiveUppercase);
-            
+
             var leadingSeparators = options.KeepLeadingSeparators
                 ? LEADING_SEPARATORS.Match(input).Value
                 : "";
 
             input = LEADING_SEPARATORS.Replace(input, "");
-	        input = options.PreserveConsecutiveUppercase 
-                ? PreserveConsecutiveUppercase(input) 
+            input = options.PreserveConsecutiveUppercase
+                ? PreserveConsecutiveUppercase(input)
                 : input.ToLower();
 
-            if (options.PascalCase && input.Length > 0) {
+            if (options.PascalCase && input.Length > 0)
+            {
                 input = char.ToUpper(input[0]) + (input.Length > 1 ? input.Substring(1, input.Length - 1) : "");
             }
 
@@ -63,21 +64,23 @@ namespace Shesha.Utilities
             return string.IsNullOrEmpty(result) ? string.Empty : leadingSeparators + result;
         }
 
-        private static char? CharAt(string input, int position) 
-        { 
+        private static char? CharAt(string input, int position)
+        {
             return position >= 0 && position < input.Length
                 ? input[position] : null;
         }
 
-        private static string PostProcess(string input) 
+        private static string PostProcess(string input)
         {
             var delimiters = new char[] { '_', '-' };
-            input = NUMBERS_AND_IDENTIFIER.Replace(input, (m) => {
+            input = NUMBERS_AND_IDENTIFIER.Replace(input, (m) =>
+            {
                 var nextChar = CharAt(input, m.Index + m.Length);
                 return nextChar.HasValue && delimiters.Contains(nextChar.Value) ? m.Value : m.Value.ToUpper();
             });
 
-            input = SEPARATORS_AND_IDENTIFIER.Replace(input, m => {
+            input = SEPARATORS_AND_IDENTIFIER.Replace(input, m =>
+            {
                 var identifier = m.Groups["identifier"];
                 return identifier.Value.ToUpper();
             });
@@ -85,7 +88,7 @@ namespace Shesha.Utilities
             return input;
         }
 
-        private static string PreserveConsecutiveUppercase(string input) 
+        private static string PreserveConsecutiveUppercase(string input)
         {
             return LEADING_CAPITAL.Replace(input, m => m.Value.ToLower());
         }
@@ -128,7 +131,7 @@ namespace Shesha.Utilities
             return input;
         }
 
-        public class ConvertOptions 
+        public class ConvertOptions
         {
             /// <summary>
             /// NOTE! The camelCase and PascalCase standards remove the leading separators. Use this option with caution.

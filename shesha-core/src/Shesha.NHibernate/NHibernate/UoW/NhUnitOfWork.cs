@@ -110,7 +110,7 @@ namespace Shesha.NHibernate.UoW
                     : session.BeginTransaction();
             }
 
-            if (!string.IsNullOrWhiteSpace(_cfRuntime.CurrentModuleOrNull)) 
+            if (!string.IsNullOrWhiteSpace(_cfRuntime.CurrentModuleOrNull))
             {
                 //session.CreateSQLQuery("DBCC traceon (1222, -1)").ExecuteUpdate();
             }
@@ -256,11 +256,11 @@ namespace Shesha.NHibernate.UoW
                 _transaction = null;
             }
 
-            if (_session != null) 
+            if (_session != null)
             {
                 _session.Dispose();
                 _session = null;
-            }            
+            }
         }
 
         /// <summary>

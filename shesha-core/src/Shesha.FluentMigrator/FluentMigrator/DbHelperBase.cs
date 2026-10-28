@@ -23,7 +23,8 @@ namespace Shesha.FluentMigrator
 
         protected void ExecuteNonQuery(string sql, Action<IDbCommand>? prepareAction = null)
         {
-            ExecuteCommand(sql, command => {
+            ExecuteCommand(sql, command =>
+            {
                 prepareAction?.Invoke(command);
                 command.ExecuteNonQuery();
             });
@@ -32,7 +33,8 @@ namespace Shesha.FluentMigrator
         protected T? ExecuteScalar<T>(string sql, Action<IDbCommand>? prepareAction = null)
         {
             T? result = default;
-            ExecuteCommand(sql, command => {
+            ExecuteCommand(sql, command =>
+            {
                 prepareAction?.Invoke(command);
                 result = (T?)command.ExecuteScalar();
             });
@@ -57,14 +59,15 @@ namespace Shesha.FluentMigrator
         /// </summary>
         /// <param name="name">Module name</param>
         /// <returns></returns>
-        protected Guid? GetModuleId(string name) 
+        protected Guid? GetModuleId(string name)
         {
             var sql = QuerySchema.TableExists("", "Frwk_Modules")
                 ? @"select ""Id"" from ""Frwk_Modules"" where ""Name"" = @name"
                 : QuerySchema.TableExists("frwk", "modules")
-                    ? @"select id from frwk.modules where name = @name" 
+                    ? @"select id from frwk.modules where name = @name"
                     : throw new NotSupportedException("Modules table not found");
-            return ExecuteScalar<Guid?>(sql, command => {
+            return ExecuteScalar<Guid?>(sql, command =>
+            {
                 command.AddParameter("@name", name);
             });
         }
@@ -90,7 +93,8 @@ namespace Shesha.FluentMigrator
                     ? $@"insert into frwk.modules (id, creation_time, is_deleted, is_enabled, is_editable, is_root_module, Name) values (@id, @createDate, {BitOrBool(false)}, {BitOrBool(true)}, {BitOrBool(true)}, {BitOrBool(true)}, @name)"
                     : throw new NotSupportedException("Modules table not found");
             ExecuteNonQuery(sql,
-                command => {
+                command =>
+                {
                     command.AddParameter("@id", newId);
                     command.AddParameter("@createDate", DateTime.Now);
                     command.AddParameter("@name", name);
@@ -107,7 +111,8 @@ namespace Shesha.FluentMigrator
         /// </summary>
         public Guid? GetFrontEndAppId(string appKey)
         {
-            return ExecuteScalar<Guid?>(@"select ""Id"" from ""Frwk_FrontEndApps"" where ""AppKey"" = @appKey", command => {
+            return ExecuteScalar<Guid?>(@"select ""Id"" from ""Frwk_FrontEndApps"" where ""AppKey"" = @appKey", command =>
+            {
                 command.AddParameter("@appKey", appKey);
             });
         }

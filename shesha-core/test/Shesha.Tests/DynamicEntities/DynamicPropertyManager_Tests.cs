@@ -220,7 +220,7 @@ namespace Shesha.Tests.DynamicEntities
             }
         }
 
-        private async Task DeletePropertyAsync(EntityPropertyDto dto) 
+        private async Task DeletePropertyAsync(EntityPropertyDto dto)
         {
             await _propertyValueRepo.HardDeleteAsync(e => e.EntityProperty != null && e.EntityProperty.Id == dto.Id);
             if (dto.DataType == DataTypes.Object)

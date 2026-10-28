@@ -1,5 +1,5 @@
-﻿using System;
-using Abp.Application.Services.Dto;
+﻿using Abp.Application.Services.Dto;
+using System;
 
 
 namespace Shesha.StoredFiles.Dto
@@ -13,7 +13,7 @@ namespace Shesha.StoredFiles.Dto
         /// Date of the upload
         /// </summary>
         public virtual DateTime? DateUploaded { get; set; }
-        
+
         /// <summary>
         /// File size
         /// </summary>

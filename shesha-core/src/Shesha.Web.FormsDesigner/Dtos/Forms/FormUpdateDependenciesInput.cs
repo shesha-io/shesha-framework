@@ -11,7 +11,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
     {
         public List<DependencyInfo> Dependencies { get; set; } = new();
 
-        public class DependencyInfo 
+        public class DependencyInfo
         {
             public virtual string Type { get; set; }
             public virtual string? Module { get; set; }

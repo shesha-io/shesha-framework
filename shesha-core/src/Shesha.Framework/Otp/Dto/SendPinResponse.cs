@@ -2,7 +2,7 @@
 
 namespace Shesha.Otp.Dto
 {
-    public class SendPinResponse: ISendPinResponse
+    public class SendPinResponse : ISendPinResponse
     {
         /// <summary>
         /// Unique runtime identifier of the operation. Is used for resending

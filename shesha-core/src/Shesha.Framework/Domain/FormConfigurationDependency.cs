@@ -11,7 +11,7 @@ namespace Shesha.Domain
     /// </summary>
     [Table("form_configuration_dependencies", Schema = "frwk")]
     [SnakeCaseNaming]
-    public class FormConfigurationDependency: Entity<Guid>
+    public class FormConfigurationDependency : Entity<Guid>
     {
         /// <summary>
         /// Form configuration that owns this dependency

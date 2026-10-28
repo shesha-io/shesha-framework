@@ -19,7 +19,7 @@ namespace Shesha.Domain
     [Entity(CrudActions = CrudActions.Read, IsConfigurable = false)]
     [Table("modules", Schema = "frwk")]
     [SnakeCaseNaming]
-    public class Module: FullAuditedEntity<Guid>
+    public class Module : FullAuditedEntity<Guid>
     {
         /// <summary>
         /// Module name
@@ -69,7 +69,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Last initialization date
         /// </summary>
-        public virtual DateTime? LastInitializedDate { get; set; }        
+        public virtual DateTime? LastInitializedDate { get; set; }
 
         /// <summary>
         /// If true, indicates that the module is enabled

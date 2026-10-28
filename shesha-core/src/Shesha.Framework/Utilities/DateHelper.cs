@@ -63,7 +63,7 @@ namespace Shesha.Utilities
                 }
                 else if (secDiff < 3600)
                 {
-                    return $"{Math.Floor((double) secDiff / 60)} minutes ago";
+                    return $"{Math.Floor((double)secDiff / 60)} minutes ago";
                 }
                 else if (secDiff < 7200) // Less than 2 hours ago.
                 {
@@ -71,7 +71,7 @@ namespace Shesha.Utilities
                 }
                 else // Less than one day ago.
                 {
-                    return $"{Math.Floor((double) secDiff / 3600)} hours ago";
+                    return $"{Math.Floor((double)secDiff / 3600)} hours ago";
                 }
             }
             else if (dayDiff == 1)
@@ -84,7 +84,7 @@ namespace Shesha.Utilities
             }
             else if (dayDiff < 31)
             {
-                return $"{Math.Ceiling((double) dayDiff / 7)} weeks ago";
+                return $"{Math.Ceiling((double)dayDiff / 7)} weeks ago";
             }
             else if (dayDiff < 40)
             {
@@ -122,7 +122,7 @@ namespace Shesha.Utilities
                 }
                 else if (secDiff < 3600)
                 {
-                    return $"in {Math.Floor((double) secDiff / 60)} minutes";
+                    return $"in {Math.Floor((double)secDiff / 60)} minutes";
                 }
                 else if (secDiff < 7200) // Less than 2 hours ago.
                 {
@@ -130,7 +130,7 @@ namespace Shesha.Utilities
                 }
                 else // Less than one day ago.
                 {
-                    return $"in {Math.Floor((double) secDiff / 3600)} hours";
+                    return $"in {Math.Floor((double)secDiff / 3600)} hours";
                 }
             }
             else if (dayDiff == 1)
@@ -143,7 +143,7 @@ namespace Shesha.Utilities
             }
             else if (dayDiff < 31)
             {
-                return $"in {Math.Ceiling((double) dayDiff / 7)} weeks";
+                return $"in {Math.Ceiling((double)dayDiff / 7)} weeks";
             }
             else if (dayDiff < 40)
             {

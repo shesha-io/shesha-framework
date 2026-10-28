@@ -9,7 +9,7 @@ namespace Shesha.Scheduler.ProcessMonitor
 {
     public class ScheduledJobProcessMonitor : IProcessMonitor, ITransientDependency
     {
-        private readonly IScheduledJobManager _jobManager;        
+        private readonly IScheduledJobManager _jobManager;
 
         public string ProcessType => "ScheduledJob";
 
@@ -31,9 +31,9 @@ namespace Shesha.Scheduler.ProcessMonitor
         public async Task<ProcessStatus> GetStatusAsync(string processId)
         {
             var inProgress = await _jobManager.IsJobInProgressAsync(processId.ToGuid());
-            return inProgress 
-                ? ProcessStatus.Running 
+            return inProgress
+                ? ProcessStatus.Running
                 : ProcessStatus.Idle;
-        }        
+        }
     }
 }

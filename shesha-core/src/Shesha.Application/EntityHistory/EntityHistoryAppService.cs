@@ -20,7 +20,7 @@ namespace Shesha.EntityHistory
     {
         private readonly IEntityHistoryProvider _entityHistoryProvider;
         private readonly IQuickSearcher _quickSearcher;
-        
+
         public EntityHistoryAppService(
             IEntityHistoryProvider entityHistoryProvider,
             IQuickSearcher quickSearcher
@@ -89,10 +89,10 @@ namespace Shesha.EntityHistory
             history = history.Skip(skipCount).Take(takeCount).ToList();
 
             var dataRows = new List<Dictionary<string, object>>();
-            
+
             var result = new PagedResultDto<EntityHistoryItemDto>
             {
-                TotalCount= totalRows,
+                TotalCount = totalRows,
                 Items = history
             };
 

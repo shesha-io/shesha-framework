@@ -71,7 +71,7 @@ namespace Shesha
             {
                 s.NotificationSettings.WithDefaultValue(new NotificationSettings
                 {
-                    Low = new (),
+                    Low = new(),
                     Medium = new(),
                     High = new(),
                 });
@@ -80,7 +80,8 @@ namespace Shesha
 
             #region SMS Gateways
 
-            IocManager.RegisterSettingAccessor<ISmsSettings>(s => {
+            IocManager.RegisterSettingAccessor<ISmsSettings>(s =>
+            {
                 s.SmsSettings.WithDefaultValue(new SmsSettings
                 {
                     SmsGateway = NullSmsGateway.Uid
@@ -110,7 +111,8 @@ namespace Shesha
 
         public override void Initialize()
         {
-            IocManager.RegisterSettingAccessor<IOtpSettings>(s => {
+            IocManager.RegisterSettingAccessor<IOtpSettings>(s =>
+            {
                 s.OneTimePins.WithDefaultValue(new OtpSettings
                 {
                     Alphabet = OtpDefaults.DefaultAlphabet,
@@ -123,16 +125,17 @@ namespace Shesha
                 });
             });
 
-            IocManager.RegisterSettingAccessor<IUserManagementSettings>(s => {
+            IocManager.RegisterSettingAccessor<IUserManagementSettings>(s =>
+            {
                 s.UserManagementSettings.WithDefaultValue(new UserManagementSettings
                 {
-                   SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber,
-                   RequireEmailVerification = false,
-                   GoToUrlAfterRegistration = "/",
-                   UserEmailAsUsername = false,
-                   AdditionalRegistrationInfo = false,
-                   AdditionalRegistrationInfoFormModule = null,
-                   AdditionalRegistrationInfoFormName = null
+                    SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber,
+                    RequireEmailVerification = false,
+                    GoToUrlAfterRegistration = "/",
+                    UserEmailAsUsername = false,
+                    AdditionalRegistrationInfo = false,
+                    AdditionalRegistrationInfoFormModule = null,
+                    AdditionalRegistrationInfoFormName = null
                 });
             });
 

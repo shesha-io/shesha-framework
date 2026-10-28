@@ -43,7 +43,7 @@ namespace Shesha.Settings
             return values;
         }
 
-        private SettingManagementContext? GetContext(string? appKey) 
+        private SettingManagementContext? GetContext(string? appKey)
         {
             return !string.IsNullOrWhiteSpace(appKey)
                 ? new SettingManagementContext

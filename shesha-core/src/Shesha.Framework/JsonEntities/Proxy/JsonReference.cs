@@ -7,7 +7,7 @@
         string? _className { get; set; }
     }
 
-    public class JsonReference: IJsonReference
+    public class JsonReference : IJsonReference
     {
         public virtual object? Id { get; set; }
         public virtual string? _displayName { get; set; }

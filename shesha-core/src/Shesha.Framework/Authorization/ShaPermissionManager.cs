@@ -24,12 +24,12 @@ namespace Shesha.Authorization
 
         public ShaPermissionManager(
             IIocManager iocManager,
-            IAuthorizationConfiguration authorizationConfiguration, 
+            IAuthorizationConfiguration authorizationConfiguration,
             IUnitOfWorkManager unitOfWorkManager,
             IMultiTenancyConfig multiTenancyConfig,
             IRepository<PermissionDefinition, Guid> permissionDefinitionRepository,
             IShaPermissionChecker shaPermissionChecker
-            ) : 
+            ) :
             base(iocManager, authorizationConfiguration, unitOfWorkManager, multiTenancyConfig)
         {
             _permissionDefinitionRepository = permissionDefinitionRepository;
@@ -43,7 +43,7 @@ namespace Shesha.Authorization
             AsyncHelper.RunSync(async () => await InitializeDbPermissionsAsync());
         }
 
-        
+
         private async Task InitializeDbPermissionsAsync()
         {
             var dbPermissions = await _permissionDefinitionRepository.GetAllListAsync();
@@ -137,8 +137,8 @@ namespace Shesha.Authorization
                 var permission = parent.CreateChildPermission(permissionDefinition.Name,
                     (permissionDefinition.Label ?? "").L(),
                     (permissionDefinition.Description ?? "").L(),
-                    properties: new Dictionary<string, object?>() 
-                    { 
+                    properties: new Dictionary<string, object?>()
+                    {
                         { IsDbPermission, true },
                         { "ModuleId", permissionDefinition.Module?.Id },
                     }
@@ -230,7 +230,7 @@ namespace Shesha.Authorization
             }
 
             var p = GetPermissionOrNull(permission.Name);
-            if (p != null) 
+            if (p != null)
                 RemovePermission(permission.Name);
         }
 
@@ -260,8 +260,8 @@ namespace Shesha.Authorization
         {
             var permission = GetPermissionOrNull(name);
             if (permission != null
-                && permission.Properties != null 
-                && permission.Properties.ContainsKey(IsDbPermission) 
+                && permission.Properties != null
+                && permission.Properties.ContainsKey(IsDbPermission)
                 && (bool)permission.Properties[IsDbPermission])
             {
                 RemovePermission(name);

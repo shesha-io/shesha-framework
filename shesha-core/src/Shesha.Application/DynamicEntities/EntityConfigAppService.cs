@@ -192,7 +192,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
                 Entities = entities,
             };
         }).ToList();
-        
+
         var lookups = new List<LookupSyncResponse>();
 
         var lookupData = (await (await _configItemInheritanceRepository.GetAllAsync())
@@ -212,7 +212,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
 
         foreach (var model in models)
         {
-            var aliases = (new [] { model.Alias ?? "", model.Accessor ?? "" }).Where(x => x != "" && x != model.Name).ToArray();
+            var aliases = (new[] { model.Alias ?? "", model.Accessor ?? "" }).Where(x => x != "" && x != model.Name).ToArray();
             var modelLookup = lookupData.Where(x => x.FullClassName == model.FullClassName).ToList();
             if (modelLookup.Any())
             {

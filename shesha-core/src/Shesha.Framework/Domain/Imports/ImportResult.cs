@@ -19,7 +19,7 @@ namespace Shesha.Domain
         /// Import start date time
         /// </summary>
         public virtual DateTime? StartedOn { get; set; }
-        
+
         /// <summary>
         /// Import finish date time
         /// </summary>

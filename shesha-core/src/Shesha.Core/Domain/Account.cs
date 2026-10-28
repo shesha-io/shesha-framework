@@ -32,13 +32,13 @@ namespace Shesha.Domain
         public virtual RefListAccountType? AccountType { get; set; }
         public virtual DateTime? ActiveFromDate { get; set; }
         public virtual DateTime? ActiveToDate { get; set; }
-		[MaxLength(50)]
-		public virtual string ContactEmail { get; set; }
-		[MaxLength(50)]
-		public virtual string ContactTelephone { get; set; }
-		[MaxLength(400)]
-		public virtual string FreeTextBillingAddress { get; set; }
-		public virtual Address BillingAddress { get; set; }
+        [MaxLength(50)]
+        public virtual string ContactEmail { get; set; }
+        [MaxLength(50)]
+        public virtual string ContactTelephone { get; set; }
+        [MaxLength(400)]
+        public virtual string FreeTextBillingAddress { get; set; }
+        public virtual Address BillingAddress { get; set; }
 
-	}
+    }
 }

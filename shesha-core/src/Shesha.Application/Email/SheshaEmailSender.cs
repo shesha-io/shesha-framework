@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Email
 {
-    public class SheshaEmailSender: SmtpEmailSender, ISheshaEmailSender, ITransientDependency
+    public class SheshaEmailSender : SmtpEmailSender, ISheshaEmailSender, ITransientDependency
     {
         public ILogger Logger { get; set; } = NullLogger.Instance;
         private readonly IEmailSettings _emailSettings;
@@ -122,7 +122,7 @@ namespace Shesha.Email
             NormalizeMail(mail);
             NormalizeMailSender(mail, smtpSettings);
 
-            if (mail.From == null || string.IsNullOrWhiteSpace(mail.From.Address)) 
+            if (mail.From == null || string.IsNullOrWhiteSpace(mail.From.Address))
             {
                 Logger.Error("Attempt to send email using empty from address. Subject: " + mail.Subject);
                 return false;

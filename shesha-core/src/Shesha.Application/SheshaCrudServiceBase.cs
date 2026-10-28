@@ -337,7 +337,7 @@ namespace Shesha
                         if (brace > 0) innerProps.Add(propList[i]);
                         i++;
                     }
-                    if (propConfig == null 
+                    if (propConfig == null
                         || propConfig.DataType == DataTypes.EntityReference && propConfig.EntityFullClassName.IsNullOrWhiteSpace())
                         sb.Append(prop + " { " + string.Join(" ", innerProps) + " } ");
                     else
@@ -413,7 +413,7 @@ namespace Shesha
             var properties = allEntityProps.NotNull()
                 .Where(x => !x.Suppress)
                 .ToList();
-            
+
             foreach (var property in properties)
             {
                 var isEntityList = property.DataType == DataTypes.Array && (property.DataFormat == ArrayFormats.EntityReference || property.DataFormat == ArrayFormats.ManyToManyEntities);

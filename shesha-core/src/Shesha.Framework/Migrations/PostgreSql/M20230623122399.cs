@@ -21,7 +21,7 @@ namespace Shesha.Migrations.PostgreSql
 
             Execute.EmbeddedScript("Shesha.Migrations.PostgreSql.InitialScripts.log_Frwk_UserLoginAttempts_UpdateLastLoginDate_AI.sql");
             Execute.EmbeddedScript("Shesha.Migrations.PostgreSql.InitialScripts.trg_Frwk_UserLoginAttempts_UpdateLastLoginDate_AI.sql");
-                       
+
             Execute.EmbeddedScript("Shesha.Migrations.PostgreSql.InitialScripts.log_Core_Persons_UpdateContacts_AU.sql");
             Execute.EmbeddedScript("Shesha.Migrations.PostgreSql.InitialScripts.trg_Core_Persons_UpdateContacts_AU.sql");
 
@@ -44,7 +44,7 @@ namespace Shesha.Migrations.PostgreSql
             Execute.EmbeddedScript("Shesha.Migrations.PostgreSql.InitialScripts.log_Frwk_VersionedFieldVersions_UpdateIsLast_AD.sql");
             Execute.EmbeddedScript("Shesha.Migrations.PostgreSql.InitialScripts.log_Frwk_VersionedFieldVersions_UpdateIsLast_AI.sql");
             Execute.EmbeddedScript("Shesha.Migrations.PostgreSql.InitialScripts.log_Frwk_VersionedFieldVersions_UpdateIsLast_AU.sql");
-    
+
             Execute.EmbeddedScript("Shesha.Migrations.PostgreSql.InitialScripts.trg_Frwk_VersionedFieldVersions_UpdateIsLast_AD.sql");
             Execute.EmbeddedScript("Shesha.Migrations.PostgreSql.InitialScripts.trg_Frwk_VersionedFieldVersions_UpdateIsLast_AI.sql");
             Execute.EmbeddedScript("Shesha.Migrations.PostgreSql.InitialScripts.trg_Frwk_VersionedFieldVersions_UpdateIsLast_AU.sql");

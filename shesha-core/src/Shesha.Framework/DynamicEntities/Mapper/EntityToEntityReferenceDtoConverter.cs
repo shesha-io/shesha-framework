@@ -14,12 +14,12 @@ namespace Shesha.DynamicEntities.Mapper
         {
             return source == null
                 ? null
-                : new EntityReferenceDto<TId> 
-                    { 
-                        Id = source.Id, 
-                        _displayName = source.GetDisplayName(),
-                        _className = source.GetClassName()
-                    };
+                : new EntityReferenceDto<TId>
+                {
+                    Id = source.Id,
+                    _displayName = source.GetDisplayName(),
+                    _className = source.GetClassName()
+                };
         }
     }
 }

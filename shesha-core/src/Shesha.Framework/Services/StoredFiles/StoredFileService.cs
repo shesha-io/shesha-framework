@@ -15,7 +15,7 @@ namespace Shesha.Services.StoredFiles
     {
         private readonly ISheshaSettings _sheshaSettings;
         private readonly IPathHelper _pathHelper;
-        
+
         public StoredFileService(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, IRepository<StoredFileVersionDownload, Guid> storedFileVersionDownloadService, ISheshaSettings sheshaSettings, IPathHelper pathHelper) : base(fileService, versionService, storedFileVersionDownloadService)
         {
             _sheshaSettings = sheshaSettings;
@@ -40,7 +40,7 @@ namespace Shesha.Services.StoredFiles
 
         public override async Task<Stream> GetStreamAsync(StoredFileVersion fileVersion)
         {
-            await using(var fileStream = new FileStream(PhysicalFilePath(fileVersion), FileMode.Open, FileAccess.Read))
+            await using (var fileStream = new FileStream(PhysicalFilePath(fileVersion), FileMode.Open, FileAccess.Read))
             {
                 // copy to MemoryStream to prevent sharing violations
                 // todo: add a setting and test with FileStream in the real application (check RAM usage)

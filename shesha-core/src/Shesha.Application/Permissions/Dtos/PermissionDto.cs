@@ -1,8 +1,8 @@
-using System;
-using System.Collections.Generic;
 using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using Shesha.AutoMapper.Dto;
+using System;
+using System.Collections.Generic;
 
 namespace Shesha.Roles.Dto
 {
@@ -24,7 +24,7 @@ namespace Shesha.Roles.Dto
         public string? Description { get; set; }
 
         public string? ParentName { get; set; }
-        
+
         public bool IsDbPermission { get; set; }
 
         public PermissionDto? Parent { get; set; }

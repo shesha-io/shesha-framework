@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shesha.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// A converter that handles both array of objects and stringified JSON arrays of objects
@@ -47,7 +47,7 @@ public class FlexibleCollectionConverter<T> : JsonConverter
                     if (token is JArray jArray)
                     {
                         var stringList = jArray.ToObject<List<string>>(serializer) ?? new List<string>();
-                        
+
                         return stringList.WhereNotNull().Select(s => JsonConvert.DeserializeObject<T>(s)).ToList();
                     }
 

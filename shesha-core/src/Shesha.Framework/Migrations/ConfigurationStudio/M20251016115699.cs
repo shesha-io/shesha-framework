@@ -7,7 +7,7 @@ namespace Shesha.Migrations.ConfigurationStudio
     public class M20251016115699 : OneWayMigration
     {
         public override void Up()
-		{
+        {
             // is_enabled was not used earlier
             IfDatabase("SqlServer").Execute.Sql(@"update frwk.modules set is_enabled = 1");
             IfDatabase("PostgreSql").Execute.Sql(@"update frwk.modules set is_enabled = true");

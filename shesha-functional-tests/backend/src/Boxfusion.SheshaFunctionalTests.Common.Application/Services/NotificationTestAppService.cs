@@ -9,14 +9,14 @@ using Shesha.Notifications.MessageParticipants;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
-    public class NotificationTestAppService: SheshaAppServiceBase
+    public class NotificationTestAppService : SheshaAppServiceBase
     {
         private readonly INotificationSender _notificationService;
         private readonly IRepository<NotificationChannelConfig, Guid> _notificationChannelRepository;
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<NotificationTypeConfig, Guid> _notificationTypeRepository;
         private readonly IRepository<StoredFile, Guid> _storedFileRepository;
-        
+
         public NotificationTestAppService(
             INotificationSender notificationService,
             IRepository<NotificationChannelConfig, Guid> notificationChannelRepository,
@@ -74,7 +74,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             if (type == null)
                 throw new ArgumentException($"Notification type does not exist.");
             // Get recipient details
-            var recipientPerson = notification.Recipient?.Id != null 
+            var recipientPerson = notification.Recipient?.Id != null
                 ? await _personRepository.FirstOrDefaultAsync(notification.Recipient.Id)
                 : null;
             // Get channel details
@@ -106,13 +106,13 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 null,
                 channel
             );
-         }
+        }
         public async Task BulkPublishAsync(BulkNotificationDto notification)
         {
             if (notification.Type == null)
                 throw new ArgumentException($"{nameof(notification.Type)} must not be  null");
 
-                        // Fetch notification type details
+            // Fetch notification type details
             var type = await _notificationTypeRepository.FirstOrDefaultAsync(x => notification.Type.Name == x.Name && notification.Type.Module == x.Module!.Name);
             if (type == null)
                 throw new ArgumentException($"Notification type does not exist.");
@@ -170,6 +170,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                      );
                 }
             }
-        }        
+        }
     }
 }

@@ -5,6 +5,6 @@ namespace Shesha.EntityHistory
 {
     public interface IEntityHistoryAppService : IApplicationService
     {
-        
+
     }
 }

@@ -141,7 +141,7 @@ namespace Shesha.DynamicEntities
 
             var configEntities = new List<ProcessingItem>();
             var toDelete = new List<EntityConfig>();
-            foreach (var ec in _dbAllConfigs) 
+            foreach (var ec in _dbAllConfigs)
             {
                 var code = entitiesConfigs.FirstOrDefault(c =>
                         c.Config.EntityType.Name.Equals(ec.ClassName, StringComparison.InvariantCultureIgnoreCase)
@@ -158,7 +158,8 @@ namespace Shesha.DynamicEntities
                         CrudConfig = EntityCrudHelper.GetHardcodedEntityCrudConfig(code.Config.EntityType),
                     });
                 }
-                else { 
+                else
+                {
                     if (ec.Source == MetadataSourceType.ApplicationCode && !ec.IsDeleted)
                         toDelete.Add(ec);
                 }
@@ -181,7 +182,7 @@ namespace Shesha.DynamicEntities
 
                             c.DbProperties.Any(x => x.ColumnName == null) ||
                             c.Db.InheritedFrom == null ||
-                            
+
                             c.CrudConfig.IsConfigurable != c.Db.IsConfigurable ||
                             !c.CrudConfig.IsConfigurable && c.Db.GenerateAppService != (c.CrudConfig.CrudActions != CrudActions.None)
                         ))
@@ -213,7 +214,7 @@ namespace Shesha.DynamicEntities
                 var parts = config.Code.Config.TableName?.Split(".");
 
                 config.Db.SchemaName = parts?.Length == 2 ? parts[0] : null;
-                config.Db.TableName = parts?.Length == 1 
+                config.Db.TableName = parts?.Length == 1
                     ? config.Code.Config.TableName
                     : parts?.Length == 2
                         ? parts[1]
@@ -547,8 +548,8 @@ namespace Shesha.DynamicEntities
                         .FirstOrDefault();
 
                     var inheritedFrom = parentProp == null && entityConfig.InheritedFrom != null
-                        ? _dbAllProperties.Where(p => 
-                                p.EntityConfig == entityConfig.InheritedFrom 
+                        ? _dbAllProperties.Where(p =>
+                                p.EntityConfig == entityConfig.InheritedFrom
                                 && p.ParentProperty == null
                                 && p.Name.Equals(cp.Path, StringComparison.InvariantCultureIgnoreCase)
                             )
@@ -767,18 +768,18 @@ namespace Shesha.DynamicEntities
             ConfigureArrayListConfiguration(dst, src.ListConfiguration);
         }
 
-        private class CodeConfig 
+        private class CodeConfig
         {
             public EntityTypeConfiguration Config { get; set; }
-            public List<PropertyMetadataDto> Properties { get; set; }            
+            public List<PropertyMetadataDto> Properties { get; set; }
             public string PropertiesMD5 { get; set; }
             public string? ModuleName { get; set; }
         }
 
-        private class ProcessingItem 
+        private class ProcessingItem
         {
             public EntityConfig Db { get; set; }
-            public List<EntityProperty> DbProperties { get; set; }            
+            public List<EntityProperty> DbProperties { get; set; }
             public CodeConfig Code { get; set; }
             public IEntityCrudConfig CrudConfig { get; set; }
         }

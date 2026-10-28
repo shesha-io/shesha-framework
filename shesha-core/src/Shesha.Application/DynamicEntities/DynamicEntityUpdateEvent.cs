@@ -11,9 +11,9 @@ namespace Shesha.DynamicEntities
     public class DynamicEntityUpdateEvent : IDynamicEntityUpdateEvent, ITransientDependency
     {
         private readonly IIocResolver _iocResolver;
-        
 
-        public DynamicEntityUpdateEvent(IIocResolver iocResolver) 
+
+        public DynamicEntityUpdateEvent(IIocResolver iocResolver)
         {
             _iocResolver = iocResolver;
         }
@@ -39,10 +39,10 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private T? RevolveOrNull<T>() where T: class
+        private T? RevolveOrNull<T>() where T : class
         {
-            return _iocResolver.IsRegistered<T>() 
-                ? _iocResolver.Resolve<T>() 
+            return _iocResolver.IsRegistered<T>()
+                ? _iocResolver.Resolve<T>()
                 : null;
         }
     }

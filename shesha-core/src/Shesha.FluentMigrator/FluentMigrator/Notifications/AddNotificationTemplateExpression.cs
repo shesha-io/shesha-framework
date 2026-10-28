@@ -14,10 +14,12 @@ namespace Shesha.FluentMigrator.Notifications
 
         public override void ExecuteWith(IMigrationProcessor processor)
         {
-            var exp = new PerformDBOperationExpression() { Operation = (connection, transaction) => 
+            var exp = new PerformDBOperationExpression()
+            {
+                Operation = (connection, transaction) =>
                 {
                     var helper = new NotificationDbHelper(DbmsType, connection, transaction, QuerySchema);
-                    
+
                     var notificationId = helper.GetNotificationId(Namespace, Name);
                     if (notificationId == null)
                         throw new Exception($"Notification '{Namespace}.{Name}' not found");
@@ -45,7 +47,7 @@ namespace Shesha.FluentMigrator.Notifications
             processor.Process(exp);
         }
 
-        public AddNotificationTemplateExpression(DbmsType dbmsType, IQuerySchema querySchema, string @namespace, string name): base(dbmsType, querySchema)
+        public AddNotificationTemplateExpression(DbmsType dbmsType, IQuerySchema querySchema, string @namespace, string name) : base(dbmsType, querySchema)
         {
             Namespace = @namespace;
             Name = name;

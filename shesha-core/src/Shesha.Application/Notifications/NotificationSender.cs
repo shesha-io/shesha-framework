@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Notifications
 {
-    public class NotificationSender: INotificationSender, ITransientDependency
+    public class NotificationSender : INotificationSender, ITransientDependency
     {
         private readonly INotificationChannelSender _channelSender;
         private readonly IRepository<NotificationMessage, Guid> _notificationMessageRepository;
@@ -61,7 +61,7 @@ namespace Shesha.Notifications
             _storedFileRepository = storedFileRepository;
             _notificationManager = notificationManager;
             _templateProcessor = templateProcessor;
-            
+
             Logger = NullLogger.Instance;
         }
 
@@ -70,9 +70,10 @@ namespace Shesha.Notifications
             var attachments = await _attachmentRepository.GetAllListAsync(a => a.Message.Id == message.Id);
 
             var result = new List<EmailAttachment>();
-            foreach (var attachment in attachments) 
+            foreach (var attachment in attachments)
             {
-                if (!await _fileService.FileExistsAsync(attachment.File.Id)) {
+                if (!await _fileService.FileExistsAsync(attachment.File.Id))
+                {
                     Logger.Warn($"Attachment '{attachment.File.FileName}' (Id = '{attachment.File.Id}') is missing - skipped");
                     continue;
                 }
@@ -168,12 +169,12 @@ namespace Shesha.Notifications
         /// <returns></returns>
         /// <exception cref="UserFriendlyException"></exception>
         private async Task SendNotificationToChannelAsync<TData>(
-            Notification notification, 
-            TData data, 
-            IMessageSender? sender, 
+            Notification notification,
+            TData data,
+            IMessageSender? sender,
             IMessageReceiver receiver,
             NotificationTypeConfig type,
-            RefListNotificationPriority priority, 
+            RefListNotificationPriority priority,
             NotificationChannelConfig channelConfig,
             string? cc = null,
             List<NotificationAttachmentDto>? attachments = null) where TData : NotificationData
@@ -230,14 +231,14 @@ namespace Shesha.Notifications
         /// <summary>
         /// Generate content based on template (uses mustache syntax)
         /// </summary>
-        protected async Task<string?> GenerateContentAsync<TData>(string? template, TData data) where TData: class
+        protected async Task<string?> GenerateContentAsync<TData>(string? template, TData data) where TData : class
         {
             return !string.IsNullOrWhiteSpace(template)
                 ? await _templateProcessor.GenerateAsync(template, data)
                 : template;
         }
 
-        private INotificationChannelSender GetChannelSender(NotificationMessage message) 
+        private INotificationChannelSender GetChannelSender(NotificationMessage message)
         {
             var sender = _channelSenders.FirstOrDefault(x => x.GetType().Name == message.Channel.SenderTypeName);
 
@@ -312,12 +313,13 @@ namespace Shesha.Notifications
 
                     if (message.Status == RefListNotificationStatus.WaitToRetry)
                         throw new ShaMessageFailedWaitRetryException(message.Id);
-                };
+                }
+                ;
             }
         }
 
         [Obsolete("For backward compatibility only (is used by old scheduled jobs)")]
-        public Task SendAsync(Guid fromPersonId, Guid toPersonId, Guid messageId, string channelName, string senderTypeName) 
+        public Task SendAsync(Guid fromPersonId, Guid toPersonId, Guid messageId, string channelName, string senderTypeName)
         {
             return SendAsync(messageId);
         }

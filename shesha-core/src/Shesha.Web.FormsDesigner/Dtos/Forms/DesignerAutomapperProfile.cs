@@ -7,7 +7,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
     /// <summary>
     /// Form Designer Automapper profile
     /// </summary>
-    public class DesignerAutomapperProfile: ShaProfile
+    public class DesignerAutomapperProfile : ShaProfile
     {
         public DesignerAutomapperProfile()
         {

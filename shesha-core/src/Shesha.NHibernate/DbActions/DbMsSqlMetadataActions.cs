@@ -12,13 +12,13 @@ namespace Shesha.DbActions
     public class DbMsSqlGenerateActions : BaseDbMetadataActions
     {
         public override string SchemaName => CurrentSchema.IsNullOrEmpty() ? "dbo" : CurrentSchema.NotNull();
-        public override string TableName => SchemaName.IsNullOrEmpty() 
-            ? $"[{CurrentTable.NotNull("Table name should not be null")}]" 
+        public override string TableName => SchemaName.IsNullOrEmpty()
+            ? $"[{CurrentTable.NotNull("Table name should not be null")}]"
             : $"[{SchemaName}].[{CurrentTable.NotNull("Table name should not be null")}]";
 
         public DbMsSqlGenerateActions(
             IUnitOfWorkManager unitOfWorkManager
-        ): base(unitOfWorkManager)
+        ) : base(unitOfWorkManager)
         {
         }
 

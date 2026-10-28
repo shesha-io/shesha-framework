@@ -35,7 +35,7 @@ namespace Shesha.Tests.ConfigurationItems
         }
 
         [Fact]
-        public async Task ShouldExport_TestAsync() 
+        public async Task ShouldExport_TestAsync()
         {
             var dbProvider = GetMemoryDbProvider();
 
@@ -46,7 +46,8 @@ namespace Shesha.Tests.ConfigurationItems
             var module = new Module { Id = Guid.NewGuid(), Name = "test-module" };
             await moduleRepository.InsertAsync(module);
 
-            var formConfig1 = await MockFormConfigurationAsync(c => {
+            var formConfig1 = await MockFormConfigurationAsync(c =>
+            {
                 c.ModelType = "-ModelType";
                 c.Markup = "{ components: [], settings: {} }";
                 c.Name = "test-form";
@@ -72,8 +73,8 @@ namespace Shesha.Tests.ConfigurationItems
         }
 
         [Fact]
-        public async Task When_Import_Missing_FormAsync() 
-       {
+        public async Task When_Import_Missing_FormAsync()
+        {
             var src = PrepareImportContext();
             var srcModule = await src.GetOrCreateModuleAsync("test-import-missing-form-module");
             var srcForm = await src.AddFormAsync(c =>
@@ -85,7 +86,7 @@ namespace Shesha.Tests.ConfigurationItems
                 c.Markup = "{ components: [], settings: {} }";
                 c.Label = "test-label";
                 c.Description = "test-description";
-                
+
                 return Task.CompletedTask;
             }).ConfigureAwait(true);
 
@@ -99,7 +100,8 @@ namespace Shesha.Tests.ConfigurationItems
 
             await DeleteFormAsync(srcModule.Name, srcForm.Name);
 
-            await base.WithUnitOfWorkAsync((Func<Task>)(async() => {
+            await base.WithUnitOfWorkAsync((Func<Task>)(async () =>
+            {
                 var dstFormRepo = Resolve<IRepository<FormConfiguration, Guid>>();
 
                 var formExistsBeforeImport = await dstFormRepo.AnyAsync(f => f.Name == srcForm.Name && f.Module != null && f.Module.Name == srcModule.Name);
@@ -132,7 +134,7 @@ namespace Shesha.Tests.ConfigurationItems
                 ShouldBeStringTestExtensions.ShouldBe(importedFormFromRepo.Description, (string?)srcForm.Description);
                 importedFormFromRepo.Markup.ShouldBe(srcForm.Markup);
                 importedFormFromRepo.ModelType.ShouldBe(srcForm.ModelType);
-            }));            
+            }));
         }
 
         [Fact]
@@ -140,7 +142,8 @@ namespace Shesha.Tests.ConfigurationItems
         {
             var src = PrepareImportContext();
             var srcModule = await src.GetOrCreateModuleAsync("test-import-existing-form-module");
-            var srcForm = await src.AddFormAsync(c => {
+            var srcForm = await src.AddFormAsync(c =>
+            {
                 c.Module = srcModule;
                 c.Name = "test-import-existing-form";
 
@@ -148,7 +151,7 @@ namespace Shesha.Tests.ConfigurationItems
                 c.Markup = "src-markup";
                 c.Label = "test-label";
                 c.Description = "test-description";
-                
+
                 return Task.CompletedTask;
             });
 
@@ -164,7 +167,8 @@ namespace Shesha.Tests.ConfigurationItems
             var dstRevisionRepo = Resolve<IRepository<ConfigurationItemRevision, Guid>>();
             var dstModuleRepo = Resolve<IRepository<Module, Guid>>();
             Guid dstFormId = Guid.Empty;
-            await WithUnitOfWorkAsync(async() => {
+            await WithUnitOfWorkAsync(async () =>
+            {
                 var dstModule = await GetOrCreateModuleAsync(dstModuleRepo, srcModule.Name);
 
                 var dstForm = new FormConfiguration
@@ -179,7 +183,7 @@ namespace Shesha.Tests.ConfigurationItems
                 dstForm.Markup = "dst-markup";
 
                 var revision = dstForm.MakeNewRevision(ConfigurationItemRevisionCreationMethod.Manual);
-                
+
                 await dstRevisionRepo.InsertAsync(revision);
                 await dstFormRepo.UpdateAsync(dstForm);
 
@@ -187,7 +191,8 @@ namespace Shesha.Tests.ConfigurationItems
             });
             dstFormId.ShouldNotBe(Guid.Empty, "Failed to create test form");
 
-            await base.WithUnitOfWorkAsync((Func<Task>)(async() => {
+            await base.WithUnitOfWorkAsync((Func<Task>)(async () =>
+            {
                 var importer = Resolve<FormConfigurationImport>();
                 var importContext = new PackageImportContext()
                 {
@@ -214,7 +219,7 @@ namespace Shesha.Tests.ConfigurationItems
 
                 imported.Markup.ShouldBe(srcForm.Markup);
                 imported.ModelType.ShouldBe(srcForm.ModelType);
-            }));            
+            }));
         }
 
         [Fact]
@@ -222,7 +227,8 @@ namespace Shesha.Tests.ConfigurationItems
         {
             var src = PrepareImportContext();
             var srcModule = await src.GetOrCreateModuleAsync("test-import-same-form-twice-module");
-            var srcForm = await src.AddFormAsync(c => {
+            var srcForm = await src.AddFormAsync(c =>
+            {
                 c.Name = "test-import-same-form-twice";
                 c.Module = srcModule;
 
@@ -245,15 +251,17 @@ namespace Shesha.Tests.ConfigurationItems
             var dstFormRevisionRepo = Resolve<IRepository<ConfigurationItemRevision, Guid>>();
             var dstModuleRepo = Resolve<IRepository<Module, Guid>>();
             Guid dstFormId = Guid.Empty;
-            
-            await WithUnitOfWorkAsync(async () => {
+
+            await WithUnitOfWorkAsync(async () =>
+            {
                 var dstModule = await GetOrCreateModuleAsync(dstModuleRepo, srcModule.Name);
 
                 var existingForm = await dstFormRepo.GetByByFullName(srcModule.Name, srcForm.Name).FirstOrDefaultAsync();
-                if (existingForm != null) {
+                if (existingForm != null)
+                {
                     await dstFormRepo.DeleteAsync(existingForm);
                     await uowManager.Current.SaveChangesAsync();
-                }                   
+                }
 
                 var dstForm = new FormConfiguration
                 {
@@ -268,12 +276,12 @@ namespace Shesha.Tests.ConfigurationItems
                 dstForm.Markup = "dst-markup";
 
                 var revision = dstForm.MakeNewRevision(ConfigurationItemRevisionCreationMethod.Manual);
-                
+
                 await dstFormRevisionRepo.InsertAsync(revision);
                 await dstFormRepo.UpdateAsync(dstForm);
             });
-            
-            using (var uow = uowManager.Begin()) 
+
+            using (var uow = uowManager.Begin())
             {
                 var dstForm = await dstFormRepo.GetByByFullName(srcModule.Name, srcForm.Name).FirstOrDefaultAsync();
 
@@ -292,7 +300,7 @@ namespace Shesha.Tests.ConfigurationItems
 
                 var formsCountAfterFirstImport = await dstFormRepo.CountAsync();
                 formsCountAfterFirstImport.ShouldBe(formsCountBeforeImport, "First import should not create new form");
-                
+
                 var revisionsCountAfterFirstImport = await dstFormRevisionRepo.CountAsync(e => e.ConfigurationItem == dstForm);
                 revisionsCountAfterFirstImport.ShouldBe(revisionsCountBeforeImport + 1, "First import should create new form revision");
 
@@ -312,7 +320,7 @@ namespace Shesha.Tests.ConfigurationItems
         }
 
         [Fact]
-        public async Task When_Export_Multiple_ItemsAsync() 
+        public async Task When_Export_Multiple_ItemsAsync()
         {
             var dataFolder = Path.Combine(AppContext.BaseDirectory, "test-data");
             if (!Directory.Exists(dataFolder))
@@ -332,7 +340,8 @@ namespace Shesha.Tests.ConfigurationItems
                 "forms", "form-create", "form-details",
                 "form-templates", "form-template-create", "form-template-details",
                 "modules", "module-create", "module-details"            };
-            await WithUnitOfWorkAsync(async () => {
+            await WithUnitOfWorkAsync(async () =>
+            {
                 var items = await itemsBaseRepo.GetAllListAsync(i => i.Module != null && i.Module.Name.ToLower() == "shesha" && formsToExport.Contains(i.Name));
 
                 var exportContext = new PreparePackageContext(items, LocalIocManager);
@@ -346,12 +355,12 @@ namespace Shesha.Tests.ConfigurationItems
 
             File.Exists(zipFileName).ShouldBeTrue("Export file should be created");
             CompressionService.IsZipFile(zipFileName).ShouldBeTrue("Exported file should be a zip archive");
-            
+
             // todo: check file content
         }
 
         [Fact]
-        public async Task When_Import_Multiple_ItemsAsync() 
+        public async Task When_Import_Multiple_ItemsAsync()
         {
             /*
              * read zip file, prepare a list of item to import
@@ -373,11 +382,12 @@ namespace Shesha.Tests.ConfigurationItems
 
             var uowManager = Resolve<IUnitOfWorkManager>();
             var moduleRepo = Resolve<IRepository<Module, Guid>>();
-            await WithUnitOfWorkAsync(async () => {
-                using (uowManager.Current.DisableFilter(AbpDataFilters.SoftDelete)) 
+            await WithUnitOfWorkAsync(async () =>
+            {
+                using (uowManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                 {
                     var module = await moduleRepo.FirstOrDefaultAsync(e => e.Name == moduleName);
-                    if (module != null && module.IsDeleted) 
+                    if (module != null && module.IsDeleted)
                     {
                         module.IsDeleted = false;
                         await moduleRepo.UpdateAsync(module);
@@ -385,7 +395,8 @@ namespace Shesha.Tests.ConfigurationItems
                 }
             });
 
-            await WithUnitOfWorkAsync(async() => {
+            await WithUnitOfWorkAsync(async () =>
+            {
                 var importer = Resolve<FormConfigurationImport>();
 
                 var packageManager = Resolve<IConfigurationPackageManager>();
@@ -417,7 +428,8 @@ namespace Shesha.Tests.ConfigurationItems
                 }
             });
 
-            await WithUnitOfWorkAsync(async() => {
+            await WithUnitOfWorkAsync(async () =>
+            {
                 var module = await moduleRepo.FirstOrDefaultAsync(e => e.Name == moduleName);
                 module.ShouldNotBeNull($"Module '{moduleName}' should be imported from the package");
 
@@ -425,7 +437,7 @@ namespace Shesha.Tests.ConfigurationItems
                 var form1Name = "imported-form-1";
                 var form1 = await formRepo.FirstOrDefaultAsync(e => e.Module == module && e.Name == form1Name);
                 form1.ShouldNotBeNull($"form '{form1Name}' should be imported from package");
-                
+
                 var form2Name = "imported-form-2";
                 var form2 = await formRepo.FirstOrDefaultAsync(e => e.Module == module && e.Name == form2Name);
                 form2.ShouldNotBeNull($"form '{form2Name}' should be imported from package");
@@ -434,22 +446,22 @@ namespace Shesha.Tests.ConfigurationItems
 
         #region private declarations
 
-        private async Task<Module> GetOrCreateModuleAsync(IRepository<Module, Guid> repo, string moduleName) 
+        private async Task<Module> GetOrCreateModuleAsync(IRepository<Module, Guid> repo, string moduleName)
         {
             var module = await repo.FirstOrDefaultAsync(e => e.Name == moduleName);
-            if (module == null) 
+            if (module == null)
             {
                 module = await repo.InsertAsync(new Module { Name = moduleName });
             }
             return module;
         }
 
-        private TestImportContext PrepareImportContext() 
+        private TestImportContext PrepareImportContext()
         {
             return new TestImportContext(GetMemoryDbProvider());
         }
 
-        private IMemoryDatabaseProvider GetMemoryDbProvider() 
+        private IMemoryDatabaseProvider GetMemoryDbProvider()
         {
             var database = new MemoryDatabase();
             var databaseProvider = Substitute.For<IMemoryDatabaseProvider>();
@@ -458,8 +470,8 @@ namespace Shesha.Tests.ConfigurationItems
             return databaseProvider;
         }
 
-        private static async Task<FormConfiguration> MockFormConfigurationAsync(Func<FormConfiguration, Task> initAction) 
-        { 
+        private static async Task<FormConfiguration> MockFormConfigurationAsync(Func<FormConfiguration, Task> initAction)
+        {
             var id = Guid.NewGuid();
             var formConfig = new FormConfiguration
             {
@@ -477,21 +489,21 @@ namespace Shesha.Tests.ConfigurationItems
         {
             public IMemoryDatabaseProvider DbProvider { get; set; }
             public IRepository<FormConfiguration, Guid> FormRepo { get; set; }
-            public IRepository<ConfigurationItemRevision, Guid> FormRevisionRepo { get; set; }             
+            public IRepository<ConfigurationItemRevision, Guid> FormRevisionRepo { get; set; }
             public IRepository<ConfigurationItem, Guid> ConfigurationItemRepo { get; set; }
             public IRepository<Module, Guid> ModuleRepo { get; set; }
             public IRepository<FrontEndApp, Guid> FrontEndAppRepo { get; set; }
-            public async Task<FormConfiguration> AddFormAsync(Func<FormConfiguration, Task> initAction) 
+            public async Task<FormConfiguration> AddFormAsync(Func<FormConfiguration, Task> initAction)
             {
                 var form = await MockFormConfigurationAsync(initAction);
                 await FormRepo.InsertAsync(form);
                 return form;
             }
 
-            public async Task<Module> GetOrCreateModuleAsync(string moduleName) 
+            public async Task<Module> GetOrCreateModuleAsync(string moduleName)
             {
                 var module = await ModuleRepo.FirstOrDefaultAsync(m => m.Name == moduleName);
-                if (module == null) 
+                if (module == null)
                 {
                     module = new Module { Id = Guid.NewGuid(), Name = moduleName };
                     await ModuleRepo.InsertAsync(module);
@@ -499,7 +511,7 @@ namespace Shesha.Tests.ConfigurationItems
                 return module;
             }
 
-            public IRepository<T, TId> GetRepository<T, TId>() where T: class, IEntity<TId>
+            public IRepository<T, TId> GetRepository<T, TId>() where T : class, IEntity<TId>
             {
                 return new MemoryRepository<T, TId>(DbProvider);
             }

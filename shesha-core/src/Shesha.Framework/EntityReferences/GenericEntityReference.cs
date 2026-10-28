@@ -22,7 +22,7 @@ namespace Shesha.EntityReferences
 
         public GenericEntityReference(object entity)
         {
-            if (entity == null) 
+            if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
             _entity = entity;
             if (_entity.GetType().GetProperty("Id") == null)
@@ -64,7 +64,7 @@ namespace Shesha.EntityReferences
 
         public bool Equals(GenericEntityReference? obj)
         {
-            return obj != null && 
+            return obj != null &&
                 Id == obj.Id && _className == obj._className;
         }
 
@@ -86,7 +86,7 @@ namespace Shesha.EntityReferences
         public override int GetHashCode()
         {
             return string.IsNullOrWhiteSpace(Id)
-                ? 0 
+                ? 0
                 : Id.GetHashCode();
         }
     }

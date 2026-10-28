@@ -6,12 +6,12 @@ using System.Linq;
 
 namespace Shesha.Settings.Ioc
 {
-    public interface ISettingsAccessorFactory 
+    public interface ISettingsAccessorFactory
     {
         TAccessor BuildAccessor<TAccessor>() where TAccessor : class, ISettingAccessors;
     }
 
-    public class SettingsAccessorFactory: ISettingsAccessorFactory
+    public class SettingsAccessorFactory : ISettingsAccessorFactory
     {
         private readonly IocManager _iocManager;
 
@@ -20,7 +20,7 @@ namespace Shesha.Settings.Ioc
             _iocManager = iocManager;
         }
 
-        public TAccessor BuildAccessor<TAccessor>() where TAccessor : class, ISettingAccessors 
+        public TAccessor BuildAccessor<TAccessor>() where TAccessor : class, ISettingAccessors
         {
             var builder = new SettingsTypeBuilder();
 

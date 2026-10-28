@@ -52,7 +52,7 @@ namespace Shesha.Extensions
         /// Get name of the configurable module to which the specified assembly belongs to
         /// </summary>
         /// <returns></returns>
-        public static string? GetConfigurableModuleName(this Assembly assembly) 
+        public static string? GetConfigurableModuleName(this Assembly assembly)
         {
             return GetConfigurableModuleInfo(assembly)?.Name;
         }
@@ -100,7 +100,8 @@ namespace Shesha.Extensions
             _iocResolver = iocResolver;
 
             var moduleTypes = typeFinder.Find(t => !t.IsAbstract && typeof(SheshaModule).IsAssignableFrom(t)).ToList();
-            var moduleItems = moduleTypes.Select(mt => {
+            var moduleItems = moduleTypes.Select(mt =>
+            {
                 var instance = GetModuleInstance(mt);
                 return instance != null
                     ? new MainModuleCacheItem(instance)
@@ -111,7 +112,8 @@ namespace Shesha.Extensions
                 .ToList();
 
             var subModuleTypes = typeFinder.Find(t => !t.IsAbstract && typeof(ISheshaSubmodule).IsAssignableFrom(t)).ToList();
-            var subModuleItems = subModuleTypes.Select(sm => {
+            var subModuleItems = subModuleTypes.Select(sm =>
+            {
                 var subModuleInstance = StaticContext.IocManager.IsRegistered(sm)
                     ? StaticContext.IocManager.Resolve(sm) as ISheshaSubmodule
                     : null;

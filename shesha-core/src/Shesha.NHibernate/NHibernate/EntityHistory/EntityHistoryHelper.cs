@@ -128,7 +128,7 @@ namespace Shesha.NHibernate.EntityHistory
 
             var entityTypeFullName = typeOfEntity.FullName;
             var entityEntry = Session.GetEntryOrNull(entity);
-            if (entityEntry == null) 
+            if (entityEntry == null)
                 return null;
 
             var id = entityEntry.Id;
@@ -137,9 +137,9 @@ namespace Shesha.NHibernate.EntityHistory
             if (Session.IsEntityDeleted(entity)) changeType = EntityChangeType.Deleted;
             else
                 if (entityEntry.LoadedState == null)
-                changeType = EntityChangeType.Created;
-            else
-                changeType = EntityChangeType.Updated;
+                    changeType = EntityChangeType.Created;
+                else
+                    changeType = EntityChangeType.Updated;
 
             var className = NHibernateProxyHelper.GuessClass(entity).FullName;
             var sessionImpl = Session.GetSessionImplementation();
@@ -161,7 +161,7 @@ namespace Shesha.NHibernate.EntityHistory
             }
 
             var dirtyProps = dirtyP.Select(i => new DirtyPropertyInfo
-                    { Name = persister.PropertyNames[i], OldValue = entityEntry.LoadedState?[i], NewValue = currentState[i] })
+            { Name = persister.PropertyNames[i], OldValue = entityEntry.LoadedState?[i], NewValue = currentState[i] })
                 .ToList();
 
             var entityChange = EntityChanges.FirstOrDefault(x => x.EntityId == id?.ToString() && x.EntityTypeFullName == entityTypeFullName)
@@ -347,7 +347,7 @@ namespace Shesha.NHibernate.EntityHistory
             return propertyChanges;
         }
 
-        private Int64? GetRefListValue(Object value) 
+        private Int64? GetRefListValue(Object value)
         {
             if (value == null)
                 return null;
@@ -400,8 +400,8 @@ namespace Shesha.NHibernate.EntityHistory
             var abpSession = _iocResolver.Resolve<IAbpSession>();
 
             var entityType = entity.GetType().StripCastleProxyType();
-            var propertyType = propInfo.PropertyType.IsListType() && propInfo.PropertyType.IsGenericType 
-                ? propInfo.PropertyType.GetGenericArguments()[0] 
+            var propertyType = propInfo.PropertyType.IsListType() && propInfo.PropertyType.IsGenericType
+                ? propInfo.PropertyType.GetGenericArguments()[0]
                 : propInfo.PropertyType;
 
             var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(null, entityType.Namespace.NotNull(), entityType.Name, true));
@@ -410,7 +410,7 @@ namespace Shesha.NHibernate.EntityHistory
             var audited = propInfo.GetCustomAttribute<AuditedAttribute>();
             var auditedAsMany = propInfo.GetCustomAttribute<AuditedAsManyToManyAttribute>();
             var auditedAsP = propInfo.GetCustomAttributes().FirstOrDefault(x => x.GetType().FindBaseGenericType(typeof(AuditedAsManyToManyAttribute<,,>)) != null)?.GetType();
-            var auditedAsPC = propInfo.GetCustomAttributes().FirstOrDefault(x => x.GetType().FindBaseGenericType(typeof(AuditedAsManyToManyAttribute<,,,>))!= null)?.GetType();
+            var auditedAsPC = propInfo.GetCustomAttributes().FirstOrDefault(x => x.GetType().FindBaseGenericType(typeof(AuditedAsManyToManyAttribute<,,,>)) != null)?.GetType();
 
             var defaultCreatorType = typeof(EntityHistoryEventCreatorBase<,>).MakeGenericType(entityType, propertyType);
 
@@ -474,7 +474,7 @@ namespace Shesha.NHibernate.EntityHistory
                 if (Activator.CreateInstance(childCreator) is IEntityHistoryEventCreator childInstance)
                 {
                     var (addItem, removeItem) = childInstance.GetListNewAndRemoved(entityChangesInfo);
-                    
+
                     if (addItem.Any() || removeItem.Any())
                     {
                         foreach (var add in addItem)
@@ -581,8 +581,8 @@ namespace Shesha.NHibernate.EntityHistory
             };
 
             // Add description for property change
-            var entityHistoryEvents = EntityHistoryEvents.Where(x => !string.IsNullOrEmpty(x.PropertyName) && 
-                    x.EntityChange != null && 
+            var entityHistoryEvents = EntityHistoryEvents.Where(x => !string.IsNullOrEmpty(x.PropertyName) &&
+                    x.EntityChange != null &&
                     x.EventType != EntityHistoryCommonEventTypes.PROPERTY_CHANGE_AS_EVENT)
                 .ToList();
             foreach (var entityHistoryEvent in entityHistoryEvents)

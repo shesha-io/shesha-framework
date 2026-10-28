@@ -9,7 +9,7 @@
         /// <returns></returns>
         IUpdateReferenceListSyntax SetDescription(string description);
 
-        
+
         /// <summary>
         /// Set NoSelectionValue (default value is -999)
         /// </summary>

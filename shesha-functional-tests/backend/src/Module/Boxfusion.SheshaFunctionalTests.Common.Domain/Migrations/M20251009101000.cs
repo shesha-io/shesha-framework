@@ -4,7 +4,7 @@ using Shesha.FluentMigrator;
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
 {
     [Migration(20251009101000)]
-    public class M20251009101000: OneWayMigration
+    public class M20251009101000 : OneWayMigration
     {
         public override void Up()
         {

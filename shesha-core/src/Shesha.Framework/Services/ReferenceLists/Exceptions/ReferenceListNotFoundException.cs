@@ -16,7 +16,7 @@ namespace Shesha.Services.ReferenceLists.Exceptions
 
         public ReferenceListNotFoundException(ReferenceListIdentifier refListId) : this(refListId.Module, refListId.Name)
         {
-            
+
         }
     }
 }

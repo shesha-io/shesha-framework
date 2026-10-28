@@ -28,7 +28,7 @@ namespace Shesha.Settings
 
         public void Define(ISettingDefinitionContext context)
         {
-            using (var uow = _uowManager.Begin()) 
+            using (var uow = _uowManager.Begin())
             {
                 var settings = context.GetAll();
                 var dbSettings = _settingConfigurationRepository.GetAll().Where(sc => sc.Module != null && sc.Module.IsEnabled && !sc.Module.IsDeleted).ToList();

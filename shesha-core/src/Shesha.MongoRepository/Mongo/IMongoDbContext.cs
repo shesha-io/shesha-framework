@@ -3,7 +3,7 @@ using System;
 
 namespace Shesha.MongoRepository.Mongo
 {
-    public interface IMongoDbContext: IDisposable
+    public interface IMongoDbContext : IDisposable
     {
         string ConnectionString { get; }
         string DatabaseName { get; }

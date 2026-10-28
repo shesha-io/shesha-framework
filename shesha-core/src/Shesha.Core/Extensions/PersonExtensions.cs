@@ -13,7 +13,7 @@ namespace Shesha.Extensions
         /// </summary>
         /// <param name="person">Person</param>
         /// <returns></returns>
-        public static string? GetEmail(this Person person) 
+        public static string? GetEmail(this Person person)
         {
             return StringHelper.FirstNotEmpty(person.EmailAddress1, person.EmailAddress2);
         }

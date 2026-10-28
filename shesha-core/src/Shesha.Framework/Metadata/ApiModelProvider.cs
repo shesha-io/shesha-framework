@@ -30,7 +30,8 @@ namespace Shesha.Metadata
                     httpConstraint.HttpMethods.Any(m => m == System.Net.Http.HttpMethod.Post.ToString() || m == System.Net.Http.HttpMethod.Put.ToString() || m == System.Net.Http.HttpMethod.Get.ToString())
                     )
                 )
-                .SelectMany(a => {
+                .SelectMany(a =>
+                {
                     var types = a.Parameters.Select(p => p.ParameterType).ToList();
                     if (a is ControllerActionDescriptor actionDesc)
                     {
@@ -59,7 +60,7 @@ namespace Shesha.Metadata
                         t != typeof(object) &&
                         !(t.Namespace ?? string.Empty).StartsWith("Abp") &&
                         // skip entity types, they shouldn't be returned by the application service at all
-                        !t.IsEntityType() && 
+                        !t.IsEntityType() &&
                         !t.IsJsonEntityType())
                     .ToList();
 
@@ -96,7 +97,8 @@ namespace Shesha.Metadata
                 }
 
                 return parameterTypes;
-            };
+            }
+            ;
 
             var parameterTypes = getTypes(allTypes.Distinct());
 

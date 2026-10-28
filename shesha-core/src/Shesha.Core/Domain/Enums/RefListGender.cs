@@ -1,5 +1,5 @@
-﻿using System.ComponentModel;
-using Shesha.Domain.Attributes;
+﻿using Shesha.Domain.Attributes;
+using System.ComponentModel;
 
 namespace Shesha.Domain.Enums
 {

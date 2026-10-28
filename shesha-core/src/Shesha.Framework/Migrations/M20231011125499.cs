@@ -49,7 +49,7 @@ BEGIN
 	end
 END");
 
-			IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE FUNCTION public.""log_Core_Persons_UpdateContacts_AU""()
+            IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE FUNCTION public.""log_Core_Persons_UpdateContacts_AU""()
  RETURNS trigger
  LANGUAGE plpgsql
 AS $function$
@@ -72,7 +72,7 @@ END;
 $function$
 ;");
 
-			IfDatabase("PostgreSql").Execute.Sql(@"update 
+            IfDatabase("PostgreSql").Execute.Sql(@"update 
 	""AbpUsers"" u 
 set 
 	""PhoneNumber"" = p.""MobileNumber1"",
