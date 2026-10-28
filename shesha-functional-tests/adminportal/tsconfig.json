@@ -19,6 +19,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "noEmit": true,
+    "types": ["node", "react"],
     "paths": {
       "@/*": [
         "./src/*"

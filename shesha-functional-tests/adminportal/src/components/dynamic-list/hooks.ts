@@ -3,13 +3,6 @@ import useSWR, { SWRResponse } from 'swr';
 import { URLS } from "./fetchers";
 import { Organisations } from "./models";
 
-/**
- * Dynamic data result
- */
-export interface IDynamicDataResult {
-  [key: string]: unknown;
-}
-
 export const useOrganisationalAccounts = (): SWRResponse<Organisations[], Error> => {
   const httpClient = useHttpClient();
 

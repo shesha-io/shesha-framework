@@ -149,7 +149,7 @@ const IconPicker: FC<IIconPickerProps> = ({
   // Tracks which family the in-flight load belongs to, so a slow, superseded request can't overwrite a newer selection.
   const activeLoadRequestRef = useRef<string | undefined>(undefined);
 
-  const pickerOptions = useMemo(getPickerOptions, []);
+  const pickerOptions = useMemo(() => getPickerOptions(), []);
   const selectedOption = useMemo<IPickerOption>(
     () => pickerOptions.find((option) => option.key === selectedOptionKey) ?? DEFAULT_OPTION,
     [pickerOptions, selectedOptionKey],

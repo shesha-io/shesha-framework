@@ -19,6 +19,6 @@ export function useDeepCompareEffect(effect: React.EffectCallback, deps?: Depend
 
 type AnyFunction = (...args: never[]) => unknown;
 export function useDeepCompareCallback<T extends AnyFunction>(callback: T, deps?: DependencyList): T {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   return useCallback(callback, useDeepCompareMemoize(deps));
 }

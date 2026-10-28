@@ -35,6 +35,7 @@ export const useFormEvaluatedFilterWithReadiness = (args: UseFormEvaluatedFilter
 
   const prevChanged = useRef<number>(0);
   if (contextProxyRef.changed)
+    // eslint-disable-next-line react-hooks/purity
     prevChanged.current = Date.now();
 
   var keys = Object.keys({ ...contextProxyRef }) as Array<keyof typeof contextProxyRef>;
