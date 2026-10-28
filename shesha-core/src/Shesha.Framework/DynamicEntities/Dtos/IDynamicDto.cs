@@ -1,6 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Entities;
-using Newtonsoft.Json.Linq;
 
 namespace Shesha.DynamicEntities.Dtos
 {

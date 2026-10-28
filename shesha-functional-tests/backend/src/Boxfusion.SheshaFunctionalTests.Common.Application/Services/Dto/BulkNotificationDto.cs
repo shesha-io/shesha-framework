@@ -2,7 +2,6 @@
 using Shesha.DelayedUpdate;
 using Shesha.Domain;
 using Shesha.EntityReferences;
-using Shesha.Notifications.Dto;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto
 {

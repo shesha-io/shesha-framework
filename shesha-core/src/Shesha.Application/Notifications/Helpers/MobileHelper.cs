@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Shesha.Notifications.Helpers
+﻿namespace Shesha.Notifications.Helpers
 {
     public static class MobileHelper
     {

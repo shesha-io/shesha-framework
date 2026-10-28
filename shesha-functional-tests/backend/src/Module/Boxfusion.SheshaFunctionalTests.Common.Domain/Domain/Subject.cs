@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Abp.Domain.Entities.Auditing;
-using Intent.RoslynWeaver.Attributes;
+﻿using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
+using System;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {

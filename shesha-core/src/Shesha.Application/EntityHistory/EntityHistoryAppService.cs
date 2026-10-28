@@ -1,7 +1,6 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Shesha.Authorization;
-using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.QuickSearch;

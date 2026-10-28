@@ -1,9 +1,7 @@
 ﻿using Abp.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Shesha.Swagger
 {

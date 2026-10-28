@@ -7,7 +7,6 @@ using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
-using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services.Settings;
 using Shesha.Services.Settings.Dto;

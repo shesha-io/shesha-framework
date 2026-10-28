@@ -1,5 +1,4 @@
 ﻿using Abp.Dependency;
-using Castle.Core.Logging;
 using Castle.DynamicProxy;
 using Newtonsoft.Json.Linq;
 using System;

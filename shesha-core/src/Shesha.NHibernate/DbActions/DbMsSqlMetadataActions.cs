@@ -4,9 +4,7 @@ using NHibernate;
 using Shesha.DynamicEntities.DbGenerator;
 using Shesha.NHibernate.UoW;
 using Shesha.Reflection;
-using Shesha.Utilities;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.DbActions

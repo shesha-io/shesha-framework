@@ -6,7 +6,6 @@ using FluentMigrator.Builders.Alter.Table;
 using FluentMigrator.Builders.Create.Table;
 using FluentMigrator.Infrastructure;
 using FluentMigrator.Model;
-using NHibernate.Type;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;

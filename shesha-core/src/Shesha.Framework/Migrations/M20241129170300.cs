@@ -1,7 +1,5 @@
 ﻿using FluentMigrator;
-using FluentMigrator.Expressions;
 using Shesha.FluentMigrator;
-using System;
 
 namespace Shesha.Migrations
 {

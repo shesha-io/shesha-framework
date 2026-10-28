@@ -2,8 +2,6 @@
 using Abp.AutoMapper;
 using Shesha.Domain;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Shesha.DeviceRegistrations.Dto
 {

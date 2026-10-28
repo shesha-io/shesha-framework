@@ -24,7 +24,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using static Shesha.ConfigurationStudio.Dtos.GetModulesResponse;
 
 namespace Shesha.ConfigurationStudio
 {

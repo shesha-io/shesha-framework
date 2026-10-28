@@ -1,6 +1,4 @@
-﻿using Abp.Extensions;
-
-namespace Shesha.Extensions
+﻿namespace Shesha.Extensions
 {
     public static class ValueExtensions
     {

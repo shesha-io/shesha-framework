@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
-using Abp.Domain.Entities;
-using Shesha.Utilities;
+﻿using Shesha.Utilities;
+using System;
 
 namespace Shesha.EntityHistory
 {

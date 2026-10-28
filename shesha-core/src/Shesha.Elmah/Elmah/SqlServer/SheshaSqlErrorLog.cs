@@ -19,7 +19,7 @@ namespace Shesha.Elmah.SqlServer
         private const int MaxAppNameLength = 60;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SqlErrorLog" /> class
+        ///     Initializes a new instance of the <see cref="SheshaSqlErrorLog" /> class
         ///     using a dictionary of configured settings.
         /// </summary>
         public SheshaSqlErrorLog(IOptions<ElmahOptions> option)
@@ -28,7 +28,7 @@ namespace Shesha.Elmah.SqlServer
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SqlErrorLog" /> class
+        ///     Initializes a new instance of the <see cref="SheshaSqlErrorLog" /> class
         ///     to use a specific connection string for connecting to the database.
         /// </summary>
         public SheshaSqlErrorLog(string connectionString)

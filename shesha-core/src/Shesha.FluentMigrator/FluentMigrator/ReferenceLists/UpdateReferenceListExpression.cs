@@ -1,6 +1,5 @@
 ﻿using FluentMigrator;
 using FluentMigrator.Expressions;
-using System;
 
 namespace Shesha.FluentMigrator.ReferenceLists
 {

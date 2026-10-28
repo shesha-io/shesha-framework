@@ -1,6 +1,4 @@
-﻿using Shesha.Domain;
-
-namespace Shesha.Settings.Dto
+﻿namespace Shesha.Settings.Dto
 {
     /// <summary>
     /// Setting identifier, is used in the settings generic app service

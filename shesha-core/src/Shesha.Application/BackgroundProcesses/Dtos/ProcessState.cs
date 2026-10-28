@@ -1,6 +1,4 @@
-﻿using Shesha.BackgroundProcesses.Models;
-
-namespace Shesha.BackgroundProcesses.Dtos
+﻿namespace Shesha.BackgroundProcesses.Dtos
 {
     /// <summary>
     /// Represents state of background process

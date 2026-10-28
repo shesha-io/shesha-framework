@@ -1,5 +1,4 @@
 using Shesha.Domain.Attributes;
-using Shesha.DynamicEntities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

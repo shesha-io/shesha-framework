@@ -5,7 +5,7 @@ using Shesha.Utilities;
 namespace Shesha.GraphQL.Provider
 {
     /// <summary>
-    /// Alternative camel case converter. Is used because of wrong conversion logic in the standard <see cref="GraphQL.Conversion.CamelCaseNameConverter"/>. Example of bug in the standard converter: "IMEI" => "iMEI" (correct result is "imei")
+    /// Alternative camel case converter. Is used because of wrong conversion logic in the standard <see cref="CamelCaseNameConverter"/>. Example of bug in the standard converter: "IMEI" => "iMEI" (correct result is "imei")
     /// Camel case name converter; set as the default <see cref="INameConverter"/> within <see cref="Schema.NameConverter"/>.
     /// Always used by all introspection fields regardless of the selected <see cref="INameConverter"/>.
     /// </summary>

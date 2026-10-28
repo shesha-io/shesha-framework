@@ -1,6 +1,5 @@
 ﻿using Abp.Authorization.Users;
 using Abp.Extensions;
-using Castle.Components.DictionaryAdapter.Xml;
 using Newtonsoft.Json;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;

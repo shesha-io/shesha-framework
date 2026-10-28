@@ -1,6 +1,4 @@
-﻿using Shesha.Domain;
-
-namespace Shesha.Settings.Dto
+﻿namespace Shesha.Settings.Dto
 {
     /// <summary>
     /// Dynamic setting Get setting value input

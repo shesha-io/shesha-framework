@@ -1,6 +1,5 @@
 ﻿using Abp.Configuration.Startup;
 using Abp.Domain.Uow;
-using Abp.Extensions;
 using Abp.MultiTenancy;
 using Abp.Runtime.Session;
 using Shesha.FluentMigrator;

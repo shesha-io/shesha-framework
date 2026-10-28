@@ -1,5 +1,4 @@
 ﻿using Abp.Dependency;
-using Abp.Domain.Repositories;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.Runtime.Caching;
