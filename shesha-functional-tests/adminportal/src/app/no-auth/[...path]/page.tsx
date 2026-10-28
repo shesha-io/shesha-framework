@@ -1,7 +1,7 @@
 "use client";
 
-import React, { FC, use } from 'react';
-import { FormIdentifier, DynamicPage } from '@shesha-io/reactjs';
+import { FC, use } from 'react';
+import { FormIdentifier, DynamicPage, isNullOrWhiteSpace } from '@shesha-io/reactjs';
 import { notFound } from 'next/navigation';
 
 interface AsyncPageProps {
@@ -26,7 +26,7 @@ const DynamicPageInternal: FC<AsyncPageProps> = (props) => {
   const moduleName = fullPath[0];
   const formName = fullPath[1];
 
-  if (!formName)
+  if (isNullOrWhiteSpace(formName))
     return notFound();
 
   const formId: FormIdentifier = {

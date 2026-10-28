@@ -151,7 +151,7 @@ const baseTsConfig = {
             createClass: "createReactClass",
             pragma: "React",
             fragment: "Fragment",
-            version: "detect",
+            version: "19",
             flowVersion: "0.53",
         },
 

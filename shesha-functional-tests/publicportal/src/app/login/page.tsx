@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
   ConfigurableForm,
   FormFullName,
@@ -8,11 +7,9 @@ import {
   PageWithLayout,
 } from "@shesha-io/reactjs";
 
-interface IProps {}
-
-const Login: PageWithLayout<IProps> = () => (
+const Login: PageWithLayout = () => (
   <ConfigurableForm
-    mode={"edit"}
+    mode="edit"
     formId={LOGIN_CONFIGURATION as FormFullName}
   />
 );

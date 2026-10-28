@@ -3,7 +3,7 @@ import { DependencyList, useMemo, useRef } from 'react';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 
 export function useDeepCompareMemo<T>(callback: () => T, dependencies: DependencyList): T {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   return useMemo(callback, useDeepCompareMemoize(dependencies));
 }
 
@@ -24,6 +24,6 @@ export function useDeepCompareMemoKeepReference<T>(callback: () => T, dependenci
       ref.current = value;
     }
     return ref.current as T;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   }, useDeepCompareMemoize(dependencies));
 }
