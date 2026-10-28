@@ -5,7 +5,7 @@ namespace Shesha.Otp.Dto
     /// <summary>
     /// Verify OTP input
     /// </summary>
-    public class VerifyPinInput: IVerifyPinInput
+    public class VerifyPinInput : IVerifyPinInput
     {
         /// <summary>
         /// Unique runtime identifier of the operation. Is used for resending

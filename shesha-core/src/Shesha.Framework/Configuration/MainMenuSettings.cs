@@ -12,8 +12,8 @@ namespace Shesha.Configuration
                 return defaultInstance = defaultInstance ??
                     new MainMenuSettings()
                     {
-                       Version = 2,
-                       Items = new List<object>(),
+                        Version = 2,
+                        Items = new List<object>(),
                     };
             }
         }

@@ -13,13 +13,13 @@ using System.Threading.Tasks;
 
 namespace Shesha.MappingMetadata
 {
-    public class MappingMetadataProvider: IMappingMetadataProvider, ITransientDependency
+    public class MappingMetadataProvider : IMappingMetadataProvider, ITransientDependency
     {
         private readonly INhCurrentSessionContext _currentSessionContext;
         private readonly ISessionFactoryFactory _sessionFactoryFactory;
 
         public MappingMetadataProvider(
-            INhCurrentSessionContext currentSessionContext, 
+            INhCurrentSessionContext currentSessionContext,
             ISessionFactoryFactory sessionFactoryFactory)
         {
             _currentSessionContext = currentSessionContext;
@@ -95,10 +95,10 @@ namespace Shesha.MappingMetadata
             }
             else
             {
-                foreach(var property in propsMetadata)
+                foreach (var property in propsMetadata)
                 {
                     var propName = property.ColumnNames.FirstOrDefault(x => x.ToLower().UnescapeDbObjectName().EndsWith("classname"));
-                    if (!string.IsNullOrWhiteSpace(propName)) 
+                    if (!string.IsNullOrWhiteSpace(propName))
                     {
                         var sql = $"update {property.TableName.EscapeDbObjectName()} set {propName.EscapeDbObjectName()} = '{newValue}' where {propName.EscapeDbObjectName()} = '{oldValue}'";
                         var q = session.CreateSQLQuery(sql);

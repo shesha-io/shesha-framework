@@ -30,7 +30,7 @@ namespace Shesha.ConfigurationStudio
     /// <summary>
     /// Configuration Studio application service
     /// </summary>
-    public partial class ConfigurationStudioAppService: SheshaAppServiceBase
+    public partial class ConfigurationStudioAppService : SheshaAppServiceBase
     {
         public IConfigurationFrameworkRuntime CfRuntime { get; set; }
         public IModuleManager ModuleManager { get; set; }
@@ -86,7 +86,7 @@ namespace Shesha.ConfigurationStudio
              */
             var itemsToExpose = await ItemRepo.GetListInBatchesAsync(request.ItemIds);
 
-            using (CfRuntime.DisableConfigurationTracking()) 
+            using (CfRuntime.DisableConfigurationTracking())
             {
                 foreach (var item in itemsToExpose)
                 {
@@ -110,12 +110,12 @@ namespace Shesha.ConfigurationStudio
             {
                 var dto = await manager.MapToDtoAsync(item);
                 return dto;
-            } 
+            }
             else
                 throw new AbpAuthorizationException($"You are not authorized for this {request.ItemType} {request.Module}: {request.Name}");
         }
 
-        public Task<List<IConfigurationItemTypeDto>> GetAvailableItemTypesAsync() 
+        public Task<List<IConfigurationItemTypeDto>> GetAvailableItemTypesAsync()
         {
             return CiHelper.GetAvailableItemTypesAsync();
         }
@@ -152,7 +152,7 @@ namespace Shesha.ConfigurationStudio
         }
 
         [HttpPut]
-        public async Task<IConfigurationItemDto> UpdateItemAsync(UpdateConfigurationItemRequest request) 
+        public async Task<IConfigurationItemDto> UpdateItemAsync(UpdateConfigurationItemRequest request)
         {
             var item = await ItemRepo.GetAsync(request.Id);
             item.Module?.EnsureEditable();
@@ -165,7 +165,7 @@ namespace Shesha.ConfigurationStudio
         }
 
         private async Task GenericUpdateItemAsync<TItem, TDynamicDto>(TItem entity, TDynamicDto input)
-            where TItem: ConfigurationItem, IEntity<Guid>
+            where TItem : ConfigurationItem, IEntity<Guid>
             where TDynamicDto : class, IDynamicDto<TItem, Guid>
         {
             var itemResult = await MapDynamicDtoToEntityAsync<TDynamicDto, TItem, Guid>(input, entity);
@@ -177,7 +177,7 @@ namespace Shesha.ConfigurationStudio
             var result = await DelayedUpdateAsync<TDynamicDto, TItem, Guid>(input, entity);
             result.ValidationResults.ThrowValidationExceptionIfAny(L);
 
-            await UnitOfWorkManager.Current.SaveChangesAsync();            
+            await UnitOfWorkManager.Current.SaveChangesAsync();
         }
 
         private async Task<ConfigurationItem> NonGenericUpdateItemAsync(ConfigurationItem entity, IDynamicDto<ConfigurationItem, Guid> input)
@@ -186,7 +186,7 @@ namespace Shesha.ConfigurationStudio
             var dtoType = typeof(DynamicDto<,>).MakeGenericType([itemType, typeof(Guid)]);
 
             var dto = ActivatorHelper.CreateNotNullObject(dtoType);
-            
+
             (dto as IEntityDto<Guid>).NotNull().Id = input.Id;
             (dto as IHasJObjectField).NotNull()._jObject = input._jObject;
 
@@ -199,8 +199,8 @@ namespace Shesha.ConfigurationStudio
         }
 
         [HttpDelete]
-        public async Task DeleteItemAsync(DeleteConfigurationItemRequest request) 
-         {
+        public async Task DeleteItemAsync(DeleteConfigurationItemRequest request)
+        {
             var item = await ItemRepo.GetAsync(request.ItemId);
             item.Module?.EnsureEditable();
 
@@ -231,7 +231,7 @@ namespace Shesha.ConfigurationStudio
 
         #endregion
 
-        public async Task<GetItemRevisionsResponse> GetItemRevisionsAsync(GetItemRevisionsRequest request) 
+        public async Task<GetItemRevisionsResponse> GetItemRevisionsAsync(GetItemRevisionsRequest request)
         {
             var revisions = await (await HistoryRepo.GetAllAsync()).Where(e => e.ConfigurationItemId == request.ItemId).OrderByDescending(e => e.CreationTime).ToListAsync();
 
@@ -253,14 +253,15 @@ namespace Shesha.ConfigurationStudio
                 CreatorUserName = e.CreatorUser?.FullName ?? string.Empty,
             }).ToList();
 
-            return new GetItemRevisionsResponse { 
+            return new GetItemRevisionsResponse
+            {
                 Revisions = dtos
             };
         }
 
         [HttpPut]
-        public async Task RenameRevisionAsync(RenameRevisionRequest request) 
-        { 
+        public async Task RenameRevisionAsync(RenameRevisionRequest request)
+        {
             var revision = await RevisionRepo.GetAsync(request.RevisionId);
             revision.ConfigurationItem.Module?.EnsureEditable();
 
@@ -270,20 +271,20 @@ namespace Shesha.ConfigurationStudio
         }
 
         [HttpPost]
-        public async Task RestoreItemRevisionAsync(RestoreItemRevisionRequest request) 
+        public async Task RestoreItemRevisionAsync(RestoreItemRevisionRequest request)
         {
             var item = await ItemRepo.GetAsync(request.ItemId);
             item.Module?.EnsureEditable();
 
             var revision = await RevisionRepo.GetAsync(request.RevisionId);
-            if (revision.ConfigurationItem != item) 
+            if (revision.ConfigurationItem != item)
             {
                 var closestParent = item.Closest(e => e.ExposedFrom, e => e == revision.ConfigurationItem);
                 if (closestParent == null)
                     throw new AbpValidationException("Selected revision doesn't belong to the item hierarchy");
             }
-                
-            
+
+
             var manager = CiHelper.GetManagerByDiscriminator(item.ItemType);
 
             await manager.RestoreRevisionAsync(item, revision);
@@ -308,7 +309,7 @@ namespace Shesha.ConfigurationStudio
 
         [HttpGet]
         [AllowAnonymous]
-        public Task<GetModulesResponse> GetModulesAsync() 
+        public Task<GetModulesResponse> GetModulesAsync()
         {
             var modules = ModuleManager.GetModuleInfos();
             var response = new GetModulesResponse

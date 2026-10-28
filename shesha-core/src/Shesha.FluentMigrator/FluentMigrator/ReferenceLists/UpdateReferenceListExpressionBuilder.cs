@@ -28,7 +28,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
             return this;
         }
 
-        public IUpdateReferenceListSyntax DeleteItem(Int64 itemValue) 
+        public IUpdateReferenceListSyntax DeleteItem(Int64 itemValue)
         {
             _context.Expressions.Add(new DeleteReferenceListItemExpression(_dbmsType, _context.QuerySchema, Expression.Namespace, Expression.Name)
             {
@@ -36,7 +36,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
             });
 
             return this;
-        }        
+        }
 
         public IUpdateReferenceListSyntax DeleteAllItems()
         {
@@ -48,10 +48,10 @@ namespace Shesha.FluentMigrator.ReferenceLists
             return this;
         }
 
-        public IUpdateReferenceListSyntax SetDescription(string description) 
+        public IUpdateReferenceListSyntax SetDescription(string description)
         {
             Expression.Description.Set(description);
-            
+
             return this;
         }
 

@@ -30,49 +30,49 @@ namespace Shesha.Authorization.Users
     public class UserManager : AbpUserManager<Role, User>
     {
         private readonly IOptions<IdentityOptions> _optionsAccessor;
-        
+
         private readonly IPasswordComplexitySettings _passwordComplexitySettings;
         private readonly ISecuritySettings _securitySettings;
 
         public UserManager(
             RoleManager roleManager,
-            UserStore store, 
-            IOptions<IdentityOptions> optionsAccessor, 
-            IPasswordHasher<User> passwordHasher, 
-            IEnumerable<IUserValidator<User>> userValidators, 
+            UserStore store,
+            IOptions<IdentityOptions> optionsAccessor,
+            IPasswordHasher<User> passwordHasher,
+            IEnumerable<IUserValidator<User>> userValidators,
             IEnumerable<IPasswordValidator<User>> passwordValidators,
-            ILookupNormalizer keyNormalizer, 
-            IdentityErrorDescriber errors, 
-            IServiceProvider services, 
-            ILogger<UserManager<User>> logger, 
-            IPermissionManager permissionManager, 
-            IUnitOfWorkManager unitOfWorkManager, 
-            ICacheManager cacheManager, 
-            IRepository<OrganizationUnit, long> organizationUnitRepository, 
-            IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository, 
-            IOrganizationUnitSettings organizationUnitSettings, 
+            ILookupNormalizer keyNormalizer,
+            IdentityErrorDescriber errors,
+            IServiceProvider services,
+            ILogger<UserManager<User>> logger,
+            IPermissionManager permissionManager,
+            IUnitOfWorkManager unitOfWorkManager,
+            ICacheManager cacheManager,
+            IRepository<OrganizationUnit, long> organizationUnitRepository,
+            IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository,
+            IOrganizationUnitSettings organizationUnitSettings,
             ISettingManager settingManager,
             IShaSettingManager settingProvider,
             IPasswordComplexitySettings passwordComplexitySettings,
             ISecuritySettings securitySettings,
             IRepository<UserLogin, Int64> loginRepository)
             : base(
-                roleManager, 
-                store, 
-                optionsAccessor, 
-                passwordHasher, 
-                userValidators, 
-                passwordValidators, 
-                keyNormalizer, 
-                errors, 
-                services, 
-                logger, 
-                permissionManager, 
-                unitOfWorkManager, 
+                roleManager,
+                store,
+                optionsAccessor,
+                passwordHasher,
+                userValidators,
+                passwordValidators,
+                keyNormalizer,
+                errors,
+                services,
+                logger,
+                permissionManager,
+                unitOfWorkManager,
                 cacheManager,
-                organizationUnitRepository, 
-                userOrganizationUnitRepository, 
-                organizationUnitSettings, 
+                organizationUnitRepository,
+                userOrganizationUnitRepository,
+                organizationUnitSettings,
                 settingManager,
                 loginRepository)
         {
@@ -115,7 +115,7 @@ namespace Shesha.Authorization.Users
             {
                 user.Roles.Remove(roleToRemove);
             }
-            
+
             return IdentityResult.Success;
         }
 
@@ -209,13 +209,13 @@ namespace Shesha.Authorization.Users
         /// <returns>Returns the User object representing the newly created User Account. If parameters were incorrect will through 
         /// a AbpValidationException exception that can be allowed through to the calling web app.</returns>
         public async Task<User> CreateUserAsync(
-            string username, 
-            bool createLocalPassword, 
-            string? password, 
-            string? passwordConfirmation, 
-            string? firstname, 
-            string? lastname, 
-            string? mobileNumber, 
+            string username,
+            bool createLocalPassword,
+            string? password,
+            string? passwordConfirmation,
+            string? firstname,
+            string? lastname,
+            string? mobileNumber,
             string? emailAddress,
             bool requireChangePassword,
             long? supportedPasswordResetMethods = null
@@ -226,9 +226,9 @@ namespace Shesha.Authorization.Users
             if (string.IsNullOrWhiteSpace(username))
                 validationResults.Add(new ValidationResult("Username is mandatory"));
             else
-            // check duplicate usernames
-            if (await UserNameAlreadyInUseAsync(username))
-                validationResults.Add(new ValidationResult("User with the same username already exists"));
+                // check duplicate usernames
+                if (await UserNameAlreadyInUseAsync(username))
+                    validationResults.Add(new ValidationResult("User with the same username already exists"));
 
             if (createLocalPassword)
             {
@@ -266,7 +266,7 @@ namespace Shesha.Authorization.Users
             await this.InitializeOptionsAsync(AbpSession.TenantId);
 
             var newPassword = createLocalPassword
-                ? password.NotNullOrWhiteSpace() 
+                ? password.NotNullOrWhiteSpace()
                 : Guid.NewGuid().ToString();
             CheckErrors(await CreateAsync(user, newPassword));
 

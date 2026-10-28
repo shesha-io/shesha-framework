@@ -9,7 +9,7 @@ namespace Shesha.Scheduler.Exceptions
     {
         public Guid JobId { get; private set; }
 
-        public JobDeletedException(Guid jobId, Guid triggerId) : base($"Job with Id = '{jobId}' is deleted, execution of trigger '{triggerId}' skipped") 
+        public JobDeletedException(Guid jobId, Guid triggerId) : base($"Job with Id = '{jobId}' is deleted, execution of trigger '{triggerId}' skipped")
         {
             JobId = jobId;
         }

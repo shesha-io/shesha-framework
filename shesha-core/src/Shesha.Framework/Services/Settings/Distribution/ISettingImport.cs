@@ -6,7 +6,7 @@ namespace Shesha.Services.Settings.Distribution
     /// <summary>
     /// Setting import
     /// </summary>
-    public interface ISettingImport: IConfigurableItemImport<SettingConfiguration>
+    public interface ISettingImport : IConfigurableItemImport<SettingConfiguration>
     {
     }
 }

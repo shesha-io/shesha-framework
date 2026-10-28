@@ -41,7 +41,7 @@ namespace Shesha.Extensions
             return GetUrl("Download", "StoredFile", new { Id = storedFileVersion.File.Id, versionNo = storedFileVersion.VersionNo });
         }
 
-        private static string? GetUrl(string action, string controller, object values) 
+        private static string? GetUrl(string action, string controller, object values)
         {
             var linkGeneratorContext = StaticContext.IocManager.Resolve<ILinkGeneratorContext>();
             var linkGenerator = StaticContext.IocManager.Resolve<LinkGenerator>();
@@ -54,18 +54,18 @@ namespace Shesha.Extensions
             var port = linkGeneratorContext.State.Port;
 
             return linkGenerator.GetUriByAction(
-                action, 
-                controller, 
+                action,
+                controller,
                 values,
                 linkGeneratorContext.State.Scheme,
-                port > 0 
+                port > 0
                     ? new HostString(linkGeneratorContext.State.Host, port)
                     : new HostString(linkGeneratorContext.State.Host),
                 linkGeneratorContext.State.PathBase
             );
         }
 
-        private static string? GetPath(string action, string controller, object values) 
+        private static string? GetPath(string action, string controller, object values)
         {
             var linkGenerator = StaticContext.IocManager.Resolve<LinkGenerator>();
 

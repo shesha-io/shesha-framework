@@ -17,7 +17,7 @@ namespace Shesha.Domain.Conventions
             return $"{ConvertPrefix(prefix)}{propertyName.ToSnakeCase()}{ConvertSuffix(suffix)}";
         }
 
-        private string ConvertPrefix(string prefix) 
+        private string ConvertPrefix(string prefix)
         {
             return string.IsNullOrWhiteSpace(prefix)
                 ? prefix

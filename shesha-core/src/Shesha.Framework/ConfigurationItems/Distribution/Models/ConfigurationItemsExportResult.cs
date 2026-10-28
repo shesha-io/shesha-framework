@@ -13,8 +13,8 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         public List<ConfigurationItemsExportItem> Items { get; set; } = new();
     }
 
-    public class ConfigurationItemsExportItem 
-    { 
+    public class ConfigurationItemsExportItem
+    {
         /// <summary>
         /// Item data
         /// </summary>

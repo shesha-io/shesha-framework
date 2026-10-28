@@ -8,7 +8,7 @@ namespace Shesha.DynamicEntities
     /// <summary>
     /// Entity reorderer
     /// </summary>
-    public interface IEntityReorderer<T, TId, TOrderIndex>: IEntityReorderer where T : Entity<TId>
+    public interface IEntityReorderer<T, TId, TOrderIndex> : IEntityReorderer where T : Entity<TId>
     {
     }
 

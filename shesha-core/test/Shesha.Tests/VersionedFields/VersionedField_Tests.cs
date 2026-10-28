@@ -11,7 +11,7 @@ using Xunit;
 namespace Shesha.Tests.VersionedFields
 {
     [Collection(SqlServerCollection.Name)]
-    public class VersionedField_Tests: SheshaNhTestBase
+    public class VersionedField_Tests : SheshaNhTestBase
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
@@ -25,7 +25,7 @@ namespace Shesha.Tests.VersionedFields
         {
             LoginAsHostAdmin();
 
-            using (var uow = _unitOfWorkManager.Begin()) 
+            using (var uow = _unitOfWorkManager.Begin())
             {
                 var areaRepo = LocalIocManager.Resolve<IRepository<Area, Guid>>();
 
@@ -38,13 +38,13 @@ namespace Shesha.Tests.VersionedFields
 
                 var manager = Resolve<IVersionedFieldManager>();
                 var fieldName = "DynamicField";
-                    
+
                 var fieldValue = await manager.GetVersionedFieldValueAsync<Area, Guid>(area, fieldName);
                 fieldValue.ShouldBeNull();
 
                 const string testValue = "test value";
                 await manager.SetVersionedFieldValueAsync<Area, Guid>(area, fieldName, testValue, true);
-                    
+
                 var fieldValue2 = await manager.GetVersionedFieldValueAsync<Area, Guid>(area, fieldName);
                 fieldValue2.ShouldBe(testValue);
 

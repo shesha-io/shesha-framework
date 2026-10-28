@@ -9,7 +9,7 @@ namespace Shesha.Migrations
         public override void Up()
         {
             Alter.Table("Frwk_Modules").AddColumn("Accessor").AsString(200).Nullable();
-            Alter.Table("Frwk_EntityConfigs").AddColumn("Accessor").AsString(200).Nullable();            
+            Alter.Table("Frwk_EntityConfigs").AddColumn("Accessor").AsString(200).Nullable();
         }
     }
 }

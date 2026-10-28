@@ -28,7 +28,7 @@ namespace Shesha.Extensions
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static string GetRequiredFullName(this Type type) 
+        public static string GetRequiredFullName(this Type type)
         {
             return !string.IsNullOrWhiteSpace(type.FullName)
                 ? type.FullName
@@ -50,7 +50,7 @@ namespace Shesha.Extensions
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static string GetAssemblyFullName(this Type type) 
+        public static string GetAssemblyFullName(this Type type)
         {
             return type.Assembly.FullName.NotNull($"Assembly full name is null for type '{type.FullName}'");
         }

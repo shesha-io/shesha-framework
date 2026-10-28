@@ -46,11 +46,11 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Get manager for the specified <paramref name="item"/>
         /// </summary>
-        public static IConfigurationItemManager? GetItemManager(this IIocResolver iocResolver, ConfigurationItem item) 
+        public static IConfigurationItemManager? GetItemManager(this IIocResolver iocResolver, ConfigurationItem item)
         {
             return iocResolver.GetItemManager(item.GetType());
         }
-        
+
 
         /// <summary>
         /// Register items exporter

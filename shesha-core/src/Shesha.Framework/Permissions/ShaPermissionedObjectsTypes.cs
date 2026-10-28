@@ -9,7 +9,7 @@
         public const string WebCrudApiAction = "Shesha.WebCrudApi.Action";
         public const string Entity = "Shesha.Entity";
         public const string EntityAction = "Shesha.Entity.Action";
-        
+
         public const string Form = "Shesha.Form";
     }
 }

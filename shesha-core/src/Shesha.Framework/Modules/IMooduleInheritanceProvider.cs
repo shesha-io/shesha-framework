@@ -13,7 +13,7 @@ namespace Shesha.Modules
         /// <param name="module"></param>
         /// <returns></returns>
         List<string> GetModuleHierarchy(string module);
-        
+
         /// <summary>
         /// Gen base module
         /// </summary>

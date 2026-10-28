@@ -49,7 +49,7 @@ namespace Shesha.Notifications
             }
 
             var toAddress = !string.IsNullOrWhiteSpace(settings.RedirectAllMessagesTo)
-                ? settings.RedirectAllMessagesTo 
+                ? settings.RedirectAllMessagesTo
                 : receiver.GetAddress(this);
             if (string.IsNullOrWhiteSpace(toAddress))
                 return SendStatus.Failed("Recipient address is empty");

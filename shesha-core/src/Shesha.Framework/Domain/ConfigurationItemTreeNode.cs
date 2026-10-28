@@ -9,7 +9,7 @@ namespace Shesha.Domain
     [Table("vw_configuration_items_tree_nodes", Schema = "frwk")]
     [ImMutable]
     [SnakeCaseNaming]
-    public class ConfigurationItemTreeNode: Entity<Guid>
+    public class ConfigurationItemTreeNode : Entity<Guid>
     {
         /// <summary>
         /// Parent Id (module or folder)
@@ -66,7 +66,7 @@ namespace Shesha.Domain
         /// If true, indicates that configuration originally defined in a base module which has been exposed
         /// </summary>
         public virtual bool IsExposed { get; set; }
-        
+
         /// <summary>
         /// Date and time of latest modification
         /// </summary>
@@ -75,12 +75,12 @@ namespace Shesha.Domain
         /// Username of the user who modified current item
         /// </summary>
         public virtual string? LastModifierUser { get; set; }
-        
+
         /// <summary>
         /// Last modification date and time
         /// </summary>
         public virtual DateTime? LastModificationTime { get; set; }
-        
+
         /// <summary>
         /// Base module current item exposed from
         /// </summary>

@@ -19,11 +19,11 @@ namespace Shesha.Services.Urls
 
         private LinkGeneratorState? _defaultState;
 
-        private LinkGeneratorState? GetDefaultState() 
+        private LinkGeneratorState? GetDefaultState()
         {
             var request = _httpContextAccessor.HttpContext?.Request;
             return request != null
-                ? new LinkGeneratorState(request) 
+                ? new LinkGeneratorState(request)
                 : null;
         }
 

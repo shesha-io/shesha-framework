@@ -24,7 +24,7 @@ namespace Shesha.Elmah
                     await next(context);
                 }
             }
-            catch (WatchDogCleanupException e) 
+            catch (WatchDogCleanupException e)
             {
                 ElmahExtensions.RaiseError(e);
 
@@ -34,7 +34,7 @@ namespace Shesha.Elmah
                     context.Response.ContentType = "text/html";
                     await context.Response.WriteAsync(e.Message).ConfigureAwait(false);
                 }
-            }            
+            }
         }
     }
 }

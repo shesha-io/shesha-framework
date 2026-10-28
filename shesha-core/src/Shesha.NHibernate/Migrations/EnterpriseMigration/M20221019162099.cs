@@ -8,7 +8,7 @@ namespace Shesha.Migrations.EnterpriseMigration
     {
         public override void Up()
         {
-			Execute.Sql(
+            Execute.Sql(
 @"with firstVersions as (
 	select 
 		Name,
@@ -29,6 +29,6 @@ from
 	inner join firstVersions fv on fv.ItemType = ci.ItemType and (fv.ModuleId = ci.ModuleId or fv.ModuleId is null and ci.ModuleId is null) and fv.Name = ci.Name
 where
 	ci.OriginId is null");
-		}
+        }
     }
 }

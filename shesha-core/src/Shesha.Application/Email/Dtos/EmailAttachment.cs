@@ -6,7 +6,7 @@ namespace Shesha.Email.Dtos
     /// <summary>
     /// Email attachment
     /// </summary>
-    public class EmailAttachment: IDisposable
+    public class EmailAttachment : IDisposable
     {
         public string FileName { get; set; }
         public Stream Stream { get; set; }

@@ -20,8 +20,8 @@ namespace Shesha.Otp
             if (input.ExpiresOn.HasValue && input.ExpiresOn.Value <= DateTime.Now)
                 return;
 
-            await _otpCache.Cache.SetAsync(input.OperationId, 
-                input, 
+            await _otpCache.Cache.SetAsync(input.OperationId,
+                input,
                 slidingExpireTime: input.ExpiresOn.HasValue
                     ? input.ExpiresOn.Value - DateTime.Now
                     : (TimeSpan?)null);

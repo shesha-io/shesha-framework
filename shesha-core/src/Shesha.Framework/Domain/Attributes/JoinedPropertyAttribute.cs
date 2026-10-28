@@ -6,7 +6,7 @@ namespace Shesha.Domain.Attributes
     /// Indicates that properties of current entity are stored in a separate joined table
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Class, Inherited = true)]
-    public class JoinedPropertyAttribute: Attribute
+    public class JoinedPropertyAttribute : Attribute
     {
         /// <summary>
         /// Joined table name

@@ -1,7 +1,7 @@
-﻿using System;
-using Abp.AutoMapper;
+﻿using Abp.AutoMapper;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
+using System;
 
 namespace Shesha.Areas.Dto
 {

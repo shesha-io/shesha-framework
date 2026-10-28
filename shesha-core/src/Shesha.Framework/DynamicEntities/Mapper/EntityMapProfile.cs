@@ -12,11 +12,11 @@ namespace Shesha.DynamicEntities.Mapper
     /// <summary>
     /// Entity mapping profile
     /// </summary>
-    public class EntityMapProfile: ShaProfile, ITransientDependency
+    public class EntityMapProfile : ShaProfile, ITransientDependency
     {
         private static List<ConverterDefinition> Converters;
 
-        static EntityMapProfile() 
+        static EntityMapProfile()
         {
             Converters = new List<ConverterDefinition>();
 
@@ -38,7 +38,7 @@ namespace Shesha.DynamicEntities.Mapper
 
         public EntityMapProfile()
         {
-            foreach (var converterInfo in Converters) 
+            foreach (var converterInfo in Converters)
             {
                 CreateMap(converterInfo.SrcType, converterInfo.DstType).ConvertUsing(converterInfo.ConverterType);
             }

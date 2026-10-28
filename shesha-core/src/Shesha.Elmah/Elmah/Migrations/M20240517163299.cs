@@ -12,10 +12,10 @@ namespace Shesha.Elmah.Migrations
 
         public override void Up()
         {
-            if (!Schema.Schema(schemaName).Exists()) 
+            if (!Schema.Schema(schemaName).Exists())
                 Execute.Sql($"create schema \"{schemaName}\"");
 
-            if (!Schema.Schema(schemaName).Table(errorsTable).Exists()) 
+            if (!Schema.Schema(schemaName).Table(errorsTable).Exists())
             {
                 IfDatabase("PostgreSql").Execute.Sql(GetPostgreSqlErrorsTableScript());
                 IfDatabase("SqlServer").Execute.Sql(GetSqlServerErrorsTableScript());

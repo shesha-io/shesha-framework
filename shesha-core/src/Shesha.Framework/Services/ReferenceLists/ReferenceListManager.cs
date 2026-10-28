@@ -33,7 +33,7 @@ namespace Shesha.Services.ReferenceLists
         private async Task CopyItemsAsync(List<ReferenceListItem> sourceItems, ReferenceList dstRevision, ReferenceListItem? sourceParent, ReferenceListItem? destinationParent)
         {
             var levelItems = sourceItems.Where(i => i.Parent == sourceParent).ToList();
-            foreach (var srcItem in levelItems) 
+            foreach (var srcItem in levelItems)
             {
                 var dstItem = CloneListItem(srcItem);
                 dstItem.ReferenceList = dstRevision;
@@ -45,9 +45,10 @@ namespace Shesha.Services.ReferenceLists
             }
         }
 
-        private ReferenceListItem CloneListItem(ReferenceListItem source) 
+        private ReferenceListItem CloneListItem(ReferenceListItem source)
         {
-            return new ReferenceListItem {
+            return new ReferenceListItem
+            {
                 Item = source.Item,
                 ItemValue = source.ItemValue,
                 Description = source.Description,

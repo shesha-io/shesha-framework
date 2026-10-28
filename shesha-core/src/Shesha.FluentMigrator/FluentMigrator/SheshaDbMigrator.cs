@@ -24,7 +24,7 @@ namespace Shesha.FluentMigrator
         protected readonly IAssemblyFinder _assemblyFinder;
         protected readonly IDbConnectionSettingsResolver _connectionSettingsResolver;
         protected readonly IModuleLocator _moduleLocator;
-        
+
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
@@ -66,7 +66,7 @@ namespace Shesha.FluentMigrator
         {
             var services = new ServiceCollection();
             services.TryAddSingleton<IModuleLocator>(_moduleLocator);
-            
+
             services
                 // Add common FluentMigrator services
                 .AddFluentMigratorCore()
@@ -108,13 +108,13 @@ namespace Shesha.FluentMigrator
                     opt.Tags = new[] { connectionSettings.DbmsType.ToString() };
                 });
 
-            if (connectionSettings.DbmsType == DbmsType.PostgreSQL) 
+            if (connectionSettings.DbmsType == DbmsType.PostgreSQL)
             {
                 // register custom conventions for PostgreSql. It forces to use citext for string columns in the create statements
                 services.AddSingleton<IConventionSet>(new PostgreSqlConventionsSet());
             }
 
-            return services.BuildServiceProvider(false);            
+            return services.BuildServiceProvider(false);
         }
 
         /// <summary>
@@ -145,8 +145,8 @@ namespace Shesha.FluentMigrator
 
             var invalidMigrationVersions = migrations.Keys
                 .Select(v => v.ToString())
-                .Where(v => v.Length != MigrationVersionFormat.Length 
-                    || !DateTime.TryParseExact(v, MigrationVersionFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var migrationDate) 
+                .Where(v => v.Length != MigrationVersionFormat.Length
+                    || !DateTime.TryParseExact(v, MigrationVersionFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var migrationDate)
                     || migrationDate > DateTime.Now.AddDays(1 /* add one day to prevent timezone issues */))
                 .ToList();
             if (invalidMigrationVersions.Any())

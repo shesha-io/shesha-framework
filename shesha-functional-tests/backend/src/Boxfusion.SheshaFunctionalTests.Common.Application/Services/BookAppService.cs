@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
-    public class BookAppService: SheshaAppServiceBase
+    public class BookAppService : SheshaAppServiceBase
     {
         public BookAppService()
         {

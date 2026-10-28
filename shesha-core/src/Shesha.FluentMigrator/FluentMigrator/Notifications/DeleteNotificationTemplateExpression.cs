@@ -36,7 +36,8 @@ namespace Shesha.FluentMigrator.Notifications
 
                         // delete all if filter is not specified
                         helper.DeleteNotificationTemplates(Namespace, Name);
-                    } else
+                    }
+                    else
                         throw new NotSupportedException();
                 }
             };
@@ -45,7 +46,7 @@ namespace Shesha.FluentMigrator.Notifications
 
         public DeleteNotificationTemplateExpression(DbmsType dbmsType, IQuerySchema querySchema) : base(dbmsType, querySchema)
         {
-            
+
         }
     }
 }

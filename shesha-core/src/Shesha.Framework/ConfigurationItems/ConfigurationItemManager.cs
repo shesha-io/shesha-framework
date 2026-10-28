@@ -71,23 +71,24 @@ namespace Shesha.ConfigurationItems
                         var suffix = n.Replace(baseName, "").Trim();
                         return string.IsNullOrWhiteSpace(suffix)
                             ? 1
-                            : int.TryParse(suffix, out  var copyNo)
+                            : int.TryParse(suffix, out var copyNo)
                                 ? copyNo
                                 : -1;
                     })
                     .MaxOrDefault(0)
                 : 0;
-            int? newNumber = maxCopyNumber > 0 
-                ? maxCopyNumber + 1 
+            int? newNumber = maxCopyNumber > 0
+                ? maxCopyNumber + 1
                 : null;
 
             return $"{baseName}{newNumber}";
         }
 
-        public virtual async Task<TItem> DuplicateAsync(TItem item) 
+        public virtual async Task<TItem> DuplicateAsync(TItem item)
         {
             var newName = await GenerateItemDuplicateNameAsync(item);
-            var duplicate = new TItem { 
+            var duplicate = new TItem
+            {
                 Module = item.Module,
                 Application = item.Application,
                 Folder = item.Folder,
@@ -135,7 +136,7 @@ namespace Shesha.ConfigurationItems
         }
 
         /// inheritedDoc
-        public virtual Task<IConfigurationItemDto>MapToDtoAsync(TItem item) 
+        public virtual Task<IConfigurationItemDto> MapToDtoAsync(TItem item)
         {
             var dto = new ConfigurationItemDto
             {
@@ -162,8 +163,8 @@ namespace Shesha.ConfigurationItems
                     Name = item.Name,
                     Module = module,
                     Application = item.Application,
-                	Label = item.Label,
-                	Description = item.Description,
+                    Label = item.Label,
+                    Description = item.Description,
                     ExposedFrom = item,
                     ExposedFromRevision = srcRevision,
                     SurfaceStatus = RefListSurfaceStatus.Overridden,
@@ -171,7 +172,8 @@ namespace Shesha.ConfigurationItems
                 await CopyItemPropertiesAsync(item, exposedConfig);
                 await Repository.InsertAsync(exposedConfig);
 
-                await SaveToRevisionAsync(exposedConfig, revision => { 
+                await SaveToRevisionAsync(exposedConfig, revision =>
+                {
                     revision.Comments = $"Exposed from {item.Module.Name}";
                 });
 
@@ -180,7 +182,7 @@ namespace Shesha.ConfigurationItems
                 await AfterItemExposedAsync(exposedConfig);
 
                 return exposedConfig;
-            }            
+            }
         }
 
         public async Task<ConfigurationItem> DuplicateAsync(ConfigurationItem item)
@@ -211,7 +213,7 @@ namespace Shesha.ConfigurationItems
             appKeys.Add(null);
 
             var baseQuery = (await InheritanceRepository.GetAllAsync()).Where(e => e.ItemType == Discriminator && e.ModuleName == module && e.Name == name);
-            foreach (var currentAppKey in appKeys) 
+            foreach (var currentAppKey in appKeys)
             {
                 var result = await baseQuery.Where(e => e.AppKey == currentAppKey)
                     .OrderBy(e => e.ModuleLevel)
@@ -232,7 +234,7 @@ namespace Shesha.ConfigurationItems
             return await GetAsync(actualItem.ItemId);
         }
 
-        public virtual async Task<TItem> CreateItemAsync(CreateItemInput input, object? additionalData = null) 
+        public virtual async Task<TItem> CreateItemAsync(CreateItemInput input, object? additionalData = null)
         {
             var application = IsApplicationSpecific ? input.Application : null;
 
@@ -243,14 +245,15 @@ namespace Shesha.ConfigurationItems
                 validationResults.Add($"Application is not supported for '{itemType}' because it is not application-specific");
 
             var alreadyExist = await (await Repository.GetAllAsync()).Where(f => f.Module == input.Module && f.Application == application && f.Name == input.Name).AnyAsync();
-            if (alreadyExist) {
+            if (alreadyExist)
+            {
                 var fullName = input.Module != null ? $"{input.Module.Name}/{input.Name}" : input.Name;
                 validationResults.Add(
                     application != null
                         ? $"{itemType} `{fullName}` already exists in application `{application.Name}`"
                         : $"{itemType} `{fullName}` already exists");
             }
-                
+
             validationResults.ThrowValidationExceptionIfAny(L);
 
             var item = new TItem
@@ -333,13 +336,14 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         /// <param name="module">Module name</param>
         /// <param name="name">Item name</param>
-        public async Task<ConfigurationItem> GetAsync(string module, string name) 
+        public async Task<ConfigurationItem> GetAsync(string module, string name)
         {
             var item = await Repository.GetByByFullName(module, name).FirstOrDefaultAsync();
-            if (item == null) {
+            if (item == null)
+            {
                 var itemType = ConfigurationItemHelper.GetDiscriminator(typeof(TItem));
                 throw new ConfigurationItemNotFoundException(itemType, module, name, null);
-            }                
+            }
 
             return item;
         }

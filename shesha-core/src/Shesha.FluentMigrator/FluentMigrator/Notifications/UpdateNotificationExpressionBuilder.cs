@@ -21,10 +21,10 @@ namespace Shesha.FluentMigrator.Notifications
             return this;
         }
 
-        public IUpdateNotificationSyntax SetDescription(string description) 
+        public IUpdateNotificationSyntax SetDescription(string description)
         {
             Expression.Description.Set(description);
-            
+
             return this;
         }
     }

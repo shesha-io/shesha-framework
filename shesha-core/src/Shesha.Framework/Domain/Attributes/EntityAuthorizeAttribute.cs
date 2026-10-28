@@ -5,13 +5,13 @@ using System;
 namespace Shesha.Domain.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
-    public class EntityAuthorizeAttribute: Attribute, ICrudActionConfig
+    public class EntityAuthorizeAttribute : Attribute, ICrudActionConfig
     {
         /// <summary>
         /// CRUD action
         /// </summary>
         public CrudAction Action { get; init; }
-        
+
         /// <summary>
         /// Actions access 
         /// </summary>

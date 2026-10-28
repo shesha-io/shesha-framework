@@ -8,8 +8,8 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-			// restore properties defined in codeand removed by the bootstrapper to fix results of domain model refactoring
-			// It's safe, unneeded properties will be automatically deleted
+            // restore properties defined in codeand removed by the bootstrapper to fix results of domain model refactoring
+            // It's safe, unneeded properties will be automatically deleted
             Execute.Sql(@"update
 	ec
 set

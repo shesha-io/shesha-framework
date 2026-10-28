@@ -27,7 +27,8 @@ namespace Shesha.Domain
 
         public NotificationTemplate Clone()
         {
-            return new NotificationTemplate {
+            return new NotificationTemplate
+            {
                 PartOf = PartOf,
                 MessageFormat = MessageFormat,
                 TitleTemplate = TitleTemplate,

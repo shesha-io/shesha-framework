@@ -3,7 +3,7 @@
 namespace Shesha.Migrations
 {
     [Migration(20250123114500)]
-    public class M20250123114500: Migration
+    public class M20250123114500 : Migration
     {
         public override void Up()
         {

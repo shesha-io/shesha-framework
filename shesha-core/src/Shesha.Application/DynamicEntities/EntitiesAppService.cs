@@ -228,7 +228,7 @@ namespace Shesha.DynamicEntities
                         var listResponse = root is ObjectExecutionNode rootExecutionNode
                             ? rootExecutionNode.SubFields
                             : null;
-                        if (listResponse != null) 
+                        if (listResponse != null)
                         {
                             var itemsFieldName = StringHelper.ToCamelCase(nameof(PagedResultDto<EntityDto<Guid>>.Items));
                             var itemsArray = listResponse.OfType<ArrayExecutionNode>().Single(f => f.Name == itemsFieldName);
@@ -239,7 +239,7 @@ namespace Shesha.DynamicEntities
                                     ? rows.Select(row => row.ToValue() as Dictionary<string, object?>).WhereNotNull()
                                     : [];
                             }
-                        }                        
+                        }
                     }
                 }
             }
@@ -251,18 +251,18 @@ namespace Shesha.DynamicEntities
         /// </summary>
         /// <returns></returns>
         [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, IsConfigurable = false)]
-        public Task<List<SpecificationDto>> SpecificationsAsync(EntityTypeIdInput entityTypeId) 
+        public Task<List<SpecificationDto>> SpecificationsAsync(EntityTypeIdInput entityTypeId)
         {
             var entityConfig = GetConfig(entityTypeId);
 
             var specifications = _specificationsFinder.AllSpecifications.Where(s => entityConfig.EntityType.IsAssignableFrom(s.EntityType) /* include base classes */ && !s.IsGlobal).ToList();
 
-            var dtos = specifications.Select(s => new SpecificationDto 
-                {
-                    Name = s.Name,
-                    FriendlyName = s.FriendlyName,
-                    Description = s.Description,
-                })
+            var dtos = specifications.Select(s => new SpecificationDto
+            {
+                Name = s.Name,
+                FriendlyName = s.FriendlyName,
+                Description = s.Description,
+            })
                 .ToList();
 
             return Task.FromResult(dtos);

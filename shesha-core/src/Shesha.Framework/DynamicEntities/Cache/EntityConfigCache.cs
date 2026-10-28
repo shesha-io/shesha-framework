@@ -82,7 +82,7 @@ namespace Shesha.DynamicEntities.Cache
 
                 var properties = await _propertyRepository.GetAllListAsync(p => p.EntityConfig == conf && p.ParentProperty == null);
                 var propertyDtos = properties.Select(p => _mapper.Map<EntityPropertyDto>(p)).ToList();
-                
+
                 var confDto = _mapper.Map<EntityConfigDto>(conf);
 
                 await uow.CompleteAsync();
@@ -111,12 +111,12 @@ namespace Shesha.DynamicEntities.Cache
             var item = await _propertyCache.GetAsync(entityType, async (entityType) =>
             {
                 var eType = _typeFinder.Find(x => x.FullName == entityType).FirstOrDefault();
-                if (eType == null) 
+                if (eType == null)
                 {
                     var (classNamespace, className) = GetNamespaceAndClassName(entityType);
                     return await FetchConfigAsync(classNamespace, className);
                 }
-                else 
+                else
                     return await FetchConfigAsync(eType);
             });
 
@@ -147,8 +147,8 @@ namespace Shesha.DynamicEntities.Cache
                 var eType = _typeFinder.Find(x => x.FullName == entityType).FirstOrDefault();
                 if (eType == null && raiseException)
                     throw new EntityNotFoundException($"Entity {entityType} not found");
-                return eType == null 
-                    ? null 
+                return eType == null
+                    ? null
                     : await FetchConfigAsync(eType);
             });
 
@@ -206,6 +206,6 @@ namespace Shesha.DynamicEntities.Cache
         public void HandleEvent(EntityChangedEventData<EntityConfig> eventData)
         {
             _propertyCache.Remove(GetCacheKey(eventData.Entity));
-        }        
+        }
     }
 }

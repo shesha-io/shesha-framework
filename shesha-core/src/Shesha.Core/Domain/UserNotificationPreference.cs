@@ -6,7 +6,7 @@ using System;
 namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Core.UserNotificationPreference", CrudActions = CrudActions.None, IsConfigurable = false)]
-    public class UserNotificationPreference: FullAuditedEntity<Guid>
+    public class UserNotificationPreference : FullAuditedEntity<Guid>
     {
         public virtual Person User { get; set; }
         public virtual NotificationTypeConfig NotificationType { get; set; }

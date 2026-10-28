@@ -5,7 +5,7 @@ using Shesha.JsonEntities;
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {
     [Entity(TypeShortAlias = "SheshaFunctionalTests.ImageAnnotation")]
-    public class ImageAnnotation: JsonEntity
+    public class ImageAnnotation : JsonEntity
     {
         /// <summary>
         /// 

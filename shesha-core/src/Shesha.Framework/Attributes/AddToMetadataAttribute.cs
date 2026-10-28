@@ -6,10 +6,10 @@ namespace Shesha.Attributes
     /// This attribute is used to mark class as available for using in configurations (Forms, etc)
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class AddToMetadataAttribute: Attribute
+    public class AddToMetadataAttribute : Attribute
     {
-        public AddToMetadataAttribute() 
-        { 
+        public AddToMetadataAttribute()
+        {
         }
     }
 }

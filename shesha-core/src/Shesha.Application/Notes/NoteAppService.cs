@@ -21,7 +21,7 @@ namespace Shesha.Notes
         public NoteAppService(
             IRepository<Note, Guid> repository,
             IModelConfigurationManager modelConfigManager
-        ): base(repository)
+        ) : base(repository)
         {
             _modelConfigManager = modelConfigManager;
         }

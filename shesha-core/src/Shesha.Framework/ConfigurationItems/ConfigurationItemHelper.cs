@@ -43,7 +43,8 @@ namespace Shesha.ConfigurationItems
         private Dictionary<string, Type> BuildItemTypesDictionary()
         {
             var types = _typeFinder.Find(t => t.IsAssignableTo(typeof(ConfigurationItem)) && !t.IsAbstract && !t.IsGenericType).ToList();
-            var typesWithDiscriminator = types.Select(t => {
+            var typesWithDiscriminator = types.Select(t =>
+            {
                 var config = _entityConfigStore.Get(t);
                 return !string.IsNullOrWhiteSpace(config.DiscriminatorValue)
                     ? new
@@ -95,11 +96,12 @@ namespace Shesha.ConfigurationItems
             return instance.ItemType;
         }
 
-        private List<IConfigurationItemTypeDto> BuildItemTypeDtos(Dictionary<string, Type> itemTypes) 
-        { 
+        private List<IConfigurationItemTypeDto> BuildItemTypeDtos(Dictionary<string, Type> itemTypes)
+        {
             return itemTypes
                 .Where(t => t.Value != typeof(ConfigurationItem))
-                .Select(t => {
+                .Select(t =>
+                {
                     var browsable = t.Value.GetAttributeOrNull<BrowsableAttribute>();
                     if (browsable != null && !browsable.Browsable)
                         return null;

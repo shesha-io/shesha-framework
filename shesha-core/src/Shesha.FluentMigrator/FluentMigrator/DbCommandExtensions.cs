@@ -40,7 +40,7 @@ namespace Shesha.FluentMigrator
             { typeof(DateTime), DbType.DateTime },
             { typeof(DateTimeOffset), DbType.DateTimeOffset },
             { typeof(TimeSpan), DbType.Time },
-            { typeof(byte[]), DbType.Binary },            
+            { typeof(byte[]), DbType.Binary },
         };
 
         /// <summary>

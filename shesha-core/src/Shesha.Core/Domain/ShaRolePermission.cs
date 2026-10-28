@@ -17,7 +17,7 @@ namespace Shesha.Domain
         /// Permission
         /// </summary>
         public required virtual string Permission { get; set; }
-        
+
         /// <summary>
         /// If true, indicates that permission is granted
         /// </summary>

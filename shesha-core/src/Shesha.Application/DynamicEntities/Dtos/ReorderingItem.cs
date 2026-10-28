@@ -3,7 +3,7 @@
     /// <summary>
     /// Reordering item
     /// </summary>
-    public class ReorderingItem: ReorderingItem<string, double?>
+    public class ReorderingItem : ReorderingItem<string, double?>
     {
     }
 

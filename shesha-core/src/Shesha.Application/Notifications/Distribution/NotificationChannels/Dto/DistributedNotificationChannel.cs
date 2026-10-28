@@ -6,7 +6,7 @@ namespace Shesha.Notifications.Distribution.NotificationChannels.Dto
     /// <summary>
     /// Distributed file template
     /// </summary>
-    public class DistributedNotificationChannel: DistributedConfigurableItemBase
+    public class DistributedNotificationChannel : DistributedConfigurableItemBase
     {
         /// <summary>
         /// 

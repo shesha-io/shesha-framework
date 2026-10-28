@@ -94,8 +94,8 @@ set
 where
 	""Markup"" like '%""referenceListId"":{{""module"":""{moduleName}"",""name"":""{@namespace}.{name}""%'");
         }
-        
-		public static void FixRefListNotLinkedToModule(Migration migration, string @namespace, string name, string moduleName)
+
+        public static void FixRefListNotLinkedToModule(Migration migration, string @namespace, string name, string moduleName)
         {
             ExecuteSql(migration, $@"update 
 	""Frwk_ConfigurationItems""
@@ -127,22 +127,22 @@ where
 	)");
         }
 
-		private static void ExecuteSql(Migration migration, string sql) 
-		{
+        private static void ExecuteSql(Migration migration, string sql)
+        {
             migration.Execute.WithConnection((connection, transaction) =>
             {
-				using var ownTransaction = transaction == null
-					? connection.BeginTransaction()
-					: null;
+                using var ownTransaction = transaction == null
+                    ? connection.BeginTransaction()
+                    : null;
 
                 using var command = connection.CreateCommand();
                 command.Transaction = ownTransaction ?? transaction;
                 command.CommandText = sql;
-				command.CommandTimeout = 60 * 5;
+                command.CommandTimeout = 60 * 5;
 
                 command.ExecuteNonQuery();
-                
-				ownTransaction?.Commit();
+
+                ownTransaction?.Commit();
             });
         }
     }

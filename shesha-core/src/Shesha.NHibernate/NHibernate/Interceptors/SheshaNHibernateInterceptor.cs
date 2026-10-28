@@ -441,9 +441,9 @@ namespace Shesha.NHibernate.Interceptors
         {
             Session.NotNull("No active session");
 
-            #pragma warning disable IDISP001 // Dispose created
+#pragma warning disable IDISP001 // Dispose created
             var transaction = Session.GetCurrentTransaction();
-            #pragma warning restore IDISP001 // Dispose created
+#pragma warning restore IDISP001 // Dispose created
 
             if (transaction == null || !transaction.IsActive)
                 throw new InvalidOperationException("No active transaction");

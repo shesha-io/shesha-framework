@@ -5,13 +5,13 @@ using System.Data.Common;
 
 namespace Shesha.NHibernate.Connection
 {
-    public class SheshaNhConnectionProvider: DriverConnectionProvider
+    public class SheshaNhConnectionProvider : DriverConnectionProvider
     {
         private readonly IDbConnectionFactory? _connectionFactory;
         public SheshaNhConnectionProvider()
         {
             _connectionFactory = StaticContext.IocManager.IsRegistered<IDbConnectionFactory>()
-                ? StaticContext.IocManager.Resolve<IDbConnectionFactory>() 
+                ? StaticContext.IocManager.Resolve<IDbConnectionFactory>()
                 : null;
         }
 

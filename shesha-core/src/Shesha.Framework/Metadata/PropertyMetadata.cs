@@ -3,7 +3,7 @@
     /// <summary>
     /// Property metadata
     /// </summary>
-    public class PropertyMetadata: IPropertyMetadata
+    public class PropertyMetadata : IPropertyMetadata
     {
         /// <summary>
         /// Name

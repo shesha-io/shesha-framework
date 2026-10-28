@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using FluentMigrator;
+﻿using FluentMigrator;
+using System.Collections.Generic;
 
 namespace Shesha.Migrations
 {
     [Migration(20200515121000), MsSqlOnly]
-    public class M20200515121000: AutoReversingMigration
+    public class M20200515121000 : AutoReversingMigration
     {
         public override void Up()
         {

@@ -52,7 +52,7 @@ namespace Shesha.FluentMigrator.Settings
         }
 
         /// inheritedDoc
-        public IAddSettingConfigurationSyntax WithClientAccess (UserSettingAccessMode clientAccess)
+        public IAddSettingConfigurationSyntax WithClientAccess(UserSettingAccessMode clientAccess)
         {
             Expression.ClientAccess.Set(clientAccess);
             return this;

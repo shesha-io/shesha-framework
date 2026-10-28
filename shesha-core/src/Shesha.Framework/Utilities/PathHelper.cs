@@ -1,15 +1,15 @@
-﻿using System;
+﻿using Abp.Dependency;
+using Microsoft.AspNetCore.Hosting;
+using System;
 using System.IO;
 using System.Reflection;
-using Abp.Dependency;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Shesha.Utilities
 {
     /// <summary>
     /// Utility functions relating to file paths.
     /// </summary>
-    public class PathHelper: IPathHelper, ITransientDependency
+    public class PathHelper : IPathHelper, ITransientDependency
     {
         public IIocManager IocManager { get; set; } = default!;
 

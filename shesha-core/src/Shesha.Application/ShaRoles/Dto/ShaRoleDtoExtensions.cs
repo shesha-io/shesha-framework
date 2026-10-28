@@ -13,21 +13,22 @@ namespace Shesha.ShaRoles.Dto
         {
             var rolePermissionRepository = StaticContext.IocManager.Resolve<IRepository<ShaRolePermission, Guid>>();
             var rolesPermissions = role.Permissions.ToList();
-            
+
             var toAdd = permissions.Where(x => !rolesPermissions.Any(p => p.Permission == x && p.IsGranted)).ToList();
-            foreach (var permission in toAdd) 
+            foreach (var permission in toAdd)
             {
-                var rolePermission = new ShaRolePermission() { 
-                    Permission = permission, 
+                var rolePermission = new ShaRolePermission()
+                {
+                    Permission = permission,
                     IsGranted = true,
-                    Role = role 
+                    Role = role
                 };
                 rolePermissionRepository.Insert(rolePermission);
                 rolesPermissions.Add(rolePermission);
-            }                
+            }
 
             var toRemove = rolesPermissions.Where(x => permissions.All(p => x.Permission != p)).ToList();
-            foreach (var permission in toRemove) 
+            foreach (var permission in toRemove)
             {
                 rolePermissionRepository.Delete(permission);
                 rolesPermissions.Remove(permission);

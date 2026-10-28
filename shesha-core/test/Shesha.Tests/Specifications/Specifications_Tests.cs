@@ -106,7 +106,7 @@ namespace Shesha.Tests.Specifications
                     await Task.Delay(1);
 
                     specAccessor.SpecificationTypes.ShouldBe(new[] { typeof(Age18PlusSpecification), typeof(HasNoAccountSpecification) }, ignoreOrder: true);
-                    
+
                     var persons18PlusWithoutAccount = await repository.GetAllListAsync();
                     persons18PlusWithoutAccount.ShouldBe(expectedPersons18PlusWithoutAccount, ignoreOrder: true);
                 }
@@ -122,23 +122,24 @@ namespace Shesha.Tests.Specifications
             await Task.Delay(1);
 
             specAccessor.SpecificationTypes.ShouldBeEmpty();
-            
+
             var allPersonsCount2 = await repository.CountAsync();
             allPersonsCount2.ShouldBe(expectedAllPersonsCount);
         }
 
         private Person TestPerson(string firstName, string lastName, DateTime? dob, string? username)
         {
-            return new Person {
+            return new Person
+            {
                 Id = Guid.NewGuid(),
                 FirstName = firstName,
                 LastName = lastName,
                 DateOfBirth = dob,
                 User = !string.IsNullOrWhiteSpace(username)
-                    ? new Authorization.Users.User() 
-                        {
-                            UserName = username
-                        }
+                    ? new Authorization.Users.User()
+                    {
+                        UserName = username
+                    }
                     : null
             };
         }

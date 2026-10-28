@@ -60,7 +60,7 @@ namespace Shesha.Metadata
     /// <summary>
     /// Custom string formats
     /// </summary>
-    public static class StringFormats 
+    public static class StringFormats
     {
         public const string Singleline = "singleline";
         public const string Multiline = "multiline";
@@ -70,7 +70,7 @@ namespace Shesha.Metadata
         public const string Password = "password";
         public const string EmailAddress = "email";
         public const string PhoneNumber = "phone";
-        public const string Url = "url";        
+        public const string Url = "url";
     }
 
     /// <summary>

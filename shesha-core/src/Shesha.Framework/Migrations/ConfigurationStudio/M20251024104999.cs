@@ -24,7 +24,7 @@ namespace Shesha.Migrations.ConfigurationStudio
             Delete.Table("Frwk_StoredFileVersions");
             Delete.Table("Frwk_StoredFiles");
             Delete.Table("Frwk_UserLoginAttempts");
-            Delete.Table("Frwk_HiLoSequences");            
+            Delete.Table("Frwk_HiLoSequences");
         }
     }
 }

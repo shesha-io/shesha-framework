@@ -49,7 +49,7 @@ namespace Shesha.Migrations.ConfigurationStudio
             ExecuteCsScript("16-copy entity_properties.sql");
 
             Delete.Table("Frwk_SettingValues");
-            
+
             Execute.Sql(@"drop view if exists ""vw_Core_ReferenceListItemvalues""");
             Execute.Sql(@"drop view if exists ""vw_Core_ReferenceListItemValues""");
 

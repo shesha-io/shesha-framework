@@ -4,7 +4,7 @@ using Shesha.FluentMigrator;
 namespace Shesha.Migrations
 {
     [Migration(20201109112700), MsSqlOnly]
-    public class M20201109112700: AutoReversingMigration
+    public class M20201109112700 : AutoReversingMigration
     {
         public override void Up()
         {

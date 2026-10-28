@@ -9,7 +9,7 @@
         /// Lockout enabled (default value for new users)
         /// </summary>
         public bool IsLockoutEnabled { get; set; }
-        
+
         /// <summary>
         /// Lockout time in seconds
         /// </summary>
@@ -39,7 +39,7 @@
         /// Passwords: require upper case character
         /// </summary>
         public bool RequireUppercase { get; set; }
-        
+
         /// <summary>
         /// Passwords: min length
         /// </summary>

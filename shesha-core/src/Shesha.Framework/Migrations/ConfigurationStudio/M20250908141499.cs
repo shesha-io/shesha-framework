@@ -8,7 +8,7 @@ namespace Shesha.Migrations.ConfigurationStudio
     {
         public override void Up()
         {
-			IfDatabase("SqlServer").Execute.Sql(@"update 
+            IfDatabase("SqlServer").Execute.Sql(@"update 
 	ec
 set
 	accessor = rev.accessor,
@@ -84,7 +84,7 @@ where
 	ci.item_type = 'reference-list'
 	and not exists (select 1 from frwk.reference_lists where id = ci.id)");
 
-			IfDatabase("SqlServer").Execute.Sql(@"update
+            IfDatabase("SqlServer").Execute.Sql(@"update
 	item
 set
 	reference_list_id = ci.id
@@ -95,7 +95,7 @@ from
 where
 	item.reference_list_id is null");
 
-			IfDatabase("PostgreSql").Execute.Sql(@"UPDATE frwk.reference_list_items AS item
+            IfDatabase("PostgreSql").Execute.Sql(@"UPDATE frwk.reference_list_items AS item
 SET
     reference_list_id = ci.id
 FROM
@@ -142,7 +142,7 @@ where
 	ci.item_type = 'setting-configuration'
 	and not exists (select 1 from frwk.setting_configurations where id = ci.id)");
 
-			IfDatabase("PostgreSql").Execute.Sql(@"insert into
+            IfDatabase("PostgreSql").Execute.Sql(@"insert into
 	frwk.setting_configurations
 	(id, access_mode, category, client_access_lkp, data_type, data_format, editor_form_module, editor_form_name, is_client_specific, is_user_specific, order_index)
 select 
@@ -224,7 +224,7 @@ from
 where
 	ci.item_type = 'notification-type'
 	and not exists (select 1 from frwk.notification_types where id = ci.id)");
-            
+
             Execute.Sql(@"insert into
 	frwk.notification_templates
 	(

@@ -27,10 +27,10 @@ namespace Shesha.Specifications
             return ToExpression().Compile()(obj);
         }
 
-        public Expression<Func<T, bool>> ToExpression() 
+        public Expression<Func<T, bool>> ToExpression()
         {
             // switch off other specs before expression building
-            using (SpecificationManager.DisableSpecifications()) 
+            using (SpecificationManager.DisableSpecifications())
             {
                 return BuildExpression();
             }

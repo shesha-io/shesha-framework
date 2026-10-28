@@ -73,7 +73,7 @@ namespace Shesha.Domain
         /// <param name="owner"></param>
         /// <param name="entityConfigurationStore">Entity configuration store</param>
         /// <returns></returns>
-        public static StoredFile NewFor<TId>([NotNull]IEntity<TId> owner, IEntityTypeConfigurationStore entityConfigurationStore) where TId: IConvertible
+        public static StoredFile NewFor<TId>([NotNull] IEntity<TId> owner, IEntityTypeConfigurationStore entityConfigurationStore) where TId : IConvertible
         {
             if (owner.IsTransient())
                 throw new Exception("Owner is not persisted to the DB");
@@ -82,7 +82,7 @@ namespace Shesha.Domain
             {
                 Owner = new GenericEntityReference(owner)
             };
-            
+
             return file;
         }
 
@@ -91,7 +91,7 @@ namespace Shesha.Domain
         /// </summary>
         /// <typeparam name="TId">Id type of the owner</typeparam>
         /// <param name="entity">Owner entity</param>
-        public virtual void SetOwner<TId>(IEntity<TId> entity) where TId: notnull
+        public virtual void SetOwner<TId>(IEntity<TId> entity) where TId : notnull
         {
             Owner = new GenericEntityReference(entity.Id.ToString().NotNull(), entity.GetType().StripCastleProxyType().GetRequiredFullName());
         }

@@ -107,7 +107,8 @@ namespace Shesha.Sms.Clickatell
 
         public override async Task SetTypedSettingsAsync(ClickatellSettingDto settings)
         {
-            await _settings.ClickatellGateway.SetValueAsync(new GatewaySettings {
+            await _settings.ClickatellGateway.SetValueAsync(new GatewaySettings
+            {
                 Host = settings.ClickatellHost,
                 ApiId = settings.ClickatellApiId,
                 Username = settings.ClickatellApiUsername,

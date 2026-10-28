@@ -27,7 +27,7 @@ namespace Shesha.Scheduler
         , IAsyncEventHandler<EntityCreatedEventData<ScheduledJob>>
         , IAsyncEventHandler<EntityDeletedEventData<ScheduledJob>>
         , IAsyncEventHandler<EntityUpdatedEventData<ScheduledJob>>
-        
+
         , IAsyncEventHandler<EntityCreatedEventData<ScheduledJobTrigger>>
         , IAsyncEventHandler<EntityDeletedEventData<ScheduledJobTrigger>>
         , IAsyncEventHandler<EntityUpdatedEventData<ScheduledJobTrigger>>
@@ -42,8 +42,8 @@ namespace Shesha.Scheduler
 
         public ScheduledJobManager(
             IRepository<ScheduledJobTrigger, Guid> triggerRepository,
-            IUnitOfWorkManager unitOfWorkManager, 
-            ITypeFinder typeFinder, 
+            IUnitOfWorkManager unitOfWorkManager,
+            ITypeFinder typeFinder,
             IIocManager iocManager,
             IScheduledJobRunner jobRunner)
         {
@@ -63,7 +63,7 @@ namespace Shesha.Scheduler
                 var activeTriggers = await _triggerRepository.GetAllListAsync(t => !t.Job.IsDeleted && t.Job.JobStatus == JobStatus.Active && t.Job.StartupMode == StartUpMode.Automatic && t.Status == TriggerStatus.Enabled);
 
                 // remove all unused triggers
-                using (var storageConnection = JobStorage.Current.GetConnection()) 
+                using (var storageConnection = JobStorage.Current.GetConnection())
                 {
                     var allRecurringJobs = storageConnection.GetRecurringJobs();
                     var jobsToRemove = allRecurringJobs.Where(j => activeTriggers.All(t => t.Id.ToString() != j.Id)).ToList();
@@ -72,7 +72,7 @@ namespace Shesha.Scheduler
                     {
                         RecurringJob.RemoveIfExists(jobDto.Id);
                     }
-                }                
+                }
 
                 // update existing triggers
                 foreach (var trigger in activeTriggers)
@@ -128,7 +128,7 @@ namespace Shesha.Scheduler
             BackgroundJob.Enqueue<IScheduledJobRunner>(runner => runner.RunTriggerAsync(trigger.Job.JobName, triggerId, CancellationToken.None, null));
         }
 
-        private async Task SyncWithJobManagerAsync() 
+        private async Task SyncWithJobManagerAsync()
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
@@ -184,7 +184,8 @@ namespace Shesha.Scheduler
 
             using (var connection = JobStorage.Current.GetConnection())
             {
-                var inProgress = processingJobs.Any(j => {
+                var inProgress = processingJobs.Any(j =>
+                {
                     var jobData = connection.GetJobData(j.Key);
                     var extractedJobId = jobData.GetJobId();
 
@@ -238,7 +239,8 @@ namespace Shesha.Scheduler
             await _jobRunner.PreCreateExecutionRecordAsync(executionId, jobId, null, startedById);
 
             var parametersJson = JsonConvert.SerializeObject(jobParams);
-            var envelope = new JobEnvelope(jobId) { 
+            var envelope = new JobEnvelope(jobId)
+            {
                 ExecutionId = executionId,
                 StartedById = startedById,
                 ParametersJson = parametersJson,

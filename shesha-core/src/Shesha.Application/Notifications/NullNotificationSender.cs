@@ -25,7 +25,7 @@ namespace Shesha.Notifications
             TData data,
             List<NotificationAttachmentDto>? attachments = null,
             string? cc = null,
-            GenericEntityReference? triggeringEntity = null, 
+            GenericEntityReference? triggeringEntity = null,
             NotificationChannelConfig? channel = null,
             string? category = null) where TData : NotificationData
         {
@@ -39,7 +39,7 @@ namespace Shesha.Notifications
             TData data,
             List<NotificationAttachmentDto>? attachments = null,
             string? cc = null,
-            GenericEntityReference? triggeringEntity = null, 
+            GenericEntityReference? triggeringEntity = null,
             NotificationChannelConfig? channel = null,
             string? category = null) where TData : NotificationData
         {

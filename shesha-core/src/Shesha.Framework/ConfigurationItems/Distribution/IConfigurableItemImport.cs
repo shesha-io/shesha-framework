@@ -51,8 +51,8 @@ namespace Shesha.ConfigurationItems.Distribution
         IConfigurableItemImport GetSubtypeImporter(DistributedConfigurableItemBase distributedItem);
     }
 
-    public interface IConfigurableItemImport<TItem> : IConfigurableItemImport where TItem : ConfigurationItem 
-    { 
+    public interface IConfigurableItemImport<TItem> : IConfigurableItemImport where TItem : ConfigurationItem
+    {
 
     }
 }

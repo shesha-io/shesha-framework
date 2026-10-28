@@ -6,8 +6,9 @@
     public class CachedSettingValue
     {
         public string? Value { get; set; }
-        public CachedSettingValue(string? value) { 
-            Value = value; 
+        public CachedSettingValue(string? value)
+        {
+            Value = value;
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Shesha.Domain
     public class FormConfiguration : ConfigurationItem
     {
         public const string ItemTypeName = "form";
-        
+
         public override string ItemType => ItemTypeName;
 
         /// <summary>

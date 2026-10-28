@@ -14,7 +14,7 @@ namespace Shesha.JsonLogic
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static bool IsNullOrEmpty([NotNullWhen(false)]this JToken? token)
+        public static bool IsNullOrEmpty([NotNullWhen(false)] this JToken? token)
         {
             return (token == null) ||
                    (token.Type == JTokenType.Array && !token.HasValues) ||

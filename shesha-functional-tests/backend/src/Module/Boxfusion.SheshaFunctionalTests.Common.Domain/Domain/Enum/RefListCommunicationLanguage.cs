@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum
 {
     [ReferenceList("SheshaFunctionalTests", "CommunicationLanguage")]
-    public enum RefListCommunicationLanguage: long
+    public enum RefListCommunicationLanguage : long
     {
         English = 1,
 
@@ -25,9 +25,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum
         Venda = 128,
 
         Tsonga = 256,
-        
+
         Swati = 512,
-        
+
         Ndebele = 1024
     }
 }

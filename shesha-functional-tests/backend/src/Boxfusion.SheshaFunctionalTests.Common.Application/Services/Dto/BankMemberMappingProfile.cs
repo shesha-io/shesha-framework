@@ -3,7 +3,7 @@ using Shesha.AutoMapper;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto
 {
-    public class BankMemberMappingProfile: ShaProfile
+    public class BankMemberMappingProfile : ShaProfile
     {
         public BankMemberMappingProfile()
         {

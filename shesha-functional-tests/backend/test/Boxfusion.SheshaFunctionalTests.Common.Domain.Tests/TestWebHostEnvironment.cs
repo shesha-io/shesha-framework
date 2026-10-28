@@ -1,11 +1,11 @@
-using System;
-using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
+using System;
+using System.IO;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Tests
 {
-    public class TestWebHostEnvironment: IWebHostEnvironment
+    public class TestWebHostEnvironment : IWebHostEnvironment
     {
         public string ApplicationName { get; set; } = "Test Application";
         public string WebRootPath { get; set; } = Path.Combine(Environment.CurrentDirectory, "wwwroot");

@@ -15,14 +15,14 @@ namespace Shesha.Domain
     [Table("mobile_devices", Schema = "frwk")]
     [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
     [Discriminator]
-    public class MobileDevice: FullAuditedEntity<Guid>
+    public class MobileDevice : FullAuditedEntity<Guid>
     {
         /// <summary>
         /// Device name
         /// </summary>
         [MaxLength(300)]
         public virtual string Name { get; set; }
-        
+
         /// <summary>
         /// Device IMEI number
         /// </summary>
@@ -71,7 +71,7 @@ namespace Shesha.Domain
         /// the device being in the same location for a certain period of time.
         /// </summary>
         public virtual bool? LastHeartBeatIsStationary { get; set; }
-        
+
         /// <summary>
         /// The timestamp the device was first recorded at the current location.
         /// This is used to determine how long the device has been stationary.

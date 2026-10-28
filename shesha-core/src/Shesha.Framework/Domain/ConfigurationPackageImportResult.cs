@@ -9,7 +9,7 @@ namespace Shesha.Domain
     [DiscriminatorValue("SheshaConfigPackageImportResult")]
     [SnakeCaseNaming]
     [Entity(CrudActions = CrudActions.Read, IsConfigurable = false)]
-    public class ConfigurationPackageImportResult: ImportResult
+    public class ConfigurationPackageImportResult : ImportResult
     {
         /// <summary>
         /// Application startup assembly. Applicable for packages imported during application startup

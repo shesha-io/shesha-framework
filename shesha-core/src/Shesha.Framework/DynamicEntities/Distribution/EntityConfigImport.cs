@@ -25,7 +25,7 @@ namespace Shesha.DynamicEntities.Distribution
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly ITypedCache<string, ModelConfigurationDto?> _modelConfigsCache;
         private readonly IModelConfigsCacheHolder _modelConfigsCacheHolder;
-        
+
 
         public EntityConfigImport(
             IRepository<Module, Guid> moduleRepo,
@@ -34,7 +34,7 @@ namespace Shesha.DynamicEntities.Distribution
             IRepository<EntityProperty, Guid> propertyConfigRepo,
             IPermissionedObjectManager permissionedObjectManager,
             IModelConfigsCacheHolder modelConfigsCacheHolder
-        ) : base (repository, moduleRepo, frontEndAppRepo)
+        ) : base(repository, moduleRepo, frontEndAppRepo)
         {
             _propertyConfigRepo = propertyConfigRepo;
             _permissionedObjectManager = permissionedObjectManager;
@@ -45,7 +45,7 @@ namespace Shesha.DynamicEntities.Distribution
         protected override async Task AfterImportAsync(EntityConfig item, DistributedEntityConfig distributedItem, IConfigurationItemsImportContext context)
         {
             await MapPropertiesAsync(item, distributedItem.Properties);
-            
+
             var key = _modelConfigsCacheHolder.GetCacheKey(item.Namespace, item.ClassName);
             await _modelConfigsCache.RemoveAsync(key);
         }
@@ -60,7 +60,7 @@ namespace Shesha.DynamicEntities.Distribution
                 // TODO: V1 review. fetch all properties and compare
                 var dbItem = await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfig == item)
                     ?? new EntityProperty() { EntityConfig = item };
-                
+
                 dbItem.Name = src.Name;
                 dbItem.Label = src.Label;
                 dbItem.Description = src.Description;
@@ -107,8 +107,8 @@ namespace Shesha.DynamicEntities.Distribution
                 item.GenerateAppService == distributedItem.GenerateAppService &&
                 item.IsConfigurable == distributedItem.IsConfigurable &&
                 item.HardcodedPropertiesMD5 == distributedItem.PropertiesMD5;
-                // TODO: implement 
-                //revision.ViewConfigurations == distributedItem.ViewConfigurations.ToList() &&
+            // TODO: implement 
+            //revision.ViewConfigurations == distributedItem.ViewConfigurations.ToList() &&
 
             return Task.FromResult(equals);
         }

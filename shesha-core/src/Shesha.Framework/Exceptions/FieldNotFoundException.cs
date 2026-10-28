@@ -10,7 +10,7 @@ namespace Shesha.Exceptions
         public Type OwnerType { get; private set; }
         public string FieldName { get; private set; }
 
-        public FieldNotFoundException(Type type, string fieldName): base($"Field '{fieldName}' not found in type '{type.FullName}'")
+        public FieldNotFoundException(Type type, string fieldName) : base($"Field '{fieldName}' not found in type '{type.FullName}'")
         {
             OwnerType = type;
             FieldName = fieldName;

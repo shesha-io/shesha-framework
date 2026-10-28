@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Abp.Application.Services.Dto;
+﻿using Abp.Application.Services.Dto;
 using Shesha.Domain.Enums;
+using System;
+using System.Collections.Generic;
 
 namespace Shesha.Web.FormsDesigner.Dtos
 {

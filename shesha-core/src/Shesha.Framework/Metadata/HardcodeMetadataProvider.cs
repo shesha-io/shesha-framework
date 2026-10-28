@@ -470,7 +470,7 @@ namespace Shesha.Metadata
 
                     if (inverseAtt != null)
                     {
-                        var refProp = refProps.FirstOrDefault(x => 
+                        var refProp = refProps.FirstOrDefault(x =>
                             inverseAtt.Property == (x.Name + "Id")
                             || inverseAtt.Property == MappingHelper.GetColumnName(x)
                         );
@@ -480,7 +480,7 @@ namespace Shesha.Metadata
                     {
                         if (refProps.Count == 0)
                             res.ListForeignProperty = "unknown";
-                            //throw new EntityPropertyInitializationException(null, null, null, $"Error bootstrapping {entityType}.{propInfo?.Name}");
+                        //throw new EntityPropertyInitializationException(null, null, null, $"Error bootstrapping {entityType}.{propInfo?.Name}");
                         else if (refProps.Count == 1)
                             res.ListForeignProperty = refProps.FirstOrDefault().NotNull().Name;
                         else
@@ -500,7 +500,7 @@ namespace Shesha.Metadata
                             }
                             if (refProp == null)
                                 res.ListForeignProperty = "unknown";
-                                //throw new EntityPropertyInitializationException(null, null, null, $"Error bootstrapping {entityType}.{propInfo?.Name}");
+                            //throw new EntityPropertyInitializationException(null, null, null, $"Error bootstrapping {entityType}.{propInfo?.Name}");
                         }
 
                     }
@@ -513,12 +513,12 @@ namespace Shesha.Metadata
             }
             else
                 if (propType.IsClass)
-            {
-                if (propType.IsJsonEntityType())
-                    return new DataTypeInfo(DataTypes.Object, ObjectFormats.Interface, propType.FullName);
-                else
-                    return new DataTypeInfo(DataTypes.Object, ObjectFormats.Object, propType.FullName);
-            }
+                {
+                    if (propType.IsJsonEntityType())
+                        return new DataTypeInfo(DataTypes.Object, ObjectFormats.Interface, propType.FullName);
+                    else
+                        return new DataTypeInfo(DataTypes.Object, ObjectFormats.Object, propType.FullName);
+                }
             return null;
         }
 

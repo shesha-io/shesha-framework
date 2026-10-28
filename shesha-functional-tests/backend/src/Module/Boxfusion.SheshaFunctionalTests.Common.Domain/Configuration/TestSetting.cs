@@ -7,7 +7,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Configuration
 {
     [Category("Tests")]
     [Alias("common")]
-    public interface ITestSetting: ISettingAccessors
+    public interface ITestSetting : ISettingAccessors
     {
         [Display(Name = "UserLockout")]
         [Setting(TestSettingNames.UserLockOut)]

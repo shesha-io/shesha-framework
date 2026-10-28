@@ -14,7 +14,7 @@ namespace Shesha.ConfigurationStudio
     /// <summary>
     /// Configuration Studio application service
     /// </summary>
-    public partial class ConfigurationStudioAppService: SheshaAppServiceBase
+    public partial class ConfigurationStudioAppService : SheshaAppServiceBase
     {
         public IRepository<ConfigurationItemFolder, Guid> FolderRepository { get; set; }
         public IRepository<Module, Guid> ModuleRepository { get; set; }
@@ -25,7 +25,8 @@ namespace Shesha.ConfigurationStudio
         public async Task<List<FlatTreeNode>> GetFlatTreeAsync(long? rootNodeId = null)
         {
             var treeNodes = await (await TreeNodeRepository.GetAllAsync()).OrderBy(e => e.ParentId).ThenBy(e => e.NodeType == Domain.Enums.ConfigurationItemTreeNodeType.Item ? 1 : 0).ThenBy(e => e.Name)
-                .Select(e => new FlatTreeNode { 
+                .Select(e => new FlatTreeNode
+                {
                     Id = e.Id,
                     ParentId = e.ParentId,
                     ModuleId = e.ModuleId,
@@ -62,7 +63,8 @@ namespace Shesha.ConfigurationStudio
                 ? await FolderRepository.GetAsync(request.FolderId.Value)
                 : null;
 
-            var folder = new ConfigurationItemFolder { 
+            var folder = new ConfigurationItemFolder
+            {
                 Module = module,
                 Name = request.Name,
                 Parent = parentFolder,
@@ -75,7 +77,7 @@ namespace Shesha.ConfigurationStudio
         }
 
         [HttpDelete]
-        public async Task DeleteFolderAsync(DeleteFolderRequest input) 
+        public async Task DeleteFolderAsync(DeleteFolderRequest input)
         {
             var folder = await FolderRepository.GetAsync(input.FolderId);
             folder.Module.EnsureEditable();
@@ -93,14 +95,14 @@ namespace Shesha.ConfigurationStudio
             await FolderRepository.InsertAsync(folder);
         }
 
-        private async Task DeleteFolderRecursiveAsync(ConfigurationItemFolder folder) 
+        private async Task DeleteFolderRecursiveAsync(ConfigurationItemFolder folder)
         {
             // delete items
             await ItemRepo.DeleteAsync(e => e.Folder == folder);
 
             // process subfolders
             var subFolders = await FolderRepository.GetAllListAsync(e => e.Parent == folder);
-            foreach (var subFolder in subFolders) 
+            foreach (var subFolder in subFolders)
             {
                 await DeleteFolderRecursiveAsync(subFolder);
             }
@@ -110,24 +112,25 @@ namespace Shesha.ConfigurationStudio
 
         private FolderTreeNode GetFolderTreeNode(ConfigurationItemFolder folder)
         {
-            return new FolderTreeNode {
+            return new FolderTreeNode
+            {
                 Id = folder.Id,
                 Name = folder.Name,
             };
         }
 
-        private async Task<ConfigurationItemNode> GetNodeAsync(Guid id) 
+        private async Task<ConfigurationItemNode> GetNodeAsync(Guid id)
         {
             return await NodeRepository.FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        public async Task MoveNodeToFolderAsync(MoveNodeToFolderRequest input) 
+        public async Task MoveNodeToFolderAsync(MoveNodeToFolderRequest input)
         {
             var newParentFolder = input.FolderId != null
                 ? await FolderRepository.GetAsync(input.FolderId.Value)
                 : null;
 
-            switch (input.NodeType) 
+            switch (input.NodeType)
             {
                 case TreeNodeType.Folder:
                     {
@@ -150,7 +153,7 @@ namespace Shesha.ConfigurationStudio
             }
         }
 
-        public async Task ReorderNodeAsync(ReorderNodeRequest input) 
+        public async Task ReorderNodeAsync(ReorderNodeRequest input)
         {
             switch (input.NodeType)
             {
@@ -218,7 +221,7 @@ namespace Shesha.ConfigurationStudio
 
         private async Task MoveFolderAsync(ConfigurationItemFolder? newParentFolder, ConfigurationItemFolder folder)
         {
-            if (newParentFolder != null) 
+            if (newParentFolder != null)
             {
                 if (folder.Module != newParentFolder.Module)
                     throw new ArgumentException("Folder can't be moved between modules");
@@ -226,10 +229,10 @@ namespace Shesha.ConfigurationStudio
                 var fullChain = newParentFolder.GetFullChain(e => e.Parent);
                 if (fullChain.Contains(folder))
                     throw new ArgumentException("Folder can't be moved to a descendant folder");
-            } 
+            }
 
             folder.Parent = newParentFolder;
-            
+
             // TODO: update order index
 
             await FolderRepository.UpdateAsync(folder);
@@ -239,9 +242,9 @@ namespace Shesha.ConfigurationStudio
         {
             if (newParentFolder != null && item.Module != newParentFolder.Module)
                 throw new ArgumentException("Item can't be moved between modules");
-                
+
             item.Folder = newParentFolder;
-            
+
             await ItemRepo.UpdateAsync(item);
         }
     }

@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Shesha.StoredFilters.Dtos
 {
-    public class StoredFileMapProfile: Profile
+    public class StoredFileMapProfile : Profile
     {
         public StoredFileMapProfile()
         {

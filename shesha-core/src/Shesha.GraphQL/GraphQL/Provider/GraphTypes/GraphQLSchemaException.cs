@@ -9,7 +9,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
     {
         string? _genericTypeName = null;
 
-        public GraphQLSchemaException(string genericTypeName, string message) : base(message: message) 
+        public GraphQLSchemaException(string genericTypeName, string message) : base(message: message)
         {
             _genericTypeName = genericTypeName;
         }

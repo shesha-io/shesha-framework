@@ -39,7 +39,7 @@ namespace Shesha.NHibernate.Utilites
         /// </summary>
         /// <param name="sqlIdentifier">sql identifier (table name, column sname etc.)</param>
         /// <returns></returns>
-        public static string EscapeDbObjectNameForNH(this string sqlIdentifier) 
+        public static string EscapeDbObjectNameForNH(this string sqlIdentifier)
         {
             return EscapeDbObjectName(sqlIdentifier, '`');
         }
@@ -56,11 +56,11 @@ namespace Shesha.NHibernate.Utilites
         /// </summary>
         /// <param name="sqlIdentifier"></param>
         /// <returns></returns>
-        public static string UnescapeDbObjectName(this string sqlIdentifier) 
+        public static string UnescapeDbObjectName(this string sqlIdentifier)
         {
             var isQuoted = IsQuoted(sqlIdentifier, out var openQuote, out var closeQuote);
-            return isQuoted 
-                ? sqlIdentifier.Substring(1, sqlIdentifier.Length - 2) 
+            return isQuoted
+                ? sqlIdentifier.Substring(1, sqlIdentifier.Length - 2)
                 : sqlIdentifier;
         }
 

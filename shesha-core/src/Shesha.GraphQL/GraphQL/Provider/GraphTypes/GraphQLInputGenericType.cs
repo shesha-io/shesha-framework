@@ -62,9 +62,10 @@ namespace Shesha.GraphQL.Provider.GraphTypes
             var propertyType = propertyInfo.PropertyType;
             if (isDictionary || propertyType.Namespace != null && !propertyType.Namespace.StartsWith("System"))
             {
-                if (propertyType.IsEnum) {
-                    Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(propertyType, isInput: true));                    
-                }                
+                if (propertyType.IsEnum)
+                {
+                    Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(propertyType, isInput: true));
+                }
                 else
                 {
                     var gqlType = typeof(ISchema).Assembly.GetTypes().FirstOrDefault(t => t.Name == $"{typeName}Type" && t.IsAssignableTo(typeof(IGraphType)));
@@ -73,7 +74,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                         ? MakeDictionaryType(propertyInfo)
                         : typeof(GraphQLInputGenericType<>).MakeGenericType(propertyType);
 
-                    Field(propertyInfo.Name, gqlType);                    
+                    Field(propertyInfo.Name, gqlType);
                 }
             }
             else
@@ -84,7 +85,8 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                     var gqlListType = GraphTypeMapper.GetGraphType(gtn, isInput: true);
                     var listType = typeof(ListGraphType<>).MakeGenericType(gqlListType);
                     Field(propertyInfo.Name, listType);
-                } else 
+                }
+                else
                 {
                     Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: true));
                 }

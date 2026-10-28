@@ -16,12 +16,12 @@ namespace Shesha.Domain.Attributes
         /// Name of the discriminator column
         /// </summary>
         public string? DiscriminatorColumn { get; set; }
-        
+
         /// <summary>
         /// If true, indicates that entity uses discriminator
         /// </summary>
         public bool UseDiscriminator { get; set; }
-        
+
         /// <summary>
         /// If true, indicates that the ORM should filter out rows with unknown discriminator values
         /// </summary>

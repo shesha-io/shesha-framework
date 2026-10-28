@@ -24,7 +24,7 @@ namespace Shesha.DynamicEntities.Distribution
             IRepository<FrontEndApp, Guid> frontEndAppRepo,
             IRepository<PermissionDefinition, Guid> repository,
             IShaPermissionManager shaPermissionManager
-        ) : base (repository, moduleRepo, frontEndAppRepo)
+        ) : base(repository, moduleRepo, frontEndAppRepo)
         {
             _shaPermissionManager = shaPermissionManager;
         }

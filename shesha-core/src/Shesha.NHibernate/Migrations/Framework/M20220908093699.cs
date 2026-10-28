@@ -10,7 +10,7 @@ namespace Shesha.Migrations.Framework
         {
             Create.Column("IsLast").OnTable("Frwk_VersionedFieldVersions").AsBoolean().NotNullable().SetExistingRowsTo(1);
 
-			Execute.Sql(
+            Execute.Sql(
 @"CREATE TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AD
    ON  Frwk_VersionedFieldVersions
    AFTER DELETE
@@ -43,7 +43,7 @@ BEGIN
 	end
 END");
 
-			Execute.Sql(
+            Execute.Sql(
 @"CREATE TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AI
    ON  Frwk_VersionedFieldVersions
    AFTER INSERT
@@ -92,7 +92,7 @@ BEGIN
 		)
 END");
 
-			Execute.Sql(
+            Execute.Sql(
 @"CREATE TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AU
    ON  Frwk_VersionedFieldVersions
    AFTER update
@@ -144,7 +144,7 @@ BEGIN
 	end
 END");
 
-			Execute.Sql(
+            Execute.Sql(
 @"with data as (
 	select
 		v.Id,
@@ -159,6 +159,6 @@ set
 from
 	Frwk_VersionedFieldVersions ver
 	inner join data on data.Id = ver.Id");
-		}
-	}
+        }
+    }
 }

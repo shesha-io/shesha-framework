@@ -10,9 +10,9 @@ namespace Shesha.Domain
     [ImMutable]
     [SnakeCaseNaming]
     [Table("vw_configuration_item_history_items", Schema = "frwk")]
-    public class ConfigurationItemHistoryItem: Entity<Guid>
+    public class ConfigurationItemHistoryItem : Entity<Guid>
     {
-		public virtual string ModuleName { get; set; }
+        public virtual string ModuleName { get; set; }
         public virtual bool IsEditable { get; set; }
         public virtual string ConfigurationItemName { get; set; }
         public virtual Guid ConfigurationItemId { get; set; }

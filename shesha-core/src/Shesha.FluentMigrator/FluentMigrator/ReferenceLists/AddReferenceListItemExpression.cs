@@ -21,15 +21,17 @@ namespace Shesha.FluentMigrator.ReferenceLists
 
         public override void ExecuteWith(IMigrationProcessor processor)
         {
-            var exp = new PerformDBOperationExpression() { Operation = (connection, transaction) => 
+            var exp = new PerformDBOperationExpression()
+            {
+                Operation = (connection, transaction) =>
                 {
                     var helper = new ReferenceListDbHelper(DbmsType, connection, transaction, QuerySchema);
-                    
+
                     var refListId = helper.GetReferenceListId(Namespace, Name);
                     if (refListId == null)
                         throw new Exception($"Reference list '{Namespace}.{Name}' not found");
                     helper.InsertReferenceListItem(refListId.Value, Item);
-                } 
+                }
             };
             processor.Process(exp);
         }

@@ -30,7 +30,7 @@ namespace Shesha.ConfigurationItems
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<Module, Guid> _moduleRepo;
         private readonly IRepository<ModuleRelation, Guid> _moduleRelationRepo;
-        private readonly IModuleHierarchyProvider _moduleHierarchyProvider;        
+        private readonly IModuleHierarchyProvider _moduleHierarchyProvider;
         private readonly IIocManager _iocManager;
         private readonly IApplicationStartupSession _startupSession;
         private readonly IAbpModuleManager _abpModuleManager;
@@ -68,7 +68,7 @@ namespace Shesha.ConfigurationItems
             await DoProcessAsync();
         }
 
-        private async Task<List<ModuleItem>> GetCodeModulesAsync() 
+        private async Task<List<ModuleItem>> GetCodeModulesAsync()
         {
             var startupModuleName = _abpModuleManager.GetStartupModuleNameOrDefault();
             var result = new List<ModuleItem>();
@@ -78,7 +78,7 @@ namespace Shesha.ConfigurationItems
                 {
                     var dbModules = await _moduleRepo.GetAllListAsync();
                     var moduleTypes = _moduleManager.GetModuleTypes();
-                    foreach (var type in moduleTypes) 
+                    foreach (var type in moduleTypes)
                     {
                         var instance = _iocManager.Resolve(type).ForceCastAs<SheshaModule>();
 
@@ -108,8 +108,9 @@ namespace Shesha.ConfigurationItems
                             };
                             await _moduleRepo.InsertAsync(dbModule);
                         }
-                        else {
-                            if (dbModule.IsDeleted) 
+                        else
+                        {
+                            if (dbModule.IsDeleted)
                             {
                                 dbModule.IsDeleted = false;
                                 await _moduleRepo.UpdateAsync(dbModule);
@@ -125,13 +126,13 @@ namespace Shesha.ConfigurationItems
                             Accessor = accessor,
                             Id = dbModule.Id,
                             IsNewModule = isNew,
-                        });                        
+                        });
                     }
 
                     // Update startup modules assuming that we have only one startup module per DB
                     // If we'll need to run multiple back-ends on the same DB we'll have to pass current module in each session
                     var toUpdateStartupFlag = dbModules.Where(m => m.IsRootModule != (m.Name == startupModuleName)).ToList();
-                    foreach (var module in toUpdateStartupFlag) 
+                    foreach (var module in toUpdateStartupFlag)
                     {
                         module.IsRootModule = module.Name == startupModuleName;
                         await _moduleRepo.UpdateAsync(module);
@@ -139,9 +140,9 @@ namespace Shesha.ConfigurationItems
 
                     // delete missing modules
                     var toDelete = dbModules.Where(e => !result.Any(m => m.Id == e.Id)).ToList();
-                    foreach (var module in toDelete) 
+                    foreach (var module in toDelete)
                     {
-                        await _moduleRepo.DeleteAsync(module);                        
+                        await _moduleRepo.DeleteAsync(module);
                     }
                 }
                 await unitOfWork.CompleteAsync();
@@ -155,7 +156,8 @@ namespace Shesha.ConfigurationItems
             var allSubModules = _typeFinder
                 .Find(t => t != null && t.IsPublic && !t.IsGenericType && !t.IsAbstract && typeof(ISheshaSubmodule).IsAssignableFrom(t))
                 .Where(x => ForceUpdate || !_startupSession.AssemblyStaysUnchanged(x.Assembly))
-                .Select(t => {
+                .Select(t =>
+                {
                     return _iocManager.Resolve(t).ForceCastAs<ISheshaSubmodule>();
                 })
                 .ToList();
@@ -164,11 +166,11 @@ namespace Shesha.ConfigurationItems
 
             foreach (var codeModule in codeModules)
             {
-                using (var unitOfWork = _unitOfWorkManager.Begin()) 
+                using (var unitOfWork = _unitOfWorkManager.Begin())
                 {
                     var dbModule = await _moduleRepo.GetAsync(codeModule.Id);
 
-                    if (!codeModule.IsNewModule) 
+                    if (!codeModule.IsNewModule)
                     {
                         dbModule.Name = codeModule.ModuleInfo.Name; // update name to ensure that the case is correct
                         dbModule.Accessor = codeModule.Accessor;
@@ -212,7 +214,7 @@ namespace Shesha.ConfigurationItems
             }
         }
 
-        private async Task FillModuleHierarchyAsync(Module module) 
+        private async Task FillModuleHierarchyAsync(Module module)
         {
             var dbRelations = await _moduleRelationRepo.GetAllListAsync(e => e.Module == module);
 
@@ -257,7 +259,7 @@ namespace Shesha.ConfigurationItems
             }
 
             // delete outstanding relations
-            foreach (var toDelete in dbRelations) 
+            foreach (var toDelete in dbRelations)
             {
                 await _moduleRelationRepo.DeleteAsync(toDelete);
             }
@@ -267,8 +269,8 @@ namespace Shesha.ConfigurationItems
         {
             public string BaseModule { get; set; }
             public int Level { get; set; }
-            public BaseModuleWithLevel(string baseModule, int level) 
-            { 
+            public BaseModuleWithLevel(string baseModule, int level)
+            {
                 BaseModule = baseModule;
                 Level = level;
             }
@@ -282,11 +284,11 @@ namespace Shesha.ConfigurationItems
         {
             public Guid Id { get; set; }
             public required Type ModuleType { get; set; }
-            public required SheshaModule Instance { get;set; }
+            public required SheshaModule Instance { get; set; }
             public required SheshaModuleInfo ModuleInfo { get; set; }
             public string? Version { get; set; }
             public string? Accessor { get; set; }
-            public bool IsNewModule { get; set; }            
+            public bool IsNewModule { get; set; }
         }
     }
 }

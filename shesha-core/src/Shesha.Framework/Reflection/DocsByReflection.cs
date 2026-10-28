@@ -4,12 +4,12 @@
 //This is free software. Libraries and programs are distributed under the terms of the GNU Lesser
 //General Public License. Please see the files COPYING and COPYING.LESSER.
 
+using Abp.Dependency;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
-using Abp.Dependency;
 
 namespace Shesha.Reflection
 {
@@ -170,7 +170,7 @@ namespace Shesha.Reflection
                 if (!File.Exists(xmlFilePath))
                     return null;
 
-                using (var streamReader = new StreamReader(xmlFilePath)) 
+                using (var streamReader = new StreamReader(xmlFilePath))
                 {
                     var xmlDocument = new XmlDocument();
                     xmlDocument.Load(streamReader);

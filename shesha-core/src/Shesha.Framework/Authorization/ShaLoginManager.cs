@@ -109,7 +109,8 @@ namespace Shesha.Authorization
                 if (login == null || string.IsNullOrWhiteSpace(login.LoginProvider) || string.IsNullOrWhiteSpace(login.ProviderKey))
                     throw new ArgumentException("login");
 
-                var result = await ProcessTenancyLoginActionAsync(null, tenancyName, true, async (tenant) => {
+                var result = await ProcessTenancyLoginActionAsync(null, tenancyName, true, async (tenant) =>
+                {
                     var user = await UserManager.FindAsync(tenant?.Id, login);
                     if (user == null)
                     {
@@ -203,8 +204,10 @@ namespace Shesha.Authorization
         {
             CheckOtpAuthAvailability();
 
-            var result = await UnitOfWorkManager.WithUnitOfWorkAsync(async () => {
-                return await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) => {
+            var result = await UnitOfWorkManager.WithUnitOfWorkAsync(async () =>
+            {
+                return await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) =>
+                {
 
                     var otp = await OtpManager.GetOrNullAsync(operationId);
                     if (otp == null)
@@ -255,7 +258,8 @@ namespace Shesha.Authorization
 
         public virtual async Task<ShaLoginResult<TUser>> LoginAsync(string userNameOrEmailAddress, string plainPassword, string? imei = null, string? tenancyName = null, bool shouldLockout = true)
         {
-            var result = await UnitOfWorkManager.WithUnitOfWorkAsync(async () => {
+            var result = await UnitOfWorkManager.WithUnitOfWorkAsync(async () =>
+            {
                 return await LoginInternalAsync(userNameOrEmailAddress, plainPassword, imei, tenancyName, shouldLockout);
             }, TransactionScopeOption.RequiresNew);
 
@@ -302,7 +306,8 @@ namespace Shesha.Authorization
             ArgumentNullException.ThrowIfNullOrWhiteSpace(userNameOrEmailAddress, nameof(userNameOrEmailAddress));
             ArgumentNullException.ThrowIfNullOrWhiteSpace(plainPassword, nameof(plainPassword));
 
-            return await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) => {
+            return await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) =>
+            {
                 // TryLoginFromExternalAuthenticationSources method may create the user, that's why we are calling it before AbpUserStore.FindByNameOrEmailAsync
                 var loggedInFromExternalSource = await TryLoginFromExternalAuthenticationSourcesAsync(userNameOrEmailAddress, plainPassword, tenant);
 

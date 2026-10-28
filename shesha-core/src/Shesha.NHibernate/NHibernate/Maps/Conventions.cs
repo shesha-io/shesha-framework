@@ -213,7 +213,7 @@ namespace Shesha.NHibernate.Maps
                         // add join with provided table name, all properties will be added using current conventions and placed to the corresponding group using SplitGroupId = TableName
                         subclassMapper.Join(joinPropAttribute.TableName, j =>
                         {
-                            j. Table(joinPropAttribute.TableName);
+                            j.Table(joinPropAttribute.TableName);
                             if (!string.IsNullOrWhiteSpace(joinPropAttribute.Schema))
                                 j.Schema(joinPropAttribute.Schema);
 
@@ -325,10 +325,10 @@ namespace Shesha.NHibernate.Maps
                 }
                 else
                     if (member.LocalMember.GetAttribute<StringLengthAttribute>()?.MaximumLength == int.MaxValue)
-                {
-                    columnType = NHibernateUtil.StringClob;
-                    sqlType = "nvarchar(max)";
-                }
+                    {
+                        columnType = NHibernateUtil.StringClob;
+                        sqlType = "nvarchar(max)";
+                    }
 
                 if (propertyType == typeof(Geometry))
                 {
@@ -508,32 +508,32 @@ namespace Shesha.NHibernate.Maps
 
                 //map.NotFound(NotFoundMode.Ignore); disabled due to performance issues, this option breaks lazy loading
 
-                var foreignKeyColumn = propertyPath.LocalMember.GetCustomAttribute<ColumnAttribute>()?.Name 
+                var foreignKeyColumn = propertyPath.LocalMember.GetCustomAttribute<ColumnAttribute>()?.Name
                     ?? MappingHelper.GetForeignKeyColumn(propertyPath.LocalMember);
                 map.Column(foreignKeyColumn);
 
-               var readonlyAttribute = propertyPath.LocalMember.GetAttributeOrNull<ReadonlyPropertyAttribute>();
-               if (readonlyAttribute != null)
-               {
-                   map.Insert(readonlyAttribute.Insert);
-                   map.Update(readonlyAttribute.Update);
-               }
-               else 
-               {
-                   var directlyMappedFk = propertyPath.LocalMember.ReflectedType != null
-                       ? propertyPath.LocalMember.ReflectedType.GetProperties().FirstOrDefault(p => p != propertyPath.LocalMember && modelInspector.IsPersistentProperty(p) && MappingHelper.GetColumnName(p) == foreignKeyColumn)
-                       : null;
-                   if (foreignKeyColumn.ToLower() == "id" || directlyMappedFk != null)
-                   {
-                       map.Insert(false);
-                       map.Update(false);
-                   }
-               }
+                var readonlyAttribute = propertyPath.LocalMember.GetAttributeOrNull<ReadonlyPropertyAttribute>();
+                if (readonlyAttribute != null)
+                {
+                    map.Insert(readonlyAttribute.Insert);
+                    map.Update(readonlyAttribute.Update);
+                }
+                else
+                {
+                    var directlyMappedFk = propertyPath.LocalMember.ReflectedType != null
+                        ? propertyPath.LocalMember.ReflectedType.GetProperties().FirstOrDefault(p => p != propertyPath.LocalMember && modelInspector.IsPersistentProperty(p) && MappingHelper.GetColumnName(p) == foreignKeyColumn)
+                        : null;
+                    if (foreignKeyColumn.ToLower() == "id" || directlyMappedFk != null)
+                    {
+                        map.Insert(false);
+                        map.Update(false);
+                    }
+                }
 
-               var cascadeAttribute = propertyPath.LocalMember.GetAttributeOrNull<CascadeAttribute>(true);
-               map.Cascade(cascadeAttribute?.Cascade ?? ByCode.Cascade.Persist);
-               map.Class(ByCode.TypeExtensions.GetPropertyOrFieldType(propertyPath.LocalMember));
-           };
+                var cascadeAttribute = propertyPath.LocalMember.GetAttributeOrNull<CascadeAttribute>(true);
+                map.Cascade(cascadeAttribute?.Cascade ?? ByCode.Cascade.Persist);
+                map.Class(ByCode.TypeExtensions.GetPropertyOrFieldType(propertyPath.LocalMember));
+            };
 
             mapper.BeforeMapBag += (modelInspector, propertyPath, map) =>
             {
@@ -553,7 +553,8 @@ namespace Shesha.NHibernate.Maps
                             map.Key(keyMapper => keyMapper.Column(MappingHelper.GetColumnName(referenceProperty)));
                         else
                             map.Key(keyMapper => keyMapper.Column(manyToOneAttribute.PropertyName));
-                    } else
+                    }
+                    else
                         map.Key(keyMapper => keyMapper.Column(containerEntity.Name + "Id"));
                 }
 

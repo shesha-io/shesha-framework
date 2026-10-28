@@ -8,7 +8,7 @@ namespace Shesha.Migrations
     /// Saved Filters
     /// </summary>
     [Migration(20200623162800), UsedImplicitly, MsSqlOnly]
-    public class M20200623162800: AutoReversingMigration
+    public class M20200623162800 : AutoReversingMigration
     {
         public override void Up()
         {
@@ -19,7 +19,7 @@ namespace Shesha.Migrations
                 .WithIdAsGuid()
 
                 // moved to Frwk_StoredFilterOwners // .WithColumn("DataTableId").AsString(255).Nullable().WithColumnDescription("when provided, the filter is only available for the given data table configuration")
-                
+
                 .WithColumn("Name").AsString(255).NotNullable().WithColumnDescription("user friendly name of the filter that end users see in the filter picker")
                 .WithColumn("Namespace").AsString(255).Nullable().WithColumnDescription("only necessary for the report sub-filters. can be provided to limit output")
                 .WithColumn("Description").AsStringMax().Nullable().WithColumnDescription("filter description can be provided here")
@@ -28,7 +28,7 @@ namespace Shesha.Migrations
                 .WithColumn("IsExclusive").AsBoolean().NotNullable().WithDefaultValue(false).WithColumnDescription("when true, this filter cannot be applied on top of other filter(s). This effects the following: 1) If a multi-check-list control is used for filter selection, selecting this filter is only if other filter is already checked (on the Data Table view or Report view), 2) Exclusive filters cannot be used as sub-filters of another filter")
                 .WithColumn("IsPrivate").AsBoolean().NotNullable().WithDefaultValue(false).WithColumnDescription("true for filters that should only be visible to creator: 1) filter drafts created by admins or 2) filters created by end users. System filters are never private")
                 // since ShaRole is on a higher level, added a many-to-many Frwk_StoredFilterContainers instead // .WithForeignKeyColumn("VisibilityWorkflowRoleId", "Core_ShaRoles").Nullable().WithColumnDescription("a workflow role that defines which users can see the filter. When null and Is Private=false, all users can see it.")
-                
+
                 .WithColumn("CustomFilterViewPath").AsString(512).Nullable().WithColumnDescription("this feature is actively used in the Reporting Framework. specifies a path to a view containing the filter UI")
                 .WithColumn("CustomFilterFormId").AsGuid().Nullable().WithColumnDescription("allows us use form designer for creating filters UI. Can replace CustomFilterViewPath in many cases")
 
@@ -41,12 +41,12 @@ namespace Shesha.Migrations
 
                 .WithColumn("HqlExpression").AsStringMax().Nullable().WithColumnDescription("HQL Query that defines the filter. Either built with JsonLogic or typed in manually")
                 .WithColumn("JsonLogicExpression").AsStringMax().Nullable().WithColumnDescription("JsonLogic expression of the filter. It can be converted to HQL when needed")
-                
+
                 .WithFullPowerEntityColumns();
 
             Create.Table("Frwk_StoredFilterContainers").WithDescription("Each filter has at least one containing object such as datatable or report")
                 .WithIdAsGuid()
-                
+
                 .WithForeignKeyColumn("FilterId", "Frwk_StoredFilters").NotNullable()
 
                 .WithColumn("IsHidden").AsBoolean().NotNullable().WithDefaultValue(false).WithColumnDescription("When true, this filter is hidden from all users independent of Visibility settings")
@@ -60,7 +60,7 @@ namespace Shesha.Migrations
 
             Create.Table("Frwk_EntityVisibility").WithDescription("Defines user group(s) (Person/ShaRole/DistributionList/...) that can see the filter. No record is for making a filter invisible to everyone")
                 .WithIdAsGuid()
-                
+
                 .WithColumn("EntityAccessLkp").AsInt32().NotNullable().WithColumnDescription("Granted Access")
 
                 .WithFullPowerManyToManyColumns();
@@ -96,7 +96,7 @@ namespace Shesha.Migrations
                 .WithColumn("JoinOperatorLkp").AsInt32().NotNullable().WithColumnDescription("Filter join operator (AND / OR). The operator is put between current and next subfilter of the same owning filter (by order index)")
 
                 .WithColumn("OrderIndex").AsInt32().NotNullable().WithColumnDescription("Order Index of the sub-filter")
-                
+
                 .WithFullPowerEntityColumns();
 
             // todo: find a way to add where clause on IsDeleted=0 with Fluent.NHibernate

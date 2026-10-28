@@ -5,6 +5,6 @@
     /// </summary>
     public abstract class SettingDefinitionProvider : ISettingDefinitionProvider
     {
-        public abstract void Define(ISettingDefinitionContext context);        
+        public abstract void Define(ISettingDefinitionContext context);
     }
 }

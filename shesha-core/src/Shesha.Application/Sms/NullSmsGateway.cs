@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Castle.Core.Logging;
+using Shesha.Attributes;
+using Shesha.Notifications.Dto;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Castle.Core.Logging;
-using Shesha.Attributes;
-using Shesha.Notifications.Dto;
 
 namespace Shesha.Sms
 {
@@ -34,7 +34,7 @@ namespace Shesha.Sms
             Logger.InfoFormat("SMS stub. Sending SMS to {0}: {1}", mobileNumber, body);
 
             if (string.IsNullOrEmpty(mobileNumber))
-            { 
+            {
                 Logger.ErrorFormat("Can't send message, mobile number is empty");
                 return Task.FromResult(new SendStatus()
                 {
@@ -44,7 +44,7 @@ namespace Shesha.Sms
             }
 
             if (string.IsNullOrEmpty(body))
-            { 
+            {
                 Logger.ErrorFormat("Can't send empty message");
                 return Task.FromResult(new SendStatus()
                 {

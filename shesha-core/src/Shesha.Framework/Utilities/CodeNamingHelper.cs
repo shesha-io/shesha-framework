@@ -55,7 +55,7 @@ namespace Shesha.Utilities
         /// </summary>
         /// <param name="moduleInfo"></param>
         /// <returns></returns>
-        public static string GetModuleAccessor(this SheshaModuleInfo moduleInfo) 
+        public static string GetModuleAccessor(this SheshaModuleInfo moduleInfo)
         {
             return GetAccessor(moduleInfo.Name, moduleInfo.Alias);
         }
@@ -65,7 +65,7 @@ namespace Shesha.Utilities
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public static string GetPropertyAccessor(this PropertyInfo property) 
+        public static string GetPropertyAccessor(this PropertyInfo property)
         {
             var aliasAttribute = property.GetAttributeOrNull<AliasAttribute>();
             return GetAccessor(property.Name, aliasAttribute?.Alias);
@@ -76,7 +76,7 @@ namespace Shesha.Utilities
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static string GetTypeAccessor(this Type type) 
+        public static string GetTypeAccessor(this Type type)
         {
             var className = type.StripCastleProxyType().GetUnderlyingTypeIfNullable().Name;
             return ClassName2Accessor(className);
@@ -87,12 +87,12 @@ namespace Shesha.Utilities
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static EntityTypeIndentifier GetEntityTypeIdentifier(this Type type) 
+        public static EntityTypeIndentifier GetEntityTypeIdentifier(this Type type)
         {
             return new EntityTypeIndentifier(type.GetConfigurableModuleInfo()?.GetModuleAccessor(), type.GetTypeAccessor());
         }
 
-        private static string ClassName2Accessor(string className) 
+        private static string ClassName2Accessor(string className)
         {
             return GetAccessor(className, null, true);
         }

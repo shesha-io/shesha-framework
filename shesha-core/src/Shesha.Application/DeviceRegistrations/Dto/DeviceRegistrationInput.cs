@@ -7,7 +7,7 @@ namespace Shesha.DeviceRegistrations.Dto
     /// Registered mobile device DTO
     /// </summary>
     [AutoMap(typeof(DeviceRegistration))]
-    public class DeviceRegistrationInput 
+    public class DeviceRegistrationInput
     {
         public string DeviceRegistrationId { get; set; }
     }

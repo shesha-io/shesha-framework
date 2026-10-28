@@ -20,7 +20,7 @@ namespace Shesha.GraphQL.Provider
         /// Returns the field name converted to camelCase.
         /// </summary>
         public string NameForField(string fieldName, IComplexGraphType parentGraphType) => StringHelper.ToCamelCase(fieldName);
-        
+
         /// <summary>
         /// Returns the argument name converted to camelCase.
         /// </summary>

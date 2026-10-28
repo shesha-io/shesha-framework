@@ -10,7 +10,7 @@ namespace Shesha.DynamicEntities
         private string _name;
         private DynamicDtoInterceptor _parent;
 
-        private Dictionary<string, object?> _changes = new ();
+        private Dictionary<string, object?> _changes = new();
 
         private bool _isChanged = false;
 

@@ -2,8 +2,8 @@
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {
-    public class JsonSpoke: JsonEntity
+    public class JsonSpoke : JsonEntity
     {
-        public virtual string Color { get; set; }    
+        public virtual string Color { get; set; }
     }
 }

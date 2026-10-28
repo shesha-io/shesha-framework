@@ -11,7 +11,7 @@ namespace Shesha.Domain
     [SnakeCaseNaming]
     [Table("otp_audit_items", Schema = "frwk")]
     [Entity(CrudActions = CrudActions.Read, IsConfigurable = false, CrudActionsAccess = CrudActionsAccess.RequiresPermissions, CrudActionsPermissions = [PermissionNames.Application_Administer])]
-    public class OtpAuditItem: FullAuditedEntity<Guid>
+    public class OtpAuditItem : FullAuditedEntity<Guid>
     {
         /// <summary>
         /// Mobile number/email address (depending on the `send type`) to which the OTP should be sent
@@ -26,7 +26,7 @@ namespace Shesha.Domain
 
         [MaxLength(100)]
         public virtual string? RecipientType { get; set; }
-        
+
         [MaxLength(100)]
         public virtual string? RecipientId { get; set; }
 
@@ -42,12 +42,12 @@ namespace Shesha.Domain
 
         [MaxLength(100)]
         public virtual string Otp { get; set; }
-        
+
         [MaxLength(100)]
         public virtual string? ActionType { get; set; }
 
         public virtual OtpSendStatus SendStatus { get; set; }
-        
+
         [MaxLength(int.MaxValue)]
         public virtual string? ErrorMessage { get; set; }
     }

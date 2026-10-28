@@ -28,7 +28,7 @@ namespace Shesha.Tests.QuickSearch
     {
         public QuickSearcher_Tests(SqlServerFixture fixture) : base(fixture)
         {
-            
+
         }
 
         [Fact]
@@ -56,7 +56,8 @@ namespace Shesha.Tests.QuickSearch
                 $"{nameof(Person.User)}.{nameof(Person.User.UserName)}"
             });
 
-            await TryFetchDataAsync<Person, Guid>(query => query.Where(expression), data => {
+            await TryFetchDataAsync<Person, Guid>(query => query.Where(expression), data =>
+            {
                 // check data
             });
         }
@@ -99,13 +100,13 @@ namespace Shesha.Tests.QuickSearch
             });
 
             var refListId = GetReflistRevisionId(new ReferenceListIdentifier(null, "Shesha.Core", "PersonTitles"));
-            
+
             var expected = $@"ent => value(NHibernate.Linq.NhQueryable`1[Shesha.Domain.ReferenceListItem]).Any(entTitle => (((entTitle.ReferenceList.Id == {refListId}) AndAlso (Convert(ent.Title, Nullable`1) == Convert(entTitle.ItemValue, Nullable`1))) AndAlso entTitle.Item.Contains(""mrs"")))";
 
             Assert.Equal(expected, expression.ToString());
         }
 
-        private Guid? GetReflistId(ReferenceListIdentifier refListId) 
+        private Guid? GetReflistId(ReferenceListIdentifier refListId)
         {
             var refListHelper = Resolve<IReferenceListHelper>();
             Guid? id = null;
@@ -138,7 +139,8 @@ namespace Shesha.Tests.QuickSearch
                 nameof(TestPerson.Title)
             });
 
-            return TryFetchDataAsync<Person, Guid>(query => query.Where(expression), data => {
+            return TryFetchDataAsync<Person, Guid>(query => query.Where(expression), data =>
+            {
                 // check data
             });
         }
@@ -172,7 +174,8 @@ namespace Shesha.Tests.QuickSearch
 
             orgRepoMock.Setup(s => s.GetAll()).Returns(() => testOrganisations.AsQueryable());
 
-            var refList = new ReferenceList {
+            var refList = new ReferenceList
+            {
                 Id = Guid.NewGuid(),
                 Name = "PreferredContactMethod",
                 Module = new Domain.Module { Name = "Shesha" }
@@ -229,7 +232,8 @@ namespace Shesha.Tests.QuickSearch
             var repository = LocalIocManager.Resolve<IRepository<T, TId>>();
             var asyncExecuter = LocalIocManager.Resolve<IAsyncQueryableExecuter>();
 
-            return await WithUnitOfWorkAsync(async () => {
+            return await WithUnitOfWorkAsync(async () =>
+            {
                 var query = await repository.GetAllAsync();
 
                 if (prepareQueryable != null)
@@ -245,13 +249,13 @@ namespace Shesha.Tests.QuickSearch
         #endregion
     }
 
-    public class TestPerson: Entity<Guid>
+    public class TestPerson : Entity<Guid>
     {
         public virtual string FirstName { get; set; }
         public virtual string LastName { get; set; }
         public virtual RefListPersonTitle? Title { get; set; }
         public virtual TestOrganisation Organisation { get; set; }
-        
+
         [ReferenceList("Shesha.Core", "PreferredContactMethod")]
         public virtual Int64? PreferredContactMethod { get; set; }
     }
@@ -260,14 +264,14 @@ namespace Shesha.Tests.QuickSearch
     {
         public virtual string Name { get; set; }
         public virtual string Address { get; set; }
-        
+
         [MultiValueReferenceList("Shesha.Core", "PreferredContactMethod", Module = "Shesha")]
         public virtual Int64? ContactMethods { get; set; }
     }
 
     [Flags]
-    public enum TestContactMethod: Int64
-    { 
+    public enum TestContactMethod : Int64
+    {
         Email = 1,
         Sms = 2,
         Fax = 4,

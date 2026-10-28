@@ -1,15 +1,15 @@
-﻿using System;
-using FluentMigrator;
+﻿using FluentMigrator;
+using System;
 
 namespace Shesha.Migrations
 {
     [Migration(20210304165100), MsSqlOnly]
-    public class M20210304165100: Migration
+    public class M20210304165100 : Migration
     {
         public override void Up()
         {
             Execute.Sql("CREATE INDEX IX_Frwk_StoredFiles_Owner ON Frwk_StoredFiles (Frwk_OwnerId, Frwk_OwnerType, CategoryLkp, IsDeleted)");
-            
+
             Execute.Sql("CREATE INDEX IX_Core_CheckListItemSelections_Owner ON Core_CheckListItemSelections (Frwk_OwnerId, Frwk_OwnerType, IsDeleted)");
         }
 

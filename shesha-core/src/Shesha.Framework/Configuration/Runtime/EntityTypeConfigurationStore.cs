@@ -20,7 +20,7 @@ namespace Shesha.Configuration.Runtime
     /// <summary>
     /// Entities types (classes) configuration store
     /// </summary>
-    public class EntityTypeConfigurationStore: IEntityTypeConfigurationStore, ISingletonDependency/*,
+    public class EntityTypeConfigurationStore : IEntityTypeConfigurationStore, ISingletonDependency/*,
         IAsyncEventHandler<EntityChangedEventData<EntityProperty>>,
         IAsyncEventHandler<EntityChangedEventData<EntityConfig>>*/
     {
@@ -62,7 +62,7 @@ namespace Shesha.Configuration.Runtime
             // check for duplicates
             var duplicates = entityTypes
                 .Where(i => !string.IsNullOrWhiteSpace(i.TypeShortAlias))
-                .GroupBy(i => i.TypeShortAlias, (t, items) => new {TypeShortAlias = t, Types = items.Select(i => i.Type)})
+                .GroupBy(i => i.TypeShortAlias, (t, items) => new { TypeShortAlias = t, Types = items.Select(i => i.Type) })
                 .Where(g => g.Types.Count() > 1).ToList();
             if (duplicates.Any())
                 throw new DuplicatedTypeShortAliasesException(duplicates.ToDictionary(i => i.TypeShortAlias ?? "empty", i => i.Types));
@@ -108,7 +108,7 @@ namespace Shesha.Configuration.Runtime
             return entityConfig?.SafeTypeShortAlias;
         }
 
-        private Type? GetTypeOrNull(string nameOrAlias) 
+        private Type? GetTypeOrNull(string nameOrAlias)
         {
             return _entityByTypeShortAlias.ContainsKey(nameOrAlias)
                 ? _entityByTypeShortAlias[nameOrAlias] as Type
@@ -151,7 +151,7 @@ namespace Shesha.Configuration.Runtime
             var type = GetTypeOrNull(nameOrAlias);
 
             if (type == null)
-                throw new EntityTypeNotFoundException (nameOrAlias);
+                throw new EntityTypeNotFoundException(nameOrAlias);
 
             return Get(type);
         }

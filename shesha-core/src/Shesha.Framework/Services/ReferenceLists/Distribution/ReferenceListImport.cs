@@ -22,7 +22,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
             IRepository<ReferenceListItem, Guid> refListItemRepo,
             IReferenceListDistributionHelper distributionHelper,
             IRepository<Module, Guid> moduleRepo,
-            IRepository<FrontEndApp, Guid> frontEndAppRepo): base (repository, moduleRepo, frontEndAppRepo)
+            IRepository<FrontEndApp, Guid> frontEndAppRepo) : base(repository, moduleRepo, frontEndAppRepo)
         {
             _refListItemRepo = refListItemRepo;
             _distributionHelper = distributionHelper;
@@ -44,9 +44,9 @@ namespace Shesha.Services.ReferenceLists.Distribution
             }
         }
 
-        private async Task ImportListItemLevelAsync(ReferenceList referenceList, 
-            List<DistributedReferenceListItem> items, 
-            ReferenceListItem? parent, 
+        private async Task ImportListItemLevelAsync(ReferenceList referenceList,
+            List<DistributedReferenceListItem> items,
+            ReferenceListItem? parent,
             List<ReferenceListItem> existingItems)
         {
             foreach (var distributedItem in items)

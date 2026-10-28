@@ -14,7 +14,7 @@ using System.Text.Json.Serialization;
 
 namespace Shesha.Metadata.Dtos
 {
-    public class PropertyMetadataDto: EntityDto<string>
+    public class PropertyMetadataDto : EntityDto<string>
     {
         public string? ColumnName { get; set; }
         public bool CreatedInDb { get; set; }
@@ -131,7 +131,7 @@ namespace Shesha.Metadata.Dtos
         {
             var propertyProps = typeof(PropertyMetadataDto).GetProperties().OrderBy(p => p.Name).ToList();
 
-            
+
             void expr(List<PropertyMetadataDto> l, List<PropertyMetadataDto> props)
             {
                 foreach (var prop in props)
@@ -142,7 +142,8 @@ namespace Shesha.Metadata.Dtos
                         expr(l, prop.Properties);
                     }
                 }
-            };
+            }
+            ;
 
             var newDtos = new List<PropertyMetadataDto>();
             expr(newDtos, dtos);

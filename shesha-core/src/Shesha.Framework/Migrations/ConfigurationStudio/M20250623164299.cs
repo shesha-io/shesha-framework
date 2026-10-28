@@ -14,7 +14,7 @@ namespace Shesha.Migrations.ConfigurationStudio
             Alter.Table("configuration_items").InSchema("frwk")
                 .AddColumn("latest_imported_revision_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_latest_imported_revision_id", "frwk", "configuration_item_revisions", "id").Indexed();
 
-			IfDatabase("SqlServer").Execute.Sql("alter table frwk.configuration_items add is_updated as cast((case when latest_imported_revision_id is not null and latest_imported_revision_id = latest_revision_id then 0 else 1 end) as bit) persisted");
+            IfDatabase("SqlServer").Execute.Sql("alter table frwk.configuration_items add is_updated as cast((case when latest_imported_revision_id is not null and latest_imported_revision_id = latest_revision_id then 0 else 1 end) as bit) persisted");
             IfDatabase("SqlServer").Execute.Sql("alter table frwk.configuration_items add is_exposed as cast((case when exposed_from_id is not null then 1 else 0 end) as bit) persisted");
 
             IfDatabase("PostgreSql").Execute.Sql("alter table frwk.configuration_items add is_updated bool GENERATED ALWAYS as (case when latest_imported_revision_id is not null and latest_imported_revision_id = latest_revision_id then false else true end) stored");

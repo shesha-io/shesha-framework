@@ -21,7 +21,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             _memberRepo = memberRepo;
             _membershipPaymentRepo = membershipPaymentRepo;
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -45,7 +45,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             });
 
             if (totalAmount < 100) errors.Add(new ValidationResult("Payments made are less than 100"));
-            
+
             if (errors.Any()) throw new AbpValidationException("Erros", errors);
 
 

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Shesha.Otp.Dto;
+using System;
 using System.Threading.Tasks;
-using Shesha.Otp.Dto;
 
 namespace Shesha.Otp
 {

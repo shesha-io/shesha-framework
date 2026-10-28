@@ -8,7 +8,7 @@ namespace Shesha.Migrations.Framework
     {
         public override void Up()
         {
-            Alter.Table("Frwk_EntityProperties").AddForeignKeyColumn("ParentPropertyId", "Frwk_EntityProperties").Nullable();            
+            Alter.Table("Frwk_EntityProperties").AddForeignKeyColumn("ParentPropertyId", "Frwk_EntityProperties").Nullable();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Shesha.ConfigurationItems
     /// Common Configuration Item application service
     /// </summary>
     [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, IsConfigurable = false)]
-    public class ConfigurationItemAppService: SheshaAppServiceBase
+    public class ConfigurationItemAppService : SheshaAppServiceBase
     {
         private readonly IConfigurationItemClientSideCache _clientSideCache;
         private readonly IConfigurationItemHelper _ciHelper;
@@ -41,7 +41,7 @@ namespace Shesha.ConfigurationItems
             {
                 input.Module = await manager.GetBackwardCompatibleModuleNameAsync(input.Name);
             }
-            
+
             // check cache
             if (!string.IsNullOrWhiteSpace(input.Md5))
             {
@@ -58,21 +58,22 @@ namespace Shesha.ConfigurationItems
             var hasAccess = await manager.CurrentUserHasAccessToAsync(resolvedItem.Module?.Name ?? string.Empty, resolvedItem.Name);
             if (!hasAccess)
                 throw new AbpAuthorizationException($"You are not authorized to access the requested configuration ({resolvedItem.ItemType} - {resolvedItem.Module?.Name}: {resolvedItem.Name}).");
-            
+
             var dto = await manager.MapToDtoAsync(resolvedItem);
 
             var cacheMd5 = await manager.GetCacheMD5Async(dto);
 
             await _clientSideCache.SetCachedMd5Async(input.ItemType, _cfRuntime.FrontEndApplication, input.Module, input.Name, cacheMd5);
 
-            return new GetCurrentResponse {
+            return new GetCurrentResponse
+            {
                 Configuration = dto,
-                CacheMd5 = cacheMd5,                
+                CacheMd5 = cacheMd5,
             };
         }
 
         [AbpAllowAnonymous]
-        public async Task<GetCurrentResponse> GetAsync(GetConfigurationRequest input) 
+        public async Task<GetCurrentResponse> GetAsync(GetConfigurationRequest input)
         {
             if (!string.IsNullOrWhiteSpace(input.Md5))
             {
@@ -106,12 +107,12 @@ namespace Shesha.ConfigurationItems
         }
 
         [HttpPost]
-        public async Task CleanClientSideCacheAsync() 
+        public async Task CleanClientSideCacheAsync()
         {
             await _clientSideCache.ClearAsync();
         }
 
-        public async Task TriggerConfigurationChangedEventAsync(TriggerConfigurationChangedEventRequest  request)
+        public async Task TriggerConfigurationChangedEventAsync(TriggerConfigurationChangedEventRequest request)
         {
             var bus = IocManager.Resolve<IEventBus>();
             var data = new ConfigurationStateUpdatedEventData(
@@ -121,7 +122,7 @@ namespace Shesha.ConfigurationItems
             );
             await bus.TriggerAsync(data);
         }
-        public class TriggerConfigurationChangedEventRequest 
+        public class TriggerConfigurationChangedEventRequest
         {
             /// <summary>
             /// Type of configuration that was updated (form, reflist etc.)

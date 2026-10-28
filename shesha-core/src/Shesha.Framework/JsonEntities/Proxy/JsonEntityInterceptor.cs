@@ -86,7 +86,7 @@ namespace Shesha.JsonEntities.Proxy
                             var stringId = eref?.Id?.ToString();
                             if (eref != null && !string.IsNullOrWhiteSpace(stringId))
                             {
-                                value = property.PropertyType == typeof(GenericEntityReference) 
+                                value = property.PropertyType == typeof(GenericEntityReference)
                                     ? new GenericEntityReference(stringId, eref._className.NotNull(), eref._displayName)
                                     : _dynamicRepository.Get(property.PropertyType, stringId);
 

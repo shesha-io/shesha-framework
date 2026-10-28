@@ -45,7 +45,7 @@ namespace Shesha.Utilities
             return disabled;
         }
 
-        public static bool IsCrudActionsConfigurable(Type entityType) 
+        public static bool IsCrudActionsConfigurable(Type entityType)
         {
             var config = GetHardcodedEntityCrudConfig(entityType);
             return config.IsConfigurable;
@@ -110,9 +110,9 @@ namespace Shesha.Utilities
         }
 
         public static AccessParams GetInherited(AccessParams? current, AccessParams fallback)
-        { 
+        {
             return current == null || current.Access == RefListPermissionedAccess.Inherited
-                ? fallback 
+                ? fallback
                 : current;
         }
     }

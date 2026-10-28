@@ -9,7 +9,7 @@ namespace Shesha.Services.Settings
     /// <summary>
     /// Settings store
     /// </summary>
-    public interface ISettingStore: IConfigurationItemManager<SettingConfiguration>
+    public interface ISettingStore : IConfigurationItemManager<SettingConfiguration>
     {
         /// <summary>
         /// Create new setting configuration

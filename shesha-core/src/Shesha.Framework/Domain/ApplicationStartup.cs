@@ -15,7 +15,7 @@ namespace Shesha.Domain
     [SnakeCaseNaming]
     [Table("application_startups", Schema = "frwk")]
     [Entity(CrudActions = CrudActions.Read, CrudActionsPermissions = [PermissionNames.Application_Administer], IsConfigurable = false)]
-    public class ApplicationStartup: Entity<Guid>
+    public class ApplicationStartup : Entity<Guid>
     {
         [MaxLength(100)]
         public virtual string? MachineName { get; set; }

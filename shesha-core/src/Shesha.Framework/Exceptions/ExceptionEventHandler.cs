@@ -14,7 +14,7 @@ namespace Shesha.Exceptions
         {
             // log exception
             var severity = eventData.Exception.GetLogSeverity();
-            if (severity == LogSeverity.Error || severity == LogSeverity.Fatal) 
+            if (severity == LogSeverity.Error || severity == LogSeverity.Fatal)
             {
                 eventData.Exception.LogError();
             }

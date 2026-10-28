@@ -25,7 +25,7 @@ namespace Shesha.Scheduler
         /// </summary>
         /// <typeparam name="TJob">Job type</typeparam>
         /// <returns></returns>
-        Guid GetJobId<TJob>() where TJob: ScheduledJobBase;
+        Guid GetJobId<TJob>() where TJob : ScheduledJobBase;
 
         /// <summary>
         /// Enqueue job
@@ -55,7 +55,7 @@ namespace Shesha.Scheduler
         /// <param name="jobParams">Job parameters</param>
         /// <returns></returns>
         Task EnqeueJobAsync<TJob, TParams>(Guid executionId, Int64? startedById, TParams jobParams) where TJob : ScheduledJobBase, IParametrizedJob<TParams>
-            where TParams: class, new();
+            where TParams : class, new();
 
         /// <summary>
         /// Enqueue job trigger

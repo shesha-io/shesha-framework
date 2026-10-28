@@ -21,7 +21,7 @@ namespace Shesha.Utilities
             var model = new ControllerModel(controllerType.GetTypeInfo(), controllerConventions)
             {
                 ControllerName = controllerType.Name.RemovePostFix(_standardPostfixes)
-            };            
+            };
 
             foreach (var controllerConvention in controllerConventions)
             {

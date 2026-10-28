@@ -10,7 +10,7 @@ namespace Shesha.Elmah
 {
     public static class ElmahServiceCollectionExtensions
     {
-        public static void AddSheshaElmah(this IServiceCollection services, IConfigurationRoot configRoot) 
+        public static void AddSheshaElmah(this IServiceCollection services, IConfigurationRoot configRoot)
         {
             var dbms = configRoot.GetDbmsType();
 
@@ -35,7 +35,7 @@ namespace Shesha.Elmah
             }
         }
 
-        private static void ApplyOptions(ElmahOptions options, IConfigurationRoot configuration) 
+        private static void ApplyOptions(ElmahOptions options, IConfigurationRoot configuration)
         {
             options.Path = @"elmah";
             options.ConnectionString = configuration.GetDefaultConnectionString();
@@ -47,7 +47,7 @@ namespace Shesha.Elmah
                 options.Path = settings.Path;
         }
 
-        private static SheshaElmahSettings GetElmahSettings(IConfigurationRoot configuration) 
+        private static SheshaElmahSettings GetElmahSettings(IConfigurationRoot configuration)
         {
             var sheshaElmahSection = configuration.GetSection(SheshaElmahSettings.SectionName);
 
@@ -57,11 +57,11 @@ namespace Shesha.Elmah
             return new SheshaElmahSettings
             {
                 Path = sheshaElmahSection?.GetValue<string>(SheshaElmahSettings.PathKey)
-            };            
+            };
         }
 
 
-        public static IApplicationBuilder UseSheshaElmah(this IApplicationBuilder app) 
+        public static IApplicationBuilder UseSheshaElmah(this IApplicationBuilder app)
         {
             app.UseMiddleware<SheshaErrorContextMiddleware>();
             return app.UseElmah();

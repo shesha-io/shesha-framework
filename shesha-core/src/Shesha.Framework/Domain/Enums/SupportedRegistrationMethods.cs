@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Shesha.Domain.Enums
 {
     [ReferenceList("Shesha.Framework", "SupportedRegistrationMethods")]
-    public enum SupportedRegistrationMethods: long
+    public enum SupportedRegistrationMethods : long
     {
         /// <summary>
         /// None - Hide register link on login

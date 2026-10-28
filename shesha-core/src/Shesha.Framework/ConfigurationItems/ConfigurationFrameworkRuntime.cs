@@ -19,7 +19,7 @@ namespace Shesha.ConfigurationItems
         private readonly string _topLevelModule;
         private readonly IUnitOfWorkManager _uowManager;
 
-        public ConfigurationFrameworkRuntime(IAmbientScopeProvider<ConfigurationFrameworkRuntimeState> scopeProvider, 
+        public ConfigurationFrameworkRuntime(IAmbientScopeProvider<ConfigurationFrameworkRuntimeState> scopeProvider,
             IAbpModuleManager moduleManager,
             IUnitOfWorkManager uowManager)
         {
@@ -28,13 +28,14 @@ namespace Shesha.ConfigurationItems
             _uowManager = uowManager;
         }
 
-        private ConfigurationFrameworkRuntimeState _defaultState = new ConfigurationFrameworkRuntimeState {
+        private ConfigurationFrameworkRuntimeState _defaultState = new ConfigurationFrameworkRuntimeState
+        {
             FrontEndApplication = FrontEndAppKeyConsts.SheshaSwaggerFrontend,
         };
 
-        private ConfigurationFrameworkRuntimeState State 
+        private ConfigurationFrameworkRuntimeState State
         {
-            get 
+            get
             {
                 return _scopeProvider.GetValue(ScopeKey) ?? _defaultState;
             }
@@ -74,7 +75,8 @@ namespace Shesha.ConfigurationItems
 
             var scope = BeginScope(a => a.IsConfigurationTrackingEnabled = false);
 
-            return new DisposeAction(() => {
+            return new DisposeAction(() =>
+            {
                 if (forceSaveRequired && _uowManager.Current != null)
                     _uowManager.Current.SaveChanges();
                 scope.Dispose();

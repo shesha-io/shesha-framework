@@ -10,12 +10,12 @@ namespace Shesha.Persons
 {
     [AutoMapTo(typeof(Person))]
     [AutoMapFrom(typeof(Person))]
-    public class PersonAccountDto: EntityDto<Guid>
+    public class PersonAccountDto : EntityDto<Guid>
     {
         [Required]
         [MinLength(5)]
         public string? UserName { get; set; }
-        
+
         [Required]
         [MinLength(1)]
         public string? FirstName { get; set; }

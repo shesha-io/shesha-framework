@@ -44,8 +44,8 @@ namespace Shesha.ConfigurationItems.Distribution
         Task<bool> CanExportItemAsync(ConfigurationItem item);
     }
 
-    public interface IConfigurableItemExport<TItem>: IConfigurableItemExport where TItem: ConfigurationItem
-    { 
+    public interface IConfigurableItemExport<TItem> : IConfigurableItemExport where TItem : ConfigurationItem
+    {
 
     }
 }

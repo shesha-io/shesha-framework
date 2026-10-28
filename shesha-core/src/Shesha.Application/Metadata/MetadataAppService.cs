@@ -228,7 +228,7 @@ namespace Shesha.Metadata
             var containerName = entityTypeId.Name.GetDefaultIfEmpty(entityTypeId.EntityType);
             if (string.IsNullOrWhiteSpace(containerName))
                 throw new AbpValidationException($"Either '{nameof(entityTypeId.Name)}' or '{nameof(entityTypeId.EntityType)}' must be provided");
-            
+
             var containerType = await _metadataProvider.GetContainerTypeAsync(entityTypeId.Module, containerName);
             return await _metadataProvider.GetAsync(containerType);
         }

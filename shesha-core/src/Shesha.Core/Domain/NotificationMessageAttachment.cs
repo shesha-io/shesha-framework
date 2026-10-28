@@ -14,7 +14,7 @@ namespace Shesha.Domain
         /// </summary>
         [MaxLength(300)]
         public virtual string FileName { get; set; }
-        
+
         /// <summary>
         /// Stored file
         /// </summary>

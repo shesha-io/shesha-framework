@@ -12,7 +12,7 @@ namespace Shesha.BackgroundProcesses
         /// Process type this monitor is for
         /// </summary>
         string ProcessType { get; }
-        
+
         /// <summary>
         /// Get process status
         /// </summary>
@@ -28,5 +28,5 @@ namespace Shesha.BackgroundProcesses
         Task<string> GetLogContentAsync(string processId);
 
         Task<LogFileInfo> GetLogFileInfoAsync(string processId);
-    }    
+    }
 }

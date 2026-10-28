@@ -6,7 +6,7 @@ using Shesha.DynamicEntities.Dtos;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
-    public class BankMemberAppService: SheshaAppServiceBase
+    public class BankMemberAppService : SheshaAppServiceBase
     {
         private readonly IRepository<Bank, Guid> _bankRepo;
         private readonly IRepository<Member, Guid> _memberRepo;
@@ -17,7 +17,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             _memberRepo = memberRepo;
         }
 
-        public async Task<DynamicDto<Bank, Guid>> CreateBankWithMembersAsync (BankMemberDto input)
+        public async Task<DynamicDto<Bank, Guid>> CreateBankWithMembersAsync(BankMemberDto input)
         {
             var bank = ObjectMapper.Map<Bank>(input);
             await _bankRepo.InsertAsync(bank);

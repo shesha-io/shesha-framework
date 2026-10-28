@@ -8,10 +8,10 @@ namespace Shesha.DynamicEntities
     public interface IEntityModelBinder
     {
         Task<bool> BindPropertiesAsync(
-            JObject jobject, 
-            object entity, 
+            JObject jobject,
+            object entity,
             EntityModelBindingContext context,
-            string? propertyName = null, 
+            string? propertyName = null,
             List<string>? formFields = null
         );
 

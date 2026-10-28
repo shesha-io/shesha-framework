@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Shesha.DynamicEntities.TypeFinder
 {
-    public interface IShaTypeFinder: ITypeFinder
+    public interface IShaTypeFinder : ITypeFinder
     {
         List<Assembly> GetDynamicEntityAssemblies();
     }

@@ -10,7 +10,7 @@ namespace Shesha.DynamicEntities.Mapper
     /// <summary>
     /// EntityReferenceDto to Entity converter
     /// </summary>
-    public class EntityReferenceDtoToEntityConverter<TEntity, TId> : ITypeConverter<EntityReferenceDto<TId>?, TEntity?> where TEntity: class, IEntity<TId>
+    public class EntityReferenceDtoToEntityConverter<TEntity, TId> : ITypeConverter<EntityReferenceDto<TId>?, TEntity?> where TEntity : class, IEntity<TId>
     {
         public TEntity? Convert(EntityReferenceDto<TId>? source, TEntity? destination, ResolutionContext context)
         {

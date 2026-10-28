@@ -17,8 +17,8 @@ namespace Shesha.Services.Urls
             PathBase = request?.PathBase;
         }
 
-        public LinkGeneratorState() 
-        { 
+        public LinkGeneratorState()
+        {
 
         }
     }

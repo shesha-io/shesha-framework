@@ -1,11 +1,7 @@
 using ElmahCore;
 using RabbitMQ.Client.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Threading.Tasks;
 using Shesha.Elmah;
+using System.Net.Sockets;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {

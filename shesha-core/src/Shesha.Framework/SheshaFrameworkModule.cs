@@ -37,7 +37,8 @@ namespace Shesha
     public class SheshaFrameworkModule : SheshaModule
     {
         public const string ModuleName = "Shesha";
-        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName) { 
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
+        {
             FriendlyName = "Shesha Core",
             Publisher = "Shesha",
 #if !DEBUG
@@ -143,7 +144,8 @@ namespace Shesha
 
             IocManager.RegisterAssemblyByConvention(thisAssembly);
 
-            IocManager.RegisterSettingAccessor<ISecuritySettings>(s => {
+            IocManager.RegisterSettingAccessor<ISecuritySettings>(s =>
+            {
                 s.UserLockOutEnabled.WithDefaultValue(true);
                 s.MaxFailedAccessAttemptsBeforeLockout.WithDefaultValue(5);
                 s.DefaultAccountLockoutSeconds.WithDefaultValue(300 /* 5 minutes */);
@@ -163,19 +165,23 @@ namespace Shesha
                 });
             });
 
-            IocManager.RegisterSettingAccessor<IPasswordComplexitySettings>(s => {
+            IocManager.RegisterSettingAccessor<IPasswordComplexitySettings>(s =>
+            {
                 s.RequiredLength.WithDefaultValue(6);
             });
-            IocManager.RegisterSettingAccessor<ISheshaSettings>(s => {
+            IocManager.RegisterSettingAccessor<ISheshaSettings>(s =>
+            {
                 s.UploadFolder.WithDefaultValue("~/App_Data/Upload");
             });
-            IocManager.RegisterSettingAccessor<IFrontendSettings>(s => {
+            IocManager.RegisterSettingAccessor<IFrontendSettings>(s =>
+            {
                 s.Theme.WithDefaultValue(ThemeSettings.Default);
                 s.MainMenu.WithDefaultValue(MainMenuSettings.Default);
                 s.PublicUrl.WithDefaultValue("http://localhost:3000");
             });
 
-            IocManager.RegisterSettingAccessor<IEmailSettings>(s => {
+            IocManager.RegisterSettingAccessor<IEmailSettings>(s =>
+            {
                 s.SmtpSettings.WithDefaultValue(new SmtpSettings
                 {
                     Port = 25,

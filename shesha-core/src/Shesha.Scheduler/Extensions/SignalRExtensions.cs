@@ -10,7 +10,7 @@ namespace Shesha.Scheduler.Extensions
         {
             // todo: add conventional registration
             endpoints.MapHub<SignalrAppenderHub>("/signalr-appender");
-            
+
             return endpoints;
         }
     }

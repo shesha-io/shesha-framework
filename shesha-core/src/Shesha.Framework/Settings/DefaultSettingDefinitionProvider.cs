@@ -41,14 +41,14 @@ namespace Shesha.Settings
 
                 var properties = accessorType.GetProperties().Where(t => typeof(ISettingAccessor).IsAssignableFrom(t.PropertyType)).ToList();
 
-                foreach (var property in properties) 
+                foreach (var property in properties)
                 {
                     var propertyInstance = property.GetValue(accessor) as ISettingAccessor;
                     if (propertyInstance == null)
                         continue;
 
                     var definition = GetSettingDefinition(propertyInstance, property, moduleInfo);
-                    
+
                     if (definition != null)
                         context.Add(definition);
                 }
@@ -90,7 +90,7 @@ namespace Shesha.Settings
 
             definition.EditForm = !string.IsNullOrWhiteSpace(settingAttribute?.EditorFormName)
                 ? new SettingConfigurationIdentifier(definition.ModuleName, settingAttribute.EditorFormName)
-                : null;            
+                : null;
 
             definition.Category = property.GetCategory() ?? property.DeclaringType?.GetCategory();
             definition.CategoryAccessor = CodeNamingHelper.GetAccessor(UnwrapSettingAccessorName(property.DeclaringType.NotNull().Name), property.DeclaringType?.GetAttributeOrNull<AliasAttribute>()?.Alias);
@@ -98,7 +98,7 @@ namespace Shesha.Settings
             return definition;
         }
 
-        private string UnwrapSettingAccessorName(string name) 
+        private string UnwrapSettingAccessorName(string name)
         {
             return name.RemovePostfix("SettingsDefault").RemovePostfix("SettingDefault");
         }

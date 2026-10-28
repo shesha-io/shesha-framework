@@ -29,7 +29,7 @@ namespace Shesha.Settings
             return (await settingProvider.GetOrNullAsync(module, name)).To<T>();
         }
 
-        public static DataTypeInfo GetSettingDataType(this SettingDefinition definition) 
+        public static DataTypeInfo GetSettingDataType(this SettingDefinition definition)
         {
             var valueType = definition.GetValueType();
             var propType = ReflectionHelper.GetUnderlyingTypeIfNullable(valueType);

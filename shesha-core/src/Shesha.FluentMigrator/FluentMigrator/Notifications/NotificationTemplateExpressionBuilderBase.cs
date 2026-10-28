@@ -4,7 +4,7 @@ using FluentMigrator.Infrastructure;
 
 namespace Shesha.FluentMigrator.Notifications
 {
-    public class NotificationTemplateExpressionBuilderBase<TExpr, TNext>: ExpressionBuilderBase<TExpr> where TExpr: NotificationExpressionBase where TNext: class
+    public class NotificationTemplateExpressionBuilderBase<TExpr, TNext> : ExpressionBuilderBase<TExpr> where TExpr : NotificationExpressionBase where TNext : class
     {
         protected readonly IMigrationContext _context;
         protected readonly DbmsType _dbmsType;

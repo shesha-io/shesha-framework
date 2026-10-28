@@ -62,21 +62,21 @@ namespace Shesha.Bootstrappers
             foreach (var entityType in entityTypes)
             {
                 var properties = entityType.GetProperties(BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.Instance);
-                foreach (var property in properties) 
+                foreach (var property in properties)
                 {
                     var attr = property.GetAttributeOrNull<ReferenceListAttribute>();
-                    if (attr != null) 
+                    if (attr != null)
                     {
                         var refListId = attr.GetReferenceListIdentifier(property);
                         var alreadyAdded = refListTypes.Any(t => t.RefListId == refListId);
-                        if (!alreadyAdded) 
+                        if (!alreadyAdded)
                         {
                             refListTypes.Add(new RefListType(entityType.Assembly, refListId));
                         }
-                    }                    
+                    }
                 }
             }
-            
+
             var grouppedLists = refListTypes
                 .GroupBy(e => e.Assembly, (assembly, lists) => new
                 {
@@ -142,11 +142,11 @@ namespace Shesha.Bootstrappers
             LogInfo($"Bootstrap assembly {assembly.FullName} - finished");
         }
 
-        private async Task ProcessListAsync(Domain.Module module, RefListType list) 
+        private async Task ProcessListAsync(Domain.Module module, RefListType list)
         {
             var listInCode = new List<ListItemInfo>();
 
-            if (list.Enum != null) 
+            if (list.Enum != null)
             {
                 var values = Enum.GetValues(list.Enum);
 
@@ -196,7 +196,8 @@ namespace Shesha.Bootstrappers
             {
                 LogInfo($"  list in the DB: not found");
 
-                listInDb = new ReferenceList() { 
+                listInDb = new ReferenceList()
+                {
                     Module = listModule,
                     Name = list.RefListId.Name,
                 };

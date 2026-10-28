@@ -27,13 +27,13 @@ namespace Shesha.Migrations
                 "13-remove old workflow tables.sql",
             };
 
-            foreach (var script in scripts) 
+            foreach (var script in scripts)
             {
                 ExecuteCsScript(script);
             }
         }
 
-        private void ExecuteCsScript(string script) 
+        private void ExecuteCsScript(string script)
         {
             IfDatabase("SqlServer").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsMsSql.{script}");
             IfDatabase("PostgreSql").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsPostgreSql.{script}");

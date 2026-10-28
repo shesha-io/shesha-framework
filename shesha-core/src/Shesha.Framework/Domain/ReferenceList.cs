@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Shesha.Domain
 {
     [Entity(
-        FriendlyName = "List of Values", 
+        FriendlyName = "List of Values",
         TypeShortAlias = "Shesha.Framework.ReferenceList",
         CrudActions = CrudActions.All,
         IsConfigurable = false,

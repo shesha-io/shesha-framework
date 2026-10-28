@@ -5,11 +5,12 @@
         public bool IsSuccess { get; set; }
         public string? Message { get; set; }
 
-        public static SendStatus Failed(string message) 
-        { 
-            return new SendStatus { 
+        public static SendStatus Failed(string message)
+        {
+            return new SendStatus
+            {
                 IsSuccess = false,
-                Message = message 
+                Message = message
             };
         }
 

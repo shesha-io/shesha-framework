@@ -167,8 +167,8 @@ namespace Shesha.Otp
                 var pinDto = await _otpStorage.GetOrNullAsync(input.OperationId);
                 if (pinDto == null || pinDto.Pin != input.Pin)
                 {
-                    var message = pinDto?.SendType == OtpSendType.EmailLink 
-                        ? "Invalid email link" 
+                    var message = pinDto?.SendType == OtpSendType.EmailLink
+                        ? "Invalid email link"
                         : "Wrong one time pin";
                     return VerifyPinResponse.Failed(message);
                 }

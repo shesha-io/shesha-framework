@@ -9,7 +9,7 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Interface of the Configuration Item Manager
     /// </summary>
-    public interface IConfigurationItemManager<TItem>: IConfigurationItemManager where TItem : ConfigurationItem
+    public interface IConfigurationItemManager<TItem> : IConfigurationItemManager where TItem : ConfigurationItem
     {
         /// <summary>
         /// Map item to details DTO

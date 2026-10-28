@@ -12,7 +12,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {
     [Table("SheshaFunctionalTests_TestClasses")]
     [Entity(TypeShortAlias = "Boxfusion.SheshaFunctionalTests.Domain.TestClass")]
-    public class TestClass: Entity<Guid>
+    public class TestClass : Entity<Guid>
     {
         /// <summary>
         /// 
@@ -44,7 +44,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         public virtual GenericEntityReference SomeGenericProp { get; set; }
     }
 
-    public class TestJsonWithGenericEntityReference: JsonEntity
+    public class TestJsonWithGenericEntityReference : JsonEntity
     {
         public virtual GenericEntityReference Entity { get; set; }
     }

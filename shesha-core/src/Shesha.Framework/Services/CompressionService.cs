@@ -14,7 +14,7 @@ namespace Shesha.Services
             using (var ms = new MemoryStream())
             {
                 CompressFilesToStream(files, ms);
-                return  ms.ToArray();
+                return ms.ToArray();
             }
         }
 
@@ -59,7 +59,7 @@ namespace Shesha.Services
                 foreach (var fileToZip in files)
                 {
                     var entry = zip.CreateEntry(fileToZip.Key);
-                    
+
                     await using (var fileStream = await fileService.GetStreamAsync(fileToZip.Value))
                     {
                         using (var dstStream = await entry.OpenAsync())

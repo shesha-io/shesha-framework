@@ -6,7 +6,7 @@ namespace Shesha.Locks
     /// <summary>
     /// Implements null object pattern for <see cref="ILockFactory"/>.
     /// </summary>
-    public class NullLockFactory: ILockFactory
+    public class NullLockFactory : ILockFactory
     {
         /// inheritedDoc
         public async Task<bool> DoExclusiveAsync(string resource, TimeSpan expiryTime, TimeSpan waitTime, TimeSpan retryTime, Func<Task> action)

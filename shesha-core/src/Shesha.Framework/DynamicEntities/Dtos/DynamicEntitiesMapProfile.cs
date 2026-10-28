@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Shesha.DynamicEntities.Dtos
 {
-    public class DynamicEntitiesMapProfile: ShaProfile
+    public class DynamicEntitiesMapProfile : ShaProfile
     {
         public DynamicEntitiesMapProfile()
         {
@@ -63,7 +63,7 @@ namespace Shesha.DynamicEntities.Dtos
                 .ForMember(e => e.Description, m => m.MapFrom(e => e.Description))
                 .ForMember(e => e.NotImplemented, c => c.MapFrom(e => e.Source == MetadataSourceType.ApplicationCode
                         && StaticContext.IocManager.Resolve<IEntityTypeConfigurationStore>().GetOrNull(e.FullClassName) == null))
-                .ForMember(e => e.AllowConfigureAppService, c => c.MapFrom(e => e.Source == MetadataSourceType.ApplicationCode 
+                .ForMember(e => e.AllowConfigureAppService, c => c.MapFrom(e => e.Source == MetadataSourceType.ApplicationCode
                         && AllowConfigureAppService(e)))
                 ;
 

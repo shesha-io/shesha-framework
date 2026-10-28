@@ -5,7 +5,7 @@ using System;
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {
     [Entity(TypeShortAlias = "Boxfusion.SheshaFunctionalTests.Domain.EmployeeAccount")]
-    public class EmployeeAccount: Entity<Guid>
+    public class EmployeeAccount : Entity<Guid>
     {
         public virtual Employee Employee { get; set; }
 

@@ -26,7 +26,7 @@ namespace Shesha.Migrations.ConfigurationStudio
                 .AddColumn("reference_list_id").AsGuid().Nullable().ForeignKey("fk_reference_list_items_reference_list_id", "frwk", "reference_lists", "id").Indexed();
 
             AddConfigItemFk("reference_lists");
-            
+
             Alter.Table("entity_configs").InSchema("frwk")
                 .AddColumn("accessor").AsString(200).Nullable()
                 .AddColumn("generate_app_service").AsBoolean().NotNullable().SetExistingRowsTo(false).WithDefaultValue(false)
@@ -35,8 +35,8 @@ namespace Shesha.Migrations.ConfigurationStudio
                 .AddColumn("type_short_alias").AsString(100).Nullable()
                 .AddColumn("view_configurations").AsStringMax().Nullable();
 
-			Alter.Table("entity_properties").InSchema("frwk")
-				.AddColumn("entity_config_id").AsGuid().Nullable();
+            Alter.Table("entity_properties").InSchema("frwk")
+                .AddColumn("entity_config_id").AsGuid().Nullable();
 
             Create.Table("setting_configurations").InSchema("frwk")
                 .WithIdAsGuid("id")
@@ -103,7 +103,7 @@ namespace Shesha.Migrations.ConfigurationStudio
             AddConfigItemFk("notification_channels");
         }
 
-        private void AddConfigItemFk(string configItemCustomTable) 
+        private void AddConfigItemFk(string configItemCustomTable)
         {
             Create.ForeignKey($"fk_{configItemCustomTable}_ci_id")
                     .FromTable(configItemCustomTable).InSchema("frwk")

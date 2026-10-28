@@ -60,7 +60,7 @@ from
 	inner join frwk.modules m on m.id = cte.module_id
 	inner join frwk.modules om on om.id = cte.override_module_id");
 
-			IfDatabase("PostgreSql").Execute.Sql(@"create or replace view frwk.vw_configuration_items_inheritance as
+            IfDatabase("PostgreSql").Execute.Sql(@"create or replace view frwk.vw_configuration_items_inheritance as
 with recursive cte as (
 	-- Anchor member: root node(s)
 	select 

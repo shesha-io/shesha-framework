@@ -98,10 +98,10 @@ namespace Shesha.Tests.Users
                 var user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == userName);
                 user.PhoneNumber = mobileNo;
                 await _userRepository.UpdateAsync(user);
-                
+
                 await uow.CompleteAsync();
             }
-            
+
             // send OTP for password reset
             var sendOtpResponse = await userAppService.ResetPasswordSendOtpAsync(mobileNo);
 
@@ -124,10 +124,10 @@ namespace Shesha.Tests.Users
 
             // try to login using old password
             var failedAttempt = await ValidateCredentialsAsync(userName, oldPassword);
-            
+
             // try to login using new password
             var successAttempt = await ValidateCredentialsAsync(userName, newPassword);
-            
+
             // remove the user
             await _userRepository.DeleteAsync(userDto.Id);
 
@@ -198,7 +198,8 @@ namespace Shesha.Tests.Users
             firstLoginAttempt.ShouldBeTrue("Failed to login as a new user");
 
             // send OTP for password reset
-            var response = await WithUnitOfWorkAsync(async() => {
+            var response = await WithUnitOfWorkAsync(async () =>
+            {
                 return await userAppService.SendEmailLinkAsync(userName);
             });
             response.ShouldBeTrue();
@@ -225,7 +226,7 @@ namespace Shesha.Tests.Users
             }
 
             // change password
-            var resetPasswordResponse = await WithUnitOfWorkAsync(async() => await userAppService.ResetPasswordUsingTokenAsync(new ResetPasswordUsingTokenInput()
+            var resetPasswordResponse = await WithUnitOfWorkAsync(async () => await userAppService.ResetPasswordUsingTokenAsync(new ResetPasswordUsingTokenInput()
             {
                 Username = userName,
                 Token = token,
@@ -319,7 +320,7 @@ namespace Shesha.Tests.Users
         {
             LocalIocManager.Register<TokenAuthConfiguration>();
             var tokenAuthConfig = LocalIocManager.Resolve<TokenAuthConfiguration>();
-            
+
             tokenAuthConfig.SecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("ZQJK9FR81M9NDCKX161B2L9RXDBHL7GS"));
             tokenAuthConfig.Issuer = "SheshaTest";
             tokenAuthConfig.Audience = "SheshaTest";

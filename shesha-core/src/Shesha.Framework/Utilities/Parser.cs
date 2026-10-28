@@ -126,16 +126,16 @@ namespace Shesha.Utilities
             if (string.IsNullOrWhiteSpace(value))
                 return null;
 
-            if (int.TryParse(value, out var seconds) && seconds < TimeSpan.FromHours(24).TotalSeconds) 
+            if (int.TryParse(value, out var seconds) && seconds < TimeSpan.FromHours(24).TotalSeconds)
                 return TimeSpan.FromSeconds(seconds);
 
             var timeFormats = new string?[] {
                 format,
                 /*note: `hh` is always 24-hours for TimeSpan*/
-                @"hh\:mm\:ss", 
+                @"hh\:mm\:ss",
                 @"hh\:mm"
             };
-            foreach (var timeFormat in timeFormats) 
+            foreach (var timeFormat in timeFormats)
             {
                 if (!string.IsNullOrWhiteSpace(timeFormat) && TimeSpan.TryParseExact(value, timeFormat, CultureInfo.InvariantCulture, TimeSpanStyles.None, out var timeSpan))
                     return timeSpan;
@@ -225,7 +225,7 @@ namespace Shesha.Utilities
                 : result;
         }
 
-        public static bool CanParseId([NotNullWhen(true)]string? value, Type entityType)
+        public static bool CanParseId([NotNullWhen(true)] string? value, Type entityType)
         {
             if (string.IsNullOrWhiteSpace(value) || value == "-999")
                 return false;

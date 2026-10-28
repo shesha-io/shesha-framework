@@ -5,8 +5,8 @@ namespace Shesha.Domain
 {
     [Entity(
         FriendlyName = "Permission",
-        TypeShortAlias = "Shesha.Framework.PermissionDefinition", 
-        CrudActions = CrudActions.None, 
+        TypeShortAlias = "Shesha.Framework.PermissionDefinition",
+        CrudActions = CrudActions.None,
         IsConfigurable = false
     )]
     [JoinedProperty("permission_definitions", Schema = "frwk")]

@@ -1,13 +1,13 @@
-﻿using System.Threading.Tasks;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Shesha.AutoMapper.Dto;
+using System.Threading.Tasks;
 
 namespace Shesha.Authorization
 {
     /// <summary>
     /// Shesha permission checker
     /// </summary>
-    public interface IShaPermissionChecker: IPermissionChecker
+    public interface IShaPermissionChecker : IPermissionChecker
     {
         /// <summary>
         /// Clears permissions cache for the specified user

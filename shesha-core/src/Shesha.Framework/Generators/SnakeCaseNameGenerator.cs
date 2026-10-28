@@ -35,7 +35,7 @@ namespace Shesha.Generators
             var propertyName = propertyInfo.Name;
             var suffixLength = string.IsNullOrWhiteSpace(suffix) ? 0 : suffix.Length + 1;
 
-            var tableName = GetSnakeCaseText(new[] {tablePrefix, parentTypeName, propertyName}, MaxLenght - suffixLength) + (suffixLength == 0 ? "" : $"_{suffix}").ToSnakeCase();
+            var tableName = GetSnakeCaseText(new[] { tablePrefix, parentTypeName, propertyName }, MaxLenght - suffixLength) + (suffixLength == 0 ? "" : $"_{suffix}").ToSnakeCase();
 
             var childTypeName = childType.Name.ToSnakeCase();
             var parentColumnName = GetSnakeCaseText(new[] { parentTypeName }, MaxLenght - 3) + "_id";
@@ -50,7 +50,7 @@ namespace Shesha.Generators
         {
             var maxLenght = lenght ?? MaxLenght;
             var snakeParts = parts.Select(x => x.ToSnakeCase()).ToArray();
-            var res = string.Join("_",  snakeParts);
+            var res = string.Join("_", snakeParts);
             if (res.Length > maxLenght)
             {
                 switch (MaxLengthAction)

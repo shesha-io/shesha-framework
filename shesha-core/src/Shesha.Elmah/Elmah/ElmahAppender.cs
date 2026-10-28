@@ -7,7 +7,7 @@ namespace Shesha.Elmah
     /// <summary>
     /// Elmah log4net Appender
     /// </summary>
-    public class ElmahAppender: AppenderSkeleton
+    public class ElmahAppender : AppenderSkeleton
     {
         protected override void Append(LoggingEvent loggingEvent)
         {
@@ -17,7 +17,7 @@ namespace Shesha.Elmah
                 return;
 
             exception.MarkExceptionAsLogged();
-            ElmahExtensions.RaiseError(exception);            
+            ElmahExtensions.RaiseError(exception);
         }
-	}
+    }
 }

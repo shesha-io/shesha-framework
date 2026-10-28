@@ -3,7 +3,7 @@ using System;
 
 namespace Shesha.Web.FormsDesigner.Dtos
 {
-    public class GetFormByIdInput: GetConfigurationItemInputBase, IEntityDto<Guid>
+    public class GetFormByIdInput : GetConfigurationItemInputBase, IEntityDto<Guid>
     {
         /// <summary>
         /// Form configuration id

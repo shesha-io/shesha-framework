@@ -363,7 +363,7 @@ namespace Shesha.Metadata
         public async Task<Type?> GetContainerTypeOrNullAsync(string? moduleName, string container)
         {
             var allModels = await GetAllModelsAsync();
-            
+
             // Get models by Name of FullClassName or Alias
             var models = allModels.Where(m => m.Name == container || m.Alias == container || m.FullClassName == container).ToList();
             // Filter by Module

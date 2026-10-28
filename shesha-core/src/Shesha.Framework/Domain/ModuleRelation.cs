@@ -12,7 +12,7 @@ namespace Shesha.Domain
     [Entity(CrudActions = CrudActions.Read, IsConfigurable = false)]
     [Table("module_relations", Schema = "frwk")]
     [SnakeCaseNaming]
-    public class ModuleRelation: Entity<Guid>
+    public class ModuleRelation : Entity<Guid>
     {
         public required virtual Module Module { get; set; }
         public required virtual Module BaseModule { get; set; }

@@ -25,7 +25,8 @@ namespace Shesha.Tests.DomainModel
 
             var errors = new Dictionary<Type, Exception>();
 
-            await WithUnitOfWorkAsync(async() => {
+            await WithUnitOfWorkAsync(async () =>
+            {
                 foreach (var type in types)
                 {
                     var idType = type.GetEntityIdType();
@@ -50,12 +51,12 @@ namespace Shesha.Tests.DomainModel
             errors.ShouldBeEmpty();
         }
 
-        public interface IRepositoryTester 
+        public interface IRepositoryTester
         {
             Task TryFetchAsync();
         }
 
-        public class RepositoryTester<T, TId>: IRepositoryTester where T: class, IEntity<TId>
+        public class RepositoryTester<T, TId> : IRepositoryTester where T : class, IEntity<TId>
         {
             private readonly IRepository<T, TId> _repo;
 
@@ -63,7 +64,7 @@ namespace Shesha.Tests.DomainModel
             {
                 _repo = repo;
             }
-            public async Task TryFetchAsync() 
+            public async Task TryFetchAsync()
             {
                 await (await _repo.GetAllAsync()).OrderBy(e => e.Id).FirstOrDefaultAsync();
             }

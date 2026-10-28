@@ -1,6 +1,6 @@
-﻿using System;
-using NHibernate;
+﻿using NHibernate;
 using Shesha.NHibernate.Configuration;
+using System;
 
 namespace Shesha.NHibernate.Session
 {

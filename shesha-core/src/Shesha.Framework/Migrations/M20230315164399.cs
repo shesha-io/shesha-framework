@@ -189,8 +189,8 @@ BEGIN
 	end
 END");
 
-			Execute.Sql(@"DROP TRIGGER trg_Frwk_StoredFileVersions_UpdateIsLast_AI");
-			Execute.Sql(@"CREATE TRIGGER trg_Frwk_StoredFileVersions_UpdateIsLast_AI
+            Execute.Sql(@"DROP TRIGGER trg_Frwk_StoredFileVersions_UpdateIsLast_AI");
+            Execute.Sql(@"CREATE TRIGGER trg_Frwk_StoredFileVersions_UpdateIsLast_AI
    ON  Frwk_StoredFileVersions
    AFTER INSERT
 AS 
@@ -236,8 +236,8 @@ BEGIN
 		)
 END");
 
-			Execute.Sql(@"DROP TRIGGER trg_Frwk_StoredFileVersions_UpdateIsLast_AU");
-			Execute.Sql(@"CREATE TRIGGER trg_Frwk_StoredFileVersions_UpdateIsLast_AU
+            Execute.Sql(@"DROP TRIGGER trg_Frwk_StoredFileVersions_UpdateIsLast_AU");
+            Execute.Sql(@"CREATE TRIGGER trg_Frwk_StoredFileVersions_UpdateIsLast_AU
    ON  Frwk_StoredFileVersions
    AFTER update
 AS 
@@ -286,8 +286,8 @@ BEGIN
 	end
 END");
 
-			Execute.Sql(@"DROP TRIGGER trg_Frwk_StoredFileVersions_UpdateIsLast_AD");
-			Execute.Sql(@"CREATE TRIGGER trg_Frwk_StoredFileVersions_UpdateIsLast_AD
+            Execute.Sql(@"DROP TRIGGER trg_Frwk_StoredFileVersions_UpdateIsLast_AD");
+            Execute.Sql(@"CREATE TRIGGER trg_Frwk_StoredFileVersions_UpdateIsLast_AD
    ON  Frwk_StoredFileVersions
    AFTER DELETE
 AS 
@@ -317,8 +317,8 @@ BEGIN
 	end
 END");
 
-			Execute.Sql(@"DROP TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AD");
-			Execute.Sql(@"CREATE TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AD
+            Execute.Sql(@"DROP TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AD");
+            Execute.Sql(@"CREATE TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AD
    ON  Frwk_VersionedFieldVersions
    AFTER DELETE
 AS 
@@ -348,8 +348,8 @@ BEGIN
 	end
 END");
 
-			Execute.Sql(@"DROP TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AI");
-			Execute.Sql(@"CREATE TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AI
+            Execute.Sql(@"DROP TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AI");
+            Execute.Sql(@"CREATE TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AI
    ON  Frwk_VersionedFieldVersions
    AFTER INSERT
 AS 
@@ -395,8 +395,8 @@ BEGIN
 		)
 END");
 
-			Execute.Sql(@"DROP TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AU");
-			Execute.Sql(@"CREATE TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AU
+            Execute.Sql(@"DROP TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AU");
+            Execute.Sql(@"CREATE TRIGGER trg_Frwk_VersionedFieldVersions_UpdateIsLast_AU
    ON  Frwk_VersionedFieldVersions
    AFTER update
 AS 

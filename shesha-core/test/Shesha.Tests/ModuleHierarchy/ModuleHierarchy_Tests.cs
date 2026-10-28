@@ -18,7 +18,7 @@ namespace Shesha.Tests.ModuleHierarchy
         }
 
         [Fact]
-        public async Task MultiLevelExposedFormResolution_Case1() 
+        public async Task MultiLevelExposedFormResolution_Case1()
         {
             /*
              * case: 
@@ -42,17 +42,19 @@ namespace Shesha.Tests.ModuleHierarchy
             await DeleteFormFromAllModulesAsync(formName);
 
             var uowManager = Resolve<IUnitOfWorkManager>();
-            
-            await WithUnitOfWorkAsync(async() => {
+
+            await WithUnitOfWorkAsync(async () =>
+            {
 
                 var sheshaModule = await moduleManager.GetModuleAsync(SheshaFrameworkModule.ModuleName);
 
                 // 1. Create Shesha form
-                var sheshaForm1 = await formManager.CreateItemAsync(new Shesha.ConfigurationItems.Models.CreateItemInput { 
+                var sheshaForm1 = await formManager.CreateItemAsync(new Shesha.ConfigurationItems.Models.CreateItemInput
+                {
                     Module = sheshaModule,
                     Name = formName,
                 });
-                
+
                 Assert.NotNull(sheshaForm1);
 
                 // 2. Expose form1 to ModuleA
@@ -106,7 +108,8 @@ namespace Shesha.Tests.ModuleHierarchy
 
             var uowManager = Resolve<IUnitOfWorkManager>();
 
-            await WithUnitOfWorkAsync(async () => {
+            await WithUnitOfWorkAsync(async () =>
+            {
 
                 var sheshaModule = await moduleManager.GetModuleAsync(SheshaFrameworkModule.ModuleName);
 
@@ -166,7 +169,8 @@ namespace Shesha.Tests.ModuleHierarchy
 
             var uowManager = Resolve<IUnitOfWorkManager>();
 
-            await WithUnitOfWorkAsync(async () => {
+            await WithUnitOfWorkAsync(async () =>
+            {
 
                 var sheshaModule = await moduleManager.GetModuleAsync(SheshaFrameworkModule.ModuleName);
 
@@ -184,7 +188,7 @@ namespace Shesha.Tests.ModuleHierarchy
                 {
                     Module = moduleB,
                     Name = formName,
-                });                
+                });
                 Assert.NotNull(moduleBForm);
 
                 await uowManager.Current.SaveChangesAsync();
@@ -223,7 +227,8 @@ namespace Shesha.Tests.ModuleHierarchy
 
             var uowManager = Resolve<IUnitOfWorkManager>();
 
-            await WithUnitOfWorkAsync(async () => {
+            await WithUnitOfWorkAsync(async () =>
+            {
 
                 var sheshaModule = await moduleManager.GetModuleAsync(SheshaFrameworkModule.ModuleName);
 

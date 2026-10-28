@@ -143,9 +143,9 @@ namespace Shesha.Test
 
         public virtual TId? Id => Entity != null ? Entity.Id : default;
 
-        public virtual string? DisplayName => Entity != null 
-            ? _displayNamePropertyInfo != null 
-                ? _displayNamePropertyInfo.GetValue(Entity)?.ToString() 
+        public virtual string? DisplayName => Entity != null
+            ? _displayNamePropertyInfo != null
+                ? _displayNamePropertyInfo.GetValue(Entity)?.ToString()
                 : Entity.ToString()
             : null;
     }

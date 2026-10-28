@@ -5,7 +5,7 @@ namespace Shesha.Sessions.Dto
 {
     public class GrantedPermissionDto
     {
-        public string Permission {  get; set; }
+        public string Permission { get; set; }
 
         public List<EntityReferenceDto<string>> PermissionedEntity { get; set; } = new List<EntityReferenceDto<string>>();
     }

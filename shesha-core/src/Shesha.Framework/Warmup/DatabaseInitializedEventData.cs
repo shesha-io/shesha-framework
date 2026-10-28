@@ -2,7 +2,7 @@
 
 namespace Shesha.Warmup
 {
-    public class DatabaseInitializedEventData: EventData
+    public class DatabaseInitializedEventData : EventData
     {
     }
 }

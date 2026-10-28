@@ -42,7 +42,7 @@ BEGIN
 	end
 END");
 
-			IfDatabase("SqlServer").Execute.Sql(@"ALTER TRIGGER [dbo].[trg_Frwk_StoredFileVersions_UpdateIsLast_AD]
+            IfDatabase("SqlServer").Execute.Sql(@"ALTER TRIGGER [dbo].[trg_Frwk_StoredFileVersions_UpdateIsLast_AD]
    ON  [dbo].[Frwk_StoredFileVersions]
    AFTER DELETE
 AS 

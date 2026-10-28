@@ -12,7 +12,7 @@ namespace Shesha.DynamicEntities.Dtos
     /// <summary>
     /// Entity config DTO
     /// </summary>
-    public class EntityConfigDto: EntityDto<Guid>, IConfigurationItemDto
+    public class EntityConfigDto : EntityDto<Guid>, IConfigurationItemDto
     {
         public virtual bool CreatedInDb { get; set; }
 

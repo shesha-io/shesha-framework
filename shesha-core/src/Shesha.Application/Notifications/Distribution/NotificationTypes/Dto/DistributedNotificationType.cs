@@ -9,7 +9,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
     /// <summary>
     /// Distributed file template
     /// </summary>
-    public class DistributedNotificationType: DistributedConfigurableItemBase, INotificationTypeSpecificProps
+    public class DistributedNotificationType : DistributedConfigurableItemBase, INotificationTypeSpecificProps
     {
         /// <summary>
         /// The default priority used when the notification type is sent

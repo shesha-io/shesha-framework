@@ -1,6 +1,6 @@
-﻿using System.Collections.Concurrent;
-using Abp.Reflection.Extensions;
+﻿using Abp.Reflection.Extensions;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Concurrent;
 
 namespace Shesha.Configuration
 {
@@ -24,22 +24,22 @@ namespace Shesha.Configuration
 
         private static IConfigurationRoot BuildConfiguration(string path, string? environmentName = null, bool addUserSecrets = false)
         {
-             var builder = new ConfigurationBuilder()
-                .SetBasePath(path)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            var builder = new ConfigurationBuilder()
+               .SetBasePath(path)
+               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
             if (!string.IsNullOrWhiteSpace(environmentName))
             {
                 builder = builder.AddJsonFile($"appsettings.{environmentName}.json", optional: true);
             }
-            
+
             builder = builder.AddEnvironmentVariables();
 
             if (addUserSecrets)
             {
                 builder.AddUserSecrets(typeof(AppConfigurations).GetAssembly());
             }
-            
+
             return builder.Build();
         }
     }

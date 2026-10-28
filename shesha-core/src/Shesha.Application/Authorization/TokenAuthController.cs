@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Configuration;
 using Shesha.Authentication.External;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization.Models;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
-using Microsoft.Extensions.Configuration;
 using Shesha.Controllers;
 using Shesha.Domain;
 using Shesha.Extensions;
@@ -87,7 +87,7 @@ namespace Shesha.Authorization
 
         [HttpPost]
         [AllowAnonymous]
-        [EnableRateLimiting(SheshaRateLimitingPolicies.Auth)]        
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Auth)]
         public async Task<AuthenticateResultModel> AuthenticateAsync([FromBody] AuthenticateModel model)
         {
             // Check for user registration status
@@ -118,7 +118,7 @@ namespace Shesha.Authorization
             return authenticateResult;
         }
 
-        private async Task<AuthenticateResultModel> GetAuthenticateResultAsync(ShaLoginResult<User> loginResult, string? imei) 
+        private async Task<AuthenticateResultModel> GetAuthenticateResultAsync(ShaLoginResult<User> loginResult, string? imei)
         {
             if (!loginResult.IsSuccess)
                 throw new ArgumentException("Can't create token for invalid login result", nameof(loginResult));

@@ -94,11 +94,11 @@ namespace Shesha.DynamicEntities
                     if (propertyType != null)
                         properties.Add(property.Name, propertyType);
                 }
-                catch (NotSupportedException ex) 
+                catch (NotSupportedException ex)
                 {
                     Logger.Warn($"Type '{type.FullName}': failed to add property `{property.Name}` of type `{property.DataType}`", ex);
                     continue;
-                }                
+                }
             }
 
             // internal fields
@@ -159,7 +159,7 @@ namespace Shesha.DynamicEntities
                         return typeof(GenericEntityReference);
                     else
                         return GetEntityReferenceType(propertyDto, context);
-                
+
                 case DataTypes.File:
                     return typeof(StoredFile);
 
@@ -173,7 +173,7 @@ namespace Shesha.DynamicEntities
                     return null;
                 case DataTypes.Object: // JSON content
                     if (dataFormat == ObjectFormats.Object)
-                        return await GetNestedTypeAsync(propertyDto, context); 
+                        return await GetNestedTypeAsync(propertyDto, context);
                     if (dataFormat == ObjectFormats.Interface)
                         return typeof(object);
                     throw new NotSupportedException($"Data type not supported: {dataType} {dataFormat}");

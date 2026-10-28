@@ -9,7 +9,7 @@ namespace Shesha.Domain
     [DiscriminatorValue("Shesha.Core.Address")]
     [Discriminator]
     [Entity(TypeShortAlias = "Shesha.Core.Address")]
-    public class Address: FullAuditedEntity<Guid>, IMayHaveTenant
+    public class Address : FullAuditedEntity<Guid>, IMayHaveTenant
     {
         [ReferenceList("Shesha.Core", "AddressType")]
         public virtual int? AddressType { get; set; }

@@ -43,7 +43,8 @@ namespace Shesha.GraphQL
                         return Task.CompletedTask;
                     };
                 })
-                .AddComplexityAnalyzer(options => {
+                .AddComplexityAnalyzer(options =>
+                {
                     options.MaxDepth = 15;
                 })
                 // Add required services for GraphQL request/response de/serialization

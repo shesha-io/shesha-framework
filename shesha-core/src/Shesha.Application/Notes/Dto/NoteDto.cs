@@ -1,11 +1,11 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Abp.Application.Services.Dto;
+﻿using Abp.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Notes.Dto
 {
-    public class NoteDto: EntityDto<Guid>
+    public class NoteDto : EntityDto<Guid>
     {
         /// <summary>
         /// Id of the owner entity

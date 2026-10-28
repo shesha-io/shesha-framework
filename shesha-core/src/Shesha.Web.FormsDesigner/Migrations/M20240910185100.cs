@@ -8,7 +8,7 @@ namespace Shesha.Web.FormsDesigner.Migrations
     {
         public override void Up()
         {
-                IfDatabase("sqlserver").Execute.Sql(@"
+            IfDatabase("sqlserver").Execute.Sql(@"
 update fc set Markup = REPLACE(fc.Markup, 'user-management-details-new', 'user-management-details')
 from Frwk_FormConfigurations fc
 inner join Frwk_ConfigurationItems ci on ci.id = fc.id and ci.IsLast = 1 and IsDeleted = 0 and ci.ModuleId = (select id from Frwk_Modules where Name = 'Shesha')

@@ -1,10 +1,10 @@
-﻿using System;
-using Abp.Application.Services.Dto;
+﻿using Abp.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
+using System;
 
 namespace Shesha.Otp.Dto
 {
-    public class OtpAuditItemDto: EntityDto<Guid>
+    public class OtpAuditItemDto : EntityDto<Guid>
     {
         /// <summary>
         /// Creation time

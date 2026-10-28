@@ -4,7 +4,7 @@ using Shesha.Persons;
 
 namespace Shesha.UserManagements
 {
-    public class UserManagementMapProfile: ShaProfile
+    public class UserManagementMapProfile : ShaProfile
     {
         public UserManagementMapProfile()
         {

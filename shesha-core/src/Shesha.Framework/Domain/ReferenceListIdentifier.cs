@@ -14,8 +14,8 @@ namespace Shesha.Domain
         {
         }
 
-        public ReferenceListIdentifier(string? module, string? @namespace, string name): base(
-                module, 
+        public ReferenceListIdentifier(string? module, string? @namespace, string name) : base(
+                module,
                 !string.IsNullOrWhiteSpace(@namespace)
                     ? $"{@namespace}.{name}"
                     : name)

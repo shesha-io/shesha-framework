@@ -45,7 +45,7 @@ namespace Shesha.Domain
         }
 
         public static string GetTextId(string? module, string name) => module.IsNullOrWhiteSpace() ? name : $"{module}:{name}";
-        public static EntityTypeIdentifier GetIdFromTextId(string identifier) 
+        public static EntityTypeIdentifier GetIdFromTextId(string identifier)
         {
             var parts = identifier.Split(':');
             if (parts.Length > 2)

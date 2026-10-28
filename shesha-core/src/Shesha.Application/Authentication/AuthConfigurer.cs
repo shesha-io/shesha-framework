@@ -17,7 +17,8 @@ namespace Shesha.Authentication
         {
             if (bool.TryParse(configuration["Authentication:JwtBearer:IsEnabled"], out var jwtEnabled) && jwtEnabled)
             {
-                services.AddAuthentication(options => {
+                services.AddAuthentication(options =>
+                {
                     options.DefaultAuthenticateScheme = "JwtBearer";
                     options.DefaultChallengeScheme = "JwtBearer";
                 }).AddJwtBearer("JwtBearer", options =>
@@ -59,7 +60,8 @@ namespace Shesha.Authentication
         {
             var iocManager = StaticContext.IocManager;
             var handlers = iocManager.ResolveAll<IJwtBearerOnMessageReceivedHandler>();
-            try {
+            try
+            {
                 foreach (var handler in handlers)
                 {
                     await handler.OnMessageReceivedAsync(context);
@@ -69,7 +71,7 @@ namespace Shesha.Authentication
             {
                 foreach (var handler in handlers)
                     iocManager.Release(handler);
-            }            
+            }
         }
     }
 }

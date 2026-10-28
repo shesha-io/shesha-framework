@@ -39,7 +39,7 @@ namespace Shesha.Validations
         private async Task<bool> ValidateAsync(Func<IPropertyValidator, Task<bool>> action)
         {
             var result = true;
-            foreach (var validator in Validators) 
+            foreach (var validator in Validators)
                 result = await action(validator) && result;
             return result;
         }

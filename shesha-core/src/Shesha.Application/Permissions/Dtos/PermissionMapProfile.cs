@@ -9,7 +9,7 @@ namespace Shesha.Permissions.Dtos
         public PermissionMapProfile()
         {
             CreateMap<Abp.Authorization.Permission, PermissionDto>()
-                .ForMember(e => e.ParentName, c => c.MapFrom(e => 
+                .ForMember(e => e.ParentName, c => c.MapFrom(e =>
                     e.Parent != null ? e.Parent.Name : null))
                 .ForMember(e => e.DisplayName, c => c.MapFrom(e =>
                     Localize(e.DisplayName)))

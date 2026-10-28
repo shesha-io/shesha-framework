@@ -5,8 +5,8 @@ using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Metadata;
-using Shesha.Tests.DynamicEntities.Dtos;
 using Shesha.Testing.Fixtures;
+using Shesha.Tests.DynamicEntities.Dtos;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -27,13 +27,14 @@ namespace Shesha.Tests.DynamicEntities
         public async Task BuildFullDynamicDto_TestAsync()
         {
             var entityConfigCacheMock = new Mock<IEntityConfigCache>();
-            
+
             entityConfigCacheMock.Setup(x => x.GetEntityPropertiesAsync(It.IsAny<Type>()))
-                .Returns(() => {
+                .Returns(() =>
+                {
                     var result = new EntityPropertyDtoList();
                     result.AddString("Name", "Name...");
                     result.AddString("Description", "Description...");
-                    
+
 
                     var r = result as List<EntityPropertyDto>;
                     return Task.FromResult<List<EntityPropertyDto>?>(r);
@@ -47,7 +48,8 @@ namespace Shesha.Tests.DynamicEntities
 
             var baseDtoType = typeof(DynamicDto<Person, Guid>);
 
-            var context = new DynamicDtoTypeBuildingContext() { 
+            var context = new DynamicDtoTypeBuildingContext()
+            {
                 ModelType = baseDtoType,
                 AddFormFieldsProperty = true,
             };
@@ -63,12 +65,13 @@ namespace Shesha.Tests.DynamicEntities
         }
 
         [Fact]
-        public async Task BuildFullDynamicDto_HasNoSideEffect_TestAsync() 
+        public async Task BuildFullDynamicDto_HasNoSideEffect_TestAsync()
         {
             var entityConfigCacheMock = new Mock<IEntityConfigCache>();
 
             entityConfigCacheMock.Setup(x => x.GetEntityPropertiesAsync(It.IsAny<Type>()))
-                .Returns(() => {
+                .Returns(() =>
+                {
                     var result = new EntityPropertyDtoList();
                     var r = result as List<EntityPropertyDto>;
                     return Task.FromResult<List<EntityPropertyDto>?>(r);
@@ -108,12 +111,14 @@ namespace Shesha.Tests.DynamicEntities
             const string supervisorLastNamePropName = "LastName";
 
             entityConfigCacheMock.Setup(x => x.GetEntityPropertiesAsync(It.IsAny<Type>()))
-                .Returns(() => {
+                .Returns(() =>
+                {
                     var result = new EntityPropertyDtoList();
                     result.AddString("Name", "Name...");
                     result.AddString("Description", "Description...");
 
-                    var nested = new EntityPropertyDto { 
+                    var nested = new EntityPropertyDto
+                    {
                         Name = supervisorPropName,
                         DataType = DataTypes.Object,
                         DataFormat = ObjectFormats.Object,
@@ -137,7 +142,8 @@ namespace Shesha.Tests.DynamicEntities
 
             var baseDtoType = typeof(DynamicDto<Person, Guid>);
 
-            var context = new DynamicDtoTypeBuildingContext() { 
+            var context = new DynamicDtoTypeBuildingContext()
+            {
                 ModelType = baseDtoType,
                 // AddFormFieldsProperty = false // note: false is a default value for AddFormFieldsProperty. Leave it blank to test default value 
             };

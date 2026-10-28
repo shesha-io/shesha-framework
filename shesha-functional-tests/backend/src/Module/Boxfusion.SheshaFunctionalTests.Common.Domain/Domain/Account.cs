@@ -7,7 +7,7 @@ using System;
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {
     [Entity(TypeShortAlias = "Boxfusion.SheshaFunctionalTests.Domain.TestAccount")]
-    public class TestAccount: Entity<Guid>
+    public class TestAccount : Entity<Guid>
     {
         public virtual string AccountNumber { get; set; }
 

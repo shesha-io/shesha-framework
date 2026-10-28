@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Shesha.Domain;
+using System;
 using System.Threading;
-using Shesha.Domain;
 
 namespace Shesha.Import
 {

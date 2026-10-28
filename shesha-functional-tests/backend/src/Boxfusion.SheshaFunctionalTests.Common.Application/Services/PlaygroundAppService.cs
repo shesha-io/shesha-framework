@@ -14,7 +14,7 @@ using Shesha.Services.Urls;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
-    public class PlaygroundAppService: SheshaAppServiceBase
+    public class PlaygroundAppService : SheshaAppServiceBase
     {
 
         private readonly IRepository<TestClass, Guid> _testClassRepo;
@@ -65,7 +65,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             }
         }
 
-        public async Task<string?> TestFileVersionUrlAsync(Guid id) 
+        public async Task<string?> TestFileVersionUrlAsync(Guid id)
         {
             var repo = IocManager.Resolve<IRepository<StoredFileVersion, Guid>>();
             var version = await repo.GetAsync(id);
@@ -85,7 +85,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         }
 
 
-        public Task<string> TestLinkStateAsync() 
+        public Task<string> TestLinkStateAsync()
         {
             var linkGeneratorContext = StaticContext.IocManager.Resolve<ILinkGeneratorContext>();
             if (linkGeneratorContext == null)
@@ -94,7 +94,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 throw new Exception("linkGeneratorContext.State is null");
 
             return Task.FromResult(JsonConvert.SerializeObject(linkGeneratorContext.State) ?? string.Empty);
-        }        
+        }
 
         public async Task TestElmahAsync()
         {

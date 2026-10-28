@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Configuration
 {
-    public interface IFrontendSettings: ISettingAccessors
+    public interface IFrontendSettings : ISettingAccessors
     {
         /// <summary>
         /// Theme settings  

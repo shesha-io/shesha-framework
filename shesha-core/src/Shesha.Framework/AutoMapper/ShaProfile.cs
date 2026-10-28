@@ -1,5 +1,4 @@
-﻿using System;
-using Abp.Application.Services.Dto;
+﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Localization;
@@ -7,12 +6,13 @@ using AutoMapper;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Services;
+using System;
 
 namespace Shesha.AutoMapper
 {
     public abstract class ShaProfile : Profile
     {
-        protected static ReferenceListItemValueDto? GetRefListItemValueDto(string refListNamespace, string refListName, int? value) 
+        protected static ReferenceListItemValueDto? GetRefListItemValueDto(string refListNamespace, string refListName, int? value)
         {
             return GetRefListItemValueDto(null, refListNamespace, refListName, value);
         }

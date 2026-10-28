@@ -44,7 +44,7 @@ namespace Shesha.DelayedUpdate
                 {
                     Log?.Error(e.Message, e);
                 }
-            }            
+            }
         }
     }
 }

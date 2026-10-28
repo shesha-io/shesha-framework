@@ -6,7 +6,7 @@ namespace Shesha.DynamicEntities.Distribution
     /// <summary>
     /// Entity config import
     /// </summary>
-    public interface IEntityConfigImport: IConfigurableItemImport<EntityConfig>
+    public interface IEntityConfigImport : IConfigurableItemImport<EntityConfig>
     {
     }
 }

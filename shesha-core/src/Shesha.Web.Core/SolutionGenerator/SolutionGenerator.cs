@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace Shesha.Tests.SolutionGenerator
 {
-    public class SolutionGenerator: ISolutionGenerator, ITransientDependency
+    public class SolutionGenerator : ISolutionGenerator, ITransientDependency
     {
         private List<string> _sourceFileExtensions = new List<string> { ".cs", ".csproj", ".sln", ".xml", ".json" };
         public async Task GenerateAsync(
-                string sourcePath, 
-                string destination, 
+                string sourcePath,
+                string destination,
                 Dictionary<string, string> tags,
                 Func<string, bool> includePathCondition,
                 CancellationToken cancellationToken)
@@ -51,7 +51,7 @@ namespace Shesha.Tests.SolutionGenerator
                     using (var sw = new StreamWriter(dstStream))
                     {
                         string? line;
-                        while ((line = await sr.ReadLineAsync()) is not null) 
+                        while ((line = await sr.ReadLineAsync()) is not null)
                         {
                             var newLine = line.ReplaceTags(tags);
                             await sw.WriteLineAsync(newLine);
@@ -59,7 +59,8 @@ namespace Shesha.Tests.SolutionGenerator
                     }
                 }
             }
-            else {
+            else
+            {
                 using (var fs = new FileStream(path, FileMode.Open))
                 {
                     await fs.CopyToAsync(dstStream, cancellationToken);

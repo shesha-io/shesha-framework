@@ -22,7 +22,7 @@ namespace Shesha.Domain
         public string Log { get; set; }
     }
 
-    public class BootstrapperStartupContext: JsonEntity
+    public class BootstrapperStartupContext : JsonEntity
     {
         public List<BootstrapperStartupLog> Log { get; set; } = new List<BootstrapperStartupLog>();
 
@@ -36,7 +36,7 @@ namespace Shesha.Domain
 
     [SnakeCaseNaming]
     [Table("bootstrapper_startups", Schema = "frwk")]
-    public class BootstrapperStartup: Entity<Guid>
+    public class BootstrapperStartup : Entity<Guid>
     {
         public virtual DateTime CreationTime { get; set; }
         public virtual bool Force { get; set; }

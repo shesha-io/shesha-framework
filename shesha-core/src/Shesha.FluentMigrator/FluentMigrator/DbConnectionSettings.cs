@@ -19,8 +19,9 @@ namespace Shesha.FluentMigrator
 
         private static readonly AsyncLocal<IDbConnectionSettings?> InternalState = new AsyncLocal<IDbConnectionSettings?>();
 
-        public static IDbConnectionSettings? Current { 
-            get 
+        public static IDbConnectionSettings? Current
+        {
+            get
             {
                 return InternalState.Value;
             }
@@ -29,7 +30,7 @@ namespace Shesha.FluentMigrator
         public static IDisposable BeginConnectionScope(IDbConnectionSettings settings)
         {
             InternalState.Value = settings;
-            return new DisposeAction(() => 
+            return new DisposeAction(() =>
             {
                 InternalState.Value = null;
             });

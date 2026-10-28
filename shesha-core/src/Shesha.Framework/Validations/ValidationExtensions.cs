@@ -19,7 +19,7 @@ namespace Shesha.Validations
         /// <param name="errorMessage">Common error message</param>
         /// <exception cref="AbpValidationException"></exception>
         public static void ThrowValidationExceptionIfAny(this IList<ValidationResult>? validationResults, string errorMessage)
-        { 
+        {
             if (validationResults != null && validationResults.Any())
                 throw new AbpValidationException(errorMessage, validationResults);
         }
@@ -29,7 +29,7 @@ namespace Shesha.Validations
         /// </summary>
         /// <param name="validationResults">Validation results</param>
         /// <param name="localizer">Localizer, is used for localization of common error message</param>
-        public static void ThrowValidationExceptionIfAny(this IList<ValidationResult>? validationResults, Func<string, string> localizer) 
+        public static void ThrowValidationExceptionIfAny(this IList<ValidationResult>? validationResults, Func<string, string> localizer)
         {
             validationResults.ThrowValidationExceptionIfAny(localizer(AppMessages.ValidationCorrectErrorsAndTryAgain));
         }
@@ -57,16 +57,16 @@ namespace Shesha.Validations
         /// <exception cref="AbpValidationException"></exception>
         public static void ThrowArgumentExceptionIfAny(this IList<ValidationResult>? validationResults)
         {
-            if (validationResults != null && validationResults.Any()) 
+            if (validationResults != null && validationResults.Any())
             {
                 if (validationResults.Count() == 1)
                     throw ValidationResult2ArgumentException(validationResults.Single());
                 else
                     throw new AggregateException(validationResults.Select(r => ValidationResult2ArgumentException(r)));
-            }                
+            }
         }
 
-        private static ArgumentException ValidationResult2ArgumentException(ValidationResult validationResult) 
+        private static ArgumentException ValidationResult2ArgumentException(ValidationResult validationResult)
         {
             return new ArgumentException(validationResult.ErrorMessage, validationResult.MemberNames.Delimited(", "));
         }

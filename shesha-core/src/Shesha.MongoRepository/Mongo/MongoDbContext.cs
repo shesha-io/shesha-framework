@@ -49,7 +49,7 @@ namespace MongoDbRepository
             //Pluralize class name
             string tableName = PluralizeDocumentName ? PluralizationProvider.Pluralize(typeof(T).Name) : typeof(T).Name;
 
-             database.DropCollection(tableName);
+            database.DropCollection(tableName);
         }
 
         public void Dispose()

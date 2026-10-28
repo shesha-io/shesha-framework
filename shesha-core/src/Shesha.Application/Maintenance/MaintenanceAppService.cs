@@ -74,7 +74,8 @@ namespace Shesha.Controllers
                 .Where(a => string.IsNullOrWhiteSpace(searchString) || !string.IsNullOrWhiteSpace(a.FullName) && a.FullName.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
                 .OrderBy(a => a.FullName);
 
-            var result = assemblies.Select(a => {
+            var result = assemblies.Select(a =>
+            {
                 string architecture = "unknown";
                 if (a.Modules.Any())
                 {
@@ -143,7 +144,8 @@ namespace Shesha.Controllers
             var typeFinder = IocManager.Resolve<ITypeFinder>();
             var moduleTypes = typeFinder.FindModuleTypes().ToList();
 
-            var modules = moduleTypes.Select(t => {
+            var modules = moduleTypes.Select(t =>
+            {
                 var instance = IocManager.Resolve(t).ForceCastAs<SheshaModule>();
                 var moduleInfo = instance.ModuleInfo;
 

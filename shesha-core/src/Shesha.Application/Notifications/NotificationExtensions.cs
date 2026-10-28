@@ -8,7 +8,7 @@ namespace Shesha.Notifications
         /// <summary>
         /// Copy notification properties from <paramref name="src"/>
         /// </summary>
-        public static TDestination CopyNotificationSpecificPropsFrom<TDestination>(this TDestination dst, INotificationTypeSpecificProps src) where TDestination: INotificationTypeSpecificProps
+        public static TDestination CopyNotificationSpecificPropsFrom<TDestination>(this TDestination dst, INotificationTypeSpecificProps src) where TDestination : INotificationTypeSpecificProps
         {
             dst.DefaultPriority = src.DefaultPriority;
             dst.IsTimeSensitive = src.IsTimeSensitive;
@@ -17,19 +17,19 @@ namespace Shesha.Notifications
             dst.CanOptOut = src.CanOptOut;
             dst.Category = src.Category ?? string.Empty;
             dst.OverrideChannels = src.OverrideChannels ?? new List<ConfigurationItemIdentifierDto>();
-            
+
             return dst;
         }
 
         /// <summary>
         /// Copy notification template properties from <paramref name="src"/>
         /// </summary>
-        public static TDestination CopyTemplatePropsFrom<TDestination>(this TDestination dst, INotificationTemplateProps src) where TDestination: INotificationTemplateProps
+        public static TDestination CopyTemplatePropsFrom<TDestination>(this TDestination dst, INotificationTemplateProps src) where TDestination : INotificationTemplateProps
         {
             dst.MessageFormat = src.MessageFormat;
             dst.TitleTemplate = src.TitleTemplate;
             dst.BodyTemplate = src.BodyTemplate;
-            
+
             return dst;
         }
     }

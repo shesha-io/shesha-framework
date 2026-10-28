@@ -44,7 +44,7 @@ namespace Shesha.Dto.Interfaces
         /// <summary>
         /// If true, it means that the item will not be visible to Config or End-users/Admins.
         /// </summary>
-        [Display(Name = "Suppress", Description = "If true, it means that the item will not be visible to Config or End-users/Admins.")] 
+        [Display(Name = "Suppress", Description = "If true, it means that the item will not be visible to Config or End-users/Admins.")]
         bool Suppress { get; set; }
     }
 }

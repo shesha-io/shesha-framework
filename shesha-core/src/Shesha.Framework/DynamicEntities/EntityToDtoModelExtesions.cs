@@ -106,7 +106,7 @@ namespace Shesha.DynamicEntities
                         else
                             destProp.SetValue(dest, srcValue);
                     }
-                    catch(Exception)
+                    catch (Exception)
                     {
 
                     }

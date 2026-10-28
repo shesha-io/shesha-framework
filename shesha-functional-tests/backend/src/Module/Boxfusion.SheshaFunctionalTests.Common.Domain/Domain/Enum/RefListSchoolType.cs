@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using Intent.RoslynWeaver.Attributes;
+﻿using Intent.RoslynWeaver.Attributes;
 using Shesha.Domain.Attributes;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 [assembly: DefaultIntentManaged(Mode.Fully)]
 [assembly: IntentTemplate("Boxfusion.Modules.Domain.Enum", Version = "1.0")]

@@ -1,4 +1,4 @@
-﻿﻿using Abp.Collections.Extensions;
+﻿using Abp.Collections.Extensions;
 using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
@@ -195,8 +195,8 @@ namespace Shesha.DynamicEntities
         public async Task<ModelConfigurationDto> CreateAsync(ModelConfigurationCreateDto input)
         {
             var inheritedFrom = input.InheritedFromId != null
-                ? await Repository.FirstOrDefaultAsync(x => 
-                    x.Name == input.InheritedFromId.Name 
+                ? await Repository.FirstOrDefaultAsync(x =>
+                    x.Name == input.InheritedFromId.Name
                     && (x.Module != null && x.Module.Name == input.InheritedFromId.Module
                         || x.Module == null && (input.InheritedFromId.Module == null || input.InheritedFromId.Module == "")
                     )
@@ -315,7 +315,8 @@ namespace Shesha.DynamicEntities
                 if (properties.Any(x => x != prop && x.Name == prop.Name && !duplicated.Contains(fullPath)))
                 {
                     duplicated.Add(fullPath);
-                    errors.Add(new ValidationResult($"Duplicated property name '{fullPath}'"));                }
+                    errors.Add(new ValidationResult($"Duplicated property name '{fullPath}'"));
+                }
                 if (prop.Properties.Any())
                     ValidateDuplicatedProperties(prop.Properties, errors, duplicated, fullPath);
             }
@@ -334,10 +335,10 @@ namespace Shesha.DynamicEntities
                 errors.Add(new ValidationResult($"Wrong Entity name '{input.Name}': {e.Message}"));
             }
 
-            if (isNew && Repository.GetAll().Any(x => 
+            if (isNew && Repository.GetAll().Any(x =>
                 x.Name == input.Name
                 && (
-                    x.Module != null && x.Module.Name == input.Module 
+                    x.Module != null && x.Module.Name == input.Module
                     || x.Module == null && (input.Module == "" || input.Module == null))))
             {
                 errors.Add(new ValidationResult($"The Entity with name {input.Name} is already exist in the Module '{input.Module}'"));
@@ -384,7 +385,7 @@ namespace Shesha.DynamicEntities
 
             // Update Name only if the property is not created in DB yet
             if (!entityConfig.CreatedInDb)
-                entityConfig.Name = input.Name.Trim(); 
+                entityConfig.Name = input.Name.Trim();
 
 
             entityConfig.Label = input.Label;

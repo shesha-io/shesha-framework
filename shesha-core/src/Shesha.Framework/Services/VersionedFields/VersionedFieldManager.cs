@@ -5,10 +5,10 @@ using Abp.Domain.Uow;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Extensions;
+using Shesha.Locks;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Shesha.Locks;
 
 namespace Shesha.Services.VersionedFields
 {
@@ -30,7 +30,7 @@ namespace Shesha.Services.VersionedFields
             _currentUowProvider = currentUowProvider;
         }
 
-        public async Task<VersionedField> GetVersionedFieldAsync<TEntity, TId>(TEntity owner, string fieldName) 
+        public async Task<VersionedField> GetVersionedFieldAsync<TEntity, TId>(TEntity owner, string fieldName)
             where TEntity : IEntity<TId>
             where TId : notnull
         {
@@ -39,7 +39,7 @@ namespace Shesha.Services.VersionedFields
             return await _fieldRepository.FirstOrDefaultAsync(f => f.OwnerId == owner.Id.ToString() && f.OwnerType == config.TypeShortAlias && f.Name == fieldName);
         }
 
-        public VersionedField? GetVersionedField<TEntity, TId>(TEntity owner, string fieldName) 
+        public VersionedField? GetVersionedField<TEntity, TId>(TEntity owner, string fieldName)
             where TEntity : IEntity<TId>
             where TId : notnull
         {
@@ -52,7 +52,7 @@ namespace Shesha.Services.VersionedFields
         /// <summary>
         /// Creates versioned field is missing
         /// </summary>
-        public async Task<VersionedField> GetOrCreateFieldAsync<TEntity, TId>(TEntity owner, string fieldName, Action<VersionedField>? initAction = null) 
+        public async Task<VersionedField> GetOrCreateFieldAsync<TEntity, TId>(TEntity owner, string fieldName, Action<VersionedField>? initAction = null)
             where TEntity : IEntity<TId>
             where TId : notnull
         {
@@ -71,7 +71,7 @@ namespace Shesha.Services.VersionedFields
             lockFactory.DoExclusive(resource, expiry, wait, retry, () =>
             {
                 // trying to get the field one more time because it might be created while we were waiting for the lock
-                field = GetVersionedField<TEntity, TId>(owner, fieldName) 
+                field = GetVersionedField<TEntity, TId>(owner, fieldName)
                         ?? CreateField<TEntity, TId>(owner, fieldName, initAction);
             });
 
@@ -81,9 +81,9 @@ namespace Shesha.Services.VersionedFields
             return field;
         }
 
-        public async Task<VersionedField> CreateFieldAsync<TEntity, TId>(TEntity owner, string fieldName, Action<VersionedField>? initAction = null) 
+        public async Task<VersionedField> CreateFieldAsync<TEntity, TId>(TEntity owner, string fieldName, Action<VersionedField>? initAction = null)
             where TEntity : IEntity<TId>
-            where TId: notnull
+            where TId : notnull
         {
             var field = new VersionedField
             {
@@ -97,7 +97,7 @@ namespace Shesha.Services.VersionedFields
             return field;
         }
 
-        public VersionedField CreateField<TEntity, TId>(TEntity owner, string fieldName, Action<VersionedField>? initAction = null) 
+        public VersionedField CreateField<TEntity, TId>(TEntity owner, string fieldName, Action<VersionedField>? initAction = null)
             where TEntity : IEntity<TId>
             where TId : notnull
         {
@@ -119,7 +119,7 @@ namespace Shesha.Services.VersionedFields
             return version;
         }
 
-        public async Task<string?> GetVersionedFieldValueAsync<TEntity, TId>(TEntity owner, string fieldName) 
+        public async Task<string?> GetVersionedFieldValueAsync<TEntity, TId>(TEntity owner, string fieldName)
             where TEntity : IEntity<TId>
             where TId : notnull
         {
@@ -131,7 +131,7 @@ namespace Shesha.Services.VersionedFields
             return version?.Content;
         }
 
-        public async Task SetVersionedFieldValueAsync<TEntity, TId>(TEntity owner, string fieldName, string value, bool createNewVersion) 
+        public async Task SetVersionedFieldValueAsync<TEntity, TId>(TEntity owner, string fieldName, string value, bool createNewVersion)
             where TEntity : IEntity<TId>
             where TId : notnull
         {

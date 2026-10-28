@@ -6,7 +6,7 @@ namespace Shesha.Specifications
     /// Is used to mark specifications as global
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class GlobalSpecificationAttribute: Attribute
+    public class GlobalSpecificationAttribute : Attribute
     {
     }
 }

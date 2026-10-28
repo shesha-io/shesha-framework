@@ -1,6 +1,6 @@
 ﻿namespace Shesha.Sms.Clickatell
 {
-    public interface IClickatellSmsGateway: IConfigurableSmsGateway<ClickatellSettingDto>
+    public interface IClickatellSmsGateway : IConfigurableSmsGateway<ClickatellSettingDto>
     {
 
     }

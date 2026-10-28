@@ -6,7 +6,7 @@ namespace Shesha.DynamicEntities
     /// <summary>
     /// List of dynamic properties
     /// </summary>
-    public class DynamicPropertyList: List<DynamicProperty>
+    public class DynamicPropertyList : List<DynamicProperty>
     {
         /// <summary>
         /// Add new property to the list
@@ -15,7 +15,8 @@ namespace Shesha.DynamicEntities
         /// <param name="propertyType"></param>
         public void Add(string propertyName, Type propertyType)
         {
-            Add(new DynamicProperty { 
+            Add(new DynamicProperty
+            {
                 PropertyName = propertyName,
                 PropertyType = propertyType,
             });

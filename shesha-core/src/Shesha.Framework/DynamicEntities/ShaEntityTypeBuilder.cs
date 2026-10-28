@@ -34,7 +34,7 @@ namespace Shesha.DynamicEntities
         public static TypeBuilder GetTypeBuilder(string moduleName, string typeName)
         {
             var an = new AssemblyName(moduleName);
-            
+
             var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(an, AssemblyBuilderAccess.Run);
             var moduleBuilder = assemblyBuilder.DefineDynamicModule(moduleName);
             var tb = moduleBuilder.DefineType(typeName,
@@ -54,12 +54,12 @@ namespace Shesha.DynamicEntities
             var fieldBuilder = tb.DefineField("_" + propertyName, propertyType, FieldAttributes.Private);
 
             var propertyBuilder = tb.DefineProperty(propertyName, PropertyAttributes.HasDefault, propertyType, null);
-            var getPropMthdBldr = tb.DefineMethod("get_" + propertyName, 
-                MethodAttributes.Public | 
-                MethodAttributes.SpecialName | 
+            var getPropMthdBldr = tb.DefineMethod("get_" + propertyName,
+                MethodAttributes.Public |
+                MethodAttributes.SpecialName |
                 MethodAttributes.HideBySig |
-                MethodAttributes.Virtual, 
-                propertyType, 
+                MethodAttributes.Virtual,
+                propertyType,
                 Type.EmptyTypes);
             ILGenerator getIl = getPropMthdBldr.GetILGenerator();
 

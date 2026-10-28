@@ -1,8 +1,8 @@
-﻿using System.IO;
-using log4net.Core;
+﻿using log4net.Core;
 using log4net.Layout;
 using Newtonsoft.Json;
 using Shesha.Scheduler.SignalR;
+using System.IO;
 
 namespace Shesha.Scheduler.Logging
 {

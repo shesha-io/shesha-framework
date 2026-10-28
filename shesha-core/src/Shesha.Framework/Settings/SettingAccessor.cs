@@ -76,6 +76,6 @@ namespace Shesha.Settings
         }
 
         /// inheritedDoc
-        public object? GetDefaultValue() => DefaultValue;        
+        public object? GetDefaultValue() => DefaultValue;
     }
 }

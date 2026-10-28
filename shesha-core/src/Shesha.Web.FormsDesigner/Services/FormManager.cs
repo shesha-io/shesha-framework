@@ -78,10 +78,10 @@ namespace Shesha.Web.FormsDesigner.Services
             };
 
             // Create a strongly-typed container for form-specific data
-            var template = input.TemplateId.HasValue 
+            var template = input.TemplateId.HasValue
                 ? await Repository.GetAsync(input.TemplateId.Value)
                 : null;
-                
+
             var additionalData = new FormCreationData
             {
                 FormInput = input,
@@ -109,7 +109,7 @@ namespace Shesha.Web.FormsDesigner.Services
         {
             destination.Markup = source.Markup;
             destination.IsTemplate = source.IsTemplate;
-            
+
             return Task.CompletedTask;
         }
 
@@ -135,11 +135,12 @@ namespace Shesha.Web.FormsDesigner.Services
 
         public override async Task<IConfigurationItemDto> MapToDtoAsync(FormConfiguration item)
         {
-            var dto = new FormConfigurationDto {
+            var dto = new FormConfigurationDto
+            {
                 Id = item.Id,
                 ModuleId = item.Module?.Id,
                 Module = item.Module?.Name,
-                OriginId = item.Origin?.Id,                
+                OriginId = item.Origin?.Id,
                 ApplicationId = item.Application?.Id,
                 Application = item.Application?.Name,
                 Name = item.Name,

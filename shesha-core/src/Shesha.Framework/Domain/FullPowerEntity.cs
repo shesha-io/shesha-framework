@@ -1,6 +1,6 @@
-﻿using System;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using System;
 
 namespace Shesha.Domain
 {
@@ -11,7 +11,7 @@ namespace Shesha.Domain
     ///  * multi-tenancy support
     /// Note: discriminator is not included as it's not used in most cases
     /// </summary>
-    public abstract class FullPowerEntity: FullAuditedEntity<Guid>, IMayHaveTenant
+    public abstract class FullPowerEntity : FullAuditedEntity<Guid>, IMayHaveTenant
     {
         /// <summary>
         /// Tenant ID or null for no tenant

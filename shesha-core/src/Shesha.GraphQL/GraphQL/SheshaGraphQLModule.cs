@@ -12,7 +12,7 @@ namespace Shesha.GraphQL
     )]
     public class SheshaGraphQLModule : AbpModule
     {
-        public override void PreInitialize() 
+        public override void PreInitialize()
         {
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
                     this.GetType().Assembly,

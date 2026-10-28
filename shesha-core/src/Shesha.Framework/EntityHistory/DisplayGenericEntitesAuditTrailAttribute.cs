@@ -8,7 +8,7 @@ namespace Shesha.EntityHistory
         public Type EntityType { get; set; }
 
         public string? OwnerIdField { get; set; }
-        
+
         public string? OwnerTypeField { get; set; }
 
         public string? DisplayName { get; set; }

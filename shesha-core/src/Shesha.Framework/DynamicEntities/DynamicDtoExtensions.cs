@@ -11,7 +11,7 @@ namespace Shesha.DynamicEntities
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static bool IsDynamicDto(this Type type) 
+        public static bool IsDynamicDto(this Type type)
         {
             return GetGenericDtoInterface(type) != null;
         }

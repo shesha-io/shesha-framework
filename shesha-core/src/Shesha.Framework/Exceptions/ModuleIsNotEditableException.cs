@@ -9,7 +9,7 @@ namespace Shesha.Exceptions
     {
         public string ModuleName { get; private set; }
 
-        public ModuleIsNotEditableException(string moduleName): base($"Module `{moduleName}` is not editable")
+        public ModuleIsNotEditableException(string moduleName) : base($"Module `{moduleName}` is not editable")
         {
             ModuleName = moduleName;
         }

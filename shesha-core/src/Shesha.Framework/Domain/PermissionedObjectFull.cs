@@ -43,7 +43,7 @@ namespace Shesha.Domain
         /// </summary>
         [NotNull]
         public virtual string Name { get; set; }
-        
+
         /// <summary>
         /// Description for display in the configurator
         /// </summary>

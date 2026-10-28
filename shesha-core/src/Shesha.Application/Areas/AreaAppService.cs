@@ -144,7 +144,7 @@ namespace Shesha.Areas
             await DeleteChildAreasAsync(area);
 
             await Repository.DeleteAsync(input.Id);
-            
+
             await CurrentUnitOfWork.SaveChangesAsync();
         }
 

@@ -7,7 +7,7 @@ namespace Shesha.Excel
     /// <summary>
     /// Export to excel input
     /// </summary>
-    public class ExportToExcelInput: PropsFilteredPagedAndSortedResultRequestDto
+    public class ExportToExcelInput : PropsFilteredPagedAndSortedResultRequestDto
     {
         public EntityTypeIdInput EntityTypeId { get; set; }
         public List<ExcelColumn> Columns { get; set; } = new List<ExcelColumn>();
@@ -16,8 +16,8 @@ namespace Shesha.Excel
     /// <summary>
     /// list of excel columns
     /// </summary>
-    public class ExcelColumn 
-    { 
+    public class ExcelColumn
+    {
         public string PropertyName { get; set; }
         public string Label { get; set; }
     }

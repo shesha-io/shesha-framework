@@ -50,7 +50,7 @@ where
 			)
 	)");
 
-			Execute.Sql("create unique index uq_Frwk_ConfigurationItems_LiveVersion on Frwk_ConfigurationItems(Name, ModuleId, TenantId) where IsDeleted=0 and VersionStatusLkp = 3");
+            Execute.Sql("create unique index uq_Frwk_ConfigurationItems_LiveVersion on Frwk_ConfigurationItems(Name, ModuleId, TenantId) where IsDeleted=0 and VersionStatusLkp = 3");
         }
     }
 }

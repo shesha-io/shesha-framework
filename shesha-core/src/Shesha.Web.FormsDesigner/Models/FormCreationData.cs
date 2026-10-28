@@ -11,7 +11,7 @@ namespace Shesha.Web.FormsDesigner.Models
         /// Form input data from the request
         /// </summary>
         public CreateFormInput FormInput { get; set; }
-        
+
         /// <summary>
         /// Template to use for the form, if specified
         /// </summary>

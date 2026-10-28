@@ -48,7 +48,8 @@ namespace Boxfusion.SheshaFunctionalTests.Common
         {
             base.PreInitialize();
 
-            IocManager.RegisterSettingAccessor<ITestSetting>(s => {
+            IocManager.RegisterSettingAccessor<ITestSetting>(s =>
+            {
                 s.UserLockoutItem.WithDefaultValue(100);
                 s.TestComplexSetting.WithDefaultValue(new TestComplexSetting
                 {

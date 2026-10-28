@@ -9,7 +9,7 @@ namespace Shesha.ConfigurationStudio.Dtos
     {
         public List<ModuleInfo> Modules { get; set; } = new List<ModuleInfo>();
 
-        public class ModuleInfo 
+        public class ModuleInfo
         {
             /// <summary>
             /// Module name
@@ -28,7 +28,7 @@ namespace Shesha.ConfigurationStudio.Dtos
             /// Module accessor
             /// </summary>
             public string Accessor { get; set; }
-            
+
             /// <summary>
             /// Is editable
             /// </summary>

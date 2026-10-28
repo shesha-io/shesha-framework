@@ -20,7 +20,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         /// Default constructor
         /// </summary>
         public FormConfigurationImport(IRepository<Module, Guid> moduleRepo,
-            IRepository<FrontEndApp, Guid> frontEndAppRepo, 
+            IRepository<FrontEndApp, Guid> frontEndAppRepo,
             IRepository<FormConfiguration, Guid> repository,
             IPermissionedObjectManager permissionedObjectManager
         ) : base(repository, moduleRepo, frontEndAppRepo)

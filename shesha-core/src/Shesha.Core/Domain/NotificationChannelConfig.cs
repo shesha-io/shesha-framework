@@ -9,8 +9,8 @@ namespace Shesha.Domain
     )]
     [JoinedProperty("notification_channels", Schema = "frwk")]
     [DiscriminatorValue(ItemTypeName)]
-    [SnakeCaseNaming]    
-    [Prefix(UsePrefixes = false)]    
+    [SnakeCaseNaming]
+    [Prefix(UsePrefixes = false)]
     public class NotificationChannelConfig : ConfigurationItem
     {
         public NotificationChannelConfig()

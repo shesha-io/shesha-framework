@@ -13,7 +13,7 @@ namespace Shesha.Scheduler
         [UsedImplicitly]
         public JobEnvelope()
         {
-            
+
         }
 
         public JobEnvelope(Guid jobId)
@@ -29,10 +29,10 @@ namespace Shesha.Scheduler
         [UsedImplicitly]
         public JobEnvelope()
         {
-            
+
         }
 
-        public JobEnvelope(Guid jobId, TParams parameters): base(jobId)
+        public JobEnvelope(Guid jobId, TParams parameters) : base(jobId)
         {
             Parameters = parameters;
         }

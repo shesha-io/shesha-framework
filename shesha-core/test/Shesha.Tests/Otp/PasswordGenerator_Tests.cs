@@ -16,7 +16,8 @@ namespace Shesha.Tests.Otp
         {
             var settings = new Mock<IOtpSettings>();
 
-            var otpSettings = new OtpSettings {
+            var otpSettings = new OtpSettings
+            {
                 Alphabet = alphabet,
                 PasswordLength = length,
             };

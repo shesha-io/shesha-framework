@@ -1,10 +1,10 @@
-﻿using System;
-using FluentMigrator;
+﻿using FluentMigrator;
+using System;
 
 namespace Shesha.Migrations
 {
     [Migration(20200419202000), MsSqlOnly]
-    public class M20200419202000: Migration
+    public class M20200419202000 : Migration
     {
         public override void Up()
         {
@@ -13,7 +13,7 @@ namespace Shesha.Migrations
             else
                 Alter.Column("IsRegionSpecific").OnTable("Core_ShaRoles").AsBoolean().WithDefaultValue(0);
         }
-        
+
         public override void Down()
         {
             throw new NotImplementedException();

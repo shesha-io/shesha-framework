@@ -1,7 +1,7 @@
-﻿using System;
-using NHibernate.Cfg.MappingSchema;
+﻿using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using Shesha.Domain.Attributes;
+using System;
 
 namespace Shesha.NHibernate.Attributes
 {

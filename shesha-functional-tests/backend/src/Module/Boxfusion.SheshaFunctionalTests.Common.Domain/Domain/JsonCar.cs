@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {
-    public class JsonCar: JsonEntity
+    public class JsonCar : JsonEntity
     {
         public virtual string Make { get; set; }
 

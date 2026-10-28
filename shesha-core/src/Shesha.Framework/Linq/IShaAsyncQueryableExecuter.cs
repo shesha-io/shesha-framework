@@ -8,7 +8,7 @@ namespace Shesha.Linq
     /// <summary>
     /// Extended version of IAsyncQueryableExecuter
     /// </summary>
-    public interface IShaAsyncQueryableExecuter: IAsyncQueryableExecuter
+    public interface IShaAsyncQueryableExecuter : IAsyncQueryableExecuter
     {
         Task<T> FirstAsync<T>(IQueryable<T> queryable, CancellationToken cancellationToken = default);
     }

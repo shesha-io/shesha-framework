@@ -12,7 +12,7 @@ namespace Shesha.Settings.Ioc
     /// </summary>
     public class SettingsTypeBuilder
     {
-        public Type BuildType(Type settingsInterface) 
+        public Type BuildType(Type settingsInterface)
         {
             if (!settingsInterface.IsInterface)
                 throw new ArgumentException($"{nameof(SettingsTypeBuilder)}.{nameof(BuildType)} supports interfaces only", nameof(settingsInterface));
@@ -23,7 +23,7 @@ namespace Shesha.Settings.Ioc
             var constructor = tb.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);
 
             var properties = settingsInterface.GetProperties();
-            foreach (var property in properties) 
+            foreach (var property in properties)
             {
                 AddProperty(tb, property);
             }
@@ -86,10 +86,10 @@ namespace Shesha.Settings.Ioc
 
             // copy attributes
             var attributeBuilders = GetAttributeBuilders(pi);
-            foreach (var attributeBuilder in attributeBuilders) 
+            foreach (var attributeBuilder in attributeBuilders)
             {
-                propertyBuilder.SetCustomAttribute(attributeBuilder);                
-            }   
+                propertyBuilder.SetCustomAttribute(attributeBuilder);
+            }
         }
 
         private TypeBuilder GetTypeBuilder(Type baseType, string typeName, IEnumerable<Type> interfaces)
@@ -111,7 +111,7 @@ namespace Shesha.Settings.Ioc
             return tb;
         }
 
-        
+
         private static CustomAttributeBuilder ToAttributeBuilder(CustomAttributeData data)
         {
             if (data == null)
@@ -154,12 +154,12 @@ namespace Shesha.Settings.Ioc
               fieldArgumentValues.ToArray());
         }
 
-        private static List<CustomAttributeBuilder> GetAttributeBuilders(MemberInfo oldMember) 
+        private static List<CustomAttributeBuilder> GetAttributeBuilders(MemberInfo oldMember)
         {
             var result = new List<CustomAttributeBuilder>();
-            
+
             var customMethodAttributes = CustomAttributeData.GetCustomAttributes(oldMember);
-            foreach (var att in customMethodAttributes) 
+            foreach (var att in customMethodAttributes)
             {
                 var builder = ToAttributeBuilder(att);
                 result.Add(builder);

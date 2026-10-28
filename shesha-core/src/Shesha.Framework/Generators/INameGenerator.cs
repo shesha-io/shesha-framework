@@ -6,7 +6,7 @@ namespace Shesha.Generators
     public interface INameGenerator
     {
         string AutoGeneratorDbSchema { get; set; }
-        
+
         int MaxLenght { get; set; }
 
         GeneratorMaxLengthActionEnum MaxLengthAction { get; set; }

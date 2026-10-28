@@ -7,7 +7,9 @@ using Abp.Reflection;
 using Abp.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using NHibernate;
+using Shesha.Authorization;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.TypeFinder;
 using Shesha.Extensions;
 using Shesha.Migrations;
@@ -15,8 +17,6 @@ using Shesha.Mvc;
 using Shesha.NHibernate.Maps;
 using Shesha.NHibernate.Session;
 using Shesha.Reflection;
-using Shesha.Authorization;
-using Shesha.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +29,7 @@ namespace Shesha.Services
     /// NHibernate application service
     /// </summary>
     [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance, PermissionNames.Application_Configure, IsConfigurable = false)]
-    public class NHibernateAppService: IApplicationService
+    public class NHibernateAppService : IApplicationService
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly INhCurrentSessionContext _currentSessionContext;
@@ -72,7 +72,7 @@ namespace Shesha.Services
 
                 foreach (var type in types)
                 {
-                    TryFetch(type, e => errors.Add(type, e));                    
+                    TryFetch(type, e => errors.Add(type, e));
                 }
 
                 var typesToMap = errors.Select(e => e.Key).Where(t => !(t.Namespace ?? "").StartsWith("Abp") && !t.HasAttribute<ImMutableAttribute>()).ToList();
@@ -83,7 +83,7 @@ namespace Shesha.Services
                 var grouppedMigrations = grupped.Select(g => new { Prefix = g.Key, Migration = migrationGenerator.GenerateMigrations(g.Value) })
                     .ToList();
 
-                
+
                 return migration;
             }
             catch (Exception)
@@ -94,7 +94,7 @@ namespace Shesha.Services
 
         [HttpGet]
         [DontWrapResult]
-        public string GenerateMigration(string entityType) 
+        public string GenerateMigration(string entityType)
         {
             var typeFinder = StaticContext.IocManager.Resolve<ITypeFinder>();
             var type = typeFinder.Find(t => t.FullName == entityType).Single();
@@ -109,17 +109,17 @@ namespace Shesha.Services
         /// </summary>
         [HttpGet]
         [DontWrapResult]
-        public void TestEntity(string entityType) 
+        public void TestEntity(string entityType)
         {
             var typeFinder = StaticContext.IocManager.Resolve<IShaTypeFinder>();
             var type = typeFinder.Find(t => t.FullName == entityType).Single();
-            TryFetch(type, e => 
+            TryFetch(type, e =>
             {
                 throw e;
             });
         }
 
-        private void TryFetch(Type type, Action<Exception> onException) 
+        private void TryFetch(Type type, Action<Exception> onException)
         {
             var sessionFactory = StaticContext.IocManager.Resolve<ISessionFactory>();
 
@@ -133,7 +133,7 @@ namespace Shesha.Services
                 }
                 catch (Exception e)
                 {
-                    onException.Invoke(e);                    
+                    onException.Invoke(e);
                 }
                 uow.Complete();
             }

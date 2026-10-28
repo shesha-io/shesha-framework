@@ -12,7 +12,7 @@ namespace Shesha
     public class SheshaFrameworkInitializationFromDB : IInitializatorFromDb, ITransientDependency
     {
         public readonly IIocManager _ioc;
-        public SheshaFrameworkInitializationFromDB(IIocManager ioc) 
+        public SheshaFrameworkInitializationFromDB(IIocManager ioc)
         {
             _ioc = ioc;
         }

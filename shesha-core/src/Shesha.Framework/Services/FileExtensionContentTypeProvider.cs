@@ -424,7 +424,7 @@ namespace Shesha.Services
         /// <param name="subpath">A file path</param>
         /// <param name="contentType">The resulting MIME type</param>
         /// <returns>True if MIME type could be determined</returns>
-        public bool TryGetContentType(string subpath, [NotNullWhen(true)]out string? contentType)
+        public bool TryGetContentType(string subpath, [NotNullWhen(true)] out string? contentType)
         {
             var extension = GetExtension(subpath);
             if (extension == null)

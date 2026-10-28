@@ -6,7 +6,7 @@ namespace Shesha.Attributes
     /// Alias of the class/property. Can be used as an identifier of type or property
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Property)]
-    public class AliasAttribute: Attribute
+    public class AliasAttribute : Attribute
     {
         /// <summary>
         /// Alias value

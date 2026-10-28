@@ -34,7 +34,7 @@ namespace Shesha.FluentMigrator.Settings
         /// If true, indicates that expression should be applied only when setting is missing in the DB
         /// </summary>
         public bool ApplyWhenMissing { get; set; }
-        
+
         public PropertyUpdateDefinition<string> Module { get; set; } = new PropertyUpdateDefinition<string>();
         public PropertyUpdateDefinition<string> Description { get; set; } = new PropertyUpdateDefinition<string>();
         public PropertyUpdateDefinition<string> Category { get; set; } = new PropertyUpdateDefinition<string>();
@@ -51,7 +51,8 @@ namespace Shesha.FluentMigrator.Settings
         {
             var exp = new PerformDBOperationExpression()
             {
-                Operation = (connection, transaction) => {
+                Operation = (connection, transaction) =>
+                {
                     var helper = new SettingsDbHelper(DbmsType, connection, transaction, QuerySchema);
 
                     var dataType = DataType.IsSet
@@ -67,7 +68,7 @@ namespace Shesha.FluentMigrator.Settings
                         throw new SheshaMigrationException($"Module must be specified for setting `{Name}`");
 
                     var existingId = helper.GetSettingId(module, Name);
-                    if (existingId != null) 
+                    if (existingId != null)
                     {
                         if (ApplyWhenMissing)
                             return;

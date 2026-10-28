@@ -46,6 +46,6 @@ namespace Shesha.Services
             var chainIds = chain.Select(u => u.Id).Delimited(" -> ");
 
             logger.Warn($"UOW ({message}): {activeUow != null}, id: {uow?.Id}, chain: {chainIds}");
-        }        
+        }
     }
 }

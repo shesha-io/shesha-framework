@@ -1,7 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Abp.Application.Services.Dto;
+﻿using Abp.Application.Services.Dto;
 using Shesha.DynamicEntities.Dtos;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Notes.Dto
 {

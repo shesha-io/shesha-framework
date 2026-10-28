@@ -21,7 +21,9 @@ namespace Shesha.FluentMigrator.ReferenceLists
 
         public override void ExecuteWith(IMigrationProcessor processor)
         {
-            var exp = new PerformDBOperationExpression() { Operation = (connection, transaction) => 
+            var exp = new PerformDBOperationExpression()
+            {
+                Operation = (connection, transaction) =>
                 {
                     var helper = new ReferenceListDbHelper(DbmsType, connection, transaction, QuerySchema);
                     var id = helper.GetReferenceListId(Namespace, Name);
@@ -32,7 +34,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
                         helper.UpdateReferenceListDescription(id, Description.Value);
                     if (NoSelectionValue.IsSet)
                         helper.UpdateReferenceListNoSelectionValue(id, NoSelectionValue.Value);
-                } 
+                }
             };
             processor.Process(exp);
         }

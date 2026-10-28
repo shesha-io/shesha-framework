@@ -9,7 +9,7 @@ namespace Shesha.StoredFiles.Dto
     /// <summary>
     /// Upload stored file input
     /// </summary>
-    public class UploadFileInput: StoredFilesInputBase
+    public class UploadFileInput : StoredFilesInputBase
     {
         /// <summary>
         /// File content
@@ -19,7 +19,7 @@ namespace Shesha.StoredFiles.Dto
         public IFormFile? File { get; set; }
 
         [MemberNotNull(nameof(File))]
-        public void EnsureFile() 
+        public void EnsureFile()
         {
             if (File == null)
                 throw new Exception($"{nameof(File)} must not be null");

@@ -8,7 +8,7 @@ namespace Shesha.ConfigurationStudio.Dtos
     /// <summary>
     /// DTO of the <see cref="ConfigurationItemRevision"/>
     /// </summary>
-    public class ConfigurationItemRevisionDto: EntityDto<Guid>
+    public class ConfigurationItemRevisionDto : EntityDto<Guid>
     {
         /// <summary>
         /// Module name
@@ -18,7 +18,7 @@ namespace Shesha.ConfigurationStudio.Dtos
         /// <summary>
         /// If true, indicates that revision is editable 
         /// </summary>
-        public bool IsEditable { get; set; }        
+        public bool IsEditable { get; set; }
 
         /// <summary>
         /// Version number
@@ -44,7 +44,7 @@ namespace Shesha.ConfigurationStudio.Dtos
         /// Indicates if the configuration JSON is compressed.
         /// </summary>
         public bool IsCompressed { get; set; }
-        
+
         /// <summary>
         /// Creation date and time
         /// </summary>

@@ -9,7 +9,7 @@ namespace Shesha.Domain
     /// Full audited entity that supports synchronization with external system
     /// </summary>
     /// <typeparam name="TId">Type of the Id</typeparam>
-    public abstract class FullAuditedEntityWithExternalSync<TId>: FullAuditedEntity<TId>
+    public abstract class FullAuditedEntityWithExternalSync<TId> : FullAuditedEntity<TId>
     {
         [MaxLength(100)]
         public virtual string ExtSysId { get; set; }

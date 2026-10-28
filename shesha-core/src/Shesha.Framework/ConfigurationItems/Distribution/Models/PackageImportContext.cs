@@ -9,7 +9,7 @@ namespace Shesha.ConfigurationItems.Distribution
     /// <summary>
     /// Configuration items import context
     /// </summary>
-    public class PackageImportContext: IConfigurationItemsImportContext
+    public class PackageImportContext : IConfigurationItemsImportContext
     {
         /// <summary>
         /// If true, indicates that modules should be created automatically if missing

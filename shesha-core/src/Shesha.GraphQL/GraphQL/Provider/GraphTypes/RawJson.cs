@@ -6,7 +6,7 @@
     public class RawJson
     {
         private object _value;
-        
+
 
         public RawJson(object value)
         {

@@ -24,11 +24,11 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
             IRepository<FrontEndApp, Guid> frontEndAppRepo,
             IRepository<NotificationTypeConfig, Guid> repository,
             IRepository<NotificationTemplate, Guid> templateRepo,
-            INotificationManager manager            
-        ) : base (repository, moduleRepo, frontEndAppRepo)
+            INotificationManager manager
+        ) : base(repository, moduleRepo, frontEndAppRepo)
         {
             _templateRepo = templateRepo;
-            _manager = manager;           
+            _manager = manager;
         }
 
         public override string ItemType => NotificationTypeConfig.ItemTypeName;
@@ -42,7 +42,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
         {
             var dbTemplates = await _templateRepo.GetAllListAsync(e => e.PartOf == item);
 
-            foreach (var templateDto in templates) 
+            foreach (var templateDto in templates)
             {
                 var dbTemplate = dbTemplates.FirstOrDefault(dbt => dbt.TitleTemplate == templateDto.TitleTemplate &&
                     dbt.BodyTemplate == templateDto.BodyTemplate &&
@@ -52,12 +52,12 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
                     // template exists - remove from the list to keep only the ones that need to be deleted
                     dbTemplates.Remove(dbTemplate);
                 }
-                else 
+                else
                 {
                     // template is missing - create
                     var template = new NotificationTemplate { PartOf = item }.CopyTemplatePropsFrom(templateDto);
                     await _templateRepo.InsertAsync(template);
-                }                    
+                }
             }
 
             // remove templates that need to be deleted
@@ -100,7 +100,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
         }
 
         private bool IdListsEqual(IList<ConfigurationItemIdentifierDto> listA, IList<ConfigurationItemIdentifierDto> listB)
-        { 
+        {
             return listA.Count == listB.Count && listA.All(listB.Contains);
         }
 

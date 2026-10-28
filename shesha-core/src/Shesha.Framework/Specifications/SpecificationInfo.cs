@@ -5,7 +5,7 @@ namespace Shesha.Specifications
     /// <summary>
     /// Stores basic information about specifications
     /// </summary>
-    public class SpecificationInfo: ISpecificationInfo
+    public class SpecificationInfo : ISpecificationInfo
     {
         /// <summary>
         /// Type of specifications
@@ -26,12 +26,12 @@ namespace Shesha.Specifications
         /// If true, indicates that this specification is available on the client (front-end application)
         /// </summary>
         public bool IsAvailableOnClient { get; set; }
-        
+
         /// <summary>
         /// Name
         /// </summary>
         public string Name { get; set; }
-        
+
         /// <summary>
         /// Friendly name
         /// </summary>

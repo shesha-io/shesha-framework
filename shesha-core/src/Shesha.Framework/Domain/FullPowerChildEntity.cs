@@ -12,7 +12,7 @@ namespace Shesha.Domain
     ///  * multi-tenancy support
     /// Note: discriminator is not included as it's not used in most cases
     /// </summary>
-    public abstract class FullPowerChildEntity: FullPowerEntity, IHasOwningEntityLink
+    public abstract class FullPowerChildEntity : FullPowerEntity, IHasOwningEntityLink
     {
         /// <summary>
         /// Owning entity ID. ID is intentionally bigger because in some cases an owner ID is set to a data table ID string
@@ -29,7 +29,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Sets owner with an entity object
         /// </summary>
-        public virtual void SetOwner<TId>(IEntity<TId> entity) where TId: notnull
+        public virtual void SetOwner<TId>(IEntity<TId> entity) where TId : notnull
         {
             var config = entity.GetType().GetEntityConfiguration();
             if (string.IsNullOrEmpty(config.TypeShortAlias))

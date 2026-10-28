@@ -9,6 +9,6 @@ namespace Shesha.DynamicEntities.Dtos
         [EnumMember(Value = "outofdate")]
         OutOfDate,
         [EnumMember(Value = "unknown")]
-        Unknown,        
+        Unknown,
     }
 }

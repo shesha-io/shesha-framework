@@ -6,7 +6,7 @@ namespace Shesha.JsonLogic.Exceptions
     /// <summary>
     /// Indicates problems during JsonLogic parsing
     /// </summary>
-    public class JsonLogicParsingFailedException: Exception
+    public class JsonLogicParsingFailedException : Exception
     {
         /// <summary>
         /// Expression whose parsing has failed

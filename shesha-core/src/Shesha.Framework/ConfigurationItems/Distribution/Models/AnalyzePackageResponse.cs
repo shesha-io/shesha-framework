@@ -8,7 +8,7 @@ namespace Shesha.ConfigurationItems.Distribution.Models
     /// </summary>
     public class AnalyzePackageResponse
     {
-        public List<PackageItemDto> Items { get; set; } = new ();
+        public List<PackageItemDto> Items { get; set; } = new();
 
         /// <summary>
         /// Package item DTO
@@ -30,12 +30,12 @@ namespace Shesha.ConfigurationItems.Distribution.Models
             public string? OverrideModule { get; set; }
         }
 
-        public enum PackageItemStatus 
+        public enum PackageItemStatus
         {
             Unchanged = 1,
             New = 2,
             Updated = 3,
             Error = 4
         }
-    }    
+    }
 }

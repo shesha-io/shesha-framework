@@ -6,11 +6,11 @@ using Shesha.Domain;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
-    public class ChartsTestAppService: SheshaAppServiceBase
-    {        
+    public class ChartsTestAppService : SheshaAppServiceBase
+    {
         private IRepository<OrganisationBase, Guid> organisationRepository;
         private IRepository<Person, Guid> personRepository;
-        public ChartsTestAppService(IRepository<OrganisationBase, Guid> _orgs, IRepository<Person, Guid> _personRep) 
+        public ChartsTestAppService(IRepository<OrganisationBase, Guid> _orgs, IRepository<Person, Guid> _personRep)
         {
             organisationRepository = _orgs;
             personRepository = _personRep;
@@ -54,7 +54,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             var organisations = organisationRepository.GetAll()
              .Take(limit)
              .ToList()
-             .GroupBy(o => timeChooser == "day"? o.CreationTime.Day : timeChooser == "month" ? o.CreationTime.Month : o.CreationTime.Year)
+             .GroupBy(o => timeChooser == "day" ? o.CreationTime.Day : timeChooser == "month" ? o.CreationTime.Month : o.CreationTime.Year)
              .ToList();
 
             if (!organisations.Any())
@@ -76,7 +76,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             }
             else if (timeChooser == "month")
             {
-                strLabels = labels.Select(m => months[m-1]).ToArray();
+                strLabels = labels.Select(m => months[m - 1]).ToArray();
             }
             else if (timeChooser == "year")
             {

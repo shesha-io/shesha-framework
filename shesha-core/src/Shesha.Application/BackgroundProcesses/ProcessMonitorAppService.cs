@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.BackgroundProcesses
 {
-    public class ProcessMonitorAppService: SheshaAppServiceBase
+    public class ProcessMonitorAppService : SheshaAppServiceBase
     {
         private readonly IProcessMonitorProvider _processMonitorProvider;
 
@@ -20,7 +20,7 @@ namespace Shesha.BackgroundProcesses
         }
 
         public async Task<ProcessState> GetProcessStateAsync(string processType, string processId)
-        { 
+        {
             var processMonitor = _processMonitorProvider.GetProcessMonitor(processType);
 
             var status = await processMonitor.GetStatusAsync(processId);
@@ -29,7 +29,7 @@ namespace Shesha.BackgroundProcesses
                 Status = ProcessStatusToText(status),
                 Log = await processMonitor.GetLogContentAsync(processId),
             };
-            return state;            
+            return state;
         }
 
         private string ProcessStatusToText(ProcessStatus status)
@@ -37,7 +37,7 @@ namespace Shesha.BackgroundProcesses
             return Enum.GetName(status)?.ToCamelCase() ?? "unknown";
         }
 
-        public async Task<string> GetStatusAsync(string processType, string processId) 
+        public async Task<string> GetStatusAsync(string processType, string processId)
         {
             var processMonitor = _processMonitorProvider.GetProcessMonitor(processType);
 
@@ -45,7 +45,7 @@ namespace Shesha.BackgroundProcesses
             return ProcessStatusToText(status);
         }
 
-        public async Task<FileStreamResult> DownloadLogFileAsync(string processType, string processId) 
+        public async Task<FileStreamResult> DownloadLogFileAsync(string processType, string processId)
         {
             var processMonitor = _processMonitorProvider.GetProcessMonitor(processType);
 
@@ -61,7 +61,7 @@ namespace Shesha.BackgroundProcesses
             {
                 FileDownloadName = logInfo.FileName,
             };
-            return result;            
+            return result;
         }
     }
 }

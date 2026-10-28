@@ -1,6 +1,6 @@
 ﻿namespace Shesha.Web.FormsDesigner.Dtos
 {
-    public class GetFormByFullNameInput: GetConfigurationItemInputBase
+    public class GetFormByFullNameInput : GetConfigurationItemInputBase
     {
         /// <summary>
         /// Module name

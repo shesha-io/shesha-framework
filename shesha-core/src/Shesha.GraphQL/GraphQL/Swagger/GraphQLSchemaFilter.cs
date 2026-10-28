@@ -18,7 +18,7 @@ namespace Shesha.GraphQL.Swagger
     /// </summary>
     public class GraphQLSchemaFilter : ISchemaFilter
     {
-        private readonly IDynamicDtoTypeBuilder _dynamicDtoTypeBuilder;        
+        private readonly IDynamicDtoTypeBuilder _dynamicDtoTypeBuilder;
 
         public GraphQLSchemaFilter(IDynamicDtoTypeBuilder dynamicDtoTypeBuilder)
         {
@@ -50,11 +50,11 @@ namespace Shesha.GraphQL.Swagger
 
             schema.Properties?.Clear();
 
-            if (isPagedResult) 
+            if (isPagedResult)
             {
                 var entityDtoType = GetDtoType(entityType);
                 var pagedResultType = typeof(PagedResultDto<>).MakeGenericType(entityDtoType);
-                    
+
                 var pagedResultProps = pagedResultType.GetProperties();
                 foreach (var property in pagedResultProps)
                 {
@@ -62,11 +62,12 @@ namespace Shesha.GraphQL.Swagger
                     schema.Properties?.Add(property.Name.ToCamelCase(), propertySchema);
                 }
                 schema.Description = "NOTE: shape of the response depends on the `properties` argument";
-            } else 
+            }
+            else
                 FillEntitySchema(schema, context, entityType);
         }
 
-        private Type GetDtoType(Type entityType) 
+        private Type GetDtoType(Type entityType)
         {
             var idType = entityType.GetEntityIdType();
             var dtoBaseType = typeof(DynamicDto<,>).MakeGenericType(entityType, idType);
@@ -76,11 +77,11 @@ namespace Shesha.GraphQL.Swagger
                 ModelType = dtoBaseType
             };
             var dtoType = AsyncHelper.RunSync(async () => await _dynamicDtoTypeBuilder.BuildDtoFullProxyTypeAsync(dtoBaseType, builderContext));
-            
+
             return dtoType;
         }
 
-        private void FillEntitySchema(IOpenApiSchema schema, SchemaFilterContext context, Type entityType) 
+        private void FillEntitySchema(IOpenApiSchema schema, SchemaFilterContext context, Type entityType)
         {
             var dtoType = GetDtoType(entityType);
 

@@ -29,7 +29,7 @@ namespace Shesha.Specifications
 
         private static SpecificationManagerState State
         {
-            get 
+            get
             {
                 if (InternalState.Value != null)
                     return InternalState.Value;
@@ -45,15 +45,16 @@ namespace Shesha.Specifications
 
         public List<Type> SpecificationTypes => ActiveSpecifications.Select(s => s.SpecificationsType).ToList();
 
-        public List<ISpecificationInfo> ActiveSpecifications {
-            get 
+        public List<ISpecificationInfo> ActiveSpecifications
+        {
+            get
             {
                 if (!State.IsEnabled)
                     return new List<ISpecificationInfo>();
 
                 var specs = _specificationsFinder.GlobalSpecifications;
                 var localSpecs = State.Stack.ToList().Select(s => s.SpecificationInfo).ToList();
-                
+
                 return specs.Union(localSpecs).ToList();
             }
         }
@@ -62,8 +63,8 @@ namespace Shesha.Specifications
         {
             var specs = GetSpecifications<T>();
             var filteredQuery = queryable;
-            
-            foreach (var spec in specs) 
+
+            foreach (var spec in specs)
             {
                 filteredQuery = filteredQuery.Where(spec.ToExpression());
             }
@@ -83,7 +84,7 @@ namespace Shesha.Specifications
 
             return specTypes.Select(si => GetSpecificationInstance<T>(si)).ToList();
         }
-        
+
         /// inheritedDoc
         public ISpecification<T> GetSpecificationInstance<T>(ISpecificationInfo specInfo)
         {
@@ -113,7 +114,7 @@ namespace Shesha.Specifications
             {
                 if (!State.Stack.TryPop(out var specificationsContext))
                     throw new Exception("Failed to remove specifications from the current context");
-                
+
                 if (specificationsContext != context)
                     throw new Exception("Wrong specifications sequence. Make sure that you dispose specification contexts in a correct sequence");
             };
@@ -125,10 +126,11 @@ namespace Shesha.Specifications
             var specifications = specificationType.SelectMany(t => SpecificationsHelper.GetSpecificationsInfo(t)).ToList();
 
             var stack = new Stack<IDisposable>();
-            foreach (var specification in specifications) 
+            foreach (var specification in specifications)
                 stack.Push(Use(specification.SpecificationsType, specification.EntityType));
 
-            return new DisposeAction(() => {
+            return new DisposeAction(() =>
+            {
                 while (stack.TryPop(out var disposable))
                     disposable.Dispose();
             });
@@ -179,7 +181,7 @@ namespace Shesha.Specifications
     /// <summary>
     /// Specifications menager state
     /// </summary>
-    public class SpecificationManagerState 
+    public class SpecificationManagerState
     {
         public ConcurrentStack<ISpecificationsContext> Stack { get; set; }
         public bool IsEnabled { get; set; }

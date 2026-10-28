@@ -61,7 +61,7 @@ namespace Shesha.Migrations.ConfigurationStudio
 
             ExecuteCsScript("20-copy permissioned_objects.sql");
 
-            Delete.Table("Frwk_PermissionedObjects");            
+            Delete.Table("Frwk_PermissionedObjects");
         }
 
         private void ExecuteCsScript(string script)

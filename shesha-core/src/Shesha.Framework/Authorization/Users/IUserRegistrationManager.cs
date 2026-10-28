@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using Abp.Domain.Services;
+﻿using Abp.Domain.Services;
+using System.Threading.Tasks;
 
 namespace Shesha.Authorization.Users
 {

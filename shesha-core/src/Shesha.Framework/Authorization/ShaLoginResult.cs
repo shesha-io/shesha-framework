@@ -16,7 +16,7 @@ namespace Shesha.Authorization
 
         public ClaimsIdentity? Identity { get; private set; }
 
-        [MemberNotNullWhen(true, nameof(Identity))]   
+        [MemberNotNullWhen(true, nameof(Identity))]
         public bool IsSuccess => Result == ShaLoginResultType.Success;
 
         public ShaLoginResult(ShaLoginResultType result, AbpTenantBase? tenant = null, TUser? user = null)

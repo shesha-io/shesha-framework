@@ -120,8 +120,9 @@ namespace Shesha.EntityHistory
 
             if (change.Entity != null)
                 changeSet.ParentEntity = (E)change.Entity;
-            if (change.NewValue != null) {
-                changeSet.ChildEntity = (T) change.NewValue;
+            if (change.NewValue != null)
+            {
+                changeSet.ChildEntity = (T)change.NewValue;
                 return CreateManyToManyAddRelationEvent(changeSet);
             }
             if (change.OldValue != null)

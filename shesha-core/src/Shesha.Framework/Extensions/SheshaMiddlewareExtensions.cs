@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Shesha.ConfigurationItems;
 using Shesha.DynamicEntities.Middleware;
-using System.Threading.Tasks;
 using Shesha.Ioc;
+using System.Threading.Tasks;
 
 namespace Shesha.Extensions
 {

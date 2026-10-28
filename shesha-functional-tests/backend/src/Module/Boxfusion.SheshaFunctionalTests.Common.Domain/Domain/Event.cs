@@ -7,7 +7,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {
     [Entity(TypeShortAlias = "SheshaFunctionalTests.Event")]
 
-    public class Event: FullAuditedEntity<Guid>
+    public class Event : FullAuditedEntity<Guid>
     {
 
         public virtual string Title { get; set; }

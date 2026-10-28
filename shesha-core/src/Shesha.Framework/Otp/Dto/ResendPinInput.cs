@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Otp.Dto
 {
-    public class ResendPinInput: IResendPinInput
+    public class ResendPinInput : IResendPinInput
     {
         /// <summary>
         /// Unique runtime identifier of the operation

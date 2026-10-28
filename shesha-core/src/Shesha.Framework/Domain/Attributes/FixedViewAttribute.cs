@@ -6,7 +6,7 @@ namespace Shesha.Domain.Attributes
     /// Specifies fixed view configuration for the destination entity
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class FixedViewAttribute: Attribute
+    public class FixedViewAttribute : Attribute
     {
         /// <summary>
         /// View type

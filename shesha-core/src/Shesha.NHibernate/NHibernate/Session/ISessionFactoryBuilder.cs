@@ -12,6 +12,6 @@ namespace Shesha.NHibernate.Session
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        ISessionFactory BuildSessionFactory(global::NHibernate.Cfg.Configuration configuration);        
+        ISessionFactory BuildSessionFactory(global::NHibernate.Cfg.Configuration configuration);
     }
 }

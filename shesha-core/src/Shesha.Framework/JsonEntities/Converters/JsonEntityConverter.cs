@@ -23,8 +23,8 @@ namespace Shesha.JsonEntities.Converters
             var _className = jObj.ContainsKey(classNameProp)
                 ? jObj.GetValue(classNameProp)?.ToString()
                 : null;
-            
-            var classNameObjectType = _className != null 
+
+            var classNameObjectType = _className != null
                 ? StaticContext.IocManager.Resolve<ITypeFinder>().Find(t => t.FullName == _className).FirstOrDefault()
                 : objectType;
 

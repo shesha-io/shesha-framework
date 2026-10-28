@@ -49,12 +49,12 @@ namespace Shesha.DynamicEntities
             var result = await (await _entityPropertyValueRepository.GetAllAsync())
                 .Where(x => x.EntityProperty.Id == property.Id && x.OwnerId == entity.Id.ToString() && x.OwnerType == config.TypeShortAlias)
                 .OrderByDescending(x => x.CreationTime).FirstOrDefaultAsync();
-                
+
             return result?.Value;
         }
 
         // todo: get IsVersioned flag from the EntityPropertyDto
-        public async Task SetValueAsync<TId>(IEntity<TId> entity, EntityPropertyDto property, string value, bool createNewVersion) where TId: notnull
+        public async Task SetValueAsync<TId>(IEntity<TId> entity, EntityPropertyDto property, string value, bool createNewVersion) where TId : notnull
         {
             var config = entity.GetType().GetEntityConfiguration();
 
@@ -68,9 +68,10 @@ namespace Shesha.DynamicEntities
 
             if (createNewVersion || prop == null)
             {
-                prop = new EntityPropertyValue() { 
-                    Value = value, 
-                    EntityProperty = await _entityPropertyRepository.GetAsync(property.Id) 
+                prop = new EntityPropertyValue()
+                {
+                    Value = value,
+                    EntityProperty = await _entityPropertyRepository.GetAsync(property.Id)
                 };
                 prop.SetOwner(entity);
             }
@@ -110,8 +111,8 @@ namespace Shesha.DynamicEntities
             });
         }
 
-        public async Task MapPropertiesAsync<TId, TDynamicDto>(IEntity<TId> entity, TDynamicDto dto, 
-            Func<IEntity<TId>, TDynamicDto, EntityPropertyDto, PropertyInfo, Task> action) where TDynamicDto: notnull
+        public async Task MapPropertiesAsync<TId, TDynamicDto>(IEntity<TId> entity, TDynamicDto dto,
+            Func<IEntity<TId>, TDynamicDto, EntityPropertyDto, PropertyInfo, Task> action) where TDynamicDto : notnull
         {
             var dynamicProperties = (await DtoTypeBuilder.GetEntityPropertiesAsync(entity.GetType()))
                 .Where(p => p.Source == MetadataSourceType.UserDefined).ToList();
@@ -145,9 +146,9 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        public async Task<object?> GetPropertyAsync(object entity, string propertyName) 
+        public async Task<object?> GetPropertyAsync(object entity, string propertyName)
         {
-            try 
+            try
             {
                 if (entity == null)
                     return null;
@@ -161,7 +162,7 @@ namespace Shesha.DynamicEntities
                 var result = genericGetterMethod.Invoke(this, [entity, propertyName]).ForceCastAs<Task<object>>();
                 return await result;
             }
-            catch (Exception) 
+            catch (Exception)
             {
                 throw;
             }
@@ -182,7 +183,7 @@ namespace Shesha.DynamicEntities
                 return null;
 
             Type? simpleType = null;
-            switch (dynamicProperty.DataType) 
+            switch (dynamicProperty.DataType)
             {
                 case DataTypes.EntityReference:
                     {
@@ -209,7 +210,7 @@ namespace Shesha.DynamicEntities
                     break;
                 case DataTypes.Number:
                     {
-                        switch (dynamicProperty.DataFormat) 
+                        switch (dynamicProperty.DataFormat)
                         {
                             case NumberFormats.Int32:
                                 simpleType = typeof(int?);

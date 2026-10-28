@@ -1,15 +1,15 @@
-﻿using System;
-using FluentMigrator;
+﻿using FluentMigrator;
+using System;
 
 namespace Shesha.Migrations.Abp
 {
     [Migration(20200604120500), MsSqlOnly]
-    public class M20200604120500: Migration
+    public class M20200604120500 : Migration
     {
         public override void Up()
         {
             Alter.Table("AbpUsers").AddColumn("LastLoginDate").AsDateTime().Nullable();
-            
+
             Execute.Sql(
 @"update 
 	AbpUsers 

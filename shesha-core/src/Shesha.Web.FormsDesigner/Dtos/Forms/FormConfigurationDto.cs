@@ -10,7 +10,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
     /// <summary>
     /// Form configuration DTO
     /// </summary>
-    public class FormConfigurationDto: EntityDto<Guid>, IConfigurationItemDto
+    public class FormConfigurationDto : EntityDto<Guid>, IConfigurationItemDto
     {
         /// <summary>
         /// Module Id

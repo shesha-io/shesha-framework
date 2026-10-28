@@ -10,11 +10,11 @@ namespace Shesha.JsonEntities
         string __className;
 
         public virtual string _className
-        { 
+        {
             get
             {
                 return __className ??= this.GetType().GetRequiredFullName();
-            } 
+            }
         }
 
         public virtual string GetJson()

@@ -6,7 +6,7 @@ namespace Shesha.Domain
 {
     [Table("vw_Frwk_EntityChangeAuditLogs")]
     [ImMutable]
-    public class EntityChangeAuditLog: Entity<long>
+    public class EntityChangeAuditLog : Entity<long>
     {
         /// <summary>
         /// The Id of the Entity of the property that is audited
@@ -20,7 +20,7 @@ namespace Shesha.Domain
         /// <summary>
         /// The value of the property before the change
         /// </summary>
-        public virtual string? OriginalValue { get; protected set; } 
+        public virtual string? OriginalValue { get; protected set; }
 
         /// <summary>
         /// The value of the property after the change

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Shesha.UserManagements.Configurations
 {
     [Category("User Management")]
-    public interface IUserManagementSettings: ISettingAccessors
+    public interface IUserManagementSettings : ISettingAccessors
     {
         /// <summary>
         /// User Management Settings

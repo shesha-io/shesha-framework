@@ -19,6 +19,6 @@
             Subject = new PropertyUpdateDefinition<string>();
             SendType = new PropertyUpdateDefinition<NotificationSendType>();
             BodyFormat = new PropertyUpdateDefinition<NotificationTemplateType>();
-    }
+        }
     }
 }

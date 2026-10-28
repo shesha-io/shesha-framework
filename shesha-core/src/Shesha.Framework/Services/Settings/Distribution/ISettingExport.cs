@@ -6,7 +6,7 @@ namespace Shesha.Services.Settings.Distribution
     /// <summary>
     /// Setting export
     /// </summary>
-    public interface ISettingExport: IConfigurableItemExport<SettingConfiguration>
+    public interface ISettingExport : IConfigurableItemExport<SettingConfiguration>
     {
     }
 }

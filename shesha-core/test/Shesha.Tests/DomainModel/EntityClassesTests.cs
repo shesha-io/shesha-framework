@@ -13,7 +13,7 @@ namespace Shesha.Tests.DomainModel
         public EntityClassesTests(SqlServerFixture fixture) : base(fixture)
         {
         }
-        
+
         [Fact]
         public void EntityProperties_ShouldBeVirtual()
         {

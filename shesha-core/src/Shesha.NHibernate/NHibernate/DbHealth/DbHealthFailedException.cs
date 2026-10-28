@@ -7,11 +7,11 @@ namespace Shesha.NHibernate.DbHealth
     /// <summary>
     /// DB Health check failed exception
     /// </summary>
-    public class DbHealthFailedException: Exception
+    public class DbHealthFailedException : Exception
     {
         public List<string> Issues { get; private set; }
 
-        public DbHealthFailedException(List<string> issues): base("Database health check failed")
+        public DbHealthFailedException(List<string> issues) : base("Database health check failed")
         {
             Issues = issues;
         }
@@ -32,7 +32,7 @@ namespace Shesha.NHibernate.DbHealth
         public override string ToString()
         {
             var text = new StringBuilder();
-            
+
             AppendDetails(text);
 
             return text.ToString();

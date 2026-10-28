@@ -20,7 +20,7 @@ namespace Shesha.Settings
     {
         private readonly ITypeFinder _typeFinder;
         private readonly IIocManager _iocManager;
-        private readonly IModuleManager _moduleManager;        
+        private readonly IModuleManager _moduleManager;
 
         protected Lazy<IDictionary<SettingIdentifier, SettingDefinition>> SettingDefinitions { get; }
 
@@ -35,9 +35,9 @@ namespace Shesha.Settings
 
         protected virtual IDictionary<SettingIdentifier, SettingDefinition> CreateSettingDefinitions()
         {
-            var definitionProvidersTypes = _typeFinder.Find(t => t.IsPublic && 
-                    !t.IsAbstract && 
-                    !t.IsGenericType && 
+            var definitionProvidersTypes = _typeFinder.Find(t => t.IsPublic &&
+                    !t.IsAbstract &&
+                    !t.IsGenericType &&
                     typeof(ISettingDefinitionProvider).IsAssignableFrom(t) &&
                     _iocManager.IsRegistered(t)
                 ).ToList();
@@ -94,7 +94,7 @@ namespace Shesha.Settings
                 throw new ArgumentException($"Setting name can not be empty or null or whitespace.", nameof(name));
             var type = GetTypeFromName(dataType);
 
-            object? convertedDefaultValue = value == null && type.IsValueType 
+            object? convertedDefaultValue = value == null && type.IsValueType
                 ? Activator.CreateInstance(type)
                 : ConvertToType(value, type);
 
@@ -109,7 +109,7 @@ namespace Shesha.Settings
             SettingDefinition setting = (SettingDefinition)constructor.Invoke([name, convertedDefaultValue, name]);
 
             setting.ModuleName = module;
-            
+
             var moduleInfo = _moduleManager.GetModuleInfos().FirstOrDefault(m => m.Name == module);
             setting.ModuleAccessor = moduleInfo?.GetModuleAccessor();
 

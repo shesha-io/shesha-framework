@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using NHibernate.Engine;
 using NHibernate.Id;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Shesha.NHibernate.Generators
 {

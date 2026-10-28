@@ -65,7 +65,7 @@ namespace Shesha.NHibernate.Uow
         /// <param name="unitOfWork"></param>
         /// <param name="session"></param>
         /// <returns></returns>
-        private bool SkipProcessing(IUnitOfWork unitOfWork, [NotNullWhen(false)]out ISession? session)
+        private bool SkipProcessing(IUnitOfWork unitOfWork, [NotNullWhen(false)] out ISession? session)
         {
             session = unitOfWork is NhUnitOfWork nhUnitOwWork
                 ? nhUnitOwWork.GetSessionOrNull(false)

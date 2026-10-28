@@ -14,7 +14,7 @@ namespace Shesha.ConfigurationItems.Events
     {
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly IConfigurationItemHelper _ciHelper;
-        private readonly IUnitOfWorkManager _uowManager;        
+        private readonly IUnitOfWorkManager _uowManager;
 
         public ConfigurationChangesCollectedEventHandler(IConfigurationFrameworkRuntime cfRuntime, IConfigurationItemHelper ciHelper, IUnitOfWorkManager uowManager)
         {
@@ -30,7 +30,7 @@ namespace Shesha.ConfigurationItems.Events
             if (!updates.Any())
                 return;
 
-            using (_cfRuntime.DisableConfigurationTracking()) 
+            using (_cfRuntime.DisableConfigurationTracking())
             {
                 using (var uow = _uowManager.Begin(TransactionScopeOption.RequiresNew))
                 {

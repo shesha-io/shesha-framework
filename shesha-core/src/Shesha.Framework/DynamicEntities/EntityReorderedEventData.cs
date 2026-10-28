@@ -9,7 +9,7 @@ namespace Shesha.DynamicEntities
     /// This type of event can be used to notify just after reordering of a list of Entities.
     /// </summary>
     [Serializable]
-    public class EntityReorderedEventData<TEntity, TId>: EventData where TEntity: IEntity<TId>
+    public class EntityReorderedEventData<TEntity, TId> : EventData where TEntity : IEntity<TId>
     {
         public Type EntityType { get; private set; }
         public List<TId> Ids { get; private set; }

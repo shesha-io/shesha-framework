@@ -7,7 +7,7 @@ using System;
 namespace Shesha.Email
 {
     [Obsolete("To be removed")]
-    public class SmtpEmailSenderSettings: ISmtpEmailSenderConfiguration, ITransientDependency
+    public class SmtpEmailSenderSettings : ISmtpEmailSenderConfiguration, ITransientDependency
     {
         /// <summary>
         /// Reference to the current Session.

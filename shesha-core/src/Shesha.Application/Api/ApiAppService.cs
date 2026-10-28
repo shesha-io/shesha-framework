@@ -20,7 +20,7 @@ namespace Shesha.Api
     /// API application service
     /// </summary>
     [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, IsConfigurable = false)]
-    public class ApiAppService: SheshaAppServiceBase//, IApiAppService
+    public class ApiAppService : SheshaAppServiceBase//, IApiAppService
     {
         private readonly IApiDescriptionGroupCollectionProvider _apiDescriptionsProvider;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
@@ -54,13 +54,13 @@ namespace Shesha.Api
 
                 return desc is ControllerActionDescriptor actionDescriptor
                     ? verbs.Select(v => new ApiEndpointInfo
-                        {
-                            HttpVerb = v.ToLower(),
-                            Url = "/" + desc.AttributeRouteInfo?.Template?.TrimStart('/'),
+                    {
+                        HttpVerb = v.ToLower(),
+                        Url = "/" + desc.AttributeRouteInfo?.Template?.TrimStart('/'),
 
-                            ActionName = actionDescriptor.ActionName,
-                            ControllerName = actionDescriptor.ControllerName,
-                        })
+                        ActionName = actionDescriptor.ActionName,
+                        ControllerName = actionDescriptor.ControllerName,
+                    })
                     : new List<ApiEndpointInfo>();
             })
                 .Where(i => !string.IsNullOrWhiteSpace(i.Url))
@@ -78,7 +78,7 @@ namespace Shesha.Api
         [HttpGet]
         public async Task<string> ShutdownAsync()
         {
-            _applicationLifetime. StopApplication();
+            _applicationLifetime.StopApplication();
             return await Task.FromResult("Done");
         }
     }

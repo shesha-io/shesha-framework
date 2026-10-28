@@ -43,8 +43,9 @@ namespace Shesha.ConfigurationItems.Exceptions
             Code = 404;
         }
 
-        public override string Message {
-            get 
+        public override string Message
+        {
+            get
             {
                 var fullName = !string.IsNullOrWhiteSpace(Module)
                     ? $"{Module}\\{Name}"
@@ -52,7 +53,7 @@ namespace Shesha.ConfigurationItems.Exceptions
                 return !string.IsNullOrWhiteSpace(FrontEndApplication)
                     ? $"{ItemType} `{fullName}` not found for the `{FrontEndApplication}` application"
                     : $"{ItemType} `{fullName}` not found";
-            } 
+            }
         }
     }
 }

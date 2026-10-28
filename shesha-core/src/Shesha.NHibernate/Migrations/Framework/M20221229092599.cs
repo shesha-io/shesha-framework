@@ -30,7 +30,7 @@ from
 
             Execute.Sql("create unique index uq_Frwk_FrontEndApps_Name on Frwk_FrontEndApps(AppKey) where IsDeleted=0");
 
-            Alter.Table("Frwk_ConfigurationItems").AddForeignKeyColumn("ApplicationId", "Frwk_FrontEndApps");            
+            Alter.Table("Frwk_ConfigurationItems").AddForeignKeyColumn("ApplicationId", "Frwk_FrontEndApps");
         }
     }
 }

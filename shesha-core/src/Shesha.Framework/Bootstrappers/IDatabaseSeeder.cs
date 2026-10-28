@@ -6,7 +6,7 @@ namespace Shesha.Bootstrappers
     /// <summary>
     /// Seed the database (execute migration, bootstrappers, initialisatons)
     /// </summary>
-    public interface IDatabaseSeeder: IDisposable
+    public interface IDatabaseSeeder : IDisposable
     {
         /// <summary>
         /// 1 stage - migrate the DB

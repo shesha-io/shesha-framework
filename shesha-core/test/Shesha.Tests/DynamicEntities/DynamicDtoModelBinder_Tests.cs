@@ -169,7 +169,7 @@ namespace Shesha.Tests.DynamicEntities
             var mockDtoBuilder = await GetDtoBuilderAsync(schemaResourceName);
 
             var binder = CreateBinder(new[] { inputFormatter }, mockDtoBuilder);
-            
+
 
             // Act
             await binder.BindModelAsync(bindingContext);

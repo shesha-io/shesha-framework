@@ -34,7 +34,7 @@ namespace Shesha.DbActions
             throw new System.NotImplementedException();
         }
 
-        public void CreateEntityReferenceColumn(string tableName,string name, string primaryTableName, string primaryColumnName)
+        public void CreateEntityReferenceColumn(string tableName, string name, string primaryTableName, string primaryColumnName)
         {
             throw new System.NotImplementedException();
         }

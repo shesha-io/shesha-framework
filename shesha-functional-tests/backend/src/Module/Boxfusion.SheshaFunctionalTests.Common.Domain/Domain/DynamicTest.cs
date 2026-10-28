@@ -17,7 +17,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         public FormIdentifier FormIdFullName { get; set; }
     }
 
-    public class JsonObject: JsonEntity
+    public class JsonObject : JsonEntity
     {
         public string Subject { get; set; }
     }

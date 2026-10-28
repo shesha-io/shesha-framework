@@ -3,7 +3,7 @@
     /// <summary>
     /// Setting definition provider
     /// </summary>
-    public interface IOrderedSettingDefinitionProvider: ISettingDefinitionProvider
+    public interface IOrderedSettingDefinitionProvider : ISettingDefinitionProvider
     {
         /// <summary>
         /// Order of the provider

@@ -23,10 +23,10 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         public bool ExportDependencies { get; set; }
 
         private readonly IIocManager _iocManager;
-        
+
         private readonly Dictionary<Type, IConfigurableItemExport?> _exporters = new Dictionary<Type, IConfigurableItemExport?>();
 
-        public IConfigurableItemExport? GetExporter(ConfigurationItem item) 
+        public IConfigurableItemExport? GetExporter(ConfigurationItem item)
         {
             var itemType = item.GetType().StripCastleProxyType();
 
@@ -36,7 +36,7 @@ namespace Shesha.ConfigurationItems.Distribution.Models
             exporter = _iocManager.GetItemExporter(itemType);
             _exporters[itemType] = exporter;
 
-            return exporter;            
+            return exporter;
         }
 
         public PreparePackageContext(IList<ConfigurationItem> items, IIocManager iocManager)
@@ -44,8 +44,8 @@ namespace Shesha.ConfigurationItems.Distribution.Models
             _iocManager = iocManager;
             Items = items;
         }
-        public PreparePackageContext(IList<ConfigurationItem> items) : this(items, StaticContext.IocManager) 
-        { 
+        public PreparePackageContext(IList<ConfigurationItem> items) : this(items, StaticContext.IocManager)
+        {
         }
     }
 }

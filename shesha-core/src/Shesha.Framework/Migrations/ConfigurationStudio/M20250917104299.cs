@@ -51,15 +51,15 @@ WHERE
 
             Execute.Sql("delete from frwk.reference_list_items where reference_list_id is null");
 
-			Delete.ForeignKey("fk_reference_list_items_reference_list_id").OnTable("reference_list_items").InSchema("frwk");
-			Delete.Index("IX_reference_list_items_reference_list_id").OnTable("reference_list_items").InSchema("frwk");
+            Delete.ForeignKey("fk_reference_list_items_reference_list_id").OnTable("reference_list_items").InSchema("frwk");
+            Delete.Index("IX_reference_list_items_reference_list_id").OnTable("reference_list_items").InSchema("frwk");
 
             IfDatabase("PostgreSql").Execute.Sql(@"drop view frwk.vw_reference_list_item_values");
             Alter.Column("reference_list_id").OnTable("reference_list_items").InSchema("frwk").AsGuid().NotNullable().Indexed();
 
             Create.ForeignKey("fk_reference_list_items_reference_list_id")
-				.FromTable("reference_list_items").InSchema("frwk").ForeignColumn("reference_list_id")
-				.ToTable("reference_lists").InSchema("frwk").PrimaryColumn("id");
+                .FromTable("reference_list_items").InSchema("frwk").ForeignColumn("reference_list_id")
+                .ToTable("reference_lists").InSchema("frwk").PrimaryColumn("id");
 
             Delete.ForeignKey("fk_reference_list_items_reference_list_revision_id").OnTable("reference_list_items").InSchema("frwk");
             Delete.Index("IX_reference_list_items_reference_list_revision_id").OnTable("reference_list_items").InSchema("frwk");

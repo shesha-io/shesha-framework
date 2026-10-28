@@ -13,7 +13,7 @@ namespace Shesha.Domain
     /// </summary>
     [SnakeCaseNaming]
     [Table("setting_values", Schema = "frwk")]
-    public class SettingValue: AuditedEntity<Guid>, IMayHaveFrontEndApplication, IMayHaveUser
+    public class SettingValue : AuditedEntity<Guid>, IMayHaveFrontEndApplication, IMayHaveUser
     {
         /// <summary>
         /// Setting definition

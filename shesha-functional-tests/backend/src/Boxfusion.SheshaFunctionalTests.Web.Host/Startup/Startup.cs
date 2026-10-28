@@ -1,7 +1,6 @@
 using Abp.AspNetCore;
 using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
-using Abp.Extensions;
 using Abp.PlugIns;
 using Castle.Facilities.Logging;
 using ElmahCore.Mvc;
@@ -13,7 +12,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -24,12 +22,10 @@ using Shesha.Authentication;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
-using Shesha.DynamicEntities.Swagger;
 using Shesha.Elmah;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.GraphQL;
-using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
 using Shesha.Notifications;
 using Shesha.Notifications.SMS;
@@ -48,67 +44,68 @@ using System.Reflection;
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {
     public class Startup
-	{
-		private readonly IConfigurationRoot _appConfiguration;
-		private readonly IWebHostEnvironment _hostEnvironment;
+    {
+        private readonly IConfigurationRoot _appConfiguration;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-		public Startup(IWebHostEnvironment hostEnvironment)
-		{
-			_appConfiguration = hostEnvironment.GetAppConfiguration();
-			_hostEnvironment = hostEnvironment;
-		}
+        public Startup(IWebHostEnvironment hostEnvironment)
+        {
+            _appConfiguration = hostEnvironment.GetAppConfiguration();
+            _hostEnvironment = hostEnvironment;
+        }
 
-		public void ConfigureServices(IServiceCollection services)
-		{
-			services.UseDynamicWebApi();
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.UseDynamicWebApi();
 
             services.Configure<IISServerOptions>(options =>
-			{
-				options.AllowSynchronousIO = true;
-			});
-            
+            {
+                options.AllowSynchronousIO = true;
+            });
+
             services.AddSheshaElmah(_appConfiguration);
 
             services.AddSheshaRateLimiting(opts => _appConfiguration.GetSection("RateLimiting").Bind(opts));
 
             services.AddMvcCore(options =>
-			{
-				options.EnableEndpointRouting = false;
-				options.Conventions.Add(new Shesha.Swagger.ApiExplorerGroupPerControllerConvention());
+            {
+                options.EnableEndpointRouting = false;
+                options.Conventions.Add(new Shesha.Swagger.ApiExplorerGroupPerControllerConvention());
 
                 options.EnableDynamicDtoBinding();
-				options.AddDynamicAppServices(services);
+                options.AddDynamicAppServices(services);
 
                 options.Filters.AddService(typeof(SheshaAuthorizationFilter));
                 options.Filters.AddService(typeof(SheshaExceptionFilter), order: 1);
                 options.Filters.AddService(typeof(SpecificationsActionFilter), order: 1);
             })
             .AddApiExplorer()
-			.AddDataAnnotations()
+            .AddDataAnnotations()
             .AddNewtonsoftJson(options =>
             {
                 options.UseCamelCasing(true);
             });
 
-			IdentityRegistrar.Register(services);
-			AuthConfigurer.Configure(services, _appConfiguration);
+            IdentityRegistrar.Register(services);
+            AuthConfigurer.Configure(services, _appConfiguration);
 
-			services.AddSignalR(options => { 
-				options.EnableDetailedErrors = true;
-			});
+            services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true;
+            });
 
-			services.AddCors();
-			
-			AddApiVersioning(services);
+            services.AddCors();
 
-			services.AddHttpContextAccessor();
+            AddApiVersioning(services);
+
+            services.AddHttpContextAccessor();
 
 
             services.AddTransient<INotificationChannelSender, EmailChannelSender>();
             services.AddTransient<INotificationChannelSender, SmsChannelSender>();
 
             services.AddHangfire(config =>
-			{
+            {
                 var dbms = _appConfiguration.GetDbmsType();
                 var connStr = _appConfiguration.GetDefaultConnectionString();
 
@@ -121,134 +118,136 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
                         }
                     case DbmsType.PostgreSQL:
                         {
-                            config.UsePostgreSqlStorage(options => {
-								options.UseNpgsqlConnection(connStr);
+                            config.UsePostgreSqlStorage(options =>
+                            {
+                                options.UseNpgsqlConnection(connStr);
                             });
                             break;
                         }
                 }
             });
-			services.AddHangfireServer(config => {
+            services.AddHangfireServer(config =>
+            {
             });
 
-			// add Shesha GraphQL
-			services.AddSheshaGraphQL();
+            // add Shesha GraphQL
+            services.AddSheshaGraphQL();
 
-			// Add ABP and initialize 
-			// Configure Abp and Dependency Injection
-			services.AddAbpWithoutCreatingServiceProvider<SheshaWebHostModule>(
-				options =>
-				{
-					// Configure Log4Net logging
-					options.IocManager.IocContainer.AddFacility<LoggingFacility>(f => f.UseAbpLog4Net().WithConfig("log4net.config"));
+            // Add ABP and initialize 
+            // Configure Abp and Dependency Injection
+            services.AddAbpWithoutCreatingServiceProvider<SheshaWebHostModule>(
+                options =>
+                {
+                    // Configure Log4Net logging
+                    options.IocManager.IocContainer.AddFacility<LoggingFacility>(f => f.UseAbpLog4Net().WithConfig("log4net.config"));
 
-					// configure plugins
-					var pluginsFolder = Path.Combine(_hostEnvironment.ContentRootPath, "Plugins");
-					if (Directory.Exists(pluginsFolder))
-						options.PlugInSources.AddFolder(Path.Combine(_hostEnvironment.ContentRootPath, "Plugins"), SearchOption.AllDirectories);
-				}
-			);
-		}
+                    // configure plugins
+                    var pluginsFolder = Path.Combine(_hostEnvironment.ContentRootPath, "Plugins");
+                    if (Directory.Exists(pluginsFolder))
+                        options.PlugInSources.AddFolder(Path.Combine(_hostEnvironment.ContentRootPath, "Plugins"), SearchOption.AllDirectories);
+                }
+            );
+        }
 
-		public void Configure(IApplicationBuilder app, IBackgroundJobClient backgroundJobs)
-		{
-			// Security headers (registered first so they apply to all responses)
-			app.UseSecurityHeaders();
+        public void Configure(IApplicationBuilder app, IBackgroundJobClient backgroundJobs)
+        {
+            // Security headers (registered first so they apply to all responses)
+            app.UseSecurityHeaders();
 
-			app.UseSheshaElmah();
+            app.UseSheshaElmah();
 
-			// note: already registered in the ABP
-			AppContextHelper.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
+            // note: already registered in the ABP
+            AppContextHelper.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
 
-			app.UseConfigurationFramework();
+            app.UseConfigurationFramework();
 
-			app.UseAbp(options =>
-			{
-				options.UseAbpRequestLocalization = false;
-			}); 
+            app.UseAbp(options =>
+            {
+                options.UseAbpRequestLocalization = false;
+            });
 
-			app.UseCors(x => x
-				.AllowAnyMethod()
-				.AllowAnyHeader()
-				.SetIsOriginAllowed(origin => true) // allow any origin
-				.AllowCredentials()); // allow credentials​
-			app.UseStaticFiles();
-			app.UseRouting();
-			app.UseRateLimiter();
-			app.UseAuthentication();
-			app.UseAbpRequestLocalization();
-			app.UseAuthorization();
+            app.UseCors(x => x
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true) // allow any origin
+                .AllowCredentials()); // allow credentials​
+            app.UseStaticFiles();
+            app.UseRouting();
+            app.UseRateLimiter();
+            app.UseAuthentication();
+            app.UseAbpRequestLocalization();
+            app.UseAuthorization();
 
-			app.UseEndpoints(endpoints =>
-			{
-				endpoints.MapControllerRoute(
-					name: "defaultWithArea",
-					pattern: "{area}/{controller=Home}/{action=Index}/{id?}");
-				endpoints.MapControllerRoute(
-					name: "default",
-					pattern: "{controller=Home}/{action=Index}/{id?}");
-				endpoints.MapHub<AbpCommonHub>("/signalr");
-				endpoints.MapControllers();
-				endpoints.MapSignalRHubs();
-			});
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "defaultWithArea",
+                    pattern: "{area}/{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<AbpCommonHub>("/signalr");
+                endpoints.MapControllers();
+                endpoints.MapSignalRHubs();
+            });
 
-			// Block access to Swagger UI when the setting is disabled
-			app.UseMiddleware<SwaggerUiAccessMiddleware>();
+            // Block access to Swagger UI when the setting is disabled
+            app.UseMiddleware<SwaggerUiAccessMiddleware>();
 
-			// Enable middleware to serve generated Swagger as a JSON endpoint
-			app.UseSwagger();
+            // Enable middleware to serve generated Swagger as a JSON endpoint
+            app.UseSwagger();
 
-			// Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
-			app.UseSwaggerUI(options =>
-			{
-				options.AddEndpointsPerService();
-				//options.SwaggerEndpoint("swagger/v1/swagger.json", "Shesha API V1");​
-				// todo: add documents per module with summary about `service:xxx` endpoints
-				//options.SwaggerEndpoint(baseUrl + "swagger/service:Meter/swagger.json", "Meter API");​
-				options.IndexStream = () => Assembly.GetExecutingAssembly()
-					.GetManifestResourceStream("Boxfusion.SheshaFunctionalTests.Web.Host.wwwroot.swagger.ui.index.html");
-			}); // URL: /swagger​
+            // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
+            app.UseSwaggerUI(options =>
+            {
+                options.AddEndpointsPerService();
+                //options.SwaggerEndpoint("swagger/v1/swagger.json", "Shesha API V1");​
+                // todo: add documents per module with summary about `service:xxx` endpoints
+                //options.SwaggerEndpoint(baseUrl + "swagger/service:Meter/swagger.json", "Meter API");​
+                options.IndexStream = () => Assembly.GetExecutingAssembly()
+                    .GetManifestResourceStream("Boxfusion.SheshaFunctionalTests.Web.Host.wwwroot.swagger.ui.index.html");
+            }); // URL: /swagger​
 
             app.UseSheshaHangfireDashboard();
-		}
+        }
 
-		private void AddApiVersioning(IServiceCollection services)
-		{
-			services.Replace(ServiceDescriptor.Singleton<IApiControllerSpecification, AbpAppServiceApiVersionSpecification>());
-			services.Configure<OpenApiInfo>(_appConfiguration.GetSection(nameof(OpenApiInfo)));
+        private void AddApiVersioning(IServiceCollection services)
+        {
+            services.Replace(ServiceDescriptor.Singleton<IApiControllerSpecification, AbpAppServiceApiVersionSpecification>());
+            services.Configure<OpenApiInfo>(_appConfiguration.GetSection(nameof(OpenApiInfo)));
 
-			services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
-			//Swagger - Enable this line and the related lines in Configure method to enable swagger UI
-			services.AddSwaggerGen(options =>
-			{
+            //Swagger - Enable this line and the related lines in Configure method to enable swagger UI
+            services.AddSwaggerGen(options =>
+            {
                 options.UseSheshaDefaults();
 
                 options.AddDocumentsPerService();
 
-				// Define the BearerAuth scheme that's in use
-				options.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme()
-				{
-					Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-					Name = "Authorization",
-					In = ParameterLocation.Header,
-					Type = SecuritySchemeType.ApiKey
-				});
-			});
-			services.Replace(ServiceDescriptor.Transient<ISwaggerProvider, CachingSwaggerProvider>());
+                // Define the BearerAuth scheme that's in use
+                options.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme()
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
+            });
+            services.Replace(ServiceDescriptor.Transient<ISwaggerProvider, CachingSwaggerProvider>());
 
-			services.AddApiVersioning(options =>
-			{
-				options.AssumeDefaultVersionWhenUnspecified = true;
-				options.DefaultApiVersion = ApiVersion.Default;
-				options.ReportApiVersions = true;
-			});
+            services.AddApiVersioning(options =>
+            {
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.DefaultApiVersion = ApiVersion.Default;
+                options.ReportApiVersions = true;
+            });
 
-			services.AddVersionedApiExplorer(options =>
-			{
-				options.GroupNameFormat = "'v'VVV";
-				options.SubstituteApiVersionInUrl = true;
-			});
-		}
+            services.AddVersionedApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
+        }
     }
 }

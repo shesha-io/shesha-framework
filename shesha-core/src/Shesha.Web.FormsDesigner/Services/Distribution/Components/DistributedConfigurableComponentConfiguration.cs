@@ -5,7 +5,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     /// <summary>
     /// Distributed form
     /// </summary>
-    public class DistributedConfigurableComponent: DistributedConfigurableItemBase
+    public class DistributedConfigurableComponent : DistributedConfigurableItemBase
     {
         /// <summary>
         /// Settings

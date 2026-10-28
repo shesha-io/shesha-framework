@@ -15,4 +15,4 @@
         /// </summary>
         public string Module { get; set; }
     }
- }
+}

@@ -6,13 +6,13 @@ namespace Shesha.Reflection
 {
     public static partial class ReflectionHelper
     {
-        public class PropertyValueAccessor 
+        public class PropertyValueAccessor
         {
             public PropertyInfo? PropInfo { get; private set; }
             public object? Parent { get; private set; }
 
             [MemberNotNullWhen(true, nameof(PropInfo), nameof(Parent))]
-            public bool IsValueAvailable => Parent != null && PropInfo!= null;
+            public bool IsValueAvailable => Parent != null && PropInfo != null;
 
             public object? Value => IsValueAvailable ? PropInfo.GetValue(Parent, null) : null;
 
@@ -23,8 +23,8 @@ namespace Shesha.Reflection
             }
         }
 
-        public class PropertyInfoWithPath 
-        { 
+        public class PropertyInfoWithPath
+        {
             /// <summary>
             /// Property info
             /// </summary>

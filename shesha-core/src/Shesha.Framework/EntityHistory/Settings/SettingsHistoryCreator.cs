@@ -27,7 +27,7 @@ namespace Shesha.EntityHistory.Settings
         public EntityChange? GetEntityChange(object entity, IAbpSession abpSession, string[] propertyNames, object[] loadedState, object[] currentState, Int32[] dirtyProps)
         {
             var setting = entity as Setting;
-            if (setting == null) 
+            if (setting == null)
                 return null;
 
             var entityChange = new EntityChange

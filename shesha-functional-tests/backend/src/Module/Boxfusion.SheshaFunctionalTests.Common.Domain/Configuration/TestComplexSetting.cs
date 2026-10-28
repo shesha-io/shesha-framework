@@ -4,7 +4,7 @@
     {
         public int SomeNumber { get; set; }
 
-        public string SomeItem { get; set; }    
+        public string SomeItem { get; set; }
 
 
         public bool IsSomething { get; set; }

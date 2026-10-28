@@ -14,7 +14,7 @@ namespace Shesha.Elmah.Domain
     [ImMutable]
     [Table("vw_referenced_errors", Schema = "elmah")]
     [SnakeCaseNaming]
-    public class ReferencedError: Entity<Guid>
+    public class ReferencedError : Entity<Guid>
     {
         public virtual string RefId { get; set; }
         public virtual string RefType { get; set; }
@@ -29,8 +29,10 @@ namespace Shesha.Elmah.Domain
         public virtual string Location { get; set; }
 
         [NotMapped]
-        public virtual string? DetailsUrl { 
-            get {
+        public virtual string? DetailsUrl
+        {
+            get
+            {
                 var linkGeneratorContext = StaticContext.IocManager.Resolve<ILinkGeneratorContext>();
                 if (linkGeneratorContext?.State == null || string.IsNullOrWhiteSpace(linkGeneratorContext.State.Host))
                     return null;
@@ -40,7 +42,7 @@ namespace Shesha.Elmah.Domain
                     : new HostString(linkGeneratorContext.State.Host);
 
                 return $"{linkGeneratorContext.State.Scheme}://{hostString}{linkGeneratorContext.State.PathBase}/elmah/detail/{ErrorId}";
-            } 
+            }
         }
     }
 }

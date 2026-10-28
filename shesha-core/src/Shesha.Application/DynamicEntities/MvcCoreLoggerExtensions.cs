@@ -26,7 +26,7 @@ namespace Shesha.DynamicEntities
         private static readonly Action<ILogger, string?, Exception?> _noInputFormatterSelected;
         private static readonly Action<ILogger, string, string?, Exception?> _removeFromBodyAttribute;
 
-        static MvcCoreLoggerExtensions ()
+        static MvcCoreLoggerExtensions()
         {
             _attemptingToBindParameterModel = LoggerMessage.Define<string?, Type, string>(
                 LogLevel.Debug,

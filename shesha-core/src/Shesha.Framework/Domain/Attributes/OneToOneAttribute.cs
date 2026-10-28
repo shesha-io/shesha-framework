@@ -6,7 +6,7 @@ namespace Shesha.Domain.Attributes
     /// Attribute for identification of many-to-many relations. 
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class OneToOneAttribute: Attribute
+    public class OneToOneAttribute : Attribute
     {
     }
 }

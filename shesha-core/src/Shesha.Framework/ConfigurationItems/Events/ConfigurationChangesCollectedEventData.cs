@@ -6,7 +6,7 @@ namespace Shesha.ConfigurationItems.Events
     /// <summary>
     /// Configuration changes collected event data. Stores information about collected configuration changes
     /// </summary>
-    public class ConfigurationChangesCollectedEventData: EventData
+    public class ConfigurationChangesCollectedEventData : EventData
     {
         public List<ConfigIdentifier> Updates { get; set; }
 

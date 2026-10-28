@@ -10,7 +10,7 @@ namespace Shesha.Extensions
         /// <summary>
         /// Set nullable
         /// </summary>
-        public static void SetNullable(this IOpenApiSchema schema, bool nullable) 
+        public static void SetNullable(this IOpenApiSchema schema, bool nullable)
         {
             if (schema is OpenApiSchema openApiSchema)
             {
@@ -25,7 +25,7 @@ namespace Shesha.Extensions
         /// Set parameter required
         /// </summary>
         public static void SetRequired(this IOpenApiParameter parameter, bool required)
-        { 
+        {
             if (parameter is OpenApiParameter openApiSchema)
             {
                 openApiSchema.Required = required;

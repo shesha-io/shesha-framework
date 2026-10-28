@@ -9,7 +9,7 @@
         public T Value { get; set; } = default!;
         public bool IsSet { get; set; }
 
-        public void Set(T value) 
+        public void Set(T value)
         {
             Value = value;
             IsSet = true;

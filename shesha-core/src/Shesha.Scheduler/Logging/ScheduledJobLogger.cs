@@ -1,9 +1,9 @@
-﻿using System;
-using System.Globalization;
-using log4net;
+﻿using log4net;
 using log4net.Core;
 using log4net.Util;
 using Shesha.Reflection;
+using System;
+using System.Globalization;
 using ILogger = Castle.Core.Logging.ILogger;
 
 namespace Shesha.Scheduler.Logging

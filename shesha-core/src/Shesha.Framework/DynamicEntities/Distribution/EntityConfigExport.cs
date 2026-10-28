@@ -67,7 +67,7 @@ namespace Shesha.DynamicEntities.Distribution
             return properties;
         }
 
-        private async Task<DistributedEntityConfigProperty> MapPropertyAsync(EntityProperty src) 
+        private async Task<DistributedEntityConfigProperty> MapPropertyAsync(EntityProperty src)
         {
             var property = new DistributedEntityConfigProperty();
             property.Name = src.Name;
@@ -83,7 +83,7 @@ namespace Shesha.DynamicEntities.Distribution
             property.Source = src.Source;
             property.SortOrder = src.SortOrder;
 
-            property.ItemsType = src.ItemsType != null 
+            property.ItemsType = src.ItemsType != null
                 ? await MapPropertyAsync(src.ItemsType)
                 : null;
             property.IsFrameworkRelated = src.IsFrameworkRelated;
@@ -102,7 +102,7 @@ namespace Shesha.DynamicEntities.Distribution
             property.CascadeUpdate = src.CascadeUpdate;
             property.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
 
-            foreach (var childProp in src.Properties) 
+            foreach (var childProp in src.Properties)
             {
                 property.Properties.Add(await MapPropertyAsync(childProp));
             }

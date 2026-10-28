@@ -5,7 +5,7 @@ namespace Shesha.NHibernate.Session
     /// <summary>
     /// Session start exception
     /// </summary>
-    public class SessionStartException: Exception
+    public class SessionStartException : Exception
     {
         public SessionStartException()
         {

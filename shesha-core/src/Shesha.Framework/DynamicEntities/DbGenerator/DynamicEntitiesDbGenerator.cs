@@ -217,7 +217,7 @@ namespace Shesha.DynamicEntities.DbGenerator
                 return;
             }
             // ToDo: AS - get Id Column and naming generator
-            if (propertyDbType.ColumnType == DbColumnTypeEnum.GenericEntityReference) 
+            if (propertyDbType.ColumnType == DbColumnTypeEnum.GenericEntityReference)
             {
                 // ToDo: AS - check columns type
                 if (force || !await _dbActions.IsColumnExistsAsync($"{columnName}_id")) // ToDo: AS - get Id Column

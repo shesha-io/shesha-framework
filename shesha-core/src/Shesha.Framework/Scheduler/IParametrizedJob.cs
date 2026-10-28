@@ -6,7 +6,7 @@ namespace Shesha.Scheduler
     /// Parametrized job
     /// </summary>
     /// <typeparam name="TParams"></typeparam>
-    public interface IParametrizedJob<TParams>: IParametrizedJob where TParams : class, new()
+    public interface IParametrizedJob<TParams> : IParametrizedJob where TParams : class, new()
     {
         /// <summary>
         /// Job parameters
@@ -14,8 +14,8 @@ namespace Shesha.Scheduler
         TParams? JobParameters { get; }
     }
 
-    public interface IParametrizedJob 
-    { 
+    public interface IParametrizedJob
+    {
         /// <summary>
         /// Read parameters from Json
         /// </summary>

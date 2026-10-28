@@ -8,7 +8,7 @@ using System.Data.Common;
 
 namespace Shesha.NHibernate.UserTypes
 {
-    internal class ConfigurationItemIdentifierUserType<TIdentifier> : ICompositeUserType where TIdentifier: ConfigurationItemIdentifier, IIdentifierFactory<TIdentifier>
+    internal class ConfigurationItemIdentifierUserType<TIdentifier> : ICompositeUserType where TIdentifier : ConfigurationItemIdentifier, IIdentifierFactory<TIdentifier>
     {
         public string[] PropertyNames => [nameof(ConfigurationItemIdentifier.Module), nameof(ConfigurationItemIdentifier.Name)];
 
@@ -57,7 +57,8 @@ namespace Shesha.NHibernate.UserTypes
                 {
                     case 0: return formId.Module;
                     case 1: return formId.Name;
-                };
+                }
+                ;
             }
             return null;
         }

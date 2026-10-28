@@ -10,7 +10,7 @@ namespace Shesha.DynamicEntities
     /// <summary>
     /// Model Configuration Manager. Provides an access to the configurable models and properties
     /// </summary>
-    public interface IModelConfigurationManager: IEntityConfigManager
+    public interface IModelConfigurationManager : IEntityConfigManager
     {
         /// <summary>
         /// Get model configuration

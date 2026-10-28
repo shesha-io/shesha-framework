@@ -14,7 +14,7 @@ namespace Shesha.GraphQL.Mvc
     /// </summary>
     public class GraphQLDataResult : JsonResult, IDynamicDataResult
     {
-        private static JsonSerializerSettings MakeSerializerSettings() 
+        private static JsonSerializerSettings MakeSerializerSettings()
         {
             var errorInfoProvider = new ErrorInfoProvider();
             return new JsonSerializerSettings

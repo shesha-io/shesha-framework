@@ -143,7 +143,7 @@ select ""Id"", ""Description"", ""Name"", ""VersionNo"", ""VersionStatusLkp"", "
 	and not exists (select 1 from data rd where rd.""Name"" = data.""Name"" and data.""CreationTime"" < rd.""CreationTime"");
 ");
 
-			IfDatabase("PostgreSql").Execute.Sql(@"DROP INDEX ""IX_Core_ShaRoles_CreatorUserId"";
+            IfDatabase("PostgreSql").Execute.Sql(@"DROP INDEX ""IX_Core_ShaRoles_CreatorUserId"";
 DROP INDEX ""IX_Core_ShaRoles_DeleterUserId"";
 DROP INDEX ""IX_Core_ShaRoles_LastModifierUserId"";
 DROP INDEX ""IX_Core_ShaRoles_TenantId"";

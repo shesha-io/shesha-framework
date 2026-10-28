@@ -52,7 +52,7 @@ namespace Shesha.Settings
 
         public abstract object? GetDefaultValue();
         public abstract Type GetValueType();
-        
+
         /// <summary>
         /// Name of the module current setting belongs to
         /// </summary>
@@ -68,7 +68,7 @@ namespace Shesha.Settings
             : Name;
     }
 
-    public class SettingDefinition<TValue>: SettingDefinition
+    public class SettingDefinition<TValue> : SettingDefinition
     {
         /// <summary>
         /// Default value
@@ -80,8 +80,8 @@ namespace Shesha.Settings
             Name = name;
             DisplayName = displayName;
         }
-        
-        public SettingDefinition(string name, TValue defaultValue, string displayName): this(name, displayName)
+
+        public SettingDefinition(string name, TValue defaultValue, string displayName) : this(name, displayName)
         {
             DefaultValue = defaultValue;
         }
@@ -91,7 +91,7 @@ namespace Shesha.Settings
             return DefaultValue;
         }
 
-        public override Type GetValueType() 
+        public override Type GetValueType()
         {
             return typeof(TValue);
         }

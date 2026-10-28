@@ -62,7 +62,7 @@ namespace Shesha.EntityHistory
         public async Task<List<EntityHistoryItemDto>> GetAuditTrailAsync(string entityId, string? moduleName, string entityType, bool includeEventsOnChildEntities)
         {
             // disable SoftDeleteFilter to allow get deleted entities
-            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete)) 
+            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
                 var itemType = await _metadataProvider.GetContainerTypeAsync(moduleName, entityType);
 
@@ -96,7 +96,7 @@ namespace Shesha.EntityHistory
                 history = history.OrderBy(x => x.CreationTime).ToList();
 
                 return history;
-            }            
+            }
         }
 
         private async Task<List<EntityHistoryItemDto>> GetChildEntitiesAuditAsync(Type itemType, string entityId)
@@ -144,7 +144,7 @@ namespace Shesha.EntityHistory
 
         private string? GetActorDisplayName(long? userId)
         {
-            if (userId == null) 
+            if (userId == null)
                 return null;
 
             var person = GetPersonByUserId(userId);
@@ -735,7 +735,7 @@ namespace Shesha.EntityHistory
 
                 foreach (var childItem in childItems)
                 {
-                    
+
                     history.Add(new EntityHistoryItemDto()
                     {
                         HistoryItemType = (int?)EntityHistoryItemType.Added,

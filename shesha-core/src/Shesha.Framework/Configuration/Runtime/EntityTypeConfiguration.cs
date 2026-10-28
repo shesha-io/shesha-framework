@@ -67,14 +67,14 @@ namespace Shesha.Configuration.Runtime
             }
         }
 
-        public void SetTypeShortAlias(string? value) 
+        public void SetTypeShortAlias(string? value)
         {
             _typeShortAlias = value;
-        }        
+        }
 
         public bool TypeShortAliasIsValid
         {
-            get 
+            get
             {
                 return string.IsNullOrEmpty(_typeShortAlias) || _typeShortAlias.Length <= _typeShortAliasMaxLength;
             }

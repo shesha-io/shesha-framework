@@ -22,7 +22,7 @@ namespace Shesha.Services.Settings.Distribution
         public SettingImport(IRepository<Module, Guid> moduleRepo,
             IRepository<FrontEndApp, Guid> frontEndAppRepo,
             IRepository<SettingConfiguration, Guid> repository,
-            IRepository<SettingValue, Guid> settingValueRepo): base(repository, moduleRepo, frontEndAppRepo)
+            IRepository<SettingValue, Guid> settingValueRepo) : base(repository, moduleRepo, frontEndAppRepo)
         {
             _settingValueRepo = settingValueRepo;
         }
@@ -76,13 +76,15 @@ namespace Shesha.Services.Settings.Distribution
 
                 if (settingValue == null)
                 {
-                    settingValue = new SettingValue { 
-                        SettingConfiguration = settingConfiguration                        
+                    settingValue = new SettingValue
+                    {
+                        SettingConfiguration = settingConfiguration
                     };
                     await MapSettingValueAsync(distributedItem, settingValue, context);
                     await _settingValueRepo.InsertAsync(settingValue);
                 }
-                else {
+                else
+                {
                     await MapSettingValueAsync(distributedItem, settingValue, context);
                     await _settingValueRepo.UpdateAsync(settingValue);
                 }

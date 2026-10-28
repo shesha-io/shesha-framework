@@ -12,7 +12,9 @@ namespace Shesha.FluentMigrator.Notifications
 
         public override void ExecuteWith(IMigrationProcessor processor)
         {
-            var exp = new PerformDBOperationExpression() { Operation = (connection, transaction) => 
+            var exp = new PerformDBOperationExpression()
+            {
+                Operation = (connection, transaction) =>
                 {
                     var helper = new NotificationDbHelper(DbmsType, connection, transaction, QuerySchema);
                     var id = helper.GetNotificationId(Namespace, Name);
@@ -21,13 +23,13 @@ namespace Shesha.FluentMigrator.Notifications
 
                     if (Description.IsSet)
                         helper.UpdateNotificationDescription(id, Description.Value);
-                } 
+                }
             };
             processor.Process(exp);
         }
 
-        public UpdateNotificationExpression(DbmsType dbmsType, IQuerySchema querySchema, string @namespace, string name) : base(dbmsType, querySchema, @namespace, name) 
-        { 
+        public UpdateNotificationExpression(DbmsType dbmsType, IQuerySchema querySchema, string @namespace, string name) : base(dbmsType, querySchema, @namespace, name)
+        {
         }
     }
 }

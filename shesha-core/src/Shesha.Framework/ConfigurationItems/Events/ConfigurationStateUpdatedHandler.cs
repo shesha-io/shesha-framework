@@ -19,7 +19,7 @@ namespace Shesha.ConfigurationItems.Events
         public async Task HandleEventAsync(ConfigurationStateUpdatedEventData eventData)
         {
             var manager = _ciHelper.GetManagerByDiscriminator(eventData.ConfigurationType);
-            
+
             var item = await manager.GetAsync(eventData.ModuleName, eventData.ItemName);
 
             await manager.SaveToRevisionAsync(item);

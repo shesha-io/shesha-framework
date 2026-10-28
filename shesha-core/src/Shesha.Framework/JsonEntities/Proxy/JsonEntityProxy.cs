@@ -69,7 +69,7 @@ namespace Shesha.JsonEntities.Proxy
             if (proxy != null) proxy._reset(json);
             return json;
         }
-        
+
         public static bool IsChanged(object? proxyObj)
         {
             if (proxyObj == null) return false;
@@ -105,7 +105,7 @@ namespace Shesha.JsonEntities.Proxy
         public virtual JObject _json { get; internal set; }
 
         [JsonIgnore]
-        public virtual Dictionary<string, JsonReference> _references { get; } = new ();
+        public virtual Dictionary<string, JsonReference> _references { get; } = new();
 
         [JsonIgnore]
         public virtual bool _isThisChanged { get; internal set; } = false;
@@ -167,7 +167,7 @@ namespace Shesha.JsonEntities.Proxy
             _json = json;
             _isInitialized = isInitialized;
             _innerChanged = null;
-            
+
             var obj = JsonEntityProxy.GetUnproxiedInstance(this);
         }
     }

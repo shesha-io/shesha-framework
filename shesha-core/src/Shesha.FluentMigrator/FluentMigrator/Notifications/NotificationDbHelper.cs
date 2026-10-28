@@ -6,9 +6,9 @@ namespace Shesha.FluentMigrator.Notifications
     /// <summary>
     /// Notification DB helper
     /// </summary>
-    internal class NotificationDbHelper: DbHelperBase
+    internal class NotificationDbHelper : DbHelperBase
     {
-        public NotificationDbHelper(DbmsType dbmsType, IDbConnection connection, IDbTransaction transaction, IQuerySchema querySchema) : base (dbmsType, connection, transaction, querySchema)
+        public NotificationDbHelper(DbmsType dbmsType, IDbConnection connection, IDbTransaction transaction, IQuerySchema querySchema) : base(dbmsType, connection, transaction, querySchema)
         {
         }
 
@@ -31,7 +31,8 @@ namespace Shesha.FluentMigrator.Notifications
            ,@namespace
 		   )";
 
-            ExecuteNonQuery(sql, command => {
+            ExecuteNonQuery(sql, command =>
+            {
                 command.AddParameter("@id", id);
                 command.AddParameter("@description", description);
                 command.AddParameter("@name", name);
@@ -42,7 +43,8 @@ namespace Shesha.FluentMigrator.Notifications
 
         internal void UpdateNotificationDescription(Guid? id, string description)
         {
-            ExecuteNonQuery("update \"Core_Notifications\" set \"Description\" = @Description where \"Id\" = @Id", command => {
+            ExecuteNonQuery("update \"Core_Notifications\" set \"Description\" = @Description where \"Id\" = @Id", command =>
+            {
                 command.AddParameter("@Description", description);
                 command.AddParameter("@Id", id);
             });
@@ -50,7 +52,8 @@ namespace Shesha.FluentMigrator.Notifications
 
         internal Guid? GetNotificationId(string @namespace, string name)
         {
-            return ExecuteScalar<Guid?>(@"select ""Id"" from ""Core_Notifications"" where ""Namespace"" = @Namespace and ""Name"" = @Name", command => {
+            return ExecuteScalar<Guid?>(@"select ""Id"" from ""Core_Notifications"" where ""Namespace"" = @Namespace and ""Name"" = @Name", command =>
+            {
                 command.AddParameter("@namespace", @namespace);
                 command.AddParameter("@name", name);
             });
@@ -59,7 +62,8 @@ namespace Shesha.FluentMigrator.Notifications
         internal void DeleteNotification(string @namespace, string name)
         {
             ExecuteNonQuery(@"delete from ""Core_Notifications"" where ""Namespace"" = @Namespace and ""Name"" = @Name",
-                command => {
+                command =>
+                {
                     command.AddParameter("@namespace", @namespace);
                     command.AddParameter("@name", name);
                 }
@@ -86,7 +90,8 @@ namespace Shesha.FluentMigrator.Notifications
            ,@NotificationId
            ,@IsEnabled)";
 
-            ExecuteNonQuery(sql, command => {
+            ExecuteNonQuery(sql, command =>
+            {
                 command.AddParameter("@Id", id);
                 command.AddParameter("@Name", notification.Name.Value);
                 command.AddParameter("@NotificationId", notificationId);
@@ -103,7 +108,8 @@ namespace Shesha.FluentMigrator.Notifications
                 return;
 
             ExecuteNonQuery(@"delete from ""Core_NotificationTemplates"" where ""NotificationId"" = @NotificationId",
-                command => {
+                command =>
+                {
                     command.AddParameter("@NotificationId", id);
                 }
             );
@@ -112,7 +118,8 @@ namespace Shesha.FluentMigrator.Notifications
         internal void DeleteNotificationTemplate(Guid id)
         {
             ExecuteNonQuery(@"delete from ""Core_NotificationTemplates"" where ""Id"" = @Id",
-                command => {
+                command =>
+                {
                     command.AddParameter("@Id", id);
                 }
             );
@@ -120,7 +127,8 @@ namespace Shesha.FluentMigrator.Notifications
 
         internal void UpdateTemplateName(Guid templateId, string name)
         {
-            ExecuteNonQuery("update \"Core_NotificationTemplates\" set \"Name\" = @Name where \"Id\" = @Id", command => {
+            ExecuteNonQuery("update \"Core_NotificationTemplates\" set \"Name\" = @Name where \"Id\" = @Id", command =>
+            {
                 command.AddParameter("@Name", name);
                 command.AddParameter("@Id", templateId);
             });
@@ -128,7 +136,8 @@ namespace Shesha.FluentMigrator.Notifications
 
         internal void UpdateTemplateSubject(Guid templateId, string subject)
         {
-            ExecuteNonQuery("update \"Core_NotificationTemplates\" set \"Subject\" = @Subject where \"Id\" = @Id", command => {
+            ExecuteNonQuery("update \"Core_NotificationTemplates\" set \"Subject\" = @Subject where \"Id\" = @Id", command =>
+            {
                 command.AddParameter("@Subject", subject);
                 command.AddParameter("@Id", templateId);
             });
@@ -136,7 +145,8 @@ namespace Shesha.FluentMigrator.Notifications
 
         internal void UpdateTemplateBody(Guid templateId, string body)
         {
-            ExecuteNonQuery("update \"Core_NotificationTemplates\" set \"Body\" = @Body where \"Id\" = @Id", command => {
+            ExecuteNonQuery("update \"Core_NotificationTemplates\" set \"Body\" = @Body where \"Id\" = @Id", command =>
+            {
                 command.AddParameter("@Body", body);
                 command.AddParameter("@Id", templateId);
             });
@@ -144,7 +154,8 @@ namespace Shesha.FluentMigrator.Notifications
 
         internal void UpdateTemplateBodyFormat(Guid templateId, NotificationTemplateType templateType)
         {
-            ExecuteNonQuery("update \"Core_NotificationTemplates\" set \"BodyFormatLkp\" = @BodyFormatLkp where \"Id\" = @Id", command => {
+            ExecuteNonQuery("update \"Core_NotificationTemplates\" set \"BodyFormatLkp\" = @BodyFormatLkp where \"Id\" = @Id", command =>
+            {
                 command.AddParameter("@BodyFormatLkp", (int)templateType);
                 command.AddParameter("@Id", templateId);
             });
@@ -152,16 +163,18 @@ namespace Shesha.FluentMigrator.Notifications
 
         internal void UpdateTemplateSendType(Guid templateId, NotificationSendType sendType)
         {
-            ExecuteNonQuery("update \"Core_NotificationTemplates\" set \"SendTypeLkp\" = @SendTypeLkp where \"Id\" = @Id", command => {
+            ExecuteNonQuery("update \"Core_NotificationTemplates\" set \"SendTypeLkp\" = @SendTypeLkp where \"Id\" = @Id", command =>
+            {
                 command.AddParameter("@SendTypeLkp", (int)sendType);
                 command.AddParameter("@Id", templateId);
             });
         }
 
-        
+
         internal void UpdateTemplateIsEnabled(Guid templateId, bool isEnabled)
         {
-            ExecuteNonQuery("update \"Core_NotificationTemplates\" set \"IsEnabled\" = @IsEnabled where \"Id\" = @Id", command => {
+            ExecuteNonQuery("update \"Core_NotificationTemplates\" set \"IsEnabled\" = @IsEnabled where \"Id\" = @Id", command =>
+            {
                 command.AddParameter("@IsEnabled", isEnabled);
                 command.AddParameter("@Id", templateId);
             });

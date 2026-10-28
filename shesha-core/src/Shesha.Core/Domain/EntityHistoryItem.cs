@@ -31,7 +31,7 @@ namespace Shesha.Domain
         public virtual string PropertyName { get; set; }
 
         public virtual string OriginalValue { get; set; }
-        
+
         public virtual string NewValue { get; set; }
 
         public virtual Person Person { get; set; }
