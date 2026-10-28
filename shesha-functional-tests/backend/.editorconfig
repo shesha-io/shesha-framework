@@ -1,4 +1,3 @@
 ﻿[*.cs]
-
-# CS1704: An assembly with the same simple name 'Shesha.Scheduler' has already been imported. Try removing one of the references (e.g. 'C:\Users\Qoane\.nuget\packages\shesha.scheduler\3.0.11\lib\net6.0\Shesha.Scheduler.dll') or sign them to enable side-by-side.
-dotnet_diagnostic.CS1704.severity = suggestion
+dotnet_diagnostic.CS8019.severity = error
+dotnet_diagnostic.IDE0005.severity = error
