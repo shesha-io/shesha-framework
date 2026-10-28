@@ -1,5 +1,4 @@
-﻿using FluentMigrator;
-using FluentMigrator.Builders;
+﻿using FluentMigrator.Builders;
 using FluentMigrator.Infrastructure;
 
 namespace Shesha.FluentMigrator.ReferenceLists

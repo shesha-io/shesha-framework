@@ -2,7 +2,6 @@
 using Abp.Application.Services.Dto;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
-using Abp.Linq.Extensions;
 using Shesha.Application.Services.Dto;
 using System.Linq;
 using System.Threading.Tasks;

@@ -1,5 +1,4 @@
 ﻿using Abp.Dependency;
-using Abp.Extensions;
 using Abp.MultiTenancy;
 using Abp.Reflection;
 using Castle.Core.Logging;

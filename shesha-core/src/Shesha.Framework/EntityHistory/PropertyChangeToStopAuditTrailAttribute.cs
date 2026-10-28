@@ -1,5 +1,4 @@
 ﻿using System;
-using Abp.Json;
 
 namespace Shesha.EntityHistory
 {

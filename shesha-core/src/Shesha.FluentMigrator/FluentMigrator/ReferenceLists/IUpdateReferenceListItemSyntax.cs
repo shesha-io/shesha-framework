@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Shesha.FluentMigrator.ReferenceLists
+﻿namespace Shesha.FluentMigrator.ReferenceLists
 {
     /// <summary>
     /// ReferenceListItem update syntax

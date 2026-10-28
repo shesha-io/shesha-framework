@@ -1,6 +1,4 @@
-﻿using Shesha.Configuration.Runtime;
-
-namespace Shesha.Metadata
+﻿namespace Shesha.Metadata
 {
     /// <summary>
     /// Property metadata

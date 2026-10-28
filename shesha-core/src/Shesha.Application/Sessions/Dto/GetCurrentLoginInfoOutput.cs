@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Shesha.Sessions.Dto
+﻿namespace Shesha.Sessions.Dto
 {
     public class GetCurrentLoginInfoOutput
     {

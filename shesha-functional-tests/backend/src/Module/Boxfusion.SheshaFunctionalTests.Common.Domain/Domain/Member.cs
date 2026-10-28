@@ -4,15 +4,10 @@ using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.EntityHistory;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {
-    // <summary>
+    /// <summary>
     /// A person within the application that is a Member
     /// </summary>
     [Entity(TypeShortAlias = "SheshaFunctionalTests.Member")]
@@ -47,11 +42,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// The date when the Members membership ended
         /// </summary>
         public virtual DateTime MembershipEndDate { get; set; }
-        /// <summary>
-        /// Identification document for the Member
-        /// </summary>
-        //[NotMapped]
-        //public virtual StoredFile IdDocument { get; set; }
         /// <summary>
         /// The status of the membership
         /// </summary>

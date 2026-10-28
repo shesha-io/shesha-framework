@@ -1,9 +1,6 @@
 ﻿using Abp.Domain.Entities;
-using Shesha.Domain;
 using Shesha.Domain.Attributes;
-using Shesha.JsonEntities;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain

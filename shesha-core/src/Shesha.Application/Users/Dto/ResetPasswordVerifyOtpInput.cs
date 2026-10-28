@@ -1,7 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Abp.AutoMapper;
-using Shesha.Otp;
+﻿using Abp.AutoMapper;
 using Shesha.Otp.Dto;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Users.Dto
 {

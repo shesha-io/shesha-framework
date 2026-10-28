@@ -1,5 +1,4 @@
-﻿using Shesha.Configuration.Runtime;
-using Shesha.Domain;
+﻿using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.Domain.Interfaces;

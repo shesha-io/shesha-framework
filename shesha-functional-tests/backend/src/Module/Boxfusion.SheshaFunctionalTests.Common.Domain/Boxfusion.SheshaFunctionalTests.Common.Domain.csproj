@@ -41,6 +41,10 @@
     <ProjectReference Include="..\..\..\..\..\shesha-core\src\Shesha.NHibernate\Shesha.NHibernate.csproj" />
     <ProjectReference Include="..\..\..\..\..\shesha-core\src\Shesha.Web.FormsDesigner\Shesha.Web.FormsDesigner.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\PostgreSqlMigrations\" />
+  </ItemGroup>
 	
 
 </Project>

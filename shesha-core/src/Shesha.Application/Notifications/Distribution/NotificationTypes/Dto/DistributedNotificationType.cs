@@ -2,7 +2,6 @@
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
-using Shesha.Json;
 using System.Collections.Generic;
 
 namespace Shesha.Notifications.Distribution.NotificationTypes.Dto

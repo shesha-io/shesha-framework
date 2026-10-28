@@ -1,5 +1,4 @@
-﻿using Abp.Extensions;
-using FluentMigrator;
+﻿using FluentMigrator;
 using Shesha.FluentMigrator;
 
 namespace Shesha.Migrations

@@ -1,10 +1,15 @@
-﻿using FluentMigrator;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
+using Abp.MultiTenancy;
+using FluentMigrator;
 using FluentMigrator.Builders;
 using FluentMigrator.Builders.Alter.Table;
 using FluentMigrator.Builders.Create.Table;
-using FluentMigrator.Builders.Insert;
 using FluentMigrator.Infrastructure;
 using FluentMigrator.Runner.Extensions;
+using Shesha.Domain;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Shesha.FluentMigrator
@@ -109,9 +114,9 @@ namespace Shesha.FluentMigrator
         /// <param name="masterTable">Master table</param>
         /// <param name="nullable">If true the column is nullable</param>
         /// <returns></returns>
-        public static IAlterTableColumnOptionOrAddColumnOrAlterColumnSyntax AddForeignKeyColumn(this IAlterTableAddColumnOrAlterColumnSyntax table, string foreignColumn, string masterTable, bool nullable) 
+        public static IAlterTableColumnOptionOrAddColumnOrAlterColumnSyntax AddForeignKeyColumn(this IAlterTableAddColumnOrAlterColumnSyntax table, string foreignColumn, string masterTable, bool nullable)
         {
-            return table.AddForeignKeyColumn(foreignColumn, masterTable, DatabaseConsts.IdColumn, nullable);            
+            return table.AddForeignKeyColumn(foreignColumn, masterTable, DatabaseConsts.IdColumn, nullable);
         }
 
         public static IAlterTableColumnOptionOrAddColumnOrAlterColumnSyntax AddForeignKeyColumn(this IAlterTableAddColumnOrAlterColumnSyntax table, string foreignColumn, string masterTable, string primaryColumn)
@@ -122,9 +127,9 @@ namespace Shesha.FluentMigrator
         private static IAlterTableColumnOptionOrAddColumnOrAlterColumnSyntax AddForeignKeyColumn(this IAlterTableAddColumnOrAlterColumnSyntax table, string foreignColumn, string masterTable, string primaryColumn, bool nullable)
         {
             var expression = table.AddColumn(foreignColumn).AsGuid();
-            
-            expression = nullable 
-                ? expression.Nullable() 
+
+            expression = nullable
+                ? expression.Nullable()
                 : expression.NotNullable();
 
             expression = expression.ForeignKey(masterTable, primaryColumn).Indexed();
@@ -251,7 +256,7 @@ namespace Shesha.FluentMigrator
         /// </summary>
         /// <param name="names"></param>
         /// <returns></returns>
-        public static IDbObjectNames OrDefault(this IDbObjectNames? names) 
+        public static IDbObjectNames OrDefault(this IDbObjectNames? names)
         {
             return names ?? new DefaultDbObjectNames();
         }
@@ -542,7 +547,7 @@ namespace Shesha.FluentMigrator
         /// <typeparam name="TNext"></typeparam>
         /// <param name="columnSyntax"></param>
         /// <returns></returns>
-        public static TNext AsStringMax<TNext>(this IColumnTypeSyntax<TNext> columnSyntax) where TNext: IFluentSyntax
+        public static TNext AsStringMax<TNext>(this IColumnTypeSyntax<TNext> columnSyntax) where TNext : IFluentSyntax
         {
             return columnSyntax.AsString(MsSqlVarcharMax);
         }
@@ -577,7 +582,7 @@ namespace Shesha.FluentMigrator
             var context = contextProp.GetValue(migration) as IMigrationContext;
             if (context == null)
                 throw new SheshaMigrationException($"Migration context must implement {nameof(IMigrationContext)} interface");
-                
+
             return new SheshaExpressionRoot(context, migration);
         }
 
@@ -586,7 +591,7 @@ namespace Shesha.FluentMigrator
         public static TNext AsCaseInsensitiveString<TNext>(this IColumnTypeSyntax<TNext> syntax) where TNext : IFluentSyntax
         {
             var dbmsType = DbConnectionSettings.Current?.DbmsType;
-            switch (dbmsType) 
+            switch (dbmsType)
             {
                 case DbmsType.PostgreSQL:
                     return syntax.AsCustom("citext");

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Shesha.DynamicEntities.Dtos
+﻿namespace Shesha.DynamicEntities.Dtos
 {
     public class LookupItemSyncResponse
     {

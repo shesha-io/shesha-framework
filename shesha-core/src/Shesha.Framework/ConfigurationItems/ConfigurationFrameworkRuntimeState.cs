@@ -1,6 +1,4 @@
-﻿using Shesha.ConfigurationItems.Models;
-
-namespace Shesha.ConfigurationItems
+﻿namespace Shesha.ConfigurationItems
 {
     /// <summary>
     /// Configuration Framework runtime state

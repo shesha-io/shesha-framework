@@ -1,7 +1,5 @@
 ﻿using FluentMigrator;
-using Shesha.Configuration;
 using Shesha.FluentMigrator;
-using static Castle.MicroKernel.ModelBuilder.Descriptors.InterceptorDescriptor;
 
 namespace Shesha.Migrations
 {

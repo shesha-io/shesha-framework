@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Shesha.AutoMapper;
-using Shesha.Domain;
-using Shesha.Metadata.Dtos;
-using System.Linq;
-using Abp.Localization;
-using Shesha.DynamicEntities.Dtos;
+﻿using Shesha.AutoMapper;
 using Shesha.Roles.Dto;
+using System;
 
 namespace Shesha.Permissions.Dtos
 {

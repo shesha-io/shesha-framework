@@ -1,5 +1,4 @@
-﻿using Abp.Dependency;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Shesha.Bootstrappers
 {

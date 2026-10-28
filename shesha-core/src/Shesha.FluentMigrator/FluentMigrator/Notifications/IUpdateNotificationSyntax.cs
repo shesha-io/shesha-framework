@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Shesha.FluentMigrator.Notifications
+﻿namespace Shesha.FluentMigrator.Notifications
 {
     public interface IUpdateNotificationSyntax
     {

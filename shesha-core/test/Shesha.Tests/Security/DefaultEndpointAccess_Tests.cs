@@ -1,6 +1,5 @@
 using Abp.Authorization;
 using Abp.Configuration.Startup;
-using Abp.Domain.Uow;
 using Abp.Localization;
 using FluentAssertions;
 using NSubstitute;

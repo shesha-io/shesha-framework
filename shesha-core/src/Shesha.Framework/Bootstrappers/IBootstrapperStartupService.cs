@@ -1,9 +1,5 @@
-﻿using Abp.Domain.Repositories;
-using Shesha.Domain;
-using Shesha.JsonEntities;
+﻿using Shesha.Domain;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Bootstrappers

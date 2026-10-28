@@ -1,6 +1,5 @@
 ﻿using Abp.Dependency;
 using Shesha.Otp.Configuration;
-using System;
 using System.Security.Cryptography;
 
 namespace Shesha.Otp

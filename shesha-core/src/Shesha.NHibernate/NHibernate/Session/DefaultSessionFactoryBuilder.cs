@@ -1,6 +1,5 @@
 ﻿using Abp.Dependency;
 using NHibernate;
-using System;
 
 namespace Shesha.NHibernate.Session
 {

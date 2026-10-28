@@ -1,9 +1,5 @@
-﻿using Abp.Application.Services.Dto;
-using Abp.AutoMapper;
+﻿using Abp.AutoMapper;
 using Shesha.Domain;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Shesha.DeviceRegistrations.Dto
 {

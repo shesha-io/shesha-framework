@@ -1,5 +1,4 @@
-﻿using Abp.Configuration;
-using Shesha.Notifications.Dto;
+﻿using Shesha.Notifications.Dto;
 using Shesha.Reflection;
 using System;
 using System.Threading.Tasks;

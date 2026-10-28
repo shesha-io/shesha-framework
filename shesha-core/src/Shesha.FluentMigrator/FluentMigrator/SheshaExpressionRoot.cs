@@ -22,6 +22,7 @@ namespace Shesha.FluentMigrator
         /// Initializes a new instance of the <see cref="SheshaExpressionRoot"/> class.
         /// </summary>
         /// <param name="context">The migration context</param>
+        /// <param name="migration">Migration</param>
         public SheshaExpressionRoot(IMigrationContext context, MigrationBase migration)
         {
             _context = context;

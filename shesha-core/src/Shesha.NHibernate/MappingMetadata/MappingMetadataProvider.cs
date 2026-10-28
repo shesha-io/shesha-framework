@@ -1,5 +1,4 @@
 ﻿using Abp.Dependency;
-using NHibernate;
 using NHibernate.Persister.Entity;
 using Shesha.Configuration.MappingMetadata;
 using Shesha.Extensions;

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Abp;
 using Abp.Authorization;
 using Abp.Authorization.Roles;
@@ -13,6 +10,8 @@ using Abp.Zero.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Shesha.Authorization.Users;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Shesha.Authorization.Roles
 {
