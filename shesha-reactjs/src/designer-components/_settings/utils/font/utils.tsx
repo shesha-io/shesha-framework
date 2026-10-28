@@ -3,7 +3,10 @@ import { IFontValue } from './interfaces';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 // Bundled and self-hosted, so the default look is identical on every OS.
-export const DEFAULT_FONT_FAMILY = "'Inter Variable', sans-serif";
+/** Default font family name, as stored in a component's `font.type`. Change the default font here. */
+export const DEFAULT_FONT_TYPE = 'Inter Variable';
+/** CSS `font-family` stack for the default font. */
+export const DEFAULT_FONT_FAMILY = `'${DEFAULT_FONT_TYPE}', sans-serif`;
 
 const GENERIC_FAMILY = /^(serif|sans-serif|monospace|cursive|fantasy|system-ui|ui-[a-z-]+|emoji|math|fangsong)$/i;
 
@@ -11,13 +14,13 @@ const GENERIC_FAMILY = /^(serif|sans-serif|monospace|cursive|fantasy|system-ui|u
 export const withFontFallback = (family: string | null | undefined): string | undefined => {
   if (isNullOrWhiteSpace(family)) return undefined;
   const trimmed = family.trim();
-  if (trimmed.includes('Inter Variable')) return trimmed;
+  if (trimmed.includes(DEFAULT_FONT_TYPE)) return trimmed;
   const parts = trimmed.split(',').map((p) => p.trim()).filter((p) => p !== '');
   const genericIdx = parts.findIndex((p) => GENERIC_FAMILY.test(p));
   if (genericIdx < 0) return `${trimmed}, ${DEFAULT_FONT_FAMILY}`;
   // A stack that starts with a generic family (e.g. a deliberate `monospace`) is an explicit choice, not a fallback.
   if (genericIdx === 0) return trimmed;
-  parts.splice(genericIdx, 0, "'Inter Variable'");
+  parts.splice(genericIdx, 0, `'${DEFAULT_FONT_TYPE}'`);
   return parts.join(', ');
 };
 
@@ -72,7 +75,7 @@ export const fontTypes = [
   { value: 'Trebuchet MS', label: 'Trebuchet MS' },
   { value: 'Arial Black', label: 'Arial black' },
   { value: 'Impact', label: 'Impact' },
-  { value: 'Inter Variable', label: 'Inter' },
+  { value: DEFAULT_FONT_TYPE, label: 'Inter' },
   { value: '-apple-system', label: 'San francisco' },
   { value: 'BlinkMacSystemFont', label: 'Blinkmac system font' },
   { value: 'SF Mono', label: 'San francisco mono' },

@@ -2,11 +2,12 @@ import {
   ITextComponentPropsV0,
 } from './models';
 import { IStyleValue } from '@/interfaces';
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 export const defaultStyles = (model?: ITextComponentPropsV0 | undefined): IStyleValue & { level: number } => {
   return {
     level: 0,
-    font: { color: '#000', type: 'Segoe UI', align: 'left', weight: '400', size: model?.textType === 'title' ? undefined : 14 },
+    font: { color: '#000', type: DEFAULT_FONT_TYPE, align: 'left', weight: '400', size: model?.textType === 'title' ? undefined : 14 },
     background: { type: 'color', color: '' },
     border: {
       border: {

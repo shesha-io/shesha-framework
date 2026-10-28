@@ -1,6 +1,7 @@
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 import { INestedStyleValue, IStyleValue } from '@/providers/form/models';
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 /**
  * Default Appearance styles: the wrapper's own values, plus the nested `radio` set describing a
@@ -20,7 +21,7 @@ const defaultWrapperStyles = (): IStyleValue => {
       weight: '400',
       size: 14,
       color: '#000',
-      type: 'Segoe UI',
+      type: DEFAULT_FONT_TYPE,
     },
     dimensions: {
       width: 'auto',

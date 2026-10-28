@@ -12,6 +12,7 @@ import { IEntityTypeIdentifier } from "../../../entities/models";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { isTextComponent } from "@/designer-components/text/models";
 import { isValidEntityType } from "@/providers/metadataDispatcher/entities/utils";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 /**
  * Implements generation logic for detail views.
@@ -150,7 +151,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
                 weight: '700',
                 size: 14,
                 color: '#000',
-                type: 'Segoe UI',
+                type: DEFAULT_FONT_TYPE,
               },
             };
 

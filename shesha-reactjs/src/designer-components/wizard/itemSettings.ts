@@ -514,7 +514,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                           label: 'Family',
                           propertyName: 'font.type',
                           hideLabel: true,
-                          placeholder: 'Segoe UI',
+                          placeholder: 'Inter',
                           dropdownOptions: fontTypes,
                         },
                         {

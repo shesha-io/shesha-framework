@@ -3,6 +3,7 @@ import { FilterExpression } from "@/providers/dataTable/interfaces";
 import { createContext } from "react";
 import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 import { IAnyObject } from "@/interfaces";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 export type IDataSet = IAnyObject & {
   borderColor?: string | undefined;
@@ -147,25 +148,25 @@ export const INITIAL_STATE: IChartDataContext = {
 
   // Default font configurations
   titleFont: {
-    family: 'Segoe UI',
+    family: DEFAULT_FONT_TYPE,
     size: 16,
     weight: 'bold',
     color: '#000000',
   },
   axisLabelFont: {
-    family: 'Segoe UI',
+    family: DEFAULT_FONT_TYPE,
     size: 12,
     weight: 'bold',
     color: '#000000',
   },
   legendFont: {
-    family: 'Segoe UI',
+    family: DEFAULT_FONT_TYPE,
     size: 12,
     weight: '400',
     color: '#000000',
   },
   tickFont: {
-    family: 'Segoe UI',
+    family: DEFAULT_FONT_TYPE,
     size: 12,
     weight: '400',
     color: '#000000',

@@ -1,6 +1,7 @@
 import { IStyleValue } from "@/providers/form/models";
 import { ICollapsiblePanelComponentProps } from "./interfaces";
 import { isNullOrWhiteSpace } from "@/utils";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleValue => {
   const bodyColor = isNullOrWhiteSpace(prev.bodyColor) ? '#fff' : prev.bodyColor;
@@ -33,7 +34,7 @@ export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): ISty
   const { isSimpleDesign, borderRadius } = prev;
 
   return {
-    font: { color: '#000', size: 14, weight: isSimpleDesign === true ? '400' : '500', align: 'left', type: 'Segoe UI' },
+    font: { color: '#000', size: 14, weight: isSimpleDesign === true ? '400' : '500', align: 'left', type: DEFAULT_FONT_TYPE },
     background: {
       type: 'color',
       color: headerBgColor,

@@ -3,7 +3,7 @@ import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../..
 import { addPx, hasNumber } from "@/utils/style";
 import { StringBuilder } from "@/utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
-import { withFontFallback } from '@/designer-components/_settings/utils/font/utils';
+import { withFontFallback, DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 import { CSSProperties } from "react";
 
 /** Properties that are unitless in CSS, so a bare number must not gain a `px` suffix. */
@@ -265,7 +265,7 @@ const normalizeFontFamily = (fontFamily: string | undefined): string | undefined
     return / /.test(font) ? `"${font}"` : font;
   });
   const newFonts = fonts.splice(0);
-  newFonts.push('"Inter Variable"');
+  newFonts.push(`"${DEFAULT_FONT_TYPE}"`);
   newFonts.concat(fonts);
 
   return newFonts.join(', ');

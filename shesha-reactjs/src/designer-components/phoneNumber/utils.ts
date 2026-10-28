@@ -2,6 +2,7 @@ import { CountryCode, getExampleNumber, isSupportedCountry, parsePhoneNumberFrom
 import examples from 'libphonenumber-js/mobile/examples';
 import { IStyleValue } from '@/providers/form/models';
 import { IPhoneNumberValue } from './interfaces';
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 /**
  * Normalizes a country code to the upper-case ISO 3166-1 alpha-2 format expected by
@@ -89,7 +90,7 @@ export const defaultStyles = (): IStyleValue => ({
     weight: '400',
     size: 14,
     color: '#000',
-    type: 'Segoe UI',
+    type: DEFAULT_FONT_TYPE,
     align: 'left',
   },
   border: {
