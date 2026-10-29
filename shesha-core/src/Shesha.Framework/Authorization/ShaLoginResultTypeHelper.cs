@@ -1,7 +1,7 @@
 ﻿using Abp;
-using Shesha.Authorization;
 using Abp.Dependency;
 using Abp.UI;
+using Shesha.Abp.Authorization;
 using System;
 
 namespace Shesha.Authorization
@@ -21,25 +21,25 @@ namespace Shesha.Authorization
                     return new Exception("Don't call this method with a success result!");
                 case ShaLoginResultType.InvalidUserNameOrEmailAddress:
                 case ShaLoginResultType.InvalidPassword:
-                    return new AbpAuthorizationException(L("InvalidUserNameOrPassword"));
+                    return new SheshaAuthorizationException(L("InvalidUserNameOrPassword"));
                 case ShaLoginResultType.InvalidTenancyName:
-                    return new AbpAuthorizationException(L("ThereIsNoTenantDefinedWithName{0}", tenancyName));
+                    return new SheshaAuthorizationException(L("ThereIsNoTenantDefinedWithName{0}", tenancyName));
                 case ShaLoginResultType.TenantIsNotActive:
-                    return new AbpAuthorizationException(L("TenantIsNotActive", tenancyName));
+                    return new SheshaAuthorizationException(L("TenantIsNotActive", tenancyName));
                 case ShaLoginResultType.UserIsNotActive:
-                    return new AbpAuthorizationException(L("UserIsNotActiveAndCanNotLogin", usernameOrEmailAddress));
+                    return new SheshaAuthorizationException(L("UserIsNotActiveAndCanNotLogin", usernameOrEmailAddress));
                 case ShaLoginResultType.UserEmailIsNotConfirmed:
-                    return new AbpAuthorizationException(L("UserEmailIsNotConfirmedAndCanNotLogin"));
+                    return new SheshaAuthorizationException(L("UserEmailIsNotConfirmedAndCanNotLogin"));
                 case ShaLoginResultType.LockedOut:
-                    return new AbpAuthorizationException(L("UserLockedOutMessage"));
+                    return new SheshaAuthorizationException(L("UserLockedOutMessage"));
                 case ShaLoginResultType.DeviceNotRegistered:
-                    return new AbpAuthorizationException(L("DeviceNotRegisteredMessage"));
+                    return new SheshaAuthorizationException(L("DeviceNotRegisteredMessage"));
                 case ShaLoginResultType.UserNotFound:
-                    return new AbpAuthorizationException(L("UserNotFound"));
+                    return new SheshaAuthorizationException(L("UserNotFound"));
                 case ShaLoginResultType.InvalidOTP:
-                    return new AbpAuthorizationException(L("InvalidOTP"));
+                    return new SheshaAuthorizationException(L("InvalidOTP"));
                 case ShaLoginResultType.ForbiddenFrontend:
-                    return new AbpAuthorizationException(L("ForbiddenFrontend"));
+                    return new SheshaAuthorizationException(L("ForbiddenFrontend"));
 
                 default: // Can not fall to default actually. But other result types can be added in the future and we may forget to handle it
                     Logger.Warn("Unhandled login fail reason: " + result);

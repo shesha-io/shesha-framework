@@ -1,10 +1,10 @@
 ﻿using Abp.AspNetCore.Configuration;
 using Abp.AspNetCore.Mvc.ExceptionHandling;
-using Shesha.Authorization;
 using Abp.Web.Configuration;
 using Abp.Web.Models;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
+using AbpAuthorizationException = Abp.Authorization.AbpAuthorizationException;
 
 namespace Shesha.Exceptions
 {

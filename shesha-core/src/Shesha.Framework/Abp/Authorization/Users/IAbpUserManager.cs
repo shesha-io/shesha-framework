@@ -1,5 +1,4 @@
-﻿using Abp;
-using Abp.Organizations;
+﻿using Abp.Organizations;
 using Microsoft.AspNetCore.Identity;
 using Shesha.Authorization.Roles;
 using System;
@@ -33,7 +32,7 @@ namespace Shesha.Authorization.Users
         Task<List<TUser>> FindAllAsync(UserLoginInfo login);
         List<TUser> FindAll(UserLoginInfo login);
         Task<TUser> FindAsync(int? tenantId, UserLoginInfo login);
-        TUser Find(int? tenantId, UserLoginInfo login);
+        TUser? Find(int? tenantId, UserLoginInfo login);
         Task<TUser> FindByNameOrEmailAsync(int? tenantId, string userNameOrEmailAddress);
         TUser FindByNameOrEmail(int? tenantId, string userNameOrEmailAddress);
         Task<TUser> GetUserByIdAsync(long userId);

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Abp.Application.Editions;
 using Abp.Application.Features;
-using Abp.Authorization.Users;
 using Abp.Collections.Extensions;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
@@ -10,10 +9,12 @@ using Abp.Domain.Uow;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.Localization;
-using Abp.MultiTenancy;
 using Abp.Runtime.Caching;
 using Abp.UI;
 using Abp.Zero;
+using Shesha.Authorization.Users;
+using Shesha.MultiTenancy;
+using TenantFeatureSetting = Shesha.MultiTenancy.TenantFeatureSetting;
 
 namespace Shesha.Application.Features
 {
@@ -69,12 +70,12 @@ namespace Shesha.Application.Features
         }
 
         /// <inheritdoc/>
-        public virtual string GetValueOrNull(int tenantId, Feature feature)
+        public virtual string? GetValueOrNull(int tenantId, Feature feature)
         {
             return GetValueOrNull(tenantId, feature.Name);
         }
 
-        public virtual async Task<string> GetEditionValueOrNullAsync(int editionId, string featureName)
+        public virtual async Task<string?> GetEditionValueOrNullAsync(int editionId, string featureName)
         {
             var cacheItem = await GetEditionFeatureCacheItemAsync(editionId);
             return cacheItem.FeatureValues.GetOrDefault(featureName);

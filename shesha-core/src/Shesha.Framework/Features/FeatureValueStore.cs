@@ -1,4 +1,4 @@
-using Abp.Application.Features;
+using Shesha.Application.Features;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Runtime.Caching;
@@ -14,7 +14,7 @@ namespace Shesha.Features
             IRepository<TenantFeatureSetting, long> tenantFeatureRepository,
             IRepository<Tenant> tenantRepository,
             IRepository<EditionFeatureSetting, long> editionFeatureRepository,
-            IFeatureManager featureManager,
+            Abp.Application.Features.IFeatureManager featureManager,
             IUnitOfWorkManager unitOfWorkManager)
             : base(
                   cacheManager,

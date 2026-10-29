@@ -1,9 +1,9 @@
-﻿using Shesha.Authorization;
-using Abp.Configuration.Startup;
+﻿using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Uow;
 using Abp.Localization;
+using Shesha.Abp.Authorization;
 using Shesha.Domain.Enums;
 using Shesha.Permissions;
 using Shesha.Utilities;
@@ -94,7 +94,7 @@ namespace Shesha.Authorization
         private void EnsureAuthenticated(bool isAuthenticated)
         {
             if (!isAuthenticated)
-                throw new AbpAuthorizationException(
+                throw new SheshaAuthorizationException(
                     _localizationManager?.GetString(SheshaConsts.LocalizationSourceName, "CurrentUserDidNotLoginToTheApplication")
                     ?? "Current user did not login to the application!"
                 );
@@ -103,7 +103,7 @@ namespace Shesha.Authorization
         [DoesNotReturn]
         private void ThrowAccessDenied()
         {
-            throw new AbpAuthorizationException(
+            throw new SheshaAuthorizationException(
                 _localizationManager?.GetString(SheshaConsts.LocalizationSourceName, "AccessDenied") ?? "Access Denied"
             );
         }

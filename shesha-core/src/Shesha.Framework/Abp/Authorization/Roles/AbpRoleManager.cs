@@ -601,6 +601,7 @@ namespace Shesha.Authorization.Roles
             return AbpStore.FindByDisplayNameAsync(displayName);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP004:Don't ignore created IDisposable", Justification = "<Pending>")]
         private async Task<RolePermissionCacheItem> GetRolePermissionCacheItemAsync(int roleId)
         {
             var cacheKey = roleId + "@" + (GetCurrentTenantId() ?? 0);
@@ -645,6 +646,7 @@ namespace Shesha.Authorization.Roles
             });
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP004:Don't ignore created IDisposable", Justification = "<Pending>")]
         private RolePermissionCacheItem GetRolePermissionCacheItem(int roleId)
         {
             var cacheKey = roleId + "@" + (GetCurrentTenantId() ?? 0);

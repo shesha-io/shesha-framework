@@ -442,7 +442,7 @@ namespace Shesha.Authorization.Users
             return AbpUserStore.FindAsync(tenantId, login);
         }
 
-        public virtual TUser Find(int? tenantId, UserLoginInfo login)
+        public virtual TUser? Find(int? tenantId, UserLoginInfo login)
         {
             return AbpUserStore.Find(tenantId, login);
         }
@@ -466,13 +466,22 @@ namespace Shesha.Authorization.Users
         /// <exception cref="AbpException">Throws exception if no user found with given id</exception>
         public virtual async Task<TUser> GetUserByIdAsync(long userId)
         {
-            var user = await FindByIdAsync(userId.ToString());
-            if (user == null)
-            {
-                throw new AbpException("There is no user with id: " + userId);
-            }
+            return await GetUserByIdAsync(userId.ToString());
+        }
 
-            return user;
+        /// <summary>
+        /// Gets a user by given id.
+        /// Throws exception if no user found with given id.
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>User</returns>
+        /// <exception cref="AbpException">Throws exception if no user found with given id</exception>
+        public virtual async Task<TUser> GetUserByIdAsync(string userId)
+        {
+            var user = await FindByIdAsync(userId);
+            return user != null
+                ? user
+                : throw new AbpException("There is no user with id: " + userId);
         }
 
         /// <summary>
@@ -626,18 +635,17 @@ namespace Shesha.Authorization.Users
         //}
 
         public virtual async Task<IdentityResult> CheckDuplicateUsernameOrEmailAddressAsync(long? expectedUserId,
-            string userName, string emailAddress)
+            string userName, string? emailAddress)
         {
             var user = (await FindByNameAsync(userName));
             if (user != null && user.Id != expectedUserId)
-            {
                 throw new UserFriendlyException(string.Format(L("Identity.DuplicateUserName"), userName));
-            }
 
-            user = (await FindByEmailAsync(emailAddress));
-            if (user != null && user.Id != expectedUserId)
+            if (!string.IsNullOrWhiteSpace(emailAddress)) 
             {
-                throw new UserFriendlyException(string.Format(L("Identity.DuplicateEmail"), emailAddress));
+                user = (await FindByEmailAsync(emailAddress));
+                if (user != null && user.Id != expectedUserId)
+                    throw new UserFriendlyException(string.Format(L("Identity.DuplicateEmail"), emailAddress));
             }
 
             return IdentityResult.Success;
@@ -1071,16 +1079,15 @@ namespace Shesha.Authorization.Users
             return AbpUserStore.GetUserNameFromDatabase(userId);
         }
 
-        private async Task<UserPermissionCacheItem> GetUserPermissionCacheItemAsync(long userId)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP004:Don't ignore created IDisposable", Justification = "<Pending>")]
+        private async Task<UserPermissionCacheItem?> GetUserPermissionCacheItemAsync(long userId)
         {
             var cacheKey = userId + "@" + (GetCurrentTenantId() ?? 0);
             return await _cacheManager.GetUserPermissionCache().GetAsync(cacheKey, async () =>
             {
                 var user = await FindByIdAsync(userId.ToString());
                 if (user == null)
-                {
                     return null;
-                }
 
                 var newCacheItem = new UserPermissionCacheItem(userId);
 
@@ -1105,16 +1112,15 @@ namespace Shesha.Authorization.Users
             });
         }
 
-        private UserPermissionCacheItem GetUserPermissionCacheItem(long userId)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP004:Don't ignore created IDisposable", Justification = "<Pending>")]
+        private UserPermissionCacheItem? GetUserPermissionCacheItem(long userId)
         {
             var cacheKey = userId + "@" + (GetCurrentTenantId() ?? 0);
             return _cacheManager.GetUserPermissionCache().Get(cacheKey, () =>
             {
                 var user = AbpUserStore.FindById(userId.ToString());
                 if (user == null)
-                {
                     return null;
-                }
 
                 var newCacheItem = new UserPermissionCacheItem(userId);
 

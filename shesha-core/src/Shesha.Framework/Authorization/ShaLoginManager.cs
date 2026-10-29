@@ -9,6 +9,7 @@ using Abp.IdentityFramework;
 using Abp.UI;
 using Abp.Zero.Configuration;
 using Microsoft.AspNetCore.Identity;
+using Shesha.Abp.Authorization;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
 using Shesha.Configuration.Security;
@@ -378,7 +379,7 @@ namespace Shesha.Authorization
 
             var principal = await _claimsPrincipalFactory.CreateAsync(user);
             if (principal.Identity is not ClaimsIdentity claimsIdentity)
-                throw new AbpAuthorizationException($"Failed to create claims identity for user '{user.UserName}'");
+                throw new SheshaAuthorizationException($"Failed to create claims identity for user '{user.UserName}'");
 
             return new ShaLoginResult<TUser>(
                 tenant,

@@ -17,9 +17,9 @@ namespace Shesha.Authorization
                 && boolValue == true;                
         }
 
-        internal static ITypedCache<string, UserPermissionCacheItem> GetUserPermissionCache(this ICacheManager cacheManager)
+        internal static ITypedCache<string, UserPermissionCacheItem?> GetUserPermissionCache(this ICacheManager cacheManager)
         {
-            return cacheManager.GetCache<string, UserPermissionCacheItem>(UserPermissionCacheItem.CacheStoreName);
+            return cacheManager.GetCache<string, UserPermissionCacheItem?>(UserPermissionCacheItem.CacheStoreName);
         }
 
         internal static ITypedCache<string, RolePermissionCacheItem> GetRolePermissionCache(this ICacheManager cacheManager)
