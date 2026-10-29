@@ -20,6 +20,20 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
       .${shaModelConfiguratorForm} {
         height: calc(100vh - 180px);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+
+        & > div,
+        & > div > .ant-spin-nested-loading,
+        & > div > .ant-spin-nested-loading > .ant-spin-container {
+          height: 100%;
+          flex: 1;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
+        }
+
         .ant-spin-nested-loading, .ant-spin-container, .ant-form:first-child {
           height: 100%;
           .sha-components-container.vertical, .sha-components-container-inner {
@@ -40,15 +54,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
                     .sidebar-container-main-area-body {
                       height: 100%;
                       overflow: auto;
-                    }
-                    .sidebar-container-right, sidebar-body {
-                      height: 100%;
-                      overflow: hidden;
-                      min-height: 100%;
-                      .sidebar-body {
-                        height: calc(100% - 35px);
-                        overflow: auto;
-                      }
                     }
                   }
                 }
