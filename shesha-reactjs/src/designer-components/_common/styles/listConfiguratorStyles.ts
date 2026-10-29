@@ -26,12 +26,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
     const shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
       height: 100%;
-      overflow: auto;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
       .${shaActionButtons} {
           margin: 8px 0;
+          flex-shrink: 0;
           .${prefixCls}-btn {
               margin-right: 8px;
           }
+      }
+      .sidebar-container {
+          flex: 1;
+          min-height: 0;
       }
       .${sidebarContainerMainArea} {
           background-color: white !important;
