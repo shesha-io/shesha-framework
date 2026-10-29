@@ -1,5 +1,5 @@
 ﻿using Abp.Domain.Repositories;
-using Abp.MultiTenancy;
+using Shesha.MultiTenancy;
 using Abp.Runtime.Security;
 using Abp.UI;
 using Microsoft.AspNetCore.Authorization;

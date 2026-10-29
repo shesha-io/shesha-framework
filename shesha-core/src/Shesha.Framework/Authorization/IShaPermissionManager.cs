@@ -1,6 +1,6 @@
 ﻿using Abp.Application.Features;
 using Abp.Localization;
-using Abp.MultiTenancy;
+using Shesha.MultiTenancy;
 using Shesha.Domain;
 using System.Collections.Generic;
 using System.Threading.Tasks;

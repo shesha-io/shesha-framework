@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Shesha.Authorization.Abp.Configuration
+namespace Shesha.Authorization.Configuration
 {
     public interface IRoleManagementConfig
     {

@@ -7,7 +7,7 @@ using Abp.Domain.Services;
 using Abp.Domain.Uow;
 using Abp.Linq;
 using Abp.Localization;
-using Abp.MultiTenancy;
+using Shesha.MultiTenancy;
 using Abp.Organizations;
 using Abp.Runtime.Caching;
 using Abp.Runtime.Session;

@@ -1,5 +1,5 @@
 ﻿using Abp;
-using Abp.Authorization;
+using Shesha.Authorization;
 using Abp.Dependency;
 using Abp.UI;
 using System;

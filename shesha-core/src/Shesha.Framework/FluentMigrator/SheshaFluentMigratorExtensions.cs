@@ -1,6 +1,6 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
-using Abp.MultiTenancy;
+using Shesha.MultiTenancy;
 using FluentMigrator;
 using FluentMigrator.Builders;
 using FluentMigrator.Builders.Alter.Table;

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Shesha.MultiTenancy
+﻿namespace Shesha.MultiTenancy
 {
     /// <summary>
     /// Used to declare multi tenancy side of an object.

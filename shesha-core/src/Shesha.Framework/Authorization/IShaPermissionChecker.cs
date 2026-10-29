@@ -1,5 +1,4 @@
-﻿using Abp.Authorization;
-using Shesha.AutoMapper.Dto;
+﻿using Shesha.AutoMapper.Dto;
 using System.Threading.Tasks;
 
 namespace Shesha.Authorization

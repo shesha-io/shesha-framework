@@ -1,7 +1,7 @@
 ﻿using Abp.AspNetCore.Configuration;
 using Abp.AspNetCore.Mvc.ExceptionHandling;
 using Abp.AspNetCore.Mvc.Results;
-using Abp.Authorization;
+using Shesha.Authorization;
 using Abp.Dependency;
 using Abp.Web.Models;
 using Microsoft.AspNetCore.Authorization;

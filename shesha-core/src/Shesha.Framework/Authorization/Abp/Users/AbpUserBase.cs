@@ -3,7 +3,6 @@ using Abp.Configuration;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Abp.Extensions;
-using Shesha.Authorization.Abp.Users;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -146,7 +145,7 @@ namespace Shesha.Authorization.Users
         /// It's for one usage and must be set to null after reset.
         /// </summary>
         [StringLength(MaxPasswordResetCodeLength)]
-        public virtual string PasswordResetCode { get; set; }
+        public virtual string? PasswordResetCode { get; set; }
 
         /// <summary>
         /// Lockout end date.

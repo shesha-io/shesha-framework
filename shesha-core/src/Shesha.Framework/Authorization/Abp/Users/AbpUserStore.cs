@@ -10,7 +10,6 @@ using Abp.Zero;
 using Castle.Core.Logging;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Identity;
-using Shesha.Authorization.Abp.Users;
 using Shesha.Authorization.Roles;
 using Shesha.Extensions;
 using Shesha.Reflection;

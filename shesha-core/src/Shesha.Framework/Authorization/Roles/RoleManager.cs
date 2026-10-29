@@ -1,6 +1,6 @@
 using Abp;
-using Abp.Authorization;
-using Abp.Authorization.Roles;
+using Shesha.Authorization;
+using Shesha.Authorization.Roles;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Organizations;

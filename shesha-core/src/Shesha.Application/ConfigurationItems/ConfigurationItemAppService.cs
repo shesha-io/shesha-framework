@@ -1,4 +1,4 @@
-﻿using Abp.Authorization;
+﻿using Shesha.Authorization;
 using Abp.Domain.Entities;
 using Abp.Events.Bus;
 using Microsoft.AspNetCore.Mvc;

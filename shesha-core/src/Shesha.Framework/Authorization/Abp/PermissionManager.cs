@@ -4,7 +4,7 @@ using Abp.Collections.Extensions;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Domain.Uow;
-using Abp.MultiTenancy;
+using Shesha.MultiTenancy;
 using Abp.Runtime.Session;
 using System;
 using System.Collections.Generic;

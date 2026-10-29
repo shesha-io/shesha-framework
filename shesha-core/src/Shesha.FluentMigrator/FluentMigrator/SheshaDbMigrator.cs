@@ -1,5 +1,5 @@
 ﻿using Abp.Dependency;
-using Abp.MultiTenancy;
+using Shesha.MultiTenancy;
 using Abp.Reflection;
 using Castle.Core.Logging;
 using FluentMigrator.Runner;

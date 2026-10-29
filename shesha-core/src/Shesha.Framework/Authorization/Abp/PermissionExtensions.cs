@@ -1,9 +1,10 @@
-﻿using Abp.Authorization.Roles;
-using Abp.Authorization.Users;
+﻿using Abp.MultiTenancy;
 using Abp.Runtime.Caching;
+using Shesha.Authorization.Roles;
+using Shesha.Authorization.Users;
 using System.Collections.Generic;
 
-namespace Shesha.Authorization.Abp
+namespace Shesha.Authorization
 {
     internal static class PermissionExtensions
     {
@@ -24,6 +25,11 @@ namespace Shesha.Authorization.Abp
         internal static ITypedCache<string, RolePermissionCacheItem> GetRolePermissionCache(this ICacheManager cacheManager)
         {
             return cacheManager.GetCache<string, RolePermissionCacheItem>(RolePermissionCacheItem.CacheStoreName);
+        }
+
+        public static ITypedCache<int, TenantFeatureCacheItem> GetTenantFeatureCache(this ICacheManager cacheManager)
+        {
+            return cacheManager.GetCache<int, TenantFeatureCacheItem>(TenantFeatureCacheItem.CacheStoreName);
         }
     }
 }

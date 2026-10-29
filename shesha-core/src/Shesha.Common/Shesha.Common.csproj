@@ -11,6 +11,7 @@
 		<None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="Abp" />
 		<PackageReference Include="AsyncFixer">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

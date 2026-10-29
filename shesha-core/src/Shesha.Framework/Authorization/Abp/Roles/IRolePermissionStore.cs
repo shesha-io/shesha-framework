@@ -1,4 +1,4 @@
-﻿using Abp.Authorization.Roles;
+﻿using Shesha.Authorization.Roles;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

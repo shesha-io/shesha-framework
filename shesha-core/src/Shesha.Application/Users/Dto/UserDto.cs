@@ -1,5 +1,5 @@
 using Abp.Application.Services.Dto;
-using Abp.Authorization.Users;
+using Shesha.Authorization.Users;
 using Abp.AutoMapper;
 using Shesha.Authorization.Users;
 using System;

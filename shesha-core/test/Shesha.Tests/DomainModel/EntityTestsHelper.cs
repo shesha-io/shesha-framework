@@ -1,5 +1,5 @@
-﻿using Abp.Authorization.Roles;
-using Abp.Authorization.Users;
+﻿using Shesha.Authorization.Roles;
+using Shesha.Authorization.Users;
 using Abp.Domain.Entities;
 using Shesha.DynamicEntities.TypeFinder;
 using Shesha.Extensions;

@@ -1,9 +1,9 @@
 using Abp;
-using Abp.Authorization.Users;
+using Shesha.Authorization.Users;
 using Abp.Dependency;
 using Abp.Domain.Uow;
 using Abp.Modules;
-using Abp.MultiTenancy;
+using Shesha.MultiTenancy;
 using Abp.Runtime.Session;
 using NHibernate;
 using NHibernate.Linq;

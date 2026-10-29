@@ -1,6 +1,6 @@
 ﻿using Abp.Application.Features;
 using Abp.Application.Services;
-using Abp.Authorization;
+using Shesha.Authorization;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Localization;

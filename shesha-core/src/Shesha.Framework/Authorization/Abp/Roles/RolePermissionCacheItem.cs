@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Shesha.Authorization.Abp.Roles
+namespace Shesha.Authorization.Roles
 {
     /// <summary>
     /// Used to cache permissions of a role.

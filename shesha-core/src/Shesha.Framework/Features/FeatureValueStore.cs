@@ -1,7 +1,6 @@
 using Abp.Application.Features;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Abp.MultiTenancy;
 using Abp.Runtime.Caching;
 using Shesha.Authorization.Users;
 using Shesha.MultiTenancy;

@@ -1,4 +1,4 @@
-﻿namespace Shesha.Authorization.Abp.Users
+﻿namespace Shesha.Authorization.Users
 {
     /// <summary>
     /// Used to store setting for a permission for a user.

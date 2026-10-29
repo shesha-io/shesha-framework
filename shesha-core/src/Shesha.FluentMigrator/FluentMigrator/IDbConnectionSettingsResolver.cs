@@ -1,4 +1,4 @@
-﻿using Abp.MultiTenancy;
+﻿using Shesha.MultiTenancy;
 
 namespace Shesha.FluentMigrator
 {

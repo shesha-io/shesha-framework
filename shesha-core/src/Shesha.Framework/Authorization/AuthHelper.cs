@@ -1,4 +1,4 @@
-﻿using Abp.Authorization;
+﻿using Shesha.Authorization;
 using Abp.Runtime.Security;
 using Abp.Runtime.Session;
 using Microsoft.AspNetCore.Authentication;

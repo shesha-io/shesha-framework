@@ -1,4 +1,4 @@
-﻿using Abp.Authorization;
+﻿using Shesha.Authorization;
 using Abp.Configuration;
 using Abp.Domain.Uow;
 using Microsoft.AspNetCore.Authentication;

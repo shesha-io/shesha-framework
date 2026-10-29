@@ -1,6 +1,6 @@
 ﻿using Abp.Configuration.Startup;
 using Abp.Domain.Uow;
-using Abp.MultiTenancy;
+using Shesha.MultiTenancy;
 using Abp.Runtime.Session;
 using Shesha.FluentMigrator;
 using Shesha.NHibernate.Configuration;

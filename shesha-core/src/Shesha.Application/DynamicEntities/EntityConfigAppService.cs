@@ -1,5 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Authorization;
+using Shesha.Authorization;
 using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.Extensions;

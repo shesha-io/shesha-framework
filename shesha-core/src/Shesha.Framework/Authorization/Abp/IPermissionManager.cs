@@ -1,4 +1,4 @@
-﻿using Abp.MultiTenancy;
+﻿using Shesha.MultiTenancy;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

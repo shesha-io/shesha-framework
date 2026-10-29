@@ -1,6 +1,6 @@
 ﻿using Abp.Application.Services;
-using Abp.Authorization.Roles;
-using Abp.Authorization.Users;
+using Shesha.Authorization.Roles;
+using Shesha.Authorization.Users;
 using Abp.Domain.Entities;
 using Abp.Domain.Uow;
 using Abp.Reflection;

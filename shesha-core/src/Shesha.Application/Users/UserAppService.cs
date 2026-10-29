@@ -1,6 +1,6 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
-using Abp.Authorization;
+using Shesha.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.IdentityFramework;

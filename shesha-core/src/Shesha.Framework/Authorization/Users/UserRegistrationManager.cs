@@ -1,4 +1,4 @@
-﻿using Abp.Authorization.Users;
+﻿using Shesha.Authorization.Users;
 using Abp.Domain.Services;
 using Abp.IdentityFramework;
 using Abp.Runtime.Session;

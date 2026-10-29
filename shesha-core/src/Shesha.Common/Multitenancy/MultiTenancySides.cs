@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Shesha.MultiTenancy
+﻿namespace Shesha.MultiTenancy
 {
     /// <summary>
     /// Represents sides in a multi tenancy application.

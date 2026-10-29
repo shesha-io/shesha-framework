@@ -1,7 +1,7 @@
-﻿using Abp.Authorization.Users;
+﻿using Shesha.Authorization.Users;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
-using Abp.MultiTenancy;
+using Shesha.MultiTenancy;
 using Abp.Timing;
 using Shesha.Authorization;
 using Shesha.Domain.Attributes;

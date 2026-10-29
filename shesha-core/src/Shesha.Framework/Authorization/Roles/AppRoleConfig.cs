@@ -1,4 +1,4 @@
-﻿using Abp.MultiTenancy;
+﻿using Shesha.MultiTenancy;
 using Abp.Zero.Configuration;
 
 namespace Shesha.Authorization.Roles

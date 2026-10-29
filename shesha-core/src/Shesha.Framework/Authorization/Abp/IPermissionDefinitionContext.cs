@@ -1,6 +1,6 @@
 ﻿using Abp.Application.Features;
 using Abp.Localization;
-using Abp.MultiTenancy;
+using Shesha.MultiTenancy;
 using System.Collections.Generic;
 
 namespace Shesha.Authorization

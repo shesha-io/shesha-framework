@@ -1,4 +1,4 @@
-﻿using Abp.MultiTenancy;
+﻿using Shesha.MultiTenancy;
 using Abp.Runtime.Remoting;
 using Abp.Runtime.Session;
 using Shesha.Domain;

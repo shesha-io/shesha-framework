@@ -1,4 +1,4 @@
-using Abp.Authorization;
+using Shesha.Authorization;
 using Abp.Configuration.Startup;
 using Abp.Localization;
 using FluentAssertions;
