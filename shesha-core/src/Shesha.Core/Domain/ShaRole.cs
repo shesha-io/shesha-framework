@@ -1,6 +1,8 @@
 ﻿using Abp.Auditing;
 using Abp.Domain.Entities;
+using Shesha.Authorization;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using Shesha.EntityHistory;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Core.ShaRole")]
+    [Entity(FriendlyName = "Role",
+        TypeShortAlias = "Shesha.Core.ShaRole",
+        IsConfigurable = false,
+        CrudActions = CrudActions.All,
+        CrudActionsAccess = CrudActionsAccess.RequiresPermissions,
+        CrudActionsPermissions = [PermissionNames.Role_Manage]
+    )]
+    [EntityAuthorize(CrudAction.Read, [PermissionNames.Role_Manage, PermissionNames.User_Manage])]
     [DisplayManyToManyAuditTrail(typeof(ShaRoleAppointedPerson), "Person", DisplayName = "Member")]
     [JoinedProperty("Core_ShaRoles")]
     [Prefix(UsePrefixes = false)]

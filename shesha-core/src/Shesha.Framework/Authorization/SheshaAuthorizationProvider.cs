@@ -68,20 +68,11 @@ namespace Shesha.Authorization
 
             using (var uow = _unitOfWorkManager.Begin()) 
             {
-                var module = _moduleRepository.GetAll().FirstOrDefault(m => m.Name == moduleName);
-                if (module == null)
-                {
-                    module = new Module
-                    {
-                        Name = moduleName,
-                        IsEnabled = true,
-                    };
-                    _moduleRepository.Insert(module);
-                }
-
+                var moduleId = _moduleRepository.GetAll().Where(m => m.Name == moduleName).Select(m => m.Id).FirstOrDefault();
+                
                 uow.Complete();
 
-                return module.Id;
+                return moduleId;
             }                
         }
 
