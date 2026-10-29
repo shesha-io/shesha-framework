@@ -1,4 +1,4 @@
-﻿using Abp.Authorization.Users;
+﻿using Shesha.Authorization.Users;
 
 namespace Shesha.Authorization
 {

@@ -1,5 +1,4 @@
-﻿using Abp.Authorization;
-using Abp.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using Abp.Configuration;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
@@ -187,7 +186,7 @@ namespace Shesha.Authorization.Users
         }
 
         // permissions
-        public override Task<bool> IsGrantedAsync(User user, Abp.Authorization.Permission permission)
+        public override Task<bool> IsGrantedAsync(User user, Permission permission)
         {
             var fdc = FeatureDependencyContext;
             return base.IsGrantedAsync(user, permission);

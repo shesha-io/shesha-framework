@@ -1,5 +1,4 @@
 ﻿using Abp.Application.Features;
-using Abp.Authorization;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Domain.Entities;
@@ -8,6 +7,7 @@ using Abp.Domain.Uow;
 using Abp.Localization;
 using Abp.MultiTenancy;
 using Abp.Threading;
+using Shesha.Authorization.Abp;
 using Shesha.Domain;
 using Shesha.Utilities;
 using System;
@@ -88,7 +88,7 @@ namespace Shesha.Authorization
             }
         }
 
-        private async Task CreateChildPermissionsAsync(List<PermissionDefinition> dbPermissions, Abp.Authorization.Permission permission)
+        private async Task CreateChildPermissionsAsync(List<PermissionDefinition> dbPermissions, Permission permission)
         {
             var dbChildPermissions = dbPermissions.Where(x => x.Parent == permission.Name).ToList();
             foreach (var dbChildPermission in dbChildPermissions)
@@ -102,7 +102,7 @@ namespace Shesha.Authorization
             }
         }
 
-        public Abp.Authorization.Permission CreatePermission(Abp.Authorization.Permission parent, string name, ILocalizableString? displayName = null,
+        public Permission CreatePermission(Permission parent, string name, ILocalizableString? displayName = null,
             ILocalizableString? description = null,
             MultiTenancySides multiTenancySides = MultiTenancySides.Tenant | MultiTenancySides.Host,
             IFeatureDependency? featureDependency = null, Dictionary<string, object>? properties = null)
@@ -110,7 +110,7 @@ namespace Shesha.Authorization
             throw new NotImplementedException();
         }
 
-        public Abp.Authorization.Permission EditPermission(string oldName, Abp.Authorization.Permission parent, string name, ILocalizableString? displayName = null,
+        public Permission EditPermission(string oldName, Permission parent, string name, ILocalizableString? displayName = null,
             ILocalizableString? description = null,
             MultiTenancySides multiTenancySides = MultiTenancySides.Tenant | MultiTenancySides.Host,
             IFeatureDependency? featureDependency = null, Dictionary<string, object>? properties = null)
@@ -118,7 +118,7 @@ namespace Shesha.Authorization
             throw new NotImplementedException();
         }
 
-        public async Task<Abp.Authorization.Permission> CreatePermissionAsync(PermissionDefinition permissionDefinition)
+        public async Task<Permission> CreatePermissionAsync(PermissionDefinition permissionDefinition)
         {
             var newPermission = await CreatePermissionInternalAsync(permissionDefinition);
 
@@ -128,7 +128,7 @@ namespace Shesha.Authorization
             return newPermission;
         }
 
-        private Task<Abp.Authorization.Permission> CreatePermissionInternalAsync(PermissionDefinition permissionDefinition)
+        private Task<Permission> CreatePermissionInternalAsync(PermissionDefinition permissionDefinition)
         {
             if (!string.IsNullOrEmpty(permissionDefinition.Parent))
             {
@@ -161,7 +161,7 @@ namespace Shesha.Authorization
             }
         }
 
-        public async Task<Abp.Authorization.Permission> EditPermissionAsync(string oldName, PermissionDefinition permissionDefinition)
+        public async Task<Permission> EditPermissionAsync(string oldName, PermissionDefinition permissionDefinition)
         {
             var dbPermission = await _permissionDefinitionRepository.FirstOrDefaultAsync(x => x.Name == oldName);
 
@@ -198,7 +198,7 @@ namespace Shesha.Authorization
                 return newPermission;
             }
 
-            return GetPermissionOrNull(oldName);
+            return GetPermission(oldName);
         }
 
         public async Task UpdateParentAsync(string name, string? parentName, Module? module)
@@ -260,9 +260,7 @@ namespace Shesha.Authorization
         {
             var permission = GetPermissionOrNull(name);
             if (permission != null
-                && permission.Properties != null
-                && permission.Properties.ContainsKey(IsDbPermission)
-                && (bool)permission.Properties[IsDbPermission])
+                && permission.Properties.GetBoolOrDefault(IsDbPermission))
             {
                 RemovePermission(name);
             }
@@ -270,7 +268,7 @@ namespace Shesha.Authorization
 
         public override void RemovePermission(string name)
         {
-            Abp.Authorization.Permission? parent = null;
+            Permission? parent = null;
             var permissions = GetAllPermissions();
             foreach (var permission in permissions)
             {

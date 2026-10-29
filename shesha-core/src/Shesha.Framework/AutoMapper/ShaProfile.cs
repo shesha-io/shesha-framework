@@ -73,8 +73,10 @@ namespace Shesha.AutoMapper
             return repo.Get(id.Value);
         }
 
-        protected static string Localize(ILocalizableString str)
+        protected static string? Localize(ILocalizableString? str)
         {
+            if (str == null)
+                return null;
             var lManager = StaticContext.IocManager.Resolve<ILocalizationManager>();
             return str.Localize(lManager);
         }

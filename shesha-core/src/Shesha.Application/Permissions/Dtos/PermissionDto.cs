@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Shesha.Roles.Dto
 {
-    [AutoMapFrom(typeof(Abp.Authorization.Permission))]
+    [AutoMapFrom(typeof(Authorization.Permission))]
     public class PermissionDto : EntityDto<string?>
     {
         public PermissionDto()

@@ -1,6 +1,4 @@
-﻿using Abp.Authorization;
-using Abp.Authorization.Users;
-using Abp.Domain.Repositories;
+﻿using Abp.Domain.Repositories;
 using Abp.MultiTenancy;
 using Abp.Runtime.Security;
 using Abp.UI;

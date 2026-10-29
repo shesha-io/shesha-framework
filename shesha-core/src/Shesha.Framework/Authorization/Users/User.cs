@@ -1,5 +1,4 @@
-﻿using Abp.Authorization.Users;
-using Abp.Extensions;
+﻿using Abp.Extensions;
 using Newtonsoft.Json;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
@@ -47,7 +46,7 @@ namespace Shesha.Authorization.Users
         /// so it cannot be exposed via metadata, GraphQL, or used as a sort key.
         /// </summary>
         [JsonIgnore]
-        public override string SecurityStamp { get; set; }
+        public override string? SecurityStamp { get; set; }
 
         /// <summary>
         /// Concurrency stamp. Marked [JsonIgnore] so it cannot be exposed via
