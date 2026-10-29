@@ -1,10 +1,10 @@
 import { createStyles } from '@/styles';
 import { sheshaStyles } from '@/styles';
-
+ 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
   const leftSidebarWidth = "550px";
   const sidebarBtnHeight = "35px";
-
+ 
   const sidebarContainerHeader = "sidebar-container-header";
   const sidebarContainerBody = "sidebar-container-body";
   const sidebarContainerMainArea = "sidebar-container-main-area";
@@ -17,14 +17,14 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
   const sidebarBodyContent = "sidebar-body-content";
   const sidebarContainerLeft = "sidebar-container-left";
   const sidebarContainerRight = "sidebar-container-right";
-
+ 
   const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
       height: 100%;
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
-
+ 
       .${sidebarContainerMainAreaBody}{
         max-height: 85vh;
         overflow: auto;
@@ -39,7 +39,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
       }
     
       .${sidebarContainerBody} {
-        height: 100%;
         flex: 1;
         min-height: 0;
         display: flex;
@@ -48,7 +47,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
         .${sidebarContainerLeft},
         .${sidebarContainerRight} {
-
+          max-height: calc(100vh - 102px);
+          display: flex;
+          flex-direction: column;
+ 
           &.allow-full-collapse {
             display: none;
           }
@@ -56,8 +58,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           &.open {
             width: ${leftSidebarWidth};
             display: flex;
-            flex-direction: column;
-
+ 
             .${sidebarHeader} {
               .sidebar-header-title {
                 display: flex;
@@ -68,7 +69,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           }
     
           background: white;
-
+ 
           .sidebar-subheader {
             margin-top: 8px;
             background: #282828;
@@ -82,7 +83,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           .${sidebarHeader} {
             display: flex;
             flex-shrink: 0;
-
+ 
             .sidebar-header-title {
               width: calc(${leftSidebarWidth} - ${sidebarBtnHeight});
               background: #282828;
@@ -114,14 +115,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             padding: ${sheshaStyles.paddingLG}px;
             flex: 1;
             min-height: 0;
-
+ 
             .sidebar-body-content {
               width: 100%;
               display: none;
-
+ 
               &.open {
                 display: block;
-                height: auto;
               }
             }
     
@@ -137,25 +137,17 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
         .${sidebarContainerLeft} {
           border-right: 1px solid lightgrey;
-          height: 100%;
-          max-height: calc(100vh - 102px);
-          display: flex;
-          flex-direction: column;
-
+ 
           &.open {
             .toggle-open-btn {
               transform: rotateX(180deg);
             }
           }
         }
-
+ 
         .${sidebarContainerRight} {
           border-left: 1px solid lightgrey;
-          height: 100%;
-          max-height: calc(100vh - 102px);
-          display: flex;
-          flex-direction: column;
-
+ 
           &.open {
             .toggle-open-btn {
               transform: rotateX(180deg);
@@ -194,7 +186,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         }
       }    
     `);
-
+ 
   return {
     sidebarContainer,
     sidebarContainerHeader,
@@ -211,3 +203,4 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     sidebarContainerRight,
   };
 });
+ 
