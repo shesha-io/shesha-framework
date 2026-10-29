@@ -12,6 +12,8 @@ import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nu
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { designerConstants } from '../utils/designerConstants';
 import { useComponentValidationRules } from '@/providers/formValidator/utils';
+import { resolveFormLayout } from '@/providers/form/models';
+import { useThemeState } from '@/providers/theme';
 
 export const ConfigurableFormItemLive = <TValue = unknown>({
   children,
@@ -31,7 +33,10 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
   const allData = useAvailableConstantsDataNoRefresh();
   // Pin the label to the input's configured height so a validation message cannot shift it.
   // 'auto' carries no fixed height, so fall back to the default alignment in that case.
-  const { styles } = useStyles({ ...model, autoAlignLabel });
+  // The theme label font is for application forms, not the designer's own settings forms.
+  const { theme } = useThemeState();
+  const labelFont = shaForm.settings?.isSettingsForm === true ? undefined : theme.labelFont;
+  const { styles } = useStyles({ ...model, autoAlignLabel, labelFont });
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -44,7 +49,7 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
 
   if (hidden) return null;
 
-  const isVertical = (model.layout ?? shaForm.settings?.layout) === 'vertical';
+  const isVertical = (model.layout ?? resolveFormLayout(shaForm.settings, theme).layout) === 'vertical';
 
   const { top: defaultMarginTop, left: defaultMarginLeft, right: defaultMarginRight, bottom: defaultMarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
 

@@ -23,18 +23,17 @@ interface IPreviewFormProps {
   theme: IConfigurableTheme;
   className: string;
   formErrors: IFormValidationErrors | undefined;
-  /** Sample value for the component's field, set under `propertyName`. */
-  previewValue: unknown;
-  propertyName: string | undefined;
+  /** Sample field values, by property name, for components that display their value. */
+  previewValues: Record<string, unknown> | undefined;
 }
 
 /** One variant's form. Each is its own form so their values - and validation errors - stay independent. */
-const PreviewForm: FC<IPreviewFormProps> = ({ markup, theme, className, formErrors, previewValue, propertyName }) => {
+export const PreviewForm: FC<IPreviewFormProps> = ({ markup, theme, className, formErrors, previewValues }) => {
   const shaFormRef = useRef<IShaFormInstance | undefined>(undefined);
 
   const initialValues = useMemo(
-    (): object => isDefined(previewValue) && isNotNullOrWhiteSpace(propertyName) ? { ...theme, [propertyName]: previewValue } : theme,
-    [theme, previewValue, propertyName],
+    (): object => isDefined(previewValues) ? { ...theme, ...previewValues } : theme,
+    [theme, previewValues],
   );
 
   // The form assigns the ref in its own effect, which runs before this one.
@@ -118,8 +117,7 @@ export const ComponentDefaultsPreview: FC<IComponentDefaultsPreviewProps> = ({ c
             theme={theme}
             className={styles.appearanceForm}
             formErrors={formErrors}
-            previewValue={previewValue}
-            propertyName={propertyName}
+            previewValues={isDefined(previewValue) && isNotNullOrWhiteSpace(propertyName) ? { [propertyName]: previewValue } : undefined}
           />
         ))}
       </ComponentPreviewContext.Provider>

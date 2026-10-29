@@ -4,6 +4,7 @@ import { FormItemLayout } from 'antd/lib/form/Form';
 import { FormLabelAlign } from 'antd/lib/form/interface';
 import { ThemeComponentGroup } from '@/interfaces/formDesigner';
 import type { IStyleValue } from '@/providers/form/models';
+import type { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
 
 interface ITextTheme {
   default?: string;
@@ -44,6 +45,13 @@ export interface IConfigurableTheme {
   sidebarBackground?: string | undefined;
   layoutBackground?: string | undefined;
   text?: ITextTheme | undefined;
+  /**
+   * Application-wide font, as a font type name (see `fontTypes`). Every component still on the default
+   * font follows it; unset means the default font (Inter).
+   */
+  fontFamily?: string | undefined;
+  /** Font of form item labels, so labels can be matched to the input components' font. Unset parts inherit the application font. */
+  labelFont?: IFontValue | undefined;
   labelSpan?: number | undefined;
   componentSpan?: number | undefined;
 

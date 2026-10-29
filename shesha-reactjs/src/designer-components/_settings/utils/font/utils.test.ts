@@ -1,4 +1,4 @@
-import { getFontStyle, withFontFallback } from './utils';
+import { getFontStyle, getThemeFontStack, THEME_FONT_FAMILY, withFontFallback } from './utils';
 
 describe('withFontFallback', () => {
   it('appends the bundled Inter fallback to a configured family', () => {
@@ -7,7 +7,11 @@ describe('withFontFallback', () => {
 
   it('does not double up when the family already ends in Inter', () => {
     expect(withFontFallback("'Inter Variable', sans-serif")).toBe("'Inter Variable', sans-serif");
-    expect(withFontFallback('Inter Variable')).toBe('Inter Variable');
+  });
+
+  it('resolves the default font type to the theme font', () => {
+    expect(withFontFallback('Inter Variable')).toBe(THEME_FONT_FAMILY);
+    expect(THEME_FONT_FAMILY).toBe("var(--sha-font-family, 'Inter Variable', sans-serif)");
   });
 
   it('inserts Inter ahead of a generic family so it is tried before the browser default', () => {
@@ -26,6 +30,17 @@ describe('withFontFallback', () => {
     expect(withFontFallback(undefined)).toBeUndefined();
     expect(withFontFallback(null)).toBeUndefined();
     expect(withFontFallback('   ')).toBeUndefined();
+  });
+});
+
+describe('getThemeFontStack', () => {
+  it('uses the default font when no theme font is chosen', () => {
+    expect(getThemeFontStack(undefined)).toBe("'Inter Variable', sans-serif");
+  });
+
+  it('keeps Inter as the fallback for a chosen theme font', () => {
+    expect(getThemeFontStack('Roboto')).toBe("Roboto, 'Inter Variable', sans-serif");
+    expect(getThemeFontStack('Inter Variable')).toBe("'Inter Variable', sans-serif");
   });
 });
 

@@ -1,5 +1,5 @@
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
+import { fontTypeOptions, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { repeatOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
@@ -114,7 +114,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     label: 'Family',
                                     propertyName: 'font.type',
                                     hideLabel: true,
-                                    dropdownOptions: fontTypes,
+                                    dropdownOptions: fontTypeOptions,
                                   },
                                   {
                                     type: 'numberField',

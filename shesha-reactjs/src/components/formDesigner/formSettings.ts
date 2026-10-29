@@ -457,9 +457,8 @@ export const getFormSettingsFormMarkup: SettingsFormMarkupFactory = ({ fbf }) =>
                 propertyName: 'layout',
                 label: 'Layout',
                 parentId: appearanceTabId,
-                validate: {
-                  required: true,
-                },
+                allowClear: true,
+                tooltip: 'Leave empty to use the theme\'s Form Span settings. A form still on the original default (horizontal, label span 6, component span 18) also follows the theme.',
                 dropdownOptions: [
                   { label: 'horizontal', value: 'horizontal' },
                   { label: 'vertical', value: 'vertical' },
@@ -492,7 +491,7 @@ export const getFormSettingsFormMarkup: SettingsFormMarkupFactory = ({ fbf }) =>
                 propertyName: 'labelCol.span',
                 label: 'Label Span',
                 parentId: appearanceTabId,
-                tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none',
+                tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none. Leave empty to use the theme\'s label span.',
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -500,7 +499,7 @@ export const getFormSettingsFormMarkup: SettingsFormMarkupFactory = ({ fbf }) =>
                 propertyName: 'wrapperCol.span',
                 label: 'Component Span',
                 parentId: appearanceTabId,
-                tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none',
+                tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none. Leave empty to use the theme\'s component span.',
 
               })
               .toJson(),

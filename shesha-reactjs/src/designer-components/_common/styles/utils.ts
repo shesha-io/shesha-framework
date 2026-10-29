@@ -3,7 +3,7 @@ import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../..
 import { addPx, hasNumber } from "@/utils/style";
 import { StringBuilder } from "@/utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
-import { withFontFallback, DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
+import { withFontFallback } from '@/designer-components/_settings/utils/font/utils';
 import { CSSProperties } from "react";
 
 /** Properties that are unitless in CSS, so a bare number must not gain a `px` suffix. */
@@ -257,18 +257,22 @@ export const paddingValue = (model: StyleBoxValue | undefined): string => {
   return sb.join(' ');
 };
 
+/**
+ * Quotes the family names in a `font-family` value that contain spaces. Names already quoted are left
+ * alone - quoting them again (`"'Inter Variable'"`) names a font that does not exist. The fallbacks
+ * come from `withFontFallback`, so none are added here.
+ */
 const normalizeFontFamily = (fontFamily: string | undefined): string | undefined => {
   if (!isDefined(fontFamily)) return fontFamily;
+  // The theme font (`var(...)`) already carries its own fallbacks, and splitting it on commas would break the var() call.
+  if (fontFamily.startsWith('var(')) return fontFamily;
 
-  const fonts = fontFamily.split(',').map((f) => {
-    const font = f.trim();
-    return / /.test(font) ? `"${font}"` : font;
-  });
-  const newFonts = fonts.splice(0);
-  newFonts.push(`"${DEFAULT_FONT_TYPE}"`);
-  newFonts.concat(fonts);
-
-  return newFonts.join(', ');
+  return fontFamily
+    .split(',')
+    .map((f) => f.trim())
+    .filter((f) => f !== '')
+    .map((font) => / /.test(font) && !/^['"]/.test(font) ? `"${font}"` : font)
+    .join(', ');
 };
 
 export const fontStyles = (model: IFontValue | undefined, customStyle?: CSSProperties | undefined): string => {

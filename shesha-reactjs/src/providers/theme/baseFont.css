@@ -1,6 +1,7 @@
 /* antd's ConfigProvider token theming only scopes font-family to antd's own component
    classes, not to a common ancestor - so plain, non-antd content (e.g. SheshaLoader)
-   never inherits it. This sets the actual inherited baseline for the whole app. */
+   never inherits it. This sets the actual inherited baseline for the whole app.
+   --sha-font-family is the font chosen in the theme settings (set by the ThemeProvider). */
 body {
-  font-family: 'Inter Variable', sans-serif;
+  font-family: var(--sha-font-family, 'Inter Variable', sans-serif);
 }

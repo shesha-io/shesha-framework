@@ -7,7 +7,8 @@ import { useResolvedTheme } from './useResolvedTheme';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
 import { isNotNullOrWhiteSpace } from '@/utils/nullables';
-import { DEFAULT_FONT_FAMILY } from '@/designer-components/_settings/utils/font/utils';
+import { getThemeFontStack, THEME_FONT_VAR } from '@/designer-components/_settings/utils/font/utils';
+import { ensureWebFontLoaded } from '@/designer-components/_settings/utils/font/webFonts';
 
 export interface ThemeProviderProps {
   prefixCls?: string;
@@ -70,6 +71,15 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     document.documentElement.style.colorScheme = resolvedTheme;
   }, [resolvedTheme]);
 
+  const fontFamily = useMemo(() => getThemeFontStack(state.theme.fontFamily), [state.theme.fontFamily]);
+
+  // Components on the default font reference this variable (see `withFontFallback`), so a theme font
+  // change restyles them without re-rendering. Set on the root element so popups rendered into body get it too.
+  useEffect(() => {
+    ensureWebFontLoaded(fontFamily);
+    document.documentElement.style.setProperty(THEME_FONT_VAR, fontFamily);
+  }, [fontFamily]);
+
   const themeConfig = useMemo<ThemeConfig>(() => {
     const appTheme = state.theme.application;
     const themeDefaults: ThemeConfig['token'] = {};
@@ -92,7 +102,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
       token: {
         ...themeDefaults,
         ...theme,
-        fontFamily: DEFAULT_FONT_FAMILY,
+        fontFamily,
       },
       components: {
         Menu: {
@@ -101,7 +111,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
       },
     };
     return result;
-  }, [state.theme, isDark]);
+  }, [state.theme, isDark, fontFamily]);
 
   return (
     <UiStateContext.Provider value={stateWithResolvedTheme}>

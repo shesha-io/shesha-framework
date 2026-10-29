@@ -1,6 +1,7 @@
 import { CSSProperties } from 'react';
 import { IFontValue } from './interfaces';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { ensureWebFontLoaded } from './webFonts';
 
 // Bundled and self-hosted, so the default look is identical on every OS.
 /** Default font family name, as stored in a component's `font.type`. Change the default font here. */
@@ -8,10 +9,15 @@ export const DEFAULT_FONT_TYPE = 'Inter Variable';
 /** CSS `font-family` stack for the default font. */
 export const DEFAULT_FONT_FAMILY = `'${DEFAULT_FONT_TYPE}', sans-serif`;
 
+/** CSS custom property holding the application font stack chosen in the theme settings (set on the root element by the ThemeProvider). */
+export const THEME_FONT_VAR = '--sha-font-family';
+/** CSS `font-family` value that follows the theme font, falling back to the default font when no theme font is set. */
+export const THEME_FONT_FAMILY = `var(${THEME_FONT_VAR}, ${DEFAULT_FONT_FAMILY})`;
+
 const GENERIC_FAMILY = /^(serif|sans-serif|monospace|cursive|fantasy|system-ui|ui-[a-z-]+|emoji|math|fangsong)$/i;
 
 /** Inserts the bundled Inter fallback ahead of any generic family, so a font the OS lacks (e.g. Segoe UI on macOS) degrades to Inter, not the browser default. */
-export const withFontFallback = (family: string | null | undefined): string | undefined => {
+const withInterFallback = (family: string | null | undefined): string | undefined => {
   if (isNullOrWhiteSpace(family)) return undefined;
   const trimmed = family.trim();
   if (trimmed.includes(DEFAULT_FONT_TYPE)) return trimmed;
@@ -22,6 +28,24 @@ export const withFontFallback = (family: string | null | undefined): string | un
   if (genericIdx === 0) return trimmed;
   parts.splice(genericIdx, 0, `'${DEFAULT_FONT_TYPE}'`);
   return parts.join(', ');
+};
+
+/** Font stack for the application font chosen in the theme settings; the default font when none is chosen. */
+export const getThemeFontStack = (family: string | null | undefined): string =>
+  family?.trim() === DEFAULT_FONT_TYPE ? DEFAULT_FONT_FAMILY : withInterFallback(family) ?? DEFAULT_FONT_FAMILY;
+
+/**
+ * CSS `font-family` for a configured font type, with the Inter fallback (see {@link withInterFallback}).
+ * The default font type is what every component starts with, so it resolves to the theme font
+ * ({@link THEME_FONT_FAMILY}) - changing the application font in the theme then restyles every
+ * component that was never given a font of its own. A web font (see `webFonts`) is loaded on first use.
+ */
+export const withFontFallback = (family: string | null | undefined): string | undefined => {
+  if (isNullOrWhiteSpace(family)) return undefined;
+  if (family.trim() === DEFAULT_FONT_TYPE) return THEME_FONT_FAMILY;
+  // Every component font goes through here, so this is where a chosen web font gets loaded.
+  ensureWebFontLoaded(family);
+  return withInterFallback(family);
 };
 
 export const getFontStyle = (input?: IFontValue): CSSProperties => {
@@ -93,6 +117,9 @@ export const fontTypes = [
   { value: 'Crimson Text', label: 'Crimson text' },
   { value: 'PT Serif', label: 'PT serif' },
 ];
+
+/** {@link fontTypes} with each option shown in its own font, so the choice can be judged from the list. */
+export const fontTypeOptions = fontTypes.map((option) => ({ ...option, style: { fontFamily: getThemeFontStack(option.value) } }));
 
 export const fontWeightsOptions = [
   { value: '100', label: 'Thin (100)' },

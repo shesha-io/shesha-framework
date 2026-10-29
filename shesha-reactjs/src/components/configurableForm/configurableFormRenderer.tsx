@@ -1,7 +1,7 @@
 import { ValidateErrorEntity } from '@/interfaces';
 import { DEFAULT_FORM_SETTINGS, useSheshaApplication } from '@/providers';
 import { useDelayedUpdateOrUndefined } from '@/providers/delayedUpdateProvider';
-import { resolveFormColon, ROOT_COMPONENT_KEY } from '@/providers/form/models';
+import { resolveFormColon, resolveFormLayout, ROOT_COMPONENT_KEY } from '@/providers/form/models';
 import { useThemeState } from '@/providers/theme';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
@@ -61,10 +61,13 @@ export const ConfigurableFormRenderer = <Values extends object = object>({
 
   // The form's own Colon setting, falling back to the theme's.
   const colon = resolveFormColon(formSettings.colon, shaForm.isSettingsForm, theme.colon);
+  // Layout and spans the form did not set come from the theme's Form Span settings.
+  const formLayout = resolveFormLayout({ ...formSettings, isSettingsForm: shaForm.isSettingsForm }, theme);
   const mergedProps = {
-    layout: props.layout ?? formSettings.layout,
-    labelCol: props.labelCol ?? formSettings.labelCol,
-    wrapperCol: props.wrapperCol ?? formSettings.wrapperCol,
+    layout: props.layout ?? formLayout.layout,
+    labelCol: props.labelCol ?? formLayout.labelCol,
+    wrapperCol: props.wrapperCol ?? formLayout.wrapperCol,
+    ...(formLayout.labelAlign !== undefined ? { labelAlign: formLayout.labelAlign } : {}),
     // Omit the key when unresolved: exactOptionalPropertyTypes rejects an explicit `colon: undefined` on FormProps.
     ...(colon !== undefined ? { colon } : {}),
   };

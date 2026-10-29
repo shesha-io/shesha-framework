@@ -1,6 +1,7 @@
 import { ITableComponentProps } from "../models";
 import { SettingsMigrationContext } from "@/interfaces";
 import { defaultStyles } from "../utils";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 export const migrateV24toV25 = (props: ITableComponentProps, _context: SettingsMigrationContext): ITableComponentProps => {
   const defaults = defaultStyles();
@@ -69,7 +70,7 @@ export const migrateV24toV25 = (props: ITableComponentProps, _context: SettingsM
     result.headerFont = {};
   }
   result.headerFont = {
-    type: result.headerFont.type ?? 'Segoe UI',
+    type: result.headerFont.type ?? DEFAULT_FONT_TYPE,
     size: result.headerFont.size ?? 14,
     weight: result.headerFont.weight ?? '500',
     color: result.headerFont.color,

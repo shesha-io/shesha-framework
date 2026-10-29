@@ -1,15 +1,20 @@
-import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd';
+import { Button, Card, Col, Radio, Row, Select, Space, Typography } from 'antd';
 import { FC } from 'react';
 import { ColorPicker } from '@/components/colorPicker';
 import { ColorScheme, IConfigurableTheme, normalizeColorScheme } from '@/providers/theme/contexts';
 import { ComponentDefaultsPanel } from './componentSettings/componentSettingsPanel';
 import { GroupSettingsPanel } from './groupSettingsPanel';
+import { GroupDefaultsPreview } from './componentSettings/groupPreview';
 import { CardTitle } from './cardTitle';
 import { FormLayoutSettingsPanel } from './formLayoutSettingsPanel';
 import { useStyles } from './styles/styles';
 import AlertsExample from './alertsPreview';
 import InputStatesPreview from './inputStatePreview';
 import TextsPreview from './textsPreview';
+import { DEFAULT_FONT_TYPE, fontTypeOptions } from '@/designer-components/_settings/utils/font/utils';
+import { ensureOptionFontsLoaded } from '@/designer-components/_settings/utils/font/webFonts';
+
+const FONT_OPTIONS = fontTypeOptions.map(({ value, label, style }) => ({ value, label: <span style={style}>{label}</span> }));
 
 /**
  * The theme settings tabs: theme-wide settings, the full per-component tree, then the four
@@ -157,6 +162,25 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                   <ColorCircle color={theme.layoutBackground} onChange={(c) => changeThemeInternal({ ...theme, layoutBackground: c })} label="Page" readOnly={readOnly} />
                 </Space>
               </Col>
+
+              <Col xs={24} md={8}>
+                <h4>Font</h4>
+                <Typography.Text type="secondary" className={styles.sectionHint}>
+                  Font used across the application. Components with a font of their own keep it.
+                </Typography.Text>
+                <Select
+                  value={theme.fontFamily ?? DEFAULT_FONT_TYPE}
+                  onChange={(fontFamily: string | undefined) => changeThemeInternal({ ...theme, fontFamily })}
+                  options={FONT_OPTIONS}
+                  disabled={readOnly}
+                  allowClear
+                  showSearch={{ optionFilterProp: 'value' }}
+                  onOpenChange={(open) => {
+                    if (open) ensureOptionFontsLoaded(fontTypeOptions);
+                  }}
+                  className={styles.fullWidth}
+                />
+              </Col>
             </Row>
           </Card>
           {/* Preview Card */}
@@ -207,11 +231,13 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             <FormLayoutSettingsPanel value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
           </Card>
           <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
+          <GroupDefaultsPreview group={section} theme={theme} />
         </>
       )}
       {(section === 'inline' || section === 'standard' || section === 'layout') && (
         <>
           <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
+          <GroupDefaultsPreview group={section} theme={theme} />
         </>
       )}
     </div>

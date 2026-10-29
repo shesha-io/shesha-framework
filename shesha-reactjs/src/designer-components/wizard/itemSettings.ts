@@ -2,7 +2,7 @@ import { IConfigurableFormComponent } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { fontWeightsOptions, fontTypes } from '../_settings/utils/font/utils';
+import { fontWeightsOptions, fontTypeOptions } from '../_settings/utils/font/utils';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
 
 export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormComponent[] => {
@@ -515,7 +515,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                           propertyName: 'font.type',
                           hideLabel: true,
                           placeholder: 'Inter',
-                          dropdownOptions: fontTypes,
+                          dropdownOptions: fontTypeOptions,
                         },
                         {
                           type: 'numberField',
