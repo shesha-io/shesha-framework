@@ -1,6 +1,7 @@
 import { IStyleValue } from "@/providers/form/models";
 import { ICollapsiblePanelComponentProps } from "./interfaces";
-import { isNullOrWhiteSpace } from "@/utils";
+import { isDefined, isNullOrWhiteSpace } from "@/utils";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleValue => {
   const bodyColor = isNullOrWhiteSpace(prev.bodyColor) ? '#fff' : prev.bodyColor;
@@ -28,12 +29,35 @@ export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleValu
   };
 };
 
+/**
+ * The part of the Layout Components theme style a panel's header inherits: border, background and
+ * padding, so the header matches the body. Margin and shadow stay with the panel as a whole - on the
+ * header they would offset it inside the panel and double the shadow.
+ */
+export const headerGroupStyle = (groupStyle: IStyleValue): IStyleValue => {
+  const { border, background, stylingBoxJson } = groupStyle;
+  const padding = isDefined(stylingBoxJson)
+    ? {
+      _type: 'styleBox' as const,
+      paddingTop: stylingBoxJson.paddingTop,
+      paddingRight: stylingBoxJson.paddingRight,
+      paddingBottom: stylingBoxJson.paddingBottom,
+      paddingLeft: stylingBoxJson.paddingLeft,
+    }
+    : undefined;
+  return {
+    ...(isDefined(border) ? { border } : {}),
+    ...(isDefined(background) ? { background } : {}),
+    ...(isDefined(padding) ? { stylingBoxJson: padding } : {}),
+  };
+};
+
 export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): IStyleValue => {
   const headerBgColor = isNullOrWhiteSpace(prev.headerColor) ? '#fff' : prev.headerColor;
   const { isSimpleDesign, borderRadius } = prev;
 
   return {
-    font: { color: '#000', size: 14, weight: isSimpleDesign === true ? '400' : '500', align: 'left', type: 'Segoe UI' },
+    font: { color: '#000', size: 14, weight: isSimpleDesign === true ? '400' : '500', align: 'left', type: DEFAULT_FONT_TYPE },
     background: {
       type: 'color',
       color: headerBgColor,

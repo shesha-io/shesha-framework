@@ -1,9 +1,10 @@
 import { IStyleValue } from "@/interfaces";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '#fff', position: 'center', size: 'cover', repeat: 'no-repeat' },
-    font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },
+    font: { weight: '400', size: 14, color: '#000', type: DEFAULT_FONT_TYPE },
     dimensions: { width: '50%', height: '100%', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: {
       border: {

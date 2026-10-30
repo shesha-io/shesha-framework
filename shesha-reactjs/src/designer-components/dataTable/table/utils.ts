@@ -9,6 +9,7 @@ import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
 import { IStyleValue } from '@/providers/form/models';
 import { isNonEmptyArray } from '@/utils/array';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 const NEW_KEY = ['{{NEW_KEY}}', '{{GEN_KEY}}'];
 const MAX_NUMBER_OF_DEFAULT_COLS = 20;
@@ -103,7 +104,7 @@ export const filterVisibility =
 export const defaultStyles = (): Required<Pick<IStyleValue, 'background' | 'font' | 'border' | 'dimensions' | 'shadow'>> => {
   return {
     background: { type: 'color', color: '#fff' },
-    font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI', align: 'left' },
+    font: { weight: '400', size: 14, color: '#000', type: DEFAULT_FONT_TYPE, align: 'left' },
     border: {
       border: {
         all: { width: '1px', style: 'solid', color: '#d9d9d9' },
@@ -148,7 +149,7 @@ export const getTableDefaults = (): {
     headerFontSize: '14px',
     headerFontWeight: '500',
     headerBackgroundColor: '#fafafa',
-    headerFontFamily: 'Segoe UI',
+    headerFontFamily: DEFAULT_FONT_TYPE,
 
     rowAlternateBackgroundColor: '#f5f5f5',
     striped: true,

@@ -46,7 +46,7 @@ import { DEFAULT_FORM_SETTINGS, getEmptyFlatMarkup, IConfigurableFormComponent, 
 import { AllComponentsConfig, FluentSettings, FormBuilder, FormBuilderFactory, StandardAppearancePanel, StandardAppearancePanelConfig, StandardFormBuilderMethods } from "./interfaces";
 import { nanoid } from "@/utils/uuid";
 import { linkComponentToModelMetadata, upgradeComponent } from "@/providers/form/utils";
-import { fontTypes, fontWeightsOptions, textAlignOptions } from "@/designer-components/_settings/utils/font/utils";
+import { fontTypeOptions, fontWeightsOptions, textAlignOptions } from "@/designer-components/_settings/utils/font/utils";
 import { getBorderInputs, getCornerInputs } from "@/designer-components/_settings/utils/border/utils";
 import { backgroundTypeOptions, gradientDirectionOptions, positionOptions, repeatOptions, sizeOptions } from "@/designer-components/_settings/utils/background/utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
@@ -353,12 +353,13 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
 
   stdFontControls = (propertyName: string = 'font', exclude?: string[], panelTitle: string = 'Font', showSeparator: boolean = true): FormBuilder => {
     if (showSeparator)
-      this.addSectionSeparator({ label: panelTitle, containerStylingBoxJson: { _type: 'styleBox', marginBottom: 8 } });
+      // Neutral line (as on the settings panel headers) rather than the separator's primary-colour default.
+      this.addSectionSeparator({ label: panelTitle, lineFont: { size: 2, color: 'var(--ant-color-border)' }, containerStylingBoxJson: { _type: 'styleBox', marginBottom: 8 } });
     this.addSettingsInputRow({
       inline: true,
       propertyName: propertyName,
       inputs: excludeInputs([
-        { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypes, width: 120 },
+        { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypeOptions, width: 120 },
         { type: 'numberField', label: 'Size', propertyName: `${propertyName}.size`, hideLabel: true, width: 50 },
         { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 130, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
         { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },

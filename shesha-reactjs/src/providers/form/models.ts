@@ -1,6 +1,8 @@
 import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
+import { FormLabelAlign } from 'antd/lib/form/interface';
+import type { IConfigurableTheme } from '@/providers/theme/contexts';
 import { CSSProperties, ReactNode } from 'react';
 import { IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
@@ -675,6 +677,60 @@ export const DEFAULT_FORM_SETTINGS: IFormSettings = {
  */
 export const resolveFormColon = (formColon: boolean | undefined, isSettingsForm: boolean, themeColon: boolean | undefined): boolean | undefined =>
   formColon ?? (isSettingsForm ? undefined : themeColon);
+
+/** Form layout as rendered: the form's own settings where it has them, the theme's Form Span settings otherwise. */
+export interface IResolvedFormLayout {
+  layout: FormLayout;
+  labelCol: ColProps;
+  wrapperCol: ColProps;
+  labelAlign?: FormLabelAlign | undefined;
+}
+
+const GRID_COLUMNS = 24;
+
+const isColUnset = (col: ColProps | undefined): boolean =>
+  !isDefined(col) || Object.values(col).every((value) => !isDefined(value));
+
+/**
+ * True for a form still on the layout every form was created with before the theme had Form Span
+ * settings (horizontal, label 6, component 18). Such a form never chose a layout of its own, so it
+ * follows the theme; one with any other layout keeps it.
+ */
+const isBuiltInDefaultLayout = (settings: Partial<IFormSettingsCommon>): boolean =>
+  settings.layout === DEFAULT_FORM_SETTINGS.layout &&
+  settings.labelCol?.span === DEFAULT_FORM_SETTINGS.labelCol.span &&
+  settings.wrapperCol?.span === DEFAULT_FORM_SETTINGS.wrapperCol.span;
+
+/**
+ * Effective layout of a form. Layout, label span and component span come from the form's settings when
+ * it set them, and from the theme's Form Span settings when it did not - unset, or still on the
+ * built-in default (see {@link isBuiltInDefaultLayout}). Label alignment always comes from the theme,
+ * as forms have no setting for it. Settings forms are framework chrome, so they never use the theme's.
+ */
+export const resolveFormLayout = (
+  settings: Partial<IFormSettingsCommon> | undefined,
+  theme: Pick<IConfigurableTheme, 'layout' | 'labelSpan' | 'componentSpan' | 'labelAlign'> | undefined,
+): IResolvedFormLayout => {
+  const own = settings ?? {};
+  if (own.isSettingsForm === true || !isDefined(theme)) {
+    return {
+      layout: own.layout ?? DEFAULT_FORM_SETTINGS.layout,
+      labelCol: isColUnset(own.labelCol) ? DEFAULT_FORM_SETTINGS.labelCol : own.labelCol ?? DEFAULT_FORM_SETTINGS.labelCol,
+      wrapperCol: isColUnset(own.wrapperCol) ? DEFAULT_FORM_SETTINGS.wrapperCol : own.wrapperCol ?? DEFAULT_FORM_SETTINGS.wrapperCol,
+    };
+  }
+
+  const followsTheme = isBuiltInDefaultLayout(own);
+  const themeLabelSpan = theme.labelSpan ?? DEFAULT_FORM_SETTINGS.labelCol.span ?? 6;
+  const themeComponentSpan = theme.componentSpan ?? GRID_COLUMNS - Number(themeLabelSpan);
+
+  return {
+    layout: followsTheme || !isDefined(own.layout) ? theme.layout ?? DEFAULT_FORM_SETTINGS.layout : own.layout,
+    labelCol: followsTheme || isColUnset(own.labelCol) ? { span: themeLabelSpan } : own.labelCol ?? { span: themeLabelSpan },
+    wrapperCol: followsTheme || isColUnset(own.wrapperCol) ? { span: themeComponentSpan } : own.wrapperCol ?? { span: themeComponentSpan },
+    ...(isDefined(theme.labelAlign) ? { labelAlign: theme.labelAlign } : {}),
+  };
+};
 
 export type ActionParametersJs = string;
 export type ActionParametersDictionary = object;

@@ -1,6 +1,7 @@
 import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
 import { IStyleValue } from '@/providers/form/models';
 import { CSSProperties } from 'react';
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 type DefaultStyles = Omit<IStyleValue, 'style'> & {
   titleFont: IFontValue;
@@ -11,8 +12,8 @@ type DefaultStyles = Omit<IStyleValue, 'style'> & {
 export const defaultStyles = (): DefaultStyles => {
   return {
     background: { type: 'color', color: '#fff' },
-    titleFont: { weight: '300', size: 20, color: '#000', type: 'Segoe UI', align: 'center' },
-    valueFont: { weight: '300', size: 35, color: '#000', type: 'Segoe UI', align: 'center' },
+    titleFont: { weight: '300', size: 20, color: '#000', type: DEFAULT_FONT_TYPE, align: 'center' },
+    valueFont: { weight: '300', size: 35, color: '#000', type: DEFAULT_FONT_TYPE, align: 'center' },
     border: {
       hideBorder: false,
       radiusType: 'all',

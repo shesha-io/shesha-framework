@@ -1,4 +1,5 @@
 import { IStyleValue } from "@/providers/form/models";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 /**
  * Default appearance of an unconfigured Entity Reference.
@@ -17,7 +18,7 @@ export const defaultStyles = (): IStyleValue => {
     font: {
       weight: '400',
       size: 14,
-      type: 'Segoe UI',
+      type: DEFAULT_FONT_TYPE,
       align: 'left',
     },
     dimensions: {

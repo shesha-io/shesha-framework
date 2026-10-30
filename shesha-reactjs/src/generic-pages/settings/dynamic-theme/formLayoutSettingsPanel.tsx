@@ -11,7 +11,7 @@ const GRID_COLUMNS = 24;
 
 const hiddenUnlessHorizontal = { _code: 'return getSettingValue(data?.layout) !== "horizontal";', _mode: 'code' as const, _value: false };
 
-type FormLayoutModel = Pick<IConfigurableTheme, 'layout' | 'labelSpan' | 'labelAlign' | 'colon'>;
+type FormLayoutModel = Pick<IConfigurableTheme, 'layout' | 'labelSpan' | 'labelAlign' | 'colon' | 'labelFont'>;
 
 export interface IFormLayoutSettingsPanelProps {
   value: IConfigurableTheme;
@@ -20,7 +20,7 @@ export interface IFormLayoutSettingsPanelProps {
 }
 
 /**
- * Theme-wide form layout (layout, label span/alignment, colon). Rendered as a settings form - the same
+ * Theme-wide form layout (layout, label span/alignment, colon, label font). Rendered as a settings form - the same
  * settings inputs, vertical layout and colon-less labels as Form Settings > Appearance - so it matches
  * every other settings panel. A form's own settings take precedence over these.
  */
@@ -71,6 +71,8 @@ export const FormLayoutSettingsPanel: FC<IFormLayoutSettingsPanelProps> = ({ val
         jsSetting: false,
         tooltip: 'Whether a colon is displayed after labels (only effective when layout is horizontal). Used by forms that don\'t set their own Colon in Form Settings.',
       })
+      // Lets labels be matched to the font given to the input components; unset parts follow the application font.
+      .stdFontControls('labelFont', ['align'], 'Label Font')
       .toJson(),
     formSettings: {
       ...DEFAULT_FORM_SETTINGS,
@@ -87,9 +89,15 @@ export const FormLayoutSettingsPanel: FC<IFormLayoutSettingsPanelProps> = ({ val
     labelSpan: theme.labelSpan ?? DEFAULT_LABEL_SPAN,
     labelAlign: theme.labelAlign,
     colon: theme.colon ?? true,
-  }), [theme.layout, theme.labelSpan, theme.labelAlign, theme.colon]);
+    labelFont: theme.labelFont,
+  }), [theme.layout, theme.labelSpan, theme.labelAlign, theme.colon, theme.labelFont]);
 
   const handleChange = (changedValues: FormLayoutModel): void => {
+    if ('labelFont' in changedValues) {
+      // Merge so a change to one font part never drops the others.
+      onChange({ ...theme, labelFont: { ...theme.labelFont, ...changedValues.labelFont } });
+      return;
+    }
     if (!('labelSpan' in changedValues)) {
       onChange({ ...theme, ...changedValues });
       return;

@@ -13,13 +13,14 @@ import { isDefined, isNotNullOrWhiteSpace } from "@/utils/nullables";
 import { getDatePropertyOrUndefined } from "@/utils/object";
 import { isNonEmptyArray } from "@/utils/array";
 import { getNestedPropertyValue } from "@/utils/dotnotation";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 const MAX_TITLE_LINE_LENGTH = 12;
 
 export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '#fff' },
-    font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },
+    font: { weight: '400', size: 14, color: '#000', type: DEFAULT_FONT_TYPE },
     border: {
       border: {
         all: { width: '1px', style: 'solid', color: '#d9d9d9' },
@@ -638,7 +639,7 @@ export function createFontConfig(
   defaultWeight: FontWeight = 400,
 ): FontConfig {
   return {
-    family: fontConfig?.family || 'Segoe UI',
+    family: fontConfig?.family || DEFAULT_FONT_TYPE,
     size: fontConfig?.size || defaultSize,
     weight: isDefined(fontConfig?.weight) ? fontConfig.weight as FontWeight : defaultWeight as FontWeight,
   };

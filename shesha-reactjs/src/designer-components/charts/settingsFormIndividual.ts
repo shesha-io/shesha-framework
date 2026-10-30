@@ -2,7 +2,7 @@ import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
+import { fontTypeOptions, fontWeightsOptions } from '../_settings/utils/font/utils';
 import { SettingsFormMarkupFactory } from '@/interfaces';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
@@ -1060,7 +1060,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             label: 'Family',
                             propertyName: 'titleFont.family',
                             hideLabel: true,
-                            dropdownOptions: fontTypes,
+                            dropdownOptions: fontTypeOptions,
                           },
                           {
                             type: 'numberField',
@@ -1118,7 +1118,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             label: 'Family',
                             propertyName: 'axisLabelFont.family',
                             hideLabel: true,
-                            dropdownOptions: fontTypes,
+                            dropdownOptions: fontTypeOptions,
                           },
                           {
                             type: 'numberField',
@@ -1186,7 +1186,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             label: 'Family',
                             propertyName: 'legendFont.family',
                             hideLabel: true,
-                            dropdownOptions: fontTypes,
+                            dropdownOptions: fontTypeOptions,
                           },
                           {
                             type: 'numberField',
@@ -1244,7 +1244,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             label: 'Family',
                             propertyName: 'tickFont.family',
                             hideLabel: true,
-                            dropdownOptions: fontTypes,
+                            dropdownOptions: fontTypeOptions,
                           },
                           {
                             type: 'numberField',

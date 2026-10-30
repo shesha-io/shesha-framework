@@ -4,6 +4,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import ThemeParameters, { setUndefinedForEmptyProperties, ThemeSettingsSection } from './parameters';
 import { useStyles } from './styles/styles';
 import { IConfigurableTheme } from '@/providers/theme';
+import { GroupComponentsHelp } from './groupComponentsHelp';
 
 export interface IConfigurableThemePageProps {
   value: IConfigurableTheme;
@@ -54,7 +55,9 @@ export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ valu
         defaultActiveKey="theme"
         items={SECTION_TABS.map(({ key, label }) => ({
           key,
-          label,
+          label: key === 'theme' || key === 'components'
+            ? label
+            : <>{label}<GroupComponentsHelp group={key} /></>,
           children: <ThemeParameters value={draft} onChange={handleChange} readOnly={readOnly} section={key} />,
         }))}
         size="small"

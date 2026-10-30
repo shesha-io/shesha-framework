@@ -1,11 +1,12 @@
-import { marginStyles } from '@/designer-components/_common/styles/utils';
+import { fontStyles, marginStyles } from '@/designer-components/_common/styles/utils';
+import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
 import { IConfigurableFormComponent } from '@/providers';
 import { createStyles } from '@/styles';
 import { addPx } from '@/utils/style';
 import { isExactDimensionValue } from '../utils/stylingUtils';
 import { isDefined } from '@/utils';
 
-export const useStyles = createStyles(({ css, cx, token }, model: IConfigurableFormComponent & { autoAlignLabel?: boolean | undefined }) => {
+export const useStyles = createStyles(({ css, cx, token }, model: IConfigurableFormComponent & { autoAlignLabel?: boolean | undefined; labelFont?: IFontValue | undefined }) => {
   const settingsFormItem = cx(css`
         margin: 0px !important;
   `);
@@ -44,6 +45,8 @@ export const useStyles = createStyles(({ css, cx, token }, model: IConfigurableF
                    spills out of that box and overlaps the next row, so let it grow. */
                 > label {
                     height: auto;
+                    /* Theme label font (Input Components > Form Span settings). */
+                    ${fontStyles(model.labelFont)}
                 }
             }
         }

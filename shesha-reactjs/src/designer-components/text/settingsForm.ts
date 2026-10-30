@@ -1,5 +1,5 @@
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
+import { fontTypeOptions, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { nanoid } from '@/utils/uuid';
 import { SettingsFormMarkupFactory } from '@/interfaces';
 
@@ -33,7 +33,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
               components: fbf(styleRouter1Id)
                 .stdCollapsiblePanel('Font', (fbf) => fbf
                   .addSettingsInputRow({ inline: true, inputs: [
-                    { type: 'dropdown', label: 'Family', propertyName: 'font.type', hideLabel: true, dropdownOptions: fontTypes },
+                    { type: 'dropdown', label: 'Family', propertyName: 'font.type', hideLabel: true, dropdownOptions: fontTypeOptions },
                     { type: 'dropdown', label: 'Weight', propertyName: 'font.weight', hideLabel: true, dropdownOptions: fontWeightsOptions, width: 100, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
                     { type: 'dropdown', label: 'Align', propertyName: 'font.align', hideLabel: true, width: 60, dropdownOptions: textAlignOptions },
                   ] })
@@ -69,7 +69,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 components: fbf(styleRouter2Id)
                   .stdCollapsiblePanel('Font', (fbf) => fbf
                     .addSettingsInputRow({ inline: true, inputs: [
-                      { type: 'dropdown', label: 'Family', propertyName: 'font.type', hideLabel: true, dropdownOptions: fontTypes },
+                      { type: 'dropdown', label: 'Family', propertyName: 'font.type', hideLabel: true, dropdownOptions: fontTypeOptions },
                       { type: 'dropdown', label: 'Size', propertyName: 'level',
                         dropdownOptions: [{ label: 'Custom', value: 0 }, { label: 'H1', value: 1 }, { label: 'H2', value: 2 }, { label: 'H3', value: 3 }, { label: 'H4', value: 4 }, { label: 'H5', value: 5 }],
                       },

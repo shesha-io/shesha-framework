@@ -15,7 +15,7 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { migrateV9toV10 } from './migrations/migrate-v10';
 import { isDefined } from '@/utils/nullables';
 import { isNonEmptyArray } from '@/utils/array';
-import { defaultHeaderStyles as getDefaultHeaderStyles, defaultStyles as getDefaultStyles } from './utils';
+import { defaultHeaderStyles as getDefaultHeaderStyles, defaultStyles as getDefaultStyles, headerGroupStyle } from './utils';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { PanelApi } from '@/componentsApi/componentApi';
 
@@ -30,6 +30,8 @@ import { useComponentApi } from '@/providers/componentApi/hooks';
 const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   styleGroup: 'common-containers',
   themeGroup: 'layout',
+  // The header follows the Layout Components theme as well as the body.
+  nestedGroupStyles: { headerStyles: headerGroupStyle },
   allowInherit: true,
   type: 'collapsiblePanel',
   isInput: false,

@@ -8,6 +8,20 @@ import { IConfigurableTheme } from "@/providers";
 import { DeviceTypes } from "@/providers/canvas/contexts";
 import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from "@/utils/object";
 
+/**
+ * A component's theme group style, extended with the parts its nested style values inherit (see
+ * `nestedGroupStyles`), so a merge applies the group style to them as well as to the component.
+ */
+export const getGroupStyleForComponent = (groupStyle: IStyleValue | undefined, toolboxComponent: Pick<IToolboxComponent, 'nestedGroupStyles'> | undefined): IStyleValue | undefined => {
+  const nested = toolboxComponent?.nestedGroupStyles;
+  if (!isDefined(groupStyle) || !isDefined(nested)) return groupStyle;
+  const result: IStyleValue & Record<string, unknown> = { ...groupStyle };
+  Object.entries(nested).forEach(([propertyName, pick]) => {
+    result[propertyName] = pick(groupStyle);
+  });
+  return result;
+};
+
 export const getEffectiveStyle = (model: IConfigurableFormComponent, effectiveDevice: DeviceTypes, theme?: IConfigurableTheme | undefined, toolboxComponent?: IToolboxComponent | undefined, isSettingsForm: boolean = false): IStyleValue => {
   // for settings form components should use their own styles
   if (isSettingsForm === true)
@@ -19,7 +33,7 @@ export const getEffectiveStyle = (model: IConfigurableFormComponent, effectiveDe
   const defStyle = deepCopyViaJson(toolboxComponent?.getDefaultStyles?.() ?? { styleCss: {} }) as IStyleValue;
   // Only apply theme group styles if the component has an explicit themeGroup property
   const groupStyle = toolboxComponent?.themeGroup !== undefined
-    ? theme?.componentGroups?.[toolboxComponent.themeGroup]
+    ? getGroupStyleForComponent(theme?.componentGroups?.[toolboxComponent.themeGroup], toolboxComponent)
     : undefined;
   const groupDefStyle: IStyleValue = isDefined(groupStyle)
     ? deepMergeValues(defStyle, groupStyle, deepMergeSkipUndefinedFunc)

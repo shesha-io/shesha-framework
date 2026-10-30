@@ -1,5 +1,6 @@
 import { IStyleValue } from "@/providers/form/models";
 import { IButtonComponentProps } from "./interfaces";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 export const buttonTypes = [
   {
@@ -24,7 +25,7 @@ export const defaultStyles = (prev: IButtonComponentProps): IStyleValue & { butt
   return {
     buttonType: 'default',
     background: { type: 'color' },
-    font: { weight: '400', size: 14, type: 'Segoe UI', align: 'center' },
+    font: { weight: '400', size: 14, type: DEFAULT_FONT_TYPE, align: 'center' },
     border: {
       border: { all: { width: '1px', style: 'solid', color: '#d9d9d9' } },
       radius: { all: 8 },

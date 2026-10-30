@@ -81,7 +81,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     textAlign = 'left',
   } = style || {};
 
-  const fontFamily = withFontFallback(fontFamilyProp ?? 'Segoe UI') ?? DEFAULT_FONT_FAMILY;
+  const fontFamily = withFontFallback(fontFamilyProp) ?? DEFAULT_FONT_FAMILY;
   const { layout: layoutProp, isDragger, hideFileName, listType } = model;
   /**
    * First of the candidates that is actually set. CSS values treat an empty string as "not set", so
@@ -162,7 +162,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
   const customColorCss = customColor === '' ? '' : `color: ${customColor};`;
   const customColorImportantCss = customColor === '' ? '' : `color: ${customColor} !important;`;
 
-  // The rest of the text styling falls back to hardcoded defaults (25px Segoe UI) when no style is
+  // The rest of the text styling falls back to hardcoded defaults (25px Inter) when no style is
   // supplied. On the component-class path that would override the configured Font, so emit nothing
   // and let the class own the text as well as the box.
   const commonTextStyles = styleProvided

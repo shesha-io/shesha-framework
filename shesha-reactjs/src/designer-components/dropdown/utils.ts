@@ -1,5 +1,6 @@
 import { IBackgroundValue, IShadowValue } from "@/designer-components/_settings/utils";
 import { INestedStyleValue, IStyleValue, StyleBoxValue } from "@/providers/form/models";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 /**
  * The complete background shape, as `card` and `drawer` define it.
@@ -59,7 +60,7 @@ export const defaultStyles = (): INestedStyleValue<'tag'> => {
       weight: '400',
       size: 14,
       color: '#000',
-      type: 'Segoe UI',
+      type: DEFAULT_FONT_TYPE,
     },
     border: {
       border: {
@@ -102,7 +103,7 @@ export const defaultTagStyles = (): IStyleValue => {
     font: {
       weight: '400',
       size: 14,
-      type: 'Segoe UI',
+      type: DEFAULT_FONT_TYPE,
       align: 'center',
       color: '#000',
     },

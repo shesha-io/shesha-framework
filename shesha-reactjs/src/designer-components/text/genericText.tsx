@@ -7,19 +7,33 @@ import { useStyles } from './styles/styles';
 import { Typography } from 'antd';
 import { IConfigurableTheme, useTheme } from '@/providers';
 import { EMPTY_STYLE } from '@/styles/variables';
+import { IStyleValue } from '@/interfaces';
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 const { Paragraph, Title } = Typography;
 
 type StrongLevelType = 1 | 2 | 3 | 4 | 5;
 
-const getColorByContentType = (contentType: ContentType | undefined, color: string | undefined, theme: IConfigurableTheme | undefined): string | undefined => {
+/**
+ * Font colour the theme gives a Text component: its own override on the Components tab, else the
+ * Inline Components font colour (Text is an inline component), else `undefined`.
+ */
+const getThemeFontColor = (theme: IConfigurableTheme | undefined, componentType: string): string | undefined => {
+  const componentColor = (theme?.components?.[componentType] as IStyleValue | undefined)?.font?.color;
+  if (isNotNullOrWhiteSpace(componentColor)) return componentColor;
+  const groupColor = theme?.componentGroups?.inline?.font?.color;
+  return isNotNullOrWhiteSpace(groupColor) ? groupColor : undefined;
+};
+
+export const getColorByContentType = (contentType: ContentType | undefined, color: string | undefined, theme: IConfigurableTheme | undefined, componentType: string = 'text'): string | undefined => {
   switch (contentType) {
     case 'custom':
       return color;
     case 'secondary':
       return theme?.text?.secondary;
     case '':
-      return theme?.text?.default;
+      // Default text follows the inline components' font colour, then the theme's default text colour.
+      return getThemeFontColor(theme, componentType) ?? theme?.text?.default;
     default:
       return undefined;
   }
@@ -32,7 +46,7 @@ export const GenericText: FC<PropsWithChildren<ITextComponentProps & { additiona
   const { children, contentType, level = 0 } = model;
 
   const { theme } = useTheme();
-  const { styles } = useStyles({ ...model, font: { ...model.font, color: getColorByContentType(contentType, model.font?.color, theme) } });
+  const { styles } = useStyles({ ...model, font: { ...model.font, color: getColorByContentType(contentType, model.font?.color, theme, model.type) } });
 
   const chosenType: BaseType | undefined = isBaseType(contentType) ? contentType : undefined;
 

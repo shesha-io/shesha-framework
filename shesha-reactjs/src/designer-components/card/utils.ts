@@ -1,4 +1,5 @@
 import { IStyleValue } from "@/providers/form/models";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 export const defaultStyles = (): IStyleValue => {
   return {
@@ -13,7 +14,7 @@ export const defaultStyles = (): IStyleValue => {
       gradient: { direction: 'to right', colors: [] },
       url: '',
     },
-    font: { color: '#000', type: 'Segoe UI', align: 'left', size: 14, weight: '400' },
+    font: { color: '#000', type: DEFAULT_FONT_TYPE, align: 'left', size: 14, weight: '400' },
     shadow: { offsetX: 0, offsetY: 0, color: '#000', blurRadius: 0, spreadRadius: 0 },
     stylingBoxJson: { _type: 'styleBox', paddingLeft: '0', paddingBottom: '0', paddingTop: '0', paddingRight: '0', marginLeft: '0', marginBottom: '5', marginTop: '0', marginRight: '0' },
   };

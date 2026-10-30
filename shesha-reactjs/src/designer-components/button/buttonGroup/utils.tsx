@@ -9,6 +9,7 @@ import { RenderButton } from './renderButton';
 import { nanoid } from '@/utils/uuid';
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { IToolboxComponent } from '@/interfaces';
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 export const createMenuItem = (
   props: MenuButton,
@@ -56,7 +57,7 @@ export const getDefaultItems = (): IButtonGroupItem[] => ([
   {
     id: nanoid(), itemType: 'item', sortOrder: 0, name: 'button1', label: 'Button 1', itemSubType: 'button', buttonType: 'primary', editMode: 'inherited',
     background: { type: 'color', repeat: 'no-repeat', size: 'cover', position: 'center', gradient: { direction: 'to right', colors: [] } },
-    font: { weight: '400', size: 14, align: 'center', type: 'Segoe UI' },
+    font: { weight: '400', size: 14, align: 'center', type: DEFAULT_FONT_TYPE },
     dimensions: { width: 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: { radiusType: 'all', borderType: 'all', hideBorder: false, border: { all: { width: '1px', style: 'solid' } }, radius: { all: 8 } },
     shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
@@ -64,7 +65,7 @@ export const getDefaultItems = (): IButtonGroupItem[] => ([
   {
     id: nanoid(), itemType: 'item', sortOrder: 1, name: 'button2', label: 'Button 2', itemSubType: 'button', buttonType: 'default', editMode: 'inherited',
     background: { type: 'color', repeat: 'no-repeat', size: 'cover', position: 'center', gradient: { direction: 'to right', colors: [] } },
-    font: { weight: '400', size: 14, align: 'center', type: 'Segoe UI' },
+    font: { weight: '400', size: 14, align: 'center', type: DEFAULT_FONT_TYPE },
     dimensions: { width: 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: { radiusType: 'all', borderType: 'all', hideBorder: false, border: { all: { width: '1px', style: 'solid' } }, radius: { all: 8 } },
     shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
@@ -80,7 +81,7 @@ export const defaultStyles = (prev: ButtonGroupItemProps): IStyleValue => {
         : getStringPropertyOrUndefined(prev, "fontColor") ?? '',
       weight: prev.fontWeight ?? '400',
       size: prev.fontSize ?? 14,
-      type: getStringPropertyOrUndefined(prev, "fontFamily") ?? 'Segoe UI',
+      type: getStringPropertyOrUndefined(prev, "fontFamily") ?? DEFAULT_FONT_TYPE,
       align: 'center',
     },
     border: {
@@ -111,7 +112,7 @@ export const defaultStyles = (prev: ButtonGroupItemProps): IStyleValue => {
 export const defaultGroupStyles = (): IStyleValue => {
   return {
     background: { type: 'color' },
-    font: { weight: '400', size: 14, type: 'Segoe UI', align: 'center' },
+    font: { weight: '400', size: 14, type: DEFAULT_FONT_TYPE, align: 'center' },
     border: { borderType: 'all', radiusType: 'all', border: { all: { width: '1px', style: 'solid', color: '#d9d9d9' } }, radius: { all: 8 } },
     shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
     dimensions: { width: 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },

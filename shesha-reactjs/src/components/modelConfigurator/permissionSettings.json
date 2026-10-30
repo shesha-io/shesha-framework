@@ -141,7 +141,7 @@
                 },
                 "font": {
                   "color": "#000",
-                  "type": "Segoe UI",
+                  "type": "Inter Variable",
                   "align": "left",
                   "size": 14,
                   "weight": "400"
@@ -201,7 +201,7 @@
                 },
                 "font": {
                   "color": "#000",
-                  "type": "Segoe UI",
+                  "type": "Inter Variable",
                   "align": "left",
                   "size": 14,
                   "weight": "400"
@@ -261,7 +261,7 @@
                 },
                 "font": {
                   "color": "#000",
-                  "type": "Segoe UI",
+                  "type": "Inter Variable",
                   "align": "left",
                   "size": 14,
                   "weight": "400"
@@ -346,7 +346,7 @@
                 },
                 "font": {
                   "color": "#000",
-                  "type": "Segoe UI",
+                  "type": "Inter Variable",
                   "align": "left",
                   "size": 14,
                   "weight": "400"
@@ -406,7 +406,7 @@
                 },
                 "font": {
                   "color": "#000",
-                  "type": "Segoe UI",
+                  "type": "Inter Variable",
                   "align": "left",
                   "size": 14,
                   "weight": "400"
@@ -466,7 +466,7 @@
                 },
                 "font": {
                   "color": "#000",
-                  "type": "Segoe UI",
+                  "type": "Inter Variable",
                   "align": "left",
                   "size": 14,
                   "weight": "400"
@@ -579,7 +579,7 @@
                 },
                 "font": {
                   "color": "#000",
-                  "type": "Segoe UI",
+                  "type": "Inter Variable",
                   "align": "left",
                   "size": 14,
                   "weight": "400"
@@ -629,7 +629,7 @@
                     "url": ""
                   },
                   "font": {
-                    "type": "Segoe UI",
+                    "type": "Inter Variable",
                     "align": "center",
                     "size": 14,
                     "weight": "400"
@@ -690,7 +690,7 @@
                 },
                 "font": {
                   "color": "#000",
-                  "type": "Segoe UI",
+                  "type": "Inter Variable",
                   "align": "left",
                   "size": 14,
                   "weight": "400"
@@ -740,7 +740,7 @@
                     "url": ""
                   },
                   "font": {
-                    "type": "Segoe UI",
+                    "type": "Inter Variable",
                     "align": "center",
                     "size": 14,
                     "weight": "400"
@@ -801,7 +801,7 @@
                 },
                 "font": {
                   "color": "#000",
-                  "type": "Segoe UI",
+                  "type": "Inter Variable",
                   "align": "left",
                   "size": 14,
                   "weight": "400"
@@ -851,7 +851,7 @@
                     "url": ""
                   },
                   "font": {
-                    "type": "Segoe UI",
+                    "type": "Inter Variable",
                     "align": "center",
                     "size": 14,
                     "weight": "400"
@@ -907,7 +907,7 @@
                   "url": ""
                 },
                 "font": {
-                  "type": "Segoe UI",
+                  "type": "Inter Variable",
                   "align": "center",
                   "size": 14,
                   "weight": "400"
@@ -1056,7 +1056,7 @@
                 },
                 "font": {
                   "color": "#000",
-                  "type": "Segoe UI",
+                  "type": "Inter Variable",
                   "align": "left",
                   "size": 14,
                   "weight": "400"
@@ -1106,7 +1106,7 @@
                     "url": ""
                   },
                   "font": {
-                    "type": "Segoe UI",
+                    "type": "Inter Variable",
                     "align": "center",
                     "size": 14,
                     "weight": "400"
@@ -1167,7 +1167,7 @@
                 },
                 "font": {
                   "color": "#000",
-                  "type": "Segoe UI",
+                  "type": "Inter Variable",
                   "align": "left",
                   "size": 14,
                   "weight": "400"
@@ -1217,7 +1217,7 @@
                     "url": ""
                   },
                   "font": {
-                    "type": "Segoe UI",
+                    "type": "Inter Variable",
                     "align": "center",
                     "size": 14,
                     "weight": "400"
@@ -1278,7 +1278,7 @@
                 },
                 "font": {
                   "color": "#000",
-                  "type": "Segoe UI",
+                  "type": "Inter Variable",
                   "align": "left",
                   "size": 14,
                   "weight": "400"
@@ -1328,7 +1328,7 @@
                     "url": ""
                   },
                   "font": {
-                    "type": "Segoe UI",
+                    "type": "Inter Variable",
                     "align": "center",
                     "size": 14,
                     "weight": "400"
@@ -1384,7 +1384,7 @@
                   "url": ""
                 },
                 "font": {
-                  "type": "Segoe UI",
+                  "type": "Inter Variable",
                   "align": "center",
                   "size": 14,
                   "weight": "400"

@@ -262,7 +262,32 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
     `,
   );
 
+  const groupComponentsHelpIcon = cx(
+    'theme-group-help-icon',
+    css`
+      margin-inline-start: 6px;
+      opacity: 0.6;
+    `,
+  );
+
+  /* Long lists (the Input group has dozens) scroll inside the tooltip instead of running off-screen. */
+  const groupComponentsHelp = cx(
+    'theme-group-help',
+    css`
+      max-height: 320px;
+      overflow-y: auto;
+      ${sheshaStyles.thinScrollbars}
+
+      ul {
+        margin: 4px 0 0;
+        padding-inline-start: 18px;
+      }
+    `,
+  );
+
   return {
+    groupComponentsHelpIcon,
+    groupComponentsHelp,
     themeParameters,
     previewSection,
     themeCardMenu,

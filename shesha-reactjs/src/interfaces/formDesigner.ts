@@ -144,6 +144,14 @@ export type IToolboxComponentBase = {
    */
   themeGroup?: ThemeComponentGroup | undefined;
 
+  /**
+   * Nested style values that also inherit the theme group style, keyed by property name, each with the
+   * part of the group style it takes - e.g. a panel's header (`headerStyles`) takes the Layout group's
+   * border and background as well as its body does. Without an entry a nested style value only gets
+   * the component's own defaults and overrides.
+   */
+  nestedGroupStyles?: Record<string, (groupStyle: IStyleValue) => IStyleValue> | undefined;
+
   // ToDo: AS - remove after all components are migrated to inheritance
   /**
    * If true, indicates that the component properties can be inherited
