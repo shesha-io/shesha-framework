@@ -28,10 +28,6 @@
   - Deleted the ]*.Web.Core/Authorization] folder (and IoC registration) from the starter template and functional-tests host
   - Removed the custom checker that granted every permission to any user named admin
   - Admin now receives only what its roles grant
-- **Entity CRUD Endpoints Off by Default (Opt-In)**
-  - Entities no longer get CRUD endpoints unless explicitly exposed via attributes
-  - Controllers are not built for unexposed entities (no Swagger / permissioned-objects entries, faster startup)
-  - Framework and Enterprise entities used by the admin portal are explicitly marked
 - **Entity CRUD Security Attribute Refactor**
   - Removed `[CrudDisableActions]`; functionality moved into `[Entity]`
   - `[Entity]` now supports `CrudActions` flags (All/None/Create/Read/Update/Delete), `Access`, `Permissions` and `IsConfigurable`; `GenerateApplicationService` replaced
@@ -58,4 +54,8 @@
 - **GraphQL Endpoint & Playground Removed**
   - `/graphql` and `/ui/playground` removed — clients use GraphQL implicitly only
   - `GraphQL.Server.Ui.Playground` is deprecated
+- **Role & Entity CRUD Security Tightening**
+  - Default `[Entity]` CRUD policy (`DefaultCrudConfig.Default`) reverted to `CrudActions.All` — entities without an explicit CRUD configuration are reachable again, superseding the earlier opt-in-only default
+  - `ShaRole` now carries a non-configurable CRUD policy (`IsConfigurable = false`, `CrudActions = All`, `CrudActionsAccess = RequiresPermissions`, `CrudActionsPermissions = [Role_Manage]`), plus `[EntityAuthorize(Read, [Role_Manage, User_Manage])]` so reads are also allowed with `User_Manage`; role data can no longer be opened up via configuration
+  - `SheshaAuthorizationProvider.GetModuleId` no longer inserts a new `Module` row when one already exists under concurrent calls — it now selects the existing module's Id directly instead of create-if-missing, preventing duplicate module records
 
