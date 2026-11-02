@@ -18,6 +18,15 @@ describe('resolveFormLayout', () => {
     });
   });
 
+  it('keeps the other column settings when the spans are inherited', () => {
+    expect(resolveFormLayout({ layout: 'horizontal', labelCol: { span: 6, offset: 1 }, wrapperCol: { span: 18, offset: 2 } }, theme)).toMatchObject({
+      labelCol: { span: 8, offset: 1 }, wrapperCol: { span: 16, offset: 2 },
+    });
+    expect(resolveFormLayout({ layout: 'horizontal', labelCol: { offset: 1 }, wrapperCol: { span: 20 } }, theme)).toMatchObject({
+      labelCol: { span: 8, offset: 1 }, wrapperCol: { span: 20 },
+    });
+  });
+
   it('keeps a layout the form chose', () => {
     expect(resolveFormLayout({ layout: 'horizontal', labelCol: { span: 4 }, wrapperCol: { span: 20 } }, theme)).toMatchObject({
       layout: 'horizontal', labelCol: { span: 4 }, wrapperCol: { span: 20 },
