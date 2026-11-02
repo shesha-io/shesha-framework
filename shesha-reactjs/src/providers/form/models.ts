@@ -738,7 +738,7 @@ export const getOwnFormLayoutSettings = (settings: IFormSettings): OwnFormSettin
  */
 /** A form column with the theme's span where it inherits one, keeping the column's other settings (offset, etc.). */
 const resolveFormCol = (col: ColProps | undefined, inheritsSpan: boolean, themeSpan: NonNullable<ColProps['span']>): ColProps =>
-  inheritsSpan || !isDefined(col?.span) ? { ...col, span: themeSpan } : col ?? { span: themeSpan };
+  !inheritsSpan && isDefined(col) && isDefined(col.span) ? col : { ...col, span: themeSpan };
 
 export const resolveFormLayout = (
   settings: Partial<IFormSettingsCommon> | undefined,
