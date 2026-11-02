@@ -736,9 +736,12 @@ export const getOwnFormLayoutSettings = (settings: IFormSettings): OwnFormSettin
  * and spans too. Label alignment always comes from the theme, as forms have no setting for it.
  * Settings forms are framework chrome, so they never use the theme's.
  */
-/** A form column with the theme's span where it inherits one, keeping the column's other settings (offset, etc.). */
+/**
+ * A form column with the theme's span where it inherits one, keeping the column's other settings (offset, etc.).
+ * A column sized with flex has no span to inherit, so it is kept as it is.
+ */
 const resolveFormCol = (col: ColProps | undefined, inheritsSpan: boolean, themeSpan: NonNullable<ColProps['span']>): ColProps =>
-  !inheritsSpan && isDefined(col) && isDefined(col.span) ? col : { ...col, span: themeSpan };
+  isDefined(col) && (isDefined(col.flex) || (!inheritsSpan && isDefined(col.span))) ? col : { ...col, span: themeSpan };
 
 export const resolveFormLayout = (
   settings: Partial<IFormSettingsCommon> | undefined,

@@ -9,6 +9,7 @@ import { getPreviewComponentModel, getPreviewValue, getPreviewVariants, IPreview
 import { ComponentPreviewContext } from "@/providers/componentPreview";
 import { isDefined, isNotNullOrWhiteSpace } from "@/utils";
 import { CardTitle } from "../cardTitle";
+import { PreviewThemeProvider } from "./previewThemeProvider";
 
 export interface IComponentDefaultsPreviewProps {
   componentDefinition: IToolboxComponent;
@@ -42,14 +43,17 @@ export const PreviewForm: FC<IPreviewFormProps> = ({ markup, theme, className, f
       shaFormRef.current?.setValidationErrors(formErrors);
   }, [formErrors]);
 
+  // The edited theme, not the application's, so unsaved styles, fonts and inherited layout show.
   return (
-    <ConfigurableForm
-      mode="edit"
-      markup={markup}
-      initialValues={initialValues}
-      className={className}
-      shaFormRef={shaFormRef}
-    />
+    <PreviewThemeProvider theme={theme}>
+      <ConfigurableForm
+        mode="edit"
+        markup={markup}
+        initialValues={initialValues}
+        className={className}
+        shaFormRef={shaFormRef}
+      />
+    </PreviewThemeProvider>
   );
 };
 

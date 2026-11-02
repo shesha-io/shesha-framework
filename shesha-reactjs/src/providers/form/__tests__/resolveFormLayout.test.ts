@@ -27,6 +27,13 @@ describe('resolveFormLayout', () => {
     });
   });
 
+  it('adds no theme span to a column sized with flex', () => {
+    expect(resolveFormLayout({ layout: 'horizontal', labelCol: { flex: '100px' }, wrapperCol: { flex: 'auto', offset: 1 } }, theme)).toMatchObject({
+      labelCol: { flex: '100px' }, wrapperCol: { flex: 'auto', offset: 1 },
+    });
+    expect(resolveFormLayout({ layout: 'horizontal', labelCol: { flex: '100px' } }, theme).labelCol).not.toHaveProperty('span');
+  });
+
   it('keeps a layout the form chose', () => {
     expect(resolveFormLayout({ layout: 'horizontal', labelCol: { span: 4 }, wrapperCol: { span: 20 } }, theme)).toMatchObject({
       layout: 'horizontal', labelCol: { span: 4 }, wrapperCol: { span: 20 },
