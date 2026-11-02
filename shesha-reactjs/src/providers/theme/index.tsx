@@ -5,9 +5,9 @@ import './baseFont.css';
 import { ColorScheme, IConfigurableTheme, IThemeActionsContext, IThemeStateContext, normalizeColorScheme, ResolvedTheme, THEME_CONTEXT_INITIAL_STATE, ThemeComponentGroup, UiActionsContext, UiStateContext } from './contexts';
 import { useResolvedTheme } from './useResolvedTheme';
 import { applyThemeDefaults } from './defaults';
+import { getApplicationColorTokens } from './tokens';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
-import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { getThemeFontStack, THEME_FONT_VAR } from '@/designer-components/_settings/utils/font/utils';
 import { ensureWebFontLoaded } from '@/designer-components/_settings/utils/font/webFonts';
 
@@ -83,18 +83,8 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   }, [fontFamily]);
 
   const themeConfig = useMemo<ThemeConfig>(() => {
-    const appTheme = state.theme.application;
     const themeDefaults: ThemeConfig['token'] = {};
-
-    const theme: Partial<ThemeConfig['token']> = appTheme
-      ? {
-        ...(isNotNullOrWhiteSpace(appTheme.primaryColor) ? { colorPrimary: appTheme.primaryColor, colorLink: appTheme.primaryColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.infoColor) ? { colorInfo: appTheme.infoColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.successColor) ? { colorSuccess: appTheme.successColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.errorColor) ? { colorError: appTheme.errorColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.warningColor) ? { colorWarning: appTheme.warningColor } : {}),
-      }
-      : {};
+    const theme = getApplicationColorTokens(state.theme.application);
 
     const result: ThemeConfig = {
       algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
