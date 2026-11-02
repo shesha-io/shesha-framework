@@ -16,6 +16,7 @@ export interface IPreviewThemeProviderProps {
  * the component and group style getters, the Ant Design colour tokens and the font token all follow it,
  * so unsaved styles, colours and fonts show straight away - including the layout a form inherits from the
  * theme (see `resolveFormLayout`). The colour scheme is left alone: configured forms always render light.
+ * Wrap a whole preview once, not each of its forms, so its variants share one provider and popup container.
  */
 export const PreviewThemeProvider: FC<PropsWithChildren<IPreviewThemeProviderProps>> = ({ theme, children }) => {
   const parentState = useThemeState();
@@ -39,23 +40,42 @@ export const PreviewThemeProvider: FC<PropsWithChildren<IPreviewThemeProviderPro
   useEffect(() => {
     ensureWebFontLoaded(fontFamily);
   }, [fontFamily]);
-  const fontStyle = useMemo(() => ({ position: 'relative', [THEME_FONT_VAR]: fontFamily }) as CSSProperties, [fontFamily]);
+  const fontStyle = useMemo(() => ({ display: 'contents', [THEME_FONT_VAR]: fontFamily }) as CSSProperties, [fontFamily]);
 
   const themeConfig = useMemo(
     () => ({ token: { ...getApplicationColorTokens(theme.application), fontFamily } }),
     [theme.application, fontFamily],
   );
 
-  // Popups (e.g. dropdown options) render inside the wrapper rather than the page body, so they get the
-  // preview's font variable too.
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const getPopupContainer = useCallback(() => wrapperRef.current ?? document.body, []);
+  // Popups (e.g. dropdown options) render into a preview-only container on the page body: outside the
+  // settings' scroll container, so they are not clipped, and carrying the preview's font variable.
+  // It is only created when a popup first opens, as most previews never open one.
+  const popupContainerRef = useRef<HTMLDivElement | null>(null);
+  const fontFamilyRef = useRef(fontFamily);
+  useEffect(() => {
+    fontFamilyRef.current = fontFamily;
+    popupContainerRef.current?.style.setProperty(THEME_FONT_VAR, fontFamily);
+  }, [fontFamily]);
+  useEffect(() => () => {
+    popupContainerRef.current?.remove();
+    popupContainerRef.current = null;
+  }, []);
+  const getPopupContainer = useCallback((): HTMLElement => {
+    if (!popupContainerRef.current) {
+      const container = document.createElement('div');
+      container.className = 'sha-theme-preview-popups';
+      container.style.setProperty(THEME_FONT_VAR, fontFamilyRef.current);
+      document.body.appendChild(container);
+      popupContainerRef.current = container;
+    }
+    return popupContainerRef.current;
+  }, []);
 
   return (
     <UiStateContext.Provider value={state}>
       <UiActionsContext.Provider value={actions}>
         <ConfigProvider theme={themeConfig} getPopupContainer={getPopupContainer}>
-          <div ref={wrapperRef} style={fontStyle}>
+          <div style={fontStyle}>
             {children}
           </div>
         </ConfigProvider>

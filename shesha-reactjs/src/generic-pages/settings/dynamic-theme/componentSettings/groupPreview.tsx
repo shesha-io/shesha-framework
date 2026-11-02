@@ -10,6 +10,7 @@ import { useStyles } from '../styles/styles';
 import { CardTitle } from '../cardTitle';
 import { getDataTablePreviewModel, getPreviewComponentModel, getPreviewValue, SAMPLE_TABLE_PROPERTY, SAMPLE_TABLE_ROWS } from './previewModel';
 import { PreviewForm } from './preview';
+import { PreviewThemeProvider } from './previewThemeProvider';
 
 /**
  * Sample components previewed on each style-group tab, by component type - common members of the
@@ -87,15 +88,17 @@ export const GroupDefaultsPreview: FC<IGroupDefaultsPreviewProps> = ({ group, th
         />
       )}
     >
-      <ComponentPreviewContext.Provider value={true}>
-        <PreviewForm
-          markup={preview.markup}
-          theme={theme}
-          className={styles.appearanceForm}
-          formErrors={undefined}
-          previewValues={preview.previewValues}
-        />
-      </ComponentPreviewContext.Provider>
+      <PreviewThemeProvider theme={theme}>
+        <ComponentPreviewContext.Provider value={true}>
+          <PreviewForm
+            markup={preview.markup}
+            theme={theme}
+            className={styles.appearanceForm}
+            formErrors={undefined}
+            previewValues={preview.previewValues}
+          />
+        </ComponentPreviewContext.Provider>
+      </PreviewThemeProvider>
     </Card>
   );
 };
