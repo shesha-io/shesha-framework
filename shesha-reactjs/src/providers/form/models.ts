@@ -684,6 +684,7 @@ export interface IResolvedFormLayout {
   labelCol: ColProps;
   wrapperCol: ColProps;
   labelAlign?: FormLabelAlign | undefined;
+  colon?: boolean | undefined;
 }
 
 const GRID_COLUMNS = 24;
@@ -701,35 +702,65 @@ const isBuiltInDefaultLayout = (settings: Partial<IFormSettingsCommon>): boolean
   settings.labelCol?.span === DEFAULT_FORM_SETTINGS.labelCol.span &&
   settings.wrapperCol?.span === DEFAULT_FORM_SETTINGS.wrapperCol.span;
 
+/** Adds the optional parts of a resolved layout only when defined (exactOptionalPropertyTypes rejects explicit undefined). */
+const withOptional = (
+  resolved: Pick<IResolvedFormLayout, 'layout' | 'labelCol' | 'wrapperCol'>,
+  optional: Pick<IResolvedFormLayout, 'labelAlign' | 'colon'>,
+): IResolvedFormLayout => ({
+  ...resolved,
+  ...(isDefined(optional.labelAlign) ? { labelAlign: optional.labelAlign } : {}),
+  ...(isDefined(optional.colon) ? { colon: optional.colon } : {}),
+});
+
+/** Theme settings a form inherits the values it does not set from. */
+export type FormLayoutTheme = Pick<IConfigurableTheme, 'layout' | 'labelSpan' | 'componentSpan' | 'labelAlign' | 'colon'>;
+
 /**
- * Effective layout of a form. Layout, label span and component span come from the form's settings when
- * it set them, and from the theme's Form Span settings when it did not - unset, or still on the
- * built-in default (see {@link isBuiltInDefaultLayout}). Label alignment always comes from the theme,
- * as forms have no setting for it. Settings forms are framework chrome, so they never use the theme's.
+ * The form's own layout settings, without the ones it inherits from the theme: a form still on the
+ * built-in default layout (see {@link isBuiltInDefaultLayout}) inherits layout and spans, so they are dropped.
+ */
+export type OwnFormSettings = Omit<IFormSettings, 'layout'> & { layout?: FormLayout };
+
+export const getOwnFormLayoutSettings = (settings: IFormSettings): OwnFormSettings => {
+  if (!isBuiltInDefaultLayout(settings)) return settings;
+  const { layout: _layout, ...rest } = settings;
+  const { span: _labelSpan, ...labelCol } = settings.labelCol;
+  const { span: _wrapperSpan, ...wrapperCol } = settings.wrapperCol;
+  return { ...rest, labelCol, wrapperCol };
+};
+
+/**
+ * Effective layout of a form: Layout, Colon, Label Span and Component Span each come from the
+ * form's settings when it set them, and are inherited from the theme's Form Span settings when it did
+ * not. A form still on the built-in default layout (see {@link isBuiltInDefaultLayout}) inherits layout
+ * and spans too. Label alignment always comes from the theme, as forms have no setting for it.
+ * Settings forms are framework chrome, so they never use the theme's.
  */
 export const resolveFormLayout = (
   settings: Partial<IFormSettingsCommon> | undefined,
-  theme: Pick<IConfigurableTheme, 'layout' | 'labelSpan' | 'componentSpan' | 'labelAlign'> | undefined,
+  theme: FormLayoutTheme | undefined,
 ): IResolvedFormLayout => {
   const own = settings ?? {};
   if (own.isSettingsForm === true || !isDefined(theme)) {
-    return {
+    return withOptional({
       layout: own.layout ?? DEFAULT_FORM_SETTINGS.layout,
       labelCol: isColUnset(own.labelCol) ? DEFAULT_FORM_SETTINGS.labelCol : own.labelCol ?? DEFAULT_FORM_SETTINGS.labelCol,
       wrapperCol: isColUnset(own.wrapperCol) ? DEFAULT_FORM_SETTINGS.wrapperCol : own.wrapperCol ?? DEFAULT_FORM_SETTINGS.wrapperCol,
-    };
+    }, { colon: own.colon });
   }
 
-  const followsTheme = isBuiltInDefaultLayout(own);
+  const layoutFollowsTheme = isBuiltInDefaultLayout(own);
   const themeLabelSpan = theme.labelSpan ?? DEFAULT_FORM_SETTINGS.labelCol.span ?? 6;
   const themeComponentSpan = theme.componentSpan ?? GRID_COLUMNS - Number(themeLabelSpan);
 
-  return {
-    layout: followsTheme || !isDefined(own.layout) ? theme.layout ?? DEFAULT_FORM_SETTINGS.layout : own.layout,
-    labelCol: followsTheme || isColUnset(own.labelCol) ? { span: themeLabelSpan } : own.labelCol ?? { span: themeLabelSpan },
-    wrapperCol: followsTheme || isColUnset(own.wrapperCol) ? { span: themeComponentSpan } : own.wrapperCol ?? { span: themeComponentSpan },
-    ...(isDefined(theme.labelAlign) ? { labelAlign: theme.labelAlign } : {}),
-  };
+  return withOptional({
+    layout: layoutFollowsTheme || !isDefined(own.layout) ? theme.layout ?? DEFAULT_FORM_SETTINGS.layout : own.layout,
+    labelCol: layoutFollowsTheme || isColUnset(own.labelCol) ? { span: themeLabelSpan } : own.labelCol ?? { span: themeLabelSpan },
+    wrapperCol: layoutFollowsTheme || isColUnset(own.wrapperCol) ? { span: themeComponentSpan } : own.wrapperCol ?? { span: themeComponentSpan },
+  }, {
+    labelAlign: theme.labelAlign,
+    colon: own.colon ?? theme.colon,
+  });
 };
 
 export type ActionParametersJs = string;

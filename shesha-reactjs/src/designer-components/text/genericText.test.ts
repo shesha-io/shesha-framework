@@ -15,6 +15,8 @@ describe('getColorByContentType', () => {
 
   it('falls back to the theme default text colour when no inline colour is set', () => {
     expect(getColorByContentType('', undefined, theme())).toBe('#111111');
+    expect(getColorByContentType(undefined, undefined, theme())).toBe('#111111');
+    expect(getColorByContentType('default', undefined, theme())).toBe('#111111');
   });
 
   it('ignores a leftover custom colour on default text', () => {

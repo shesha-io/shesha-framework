@@ -1,7 +1,7 @@
 import { Form, FormInstance, FormProps } from 'antd';
 import { RefObject, PropsWithChildren, ComponentProps, ReactNode } from 'react';
 import { useForm } from '@/providers';
-import { IFormSettings, resolveFormColon, resolveFormLayout } from '@/providers/form/models';
+import { IFormSettings, resolveFormLayout } from '@/providers/form/models';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { useThemeState } from '@/providers/theme';
 import { useDelayedUpdateOrUndefined } from '../delayedUpdateProvider/index';
@@ -18,10 +18,9 @@ interface FormWrapperProps<TData extends object = object> {
 
 const extractantdFormPropertiesFromFormSettings = (formSettings: IFormSettings | undefined, theme: IConfigurableTheme): Partial<Pick<ComponentProps<typeof Form>, 'layout' | 'colon' | 'labelCol' | 'wrapperCol' | 'labelAlign' | 'size'>> => {
   if (!formSettings) return {};
+  // The form's own layout settings, falling back to (or inheriting) the theme's.
   const { size } = formSettings;
-  // The form's own Colon and layout settings, falling back to the theme's.
-  const colon = resolveFormColon(formSettings.colon, formSettings.isSettingsForm === true, theme.colon);
-  const { layout, labelCol, wrapperCol, labelAlign } = resolveFormLayout(formSettings, theme);
+  const { layout, labelCol, wrapperCol, labelAlign, colon } = resolveFormLayout(formSettings, theme);
   return {
     ...removeUndefinedProperties({ layout, labelCol, wrapperCol, size }),
     ...(labelAlign !== undefined ? { labelAlign } : {}),

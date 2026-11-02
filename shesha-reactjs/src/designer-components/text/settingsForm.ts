@@ -46,7 +46,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                       : 'return data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.level === 0;',
                   })
                   .addSettingsInput({ inputType: 'dropdown', propertyName: 'contentType', label: 'Type', hideLabel: false, dropdownOptions: [
-                    { label: 'Default', value: '' }, { label: 'Primary', value: 'primary' }, { label: 'Secondary', value: 'secondary' }, { label: 'Success', value: 'success' },
+                    { label: 'Default', value: 'default' }, { label: 'Primary', value: 'primary' }, { label: 'Secondary', value: 'secondary' }, { label: 'Success', value: 'success' },
                     { label: 'Warning', value: 'warning' }, { label: 'Info', value: 'info' }, { label: 'Error', value: 'danger' }, { label: 'Custom color', value: 'custom' },
                   ] })
                   .addSettingsInput({ inputType: 'colorPicker', label: 'Custom Color', propertyName: 'font.color', jsSetting: true,
@@ -82,7 +82,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                       { type: 'dropdown', label: 'Align', propertyName: 'font.align', hideLabel: true, width: 60, dropdownOptions: textAlignOptions },
                     ] })
                     .addSettingsInput({ inputType: 'dropdown', propertyName: 'contentType', label: 'Type', hideLabel: false, dropdownOptions: [
-                      { label: 'Default', value: '' }, { label: 'Primary', value: 'primary' }, { label: 'Secondary', value: 'secondary' }, { label: 'Success', value: 'success' },
+                      { label: 'Default', value: 'default' }, { label: 'Primary', value: 'primary' }, { label: 'Secondary', value: 'secondary' }, { label: 'Success', value: 'success' },
                       { label: 'Warning', value: 'warning' }, { label: 'Info', value: 'info' }, { label: 'Error', value: 'danger' }, { label: 'Custom color', value: 'custom' },
                     ] })
                     .addSettingsInput({ inputType: 'colorPicker', label: 'Custom Color', propertyName: 'font.color', jsSetting: true,

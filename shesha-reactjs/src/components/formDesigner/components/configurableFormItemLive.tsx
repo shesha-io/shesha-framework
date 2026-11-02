@@ -35,7 +35,7 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
   // 'auto' carries no fixed height, so fall back to the default alignment in that case.
   // The theme label font is for application forms, not the designer's own settings forms.
   const { theme } = useThemeState();
-  const labelFont = shaForm.settings?.isSettingsForm === true ? undefined : theme.labelFont;
+  const labelFont = shaForm.isSettingsForm ? undefined : theme.labelFont;
   const { styles } = useStyles({ ...model, autoAlignLabel, labelFont });
 
   const layout = useMemo(() => {
@@ -49,8 +49,7 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
 
   if (hidden) return null;
 
-  const isVertical = (model.layout ?? resolveFormLayout(shaForm.settings, theme).layout) === 'vertical';
-
+  const isVertical = (model.layout ?? resolveFormLayout({ ...shaForm.settings, isSettingsForm: shaForm.isSettingsForm }, theme).layout) === 'vertical';
   const { top: defaultMarginTop, left: defaultMarginLeft, right: defaultMarginRight, bottom: defaultMarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
 
   const {

@@ -4,6 +4,7 @@ import './interFont.generated.css';
 import './baseFont.css';
 import { ColorScheme, IConfigurableTheme, IThemeActionsContext, IThemeStateContext, normalizeColorScheme, ResolvedTheme, THEME_CONTEXT_INITIAL_STATE, ThemeComponentGroup, UiActionsContext, UiStateContext } from './contexts';
 import { useResolvedTheme } from './useResolvedTheme';
+import { applyThemeDefaults } from './defaults';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
 import { isNotNullOrWhiteSpace } from '@/utils/nullables';
@@ -33,7 +34,8 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     // load theme settings
     const loaded = await settings.getSetting<IConfigurableTheme>({ module: 'Shesha', name: 'Shesha.ThemeSettings' });
     // Persisted settings predate the 'system' option, so the stored scheme may be empty or stale.
-    const theme: IConfigurableTheme = { ...loaded, sidebar: normalizeColorScheme(loaded.sidebar) };
+    // Fills in the label and input font defaults a theme is initialised with, where it saved none.
+    const theme: IConfigurableTheme = applyThemeDefaults({ ...loaded, sidebar: normalizeColorScheme(loaded.sidebar) });
     setState((prev) => ({ ...prev, theme: theme, initialTheme: theme }));
   });
 

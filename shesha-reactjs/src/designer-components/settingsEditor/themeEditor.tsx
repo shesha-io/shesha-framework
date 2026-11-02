@@ -7,8 +7,9 @@ import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/provi
 
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { IConfigurableTheme, useTheme } from '@/providers/theme';
+import { applyThemeDefaults } from '@/providers/theme/defaults';
 import { EditOutlined } from '@ant-design/icons';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import settingsFormJson from './settingsForm.json';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -70,19 +71,22 @@ const ThemeEditorComponent: IToolboxComponent = {
       };
     });
 
+    // The saved theme with the label/input font defaults filled in, so they show here and are saved with it.
+    const themeValue = useMemo(() => applyThemeDefaults(form.formData ?? EMPTY_THEME), [form.formData]);
+
     useEffect(() => {
       if (form.formData) {
-        changeTheme(form.formData);
-        localTheme.current = form.formData;
+        changeTheme(themeValue);
+        localTheme.current = themeValue;
       }
-    }, [changeTheme, form.formData]);
+    }, [changeTheme, form.formData, themeValue]);
 
     const onChangeInternal = (changedValue: IConfigurableTheme): void => {
       form.setFormData({ values: changedValue, mergeValues: true });
     };
 
     return (
-      <ConfigurableThemeContent value={form.formData ?? EMPTY_THEME} onChange={onChangeInternal} readOnly={settingsEditor?.editorMode === 'readonly'} />
+      <ConfigurableThemeContent value={themeValue} onChange={onChangeInternal} readOnly={settingsEditor?.editorMode === 'readonly'} />
     );
   },
   settingsFormMarkup: settingsForm,

@@ -31,7 +31,9 @@ export const getColorByContentType = (contentType: ContentType | undefined, colo
       return color;
     case 'secondary':
       return theme?.text?.secondary;
+    case 'default':
     case '':
+    case undefined:
       // Default text follows the inline components' font colour, then the theme's default text colour.
       return getThemeFontColor(theme, componentType) ?? theme?.text?.default;
     default:

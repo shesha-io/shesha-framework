@@ -458,7 +458,7 @@ export const getFormSettingsFormMarkup: SettingsFormMarkupFactory = ({ fbf }) =>
                 label: 'Layout',
                 parentId: appearanceTabId,
                 allowClear: true,
-                tooltip: 'Leave empty to use the theme\'s Form Span settings. A form still on the original default (horizontal, label span 6, component span 18) also follows the theme.',
+                tooltip: 'horizontal or vertical. Inherited from the theme\'s Form Span settings unless overridden.',
                 dropdownOptions: [
                   { label: 'horizontal', value: 'horizontal' },
                   { label: 'vertical', value: 'vertical' },
@@ -483,7 +483,7 @@ export const getFormSettingsFormMarkup: SettingsFormMarkupFactory = ({ fbf }) =>
                 propertyName: 'colon',
                 label: 'Colon',
                 parentId: appearanceTabId,
-                tooltip: 'Configure the default value of colon for Form.Item. Indicates whether the colon after the label is displayed (only effective when prop layout is horizontal)',
+                tooltip: 'Whether a colon is displayed after labels (only effective when layout is horizontal). Inherited from the theme\'s Form Span settings unless overridden.',
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -491,7 +491,7 @@ export const getFormSettingsFormMarkup: SettingsFormMarkupFactory = ({ fbf }) =>
                 propertyName: 'labelCol.span',
                 label: 'Label Span',
                 parentId: appearanceTabId,
-                tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none. Leave empty to use the theme\'s label span.',
+                tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none. Inherited from the theme\'s Form Span settings unless overridden.',
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -499,8 +499,7 @@ export const getFormSettingsFormMarkup: SettingsFormMarkupFactory = ({ fbf }) =>
                 propertyName: 'wrapperCol.span',
                 label: 'Component Span',
                 parentId: appearanceTabId,
-                tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none. Leave empty to use the theme\'s component span.',
-
+                tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none. Inherited from the theme\'s Form Span settings unless overridden.',
               })
               .toJson(),
             ],

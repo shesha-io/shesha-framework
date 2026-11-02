@@ -1,4 +1,4 @@
-import { resolveFormLayout } from '../models';
+import { getOwnFormLayoutSettings, IFormSettings, resolveFormLayout } from '../models';
 
 const theme = { layout: 'vertical' as const, labelSpan: 8, componentSpan: 16, labelAlign: 'left' as const };
 
@@ -32,5 +32,22 @@ describe('resolveFormLayout', () => {
     expect(resolveFormLayout({ isSettingsForm: true, layout: 'vertical', labelCol: { span: 24 }, wrapperCol: { span: 24 } }, theme)).toEqual({
       layout: 'vertical', labelCol: { span: 24 }, wrapperCol: { span: 24 },
     });
+  });
+
+  it('inherits colon from the theme unless the form overrides it', () => {
+    expect(resolveFormLayout({}, { ...theme, colon: false })).toMatchObject({ colon: false });
+    expect(resolveFormLayout({ colon: true }, { ...theme, colon: false })).toMatchObject({ colon: true });
+  });
+});
+
+describe('getOwnFormLayoutSettings', () => {
+  it('drops the layout and spans of a form still on the built-in default, as it inherits them', () => {
+    const own: IFormSettings = { layout: 'horizontal', labelCol: { span: 6 }, wrapperCol: { span: 18, offset: 1 }, colon: false };
+    expect(getOwnFormLayoutSettings(own)).toEqual({ labelCol: {}, wrapperCol: { offset: 1 }, colon: false });
+  });
+
+  it('keeps a layout the form chose', () => {
+    const own: IFormSettings = { layout: 'vertical', labelCol: { span: 24 }, wrapperCol: { span: 24 } };
+    expect(getOwnFormLayoutSettings(own)).toBe(own);
   });
 });
