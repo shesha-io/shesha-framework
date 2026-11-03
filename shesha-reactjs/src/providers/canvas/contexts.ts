@@ -1,5 +1,5 @@
 import { createNamedContext } from '@/utils/react';
-import { defaultDesignerWidth } from './utils';
+import { DEFAULT_OPTIONS, defaultDesignerWidth } from './utils';
 
 export type DeviceTypes = 'desktop' | 'mobile' | 'tablet' | 'custom';
 
@@ -25,7 +25,7 @@ export interface ICanvasActionsContext {
 }
 
 export const CANVAS_CONTEXT_INITIAL_STATE: ICanvasStateContext = {
-  zoom: 80,
+  zoom: DEFAULT_OPTIONS.defaultZoom,
   autoZoom: false,
   designerDevice: 'desktop',
   designerWidth: defaultDesignerWidth,

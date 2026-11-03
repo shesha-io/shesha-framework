@@ -5,9 +5,12 @@ import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
 import { dimensionRelativeToCanvas } from "@/providers/canvas/utils";
 
+/** vw/vh only convert against an absolute canvas size (a device preset); a relative canvas (e.g. the pane-filling '100%') keeps real viewport units */
+const isAbsoluteCanvasSize = (canvasSize?: string): canvasSize is string =>
+  typeof canvasSize === 'string' && /px\s*$/i.test(canvasSize.trim());
+
 const getWidthDimension = (main: string | number, canvasWidth?: string, context?: object): string | number | undefined => {
-  // If canvasWidth is provided and main contains vw, convert to calc
-  if (canvasWidth && typeof main === 'string' && /vw/i.test(main)) {
+  if (isAbsoluteCanvasSize(canvasWidth) && typeof main === 'string' && /vw/i.test(main)) {
     return dimensionRelativeToCanvas(main, canvasWidth, 'vw');
   }
 
@@ -17,8 +20,7 @@ const getWidthDimension = (main: string | number, canvasWidth?: string, context?
 };
 
 const getHeightDimension = (main: string | number, canvasHeight?: string, context?: object): string | number | undefined => {
-  // If canvasHeight is provided and main contains vh, convert to calc
-  if (canvasHeight && typeof main === 'string' && /vh/i.test(main)) {
+  if (isAbsoluteCanvasSize(canvasHeight) && typeof main === 'string' && /vh/i.test(main)) {
     return dimensionRelativeToCanvas(main, canvasHeight, 'vh');
   }
 

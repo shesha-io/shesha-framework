@@ -12,6 +12,8 @@ const getShaComponentStyles = createStyles(({ css, cx, token }, wrapperStyle: IS
   const wrapperPadding = paddingStyles(wrapperStyle.stylingBoxJson);
 
   const shaComponent = cx(designerClassNames.shaComponent, css`
+    max-width: 100%;
+    min-width: 0;
     ${dimensionsStyles({ height: 'auto', width: 'auto', ...wrapperStyle.dimensions })}
     ${wrapperStyle.dimensions?.width === 'stretch' ? 'flex: 1;' : ''}
 

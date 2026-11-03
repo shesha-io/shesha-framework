@@ -21,7 +21,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     .${designerCanvas} {
         margin: 0 auto;
         height: 100%;
-        overflow: auto;
+        overflow: hidden auto;
         transform-origin: top left;
         box-shadow: 0px 1px 6px 0px #00000030;
     }

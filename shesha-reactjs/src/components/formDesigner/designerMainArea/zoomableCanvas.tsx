@@ -43,6 +43,12 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
   }, [autoZoom, canZoom, designerWidth, setCanvasZoom, zoom]);
   const wrapperRef = useElementSizeTracking(onResize);
 
+  // CSS zoom scales percentage widths too, so a pane-filling width must be pre-divided by the
+  // zoom factor to render at exactly the pane width (no horizontal scrollbar at any zoom level).
+  const canvasWidth = designerWidth.includes('%')
+    ? `calc(${designerWidth} / ${zoom / 100})`
+    : designerWidth;
+
   return (
     <>
       <div className={styles.canvasWrapper} ref={wrapperRef}>
@@ -50,7 +56,7 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
           ref={canvasRef}
           className={classNames({ [styles.designerCanvas]: canZoom })}
           style={canZoom ? {
-            width: designerWidth,
+            width: canvasWidth,
             zoom: `${zoom}%`,
             backgroundColor: theme.layoutBackground,
           } : {}}
