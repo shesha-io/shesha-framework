@@ -49,7 +49,7 @@ export const dimensionRelativeToCanvas = (
   return trimmed;
 };
 
-export const defaultDesignerWidth = `${(typeof window !== 'undefined' ? window.screen.availWidth : 1024)}px`;
+export const defaultDesignerWidth = '100%';
 
 /** Sentinel value for the responsive Canvas preset in the dropdown */
 export const CANVAS_PRESET_SENTINEL = '__CANVAS_RESPONSIVE__' as const;
@@ -65,12 +65,12 @@ export interface IAutoZoomParams {
  * Direct numeric entry in the zoom input is free-form within [minZoom, maxZoom]
  * and is not restricted to these levels.
  */
-const ZOOM_LEVELS = [25, 50, 75, 80, 100, 125, 150, 200] as const;
+const ZOOM_LEVELS = [25, 50, 75, 100, 125, 150, 175, 200] as const;
 
 export const DEFAULT_OPTIONS = {
   minZoom: 10,
   maxZoom: 400,
-  defaultZoom: 80,
+  defaultZoom: 75,
   designerWidth: defaultDesignerWidth,
   zoomStep: 1,
   zoomLevels: ZOOM_LEVELS,
@@ -85,6 +85,8 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     containerWidth,
   } = params;
 
+  if (!Number.isFinite(containerWidth) || containerWidth <= 0) return params.currentZoom;
+
   const windowWidth = window.innerWidth;
 
   let canvasWidth: number;
@@ -93,9 +95,14 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   } else if (designerWidth.includes('vw')) {
     const vwValue = parseFloat(designerWidth.replace('vw', ''));
     canvasWidth = (vwValue / 100) * windowWidth;
+  } else if (designerWidth.includes('%')) {
+    const pctValue = parseFloat(designerWidth.replace('%', ''));
+    canvasWidth = (pctValue / 100) * containerWidth;
   } else {
     canvasWidth = parseFloat(designerWidth);
   }
+
+  if (!Number.isFinite(canvasWidth) || canvasWidth <= 0) return params.currentZoom;
 
   const optimalZoom = (containerWidth / canvasWidth) * 100;
   return Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, Math.floor(optimalZoom)));

@@ -5,24 +5,23 @@ import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
 import { dimensionRelativeToCanvas } from "@/providers/canvas/utils";
 
+const isAbsoluteCanvasSize = (canvasSize?: string): canvasSize is string =>
+  typeof canvasSize === 'string' && /px\s*$/i.test(canvasSize.trim());
+
 const getWidthDimension = (main: string | number, canvasWidth?: string, context?: object): string | number | undefined => {
-  // If canvasWidth is provided and main contains vw, convert to calc
-  if (canvasWidth && typeof main === 'string' && /vw/i.test(main)) {
-    return dimensionRelativeToCanvas(main, canvasWidth, 'vw');
+  if (typeof main === 'string' && /vw/i.test(main)) {
+    return isAbsoluteCanvasSize(canvasWidth) ? dimensionRelativeToCanvas(main, canvasWidth, 'vw') : main;
   }
 
-  // For simple numeric values or values without vw, use addPx
   if (typeof main === 'string' && /^calc\(/i.test(main.trim())) return main;
   return !hasNumber(main) ? main : addPx(main, context);
 };
 
 const getHeightDimension = (main: string | number, canvasHeight?: string, context?: object): string | number | undefined => {
-  // If canvasHeight is provided and main contains vh, convert to calc
-  if (canvasHeight && typeof main === 'string' && /vh/i.test(main)) {
-    return dimensionRelativeToCanvas(main, canvasHeight, 'vh');
+  if (typeof main === 'string' && /vh/i.test(main)) {
+    return isAbsoluteCanvasSize(canvasHeight) ? dimensionRelativeToCanvas(main, canvasHeight, 'vh') : main;
   }
 
-  // For simple numeric values or values without vh, use addPx
   if (typeof main === 'string' && /^calc\(/i.test(main.trim())) return main;
   return !hasNumber(main) ? main : addPx(main, context);
 };
