@@ -49,7 +49,6 @@ export const dimensionRelativeToCanvas = (
   return trimmed;
 };
 
-/** The responsive "Canvas" width: fills the pane between the toolbox and properties panels */
 export const defaultDesignerWidth = '100%';
 
 /** Sentinel value for the responsive Canvas preset in the dropdown */

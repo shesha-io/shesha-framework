@@ -7,7 +7,6 @@ import { CANVAS_PRESET_SENTINEL, defaultDesignerWidth, getDeviceTypeByWidth, scr
 export const DeviceOptions: FC = () => {
   const { setCanvasWidth, designerWidth } = useCanvas();
 
-  // The pane-filling default width displays as "Canvas" in the dropdown
   const displayValue = designerWidth === defaultDesignerWidth ? CANVAS_PRESET_SENTINEL : designerWidth;
 
   return (

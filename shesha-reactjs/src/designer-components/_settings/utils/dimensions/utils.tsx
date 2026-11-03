@@ -5,7 +5,6 @@ import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
 import { dimensionRelativeToCanvas } from "@/providers/canvas/utils";
 
-/** vw/vh only convert against an absolute canvas size (a device preset); a relative canvas (e.g. the pane-filling '100%') keeps real viewport units */
 const isAbsoluteCanvasSize = (canvasSize?: string): canvasSize is string =>
   typeof canvasSize === 'string' && /px\s*$/i.test(canvasSize.trim());
 
