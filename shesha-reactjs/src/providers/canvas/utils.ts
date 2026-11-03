@@ -85,6 +85,8 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     containerWidth,
   } = params;
 
+  if (!Number.isFinite(containerWidth) || containerWidth <= 0) return params.currentZoom;
+
   const windowWidth = window.innerWidth;
 
   let canvasWidth: number;
@@ -99,6 +101,8 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   } else {
     canvasWidth = parseFloat(designerWidth);
   }
+
+  if (!Number.isFinite(canvasWidth) || canvasWidth <= 0) return params.currentZoom;
 
   const optimalZoom = (containerWidth / canvasWidth) * 100;
   return Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, Math.floor(optimalZoom)));

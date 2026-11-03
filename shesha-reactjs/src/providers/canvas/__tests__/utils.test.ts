@@ -20,4 +20,10 @@ describe('calculateAutoZoom', () => {
   it('resolves a px width against the container', () => {
     expect(calculateAutoZoom({ currentZoom: 75, designerWidth: '1920px', containerWidth: 960 })).toBe(50);
   });
+
+  it('keeps the current zoom when measurements are unusable', () => {
+    expect(calculateAutoZoom({ currentZoom: 75, designerWidth: '100%', containerWidth: 0 })).toBe(75);
+    expect(calculateAutoZoom({ currentZoom: 75, designerWidth: '100%', containerWidth: NaN })).toBe(75);
+    expect(calculateAutoZoom({ currentZoom: 75, designerWidth: 'bogus', containerWidth: 960 })).toBe(75);
+  });
 });

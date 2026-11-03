@@ -7,13 +7,12 @@ import { useMemo } from "react";
 import { deepMergeValues } from "@/utils/object";
 import { DEFAULT_DESIGNER_PADDING } from "../utils/stylingUtils";
 
-const getShaComponentStyles = createStyles(({ css, cx, token }, wrapperStyle: IStyleValue) => {
+const getShaComponentStyles = createStyles(({ css, cx, token }, { wrapperStyle, isDesigner }: { wrapperStyle: IStyleValue; isDesigner: boolean }) => {
   const wrapperMargin = marginStyles(wrapperStyle.stylingBoxJson);
   const wrapperPadding = paddingStyles(wrapperStyle.stylingBoxJson);
 
   const shaComponent = cx(designerClassNames.shaComponent, css`
-    max-width: 100%;
-    min-width: 0;
+    ${isDesigner ? 'max-width: 100%; min-width: 0;' : ''}
     ${dimensionsStyles({ height: 'auto', width: 'auto', ...wrapperStyle.dimensions })}
     ${wrapperStyle.dimensions?.width === 'stretch' ? 'flex: 1;' : ''}
 
@@ -60,6 +59,6 @@ export const useShaComponentStyles = (
     return deepMergeValues(defaultWrapperStyle, wrapperStyle);
   }, [componentModel, defaultWrapperStyle, isDesigner, toolboxComponent]);
 
-  return getShaComponentStyles(wrapperStyle);
+  return getShaComponentStyles({ wrapperStyle, isDesigner });
 };
 

@@ -43,10 +43,6 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
   }, [autoZoom, canZoom, designerWidth, setCanvasZoom, zoom]);
   const wrapperRef = useElementSizeTracking(onResize);
 
-  const canvasWidth = designerWidth.includes('%')
-    ? `calc(${designerWidth} / ${zoom / 100})`
-    : designerWidth;
-
   return (
     <>
       <div className={styles.canvasWrapper} ref={wrapperRef}>
@@ -54,7 +50,7 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
           ref={canvasRef}
           className={classNames({ [styles.designerCanvas]: canZoom })}
           style={canZoom ? {
-            width: canvasWidth,
+            width: designerWidth,
             zoom: `${zoom}%`,
             backgroundColor: theme.layoutBackground,
           } : {}}

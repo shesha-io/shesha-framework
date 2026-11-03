@@ -7,6 +7,8 @@ describe('getDimensionsStyle vw/vh conversion', () => {
 
   it('keeps real viewport units when the canvas width is relative', () => {
     expect(getDimensionsStyle({ width: '50vw' }, '100%').width).toBe('50vw');
+    expect(getDimensionsStyle({ width: '.5vw' }, '100%').width).toBe('.5vw');
+    expect(getDimensionsStyle({ width: '50VW' }, '100%').width).toBe('50VW');
   });
 
   it('keeps real viewport units when no canvas width is provided', () => {
