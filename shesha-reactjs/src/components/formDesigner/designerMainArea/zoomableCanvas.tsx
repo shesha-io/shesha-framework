@@ -43,7 +43,6 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
   }, [autoZoom, canZoom, designerWidth, setCanvasZoom, zoom]);
   const wrapperRef = useElementSizeTracking(onResize);
 
-  // CSS zoom scales % widths, so pre-divide to keep the canvas at pane width
   const canvasWidth = designerWidth.includes('%')
     ? `calc(${designerWidth} / ${zoom / 100})`
     : designerWidth;
