@@ -8,7 +8,6 @@ using Abp.Net.Mail;
 using Abp.Net.Mail.Smtp;
 using Abp.Reflection.Extensions;
 using Abp.Runtime.Session;
-using Abp.Threading;
 using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
 using Shesha.ConfigurationItems;
@@ -92,15 +91,11 @@ namespace Shesha
 
             IocManager.Register<NullSmsGateway, NullSmsGateway>(DependencyLifeStyle.Transient);
 
+            // Backward-compatible registration. Resolving ISmsGateway only constructs DelegatingSmsGateway.
+            // It does not read settings or call ISmsGatewayFactory until a member is awaited.
+            // Each operation then releases the gateway it resolved. New code should inject ISmsGatewayFactory.
             IocManager.IocContainer.Register(
-                Component.For<ISmsGateway>().UsingFactoryMethod(f =>
-                {
-                    // NOTE: ISmsGateway is registered for backward compatibility but it shound't be resolved using IoC.
-                    // Use <see cref="ISmsGatewayFactory"/> to get instance of <see cref="ISmsGateway"/>
-                    var factory = f.Resolve<ISmsGatewayFactory>();
-                    var gateway = AsyncHelper.RunSync(() => factory.GetSmsGatewayAsync());
-                    return gateway;
-                }, managedExternally: true).LifestyleTransient()
+                Component.For<ISmsGateway>().ImplementedBy<DelegatingSmsGateway>().LifestyleTransient()
             );
 
             #endregion

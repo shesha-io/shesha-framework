@@ -182,6 +182,10 @@ namespace Shesha.Otp
             return VerifyPinResponse.Success();
         }
 
+        /// <summary>
+        /// Delivers the one-time pin. The SMS path resolves the current gateway and releases it after the send.
+        /// </summary>
+        /// <param name="otp">Pin to deliver.</param>
         private async Task SendInternalAsync(OtpDto otp)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
@@ -196,7 +200,14 @@ namespace Shesha.Otp
                         // todo: use mustache
                         var messageBody = bodyTemplate.Replace("{{password}}", otp.Pin);
                         var smsGateway = await _smsGatewayFactory.GetSmsGatewayAsync();
-                        await smsGateway.SendSmsAsync(otp.SendTo, messageBody);
+                        try
+                        {
+                            await smsGateway.SendSmsAsync(otp.SendTo, messageBody);
+                        }
+                        finally
+                        {
+                            _smsGatewayFactory.ReleaseGateway(smsGateway);
+                        }
                         break;
                     }
                 case OtpSendType.Email:
