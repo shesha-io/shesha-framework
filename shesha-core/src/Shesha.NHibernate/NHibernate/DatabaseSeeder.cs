@@ -1,7 +1,7 @@
 ﻿using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Domain.Uow;
-using Shesha.MultiTenancy;
+using Abp.MultiTenancy;
 using Abp.Reflection;
 using Abp.Runtime.Caching;
 using Microsoft.Extensions.Configuration;

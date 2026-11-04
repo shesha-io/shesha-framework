@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Uow;
+﻿using Abp.Authorization;
+using Abp.Domain.Uow;
 using Shesha.Domain;
 using Shesha.Reflection;
 using Shesha.Utilities;
@@ -18,7 +19,7 @@ namespace Shesha.Authorization
         {
         }
 
-        private void CreateChildPermissions(List<PermissionDefinition> dbPermissions, Permission permission)
+        private void CreateChildPermissions(List<PermissionDefinition> dbPermissions, Abp.Authorization.Permission permission)
         {
             var dbChildPermissions = dbPermissions.Where(x => x.Parent == permission.Name).ToList();
             foreach (var dbChildPermission in dbChildPermissions)

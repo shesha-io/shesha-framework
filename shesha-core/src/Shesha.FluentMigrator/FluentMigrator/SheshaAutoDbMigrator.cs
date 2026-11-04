@@ -1,5 +1,5 @@
 ﻿using Abp.Dependency;
-using Shesha.MultiTenancy;
+using Abp.MultiTenancy;
 using Abp.Reflection;
 using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;

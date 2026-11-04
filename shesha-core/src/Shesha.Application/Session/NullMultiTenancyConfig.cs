@@ -1,6 +1,6 @@
 ﻿using Abp.Collections;
 using Abp.Configuration.Startup;
-using Shesha.MultiTenancy;
+using Abp.MultiTenancy;
 
 namespace Shesha.Session
 {

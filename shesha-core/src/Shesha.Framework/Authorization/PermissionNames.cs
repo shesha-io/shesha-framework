@@ -4,6 +4,9 @@
     {
         private const string Prefix = "";
 
+        /* to be removed
+        public const string Pages_ShaRoles = "pages:shaRoles";
+        */
         public const string Application_Configure = Prefix + "Application-Configure"; // app:Configurator
         public const string Application_Administer = Prefix + "Application-Administer";
         public const string Application_Settings = Prefix + "Application-Settings"; // pages:applicationSettings

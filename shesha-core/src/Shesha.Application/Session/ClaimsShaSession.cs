@@ -1,7 +1,7 @@
 ﻿using Abp;
 using Abp.Configuration.Startup;
 using Abp.Domain.Repositories;
-using Shesha.MultiTenancy;
+using Abp.MultiTenancy;
 using Abp.Runtime;
 using Abp.Runtime.Session;
 using Shesha.Domain;

@@ -1,4 +1,4 @@
-﻿using Shesha.Authorization;
+﻿using Abp.Authorization;
 using Abp.Dependency;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;

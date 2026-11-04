@@ -7,7 +7,7 @@ using Abp.Dependency;
 using Abp.Domain.Uow;
 using Abp.Events.Bus;
 using Abp.Modules;
-using Shesha.MultiTenancy;
+using Abp.MultiTenancy;
 using Abp.Reflection;
 using Abp.Threading;
 using Castle.MicroKernel.Registration;

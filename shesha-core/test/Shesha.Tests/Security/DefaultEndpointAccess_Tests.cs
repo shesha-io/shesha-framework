@@ -1,8 +1,8 @@
+using Abp.Authorization;
 using Abp.Configuration.Startup;
 using Abp.Localization;
 using FluentAssertions;
 using NSubstitute;
-using Shesha.Abp.Authorization;
 using Shesha.Authorization;
 using Shesha.Configuration.Security;
 using Shesha.Domain.Enums;
@@ -58,7 +58,7 @@ namespace Shesha.Tests.Security
             var act = () => checker.AuthorizeAsync(false, EntityName, "Get", ObjectType, true,
                 RefListPermissionedAccess.RequiresPermissions, null);
 
-            await act.Should().ThrowAsync<SheshaAuthorizationException>(
+            await act.Should().ThrowAsync<AbpAuthorizationException>(
                 "an `Inherited` endpoint must follow the DefaultEndpointAccess setting");
         }
 
@@ -73,7 +73,7 @@ namespace Shesha.Tests.Security
             var act = () => checker.AuthorizeAsync(false, EntityName, "Get", ObjectType, true,
                 RefListPermissionedAccess.RequiresPermissions, new List<string> { "some:permission" });
 
-            await act.Should().ThrowAsync<SheshaAuthorizationException>();
+            await act.Should().ThrowAsync<AbpAuthorizationException>();
         }
 
         [Fact]
@@ -105,7 +105,7 @@ namespace Shesha.Tests.Security
             var act = () => checker.AuthorizeAsync(false, EntityName, "Get", ObjectType, false,
                 RefListPermissionedAccess.AnyAuthenticated, null);
 
-            await act.Should().ThrowAsync<SheshaAuthorizationException>();
+            await act.Should().ThrowAsync<AbpAuthorizationException>();
         }
 
         [Fact]
@@ -116,7 +116,7 @@ namespace Shesha.Tests.Security
 
             var act = () => checker.AuthorizeAsync(false, EntityName, "Get", ObjectType, true);
 
-            await act.Should().ThrowAsync<SheshaAuthorizationException>();
+            await act.Should().ThrowAsync<AbpAuthorizationException>();
         }
 
         [Theory]

@@ -1,6 +1,6 @@
 ﻿using Abp.AspNetCore.Mvc.Extensions;
 using Abp.AspNetCore.Mvc.Results;
-using Shesha.Authorization;
+using Abp.Authorization;
 using Abp.Dependency;
 using Abp.Events.Bus;
 using Abp.Events.Bus.Exceptions;

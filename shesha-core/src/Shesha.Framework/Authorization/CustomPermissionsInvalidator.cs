@@ -1,4 +1,4 @@
-﻿using Shesha.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using Abp.Dependency;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;

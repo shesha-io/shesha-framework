@@ -1,4 +1,4 @@
-﻿using Shesha.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using Abp.Reflection;
 using Castle.Core.Logging;
 

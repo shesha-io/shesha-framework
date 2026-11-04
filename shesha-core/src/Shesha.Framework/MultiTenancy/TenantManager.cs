@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Features;
 using Abp.Domain.Repositories;
+using Abp.MultiTenancy;
 using Shesha.Authorization.Users;
 using Shesha.Editions;
 

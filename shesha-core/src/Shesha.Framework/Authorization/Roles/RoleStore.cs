@@ -1,4 +1,4 @@
-using Shesha.Authorization.Roles;
+using Abp.Authorization.Roles;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Shesha.Authorization.Users;

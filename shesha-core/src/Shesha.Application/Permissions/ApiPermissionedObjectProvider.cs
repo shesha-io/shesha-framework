@@ -1,7 +1,7 @@
 ﻿using Abp.Application.Services;
 using Abp.AspNetCore.Mvc.Authorization;
 using Abp.AspNetCore.Mvc.Extensions;
-using Shesha.Authorization;
+using Abp.Authorization;
 using Abp.Domain.Uow;
 using Abp.Reflection;
 using Microsoft.AspNetCore.Authorization;

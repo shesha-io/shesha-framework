@@ -1,4 +1,4 @@
-﻿using Shesha.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Models.TokenAuth

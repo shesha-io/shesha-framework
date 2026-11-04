@@ -1,4 +1,4 @@
-﻿using Shesha.Authorization.Roles;
+﻿using Abp.Authorization.Roles;
 using Shesha.Authorization.Users;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;

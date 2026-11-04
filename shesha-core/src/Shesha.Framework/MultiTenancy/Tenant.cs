@@ -1,4 +1,5 @@
-﻿using Shesha.Authorization.Users;
+﻿using Abp.MultiTenancy;
+using Shesha.Authorization.Users;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 

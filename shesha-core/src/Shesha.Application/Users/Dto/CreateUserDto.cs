@@ -1,5 +1,5 @@
 using Abp.Auditing;
-using Shesha.Authorization.Users;
+using Abp.Authorization.Users;
 using Abp.AutoMapper;
 using Abp.Runtime.Validation;
 using Shesha.Authorization.Users;

@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -150,21 +149,6 @@ namespace Shesha.Extensions
         public static IEnumerable<string> WhereNotNullOrWhiteSpace(this IEnumerable<string?> source)
         {
             return source.Where(x => !string.IsNullOrWhiteSpace(x)).OfType<string>();
-        }
-
-        /// <summary>
-        /// Remove all items from <paramref name="source"/> which setisfy <paramref name="predicate"/>
-        /// </summary>
-        public static IList<T> RemoveAll<T>([NotNull] this ICollection<T> source, Func<T, bool> predicate)
-        {
-            var items = source.Where(predicate).ToList();
-
-            foreach (var item in items)
-            {
-                source.Remove(item);
-            }
-
-            return items;
         }
     }
 }

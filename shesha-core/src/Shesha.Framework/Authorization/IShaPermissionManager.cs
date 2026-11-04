@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Features;
+using Abp.Authorization;
 using Abp.Localization;
-using Shesha.MultiTenancy;
+using Abp.MultiTenancy;
 using Shesha.Domain;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,8 +10,8 @@ namespace Shesha.Authorization
 {
     public interface IShaPermissionManager : IPermissionManager
     {
-        Permission CreatePermission(
-            Permission parent,
+        Abp.Authorization.Permission CreatePermission(
+            Abp.Authorization.Permission parent,
             string name,
             ILocalizableString? displayName = null,
             ILocalizableString? description = null,
@@ -18,9 +19,9 @@ namespace Shesha.Authorization
             IFeatureDependency? featureDependency = null,
             Dictionary<string, object>? properties = null);
 
-        Permission EditPermission(
+        Abp.Authorization.Permission EditPermission(
             string oldName,
-            Permission parent,
+            Abp.Authorization.Permission parent,
             string name,
             ILocalizableString? displayName = null,
             ILocalizableString? description = null,
@@ -28,9 +29,9 @@ namespace Shesha.Authorization
             IFeatureDependency? featureDependency = null,
             Dictionary<string, object>? properties = null);
 
-        Task<Permission> CreatePermissionAsync(PermissionDefinition permission);
+        Task<Abp.Authorization.Permission> CreatePermissionAsync(PermissionDefinition permission);
 
-        Task<Permission> EditPermissionAsync(string oldName, PermissionDefinition permission);
+        Task<Abp.Authorization.Permission> EditPermissionAsync(string oldName, PermissionDefinition permission);
 
         Task UpdateParentAsync(string name, string? parentName, Module? module);
 

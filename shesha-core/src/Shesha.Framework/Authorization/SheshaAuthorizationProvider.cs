@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Authorization;
+using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Localization;
 using Shesha.Domain;
@@ -98,7 +99,7 @@ namespace Shesha.Authorization
                 name,
                 label,
                 description,
-                properties: new Dictionary<string, object?>()
+                properties: new Dictionary<string, object>()
                 {
                     { "IsDbPermission", false },
                     { "ModuleId", moduleId },

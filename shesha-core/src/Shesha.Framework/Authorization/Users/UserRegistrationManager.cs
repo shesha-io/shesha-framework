@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Services;
+﻿using Abp.Authorization.Users;
+using Abp.Domain.Services;
 using Abp.IdentityFramework;
 using Abp.Runtime.Session;
 using Abp.UI;
@@ -43,7 +44,7 @@ namespace Shesha.Authorization.Users
             {
                 TenantId = tenant.Id,
                 Name = name,
-                Surname = surname ?? "",
+                Surname = surname,
                 EmailAddress = emailAddress,
                 IsActive = true,
                 UserName = userName,

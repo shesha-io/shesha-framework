@@ -1,5 +1,5 @@
-﻿using Shesha.Authorization.Users;
-using Shesha.MultiTenancy;
+﻿using Abp.Authorization.Users;
+using Abp.MultiTenancy;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 

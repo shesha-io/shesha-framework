@@ -820,14 +820,6 @@ namespace Shesha.Reflection
                 : throw new Exception(message);
         }
 
-        [DebuggerStepThrough]
-        public static string NotNullOrWhiteSpaceParameter([NotNull] this string? value, [JetBrains.Annotations.InvokerParameterName]string parameterName)
-        {
-            return !string.IsNullOrWhiteSpace(value)
-                ? value
-                : throw new ArgumentException($"{parameterName} must not be null or empty", parameterName);
-        }        
-
         /// <summary>
         /// Get method by name. Throws <see cref="MethodNotFoundException"/> if method not found
         /// </summary>
