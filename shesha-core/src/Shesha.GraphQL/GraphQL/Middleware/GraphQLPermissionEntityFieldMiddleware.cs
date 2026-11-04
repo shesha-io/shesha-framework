@@ -12,14 +12,14 @@ namespace Shesha.GraphQL.Middleware
     {
         public async ValueTask<object?> ResolveAsync(IResolveFieldContext context, FieldMiddlewareDelegate next)
         {
-            if (context.Source.IsEntity())
+            if (context.Source?.IsEntity() ?? false)
             {
                 var permissionedEntityProvider = context.RequestServices?.GetService<IPermissionedEntityProvider>();
-                if (permissionedEntityProvider != null)
+                if (permissionedEntityProvider != null && permissionedEntityProvider.IsEntityTypePermissioned(context.Source))
                 {
                     var newContext = new ResolveFieldContext(context)
                     {
-                        Source = permissionedEntityProvider.GetNewProxiedPermissionedEntity(context.Source)
+                        Source = permissionedEntityProvider.GetPermissionedEntity(context.Source)
                     };
                     return await next(newContext);
                 }

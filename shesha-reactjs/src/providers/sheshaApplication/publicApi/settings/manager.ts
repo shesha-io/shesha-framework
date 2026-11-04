@@ -51,13 +51,11 @@ export class SettingsManager {
   };
 
   getValueAsync = <Value = unknown>(id: ISettingFullAccessor): Promise<Value | undefined> => {
-    return this.resolveSettingAsync(id).then((resolvedId) => {
-      const url = `${SETTINGS_URLS.GET_VALUE}?${qs.stringify(resolvedId)}`;
-      return this._httpClient.get<IAjaxResponse<Value>>(url)
-        .then((res) => {
-          return res.data.success ? res.data.result : undefined;
-        });
-    });
+    const url = `${SETTINGS_URLS.GET_VALUE}?${qs.stringify(id)}`;
+    return this._httpClient.get<IAjaxResponse<Value>>(url)
+      .then((res) => {
+        return res.data.success ? res.data.result : undefined;
+      });
   };
 
   setValueAsync = <Value = unknown>(id: ISettingFullAccessor, value: Value): Promise<void> => {

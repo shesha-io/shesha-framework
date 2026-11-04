@@ -8,6 +8,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
+using Shesha.Permissions.Entity;
 using Shesha.QuickSearch;
 using Shesha.QuickSearch.Cache;
 using Shesha.Services;
@@ -207,7 +208,7 @@ namespace Shesha.Tests.QuickSearch
             var refListRevisionId = refListHelperRepoMock.Object.GetListId(new ReferenceListIdentifier("Shesha", "Shesha.Core.PreferredContactMethod"));
 
             var quickSearchPropertiesCacheHolder = Resolve<IQuickSearchPropertiesCacheHolder>();
-            var quickSearcher = new QuickSearcher(Resolve<IEntityTypeConfigurationStore>(), rliRepoMock.Object, Resolve<ICacheManager>(), refListHelperRepoMock.Object, quickSearchPropertiesCacheHolder);
+            var quickSearcher = new QuickSearcher(Resolve<IEntityTypeConfigurationStore>(), rliRepoMock.Object, Resolve<ICacheManager>(), refListHelperRepoMock.Object, Resolve<IPermissionedEntityProvider>(), quickSearchPropertiesCacheHolder);
 
             var expression = quickSearcher.GetQuickSearchExpression<TestOrganisation>("Email", new List<string> {
                 nameof(TestOrganisation.ContactMethods)

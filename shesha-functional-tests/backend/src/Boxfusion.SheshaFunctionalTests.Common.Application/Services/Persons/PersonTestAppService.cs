@@ -1,5 +1,4 @@
-﻿using Abp.Authorization;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Shesha;
 using Shesha.AutoMapper.Dto;
@@ -32,7 +31,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Persons
     }
 
 
-    [AbpAuthorize]
     public class PersonTestAppService : DynamicCrudAppService<Person, DynamicDto<Person, Guid>, Guid>, ITransientDependency
     {
         public PersonTestAppService(IRepository<Person, Guid> repository) : base(repository)
