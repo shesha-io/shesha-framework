@@ -3,6 +3,7 @@ using Abp.AutoMapper;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using System;
+using System.Collections.Generic;
 
 namespace Shesha.ShaRoleAppointedPersons.Dto
 {
@@ -10,6 +11,7 @@ namespace Shesha.ShaRoleAppointedPersons.Dto
     public class ShaRoleAppointedPersonDto : EntityDto<Guid>, IShaRoleAppointedPersonDto
     {
         public Guid RoleId { get; set; }
-        public EntityReferenceDto<Guid?> Person { get; set; }
+        public Guid PersonId { get; set; }
+        public List<EntityReferenceDto<string>> PermissionedEntities { get; set; } = new List<EntityReferenceDto<string>>();
     }
 }

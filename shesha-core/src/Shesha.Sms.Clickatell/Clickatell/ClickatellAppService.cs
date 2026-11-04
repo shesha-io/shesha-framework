@@ -1,6 +1,6 @@
 ﻿using Abp.Runtime.Session;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Authorization;
 using System.Threading.Tasks;
 
 namespace Shesha.Sms.Clickatell
@@ -42,7 +42,7 @@ namespace Shesha.Sms.Clickatell
             return await _gateway.GetTypedSettingsAsync();
         }
 
-        [Authorize]
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated, IsConfigurable = false)]
         public async Task TestSmsAsync(string mobileNumber, string body)
         {
             await _gateway.SendSmsAsync(mobileNumber, body);

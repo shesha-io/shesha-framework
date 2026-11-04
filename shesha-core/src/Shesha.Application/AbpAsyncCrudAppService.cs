@@ -7,10 +7,8 @@ using Abp.Linq.Extensions;
 using Shesha.Application.Services.Dto;
 using Shesha.Extensions;
 using Shesha.Permissions.Entity;
-using Shesha.Reflection;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Shesha
@@ -117,7 +115,7 @@ namespace Shesha
 
             var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var entity = await GetEntityByIdAsync(input.Id);
-            return MapToEntityDto(permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity));
+            return MapToEntityDto(permissionedEntityProvider.GetPermissionedEntityOrEntity(entity));
         }
 
         public virtual async Task<PagedResultDto<TEntityDto>> GetAllAsync(TGetAllInput input)
@@ -133,7 +131,7 @@ namespace Shesha
             query = ApplyPaging(query, input);
 
             var entities = (await AsyncQueryableExecuter.ToListAsync(query))
-                .Select(x => permissionedEntityProvider.GetNewProxiedPermissionedEntity(x))
+                .Select(x => permissionedEntityProvider.GetPermissionedEntityOrEntity(x))
                 .ToList();
 
             return new PagedResultDto<TEntityDto>(
@@ -144,7 +142,6 @@ namespace Shesha
 
         private void CheckPropertiesPermissions(Dictionary<string, object?> comparedValues, TEntity? entity = null)
         {
-            var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var properties = typeof(TEntity).GetProperties();
             foreach (var comparedValue in comparedValues)
             {
@@ -153,7 +150,7 @@ namespace Shesha
                     throw new AbpAuthorizationException($"You don't have permission to change '{comparedValue.Key}' property");
                 var value = entity != null ? property.GetValue(entity) : property.PropertyType.GetDefaultValue();
                 var newValue = comparedValue.Value;
-                if (value != newValue)
+                if (!Equals(value, comparedValue.Value))
                     throw new AbpAuthorizationException($"You don't have permission to change '{property.Name}' property");
             }
         }
@@ -178,7 +175,7 @@ namespace Shesha
             await Repository.InsertAsync(entity);
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            return MapToEntityDto(permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity));
+            return MapToEntityDto(permissionedEntityProvider.GetPermissionedEntityOrEntity(entity));
         }
 
         public virtual async Task<TEntityDto> UpdateAsync(TUpdateInput input)
@@ -194,7 +191,7 @@ namespace Shesha
 
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            return MapToEntityDto(permissionedEntityProvider.GetNewProxiedPermissionedEntity(entity));
+            return MapToEntityDto(permissionedEntityProvider.GetPermissionedEntityOrEntity(entity));
         }
 
         public virtual Task DeleteAsync(TDeleteInput input)

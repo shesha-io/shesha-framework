@@ -6,6 +6,7 @@ using Abp.Extensions;
 using Abp.Linq.Extensions;
 using Abp.ObjectMapping;
 using Shesha.Extensions;
+using Shesha.Permissions.Entity;
 using Shesha.Utilities;
 using System;
 using System.Linq;
@@ -53,7 +54,7 @@ namespace Shesha
             {
                 if (!sortInput.Sorting.IsNullOrWhiteSpace())
                 {
-                    SortingValidator.EnsureSortingAllowed(typeof(TEntity), sortInput.Sorting);
+                    SortingValidator.EnsureSortingAllowed(typeof(TEntity), sortInput.Sorting, IocManager.Resolve<IPermissionedEntityProvider>());
 
                     var sorted = false;
                     foreach (var sortColumn in sortInput.Sorting.Split(','))

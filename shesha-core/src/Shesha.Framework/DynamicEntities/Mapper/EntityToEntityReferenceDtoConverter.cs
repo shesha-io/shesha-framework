@@ -2,6 +2,7 @@
 using AutoMapper;
 using Shesha.AutoMapper.Dto;
 using Shesha.Extensions;
+using Shesha.Reflection;
 
 namespace Shesha.DynamicEntities.Mapper
 {
