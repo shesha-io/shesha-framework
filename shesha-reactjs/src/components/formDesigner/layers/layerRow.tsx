@@ -53,7 +53,7 @@ export const LayerRow = ({
   const elementRef = useRef<HTMLDivElement>(null);
   const row = rows[index];
   const node = isDefined(row) ? layers.nodes.get(row.id) : undefined;
-  const componentId = node?.kind === 'pane' ? node.ownerId ?? '' : node?.id ?? '';
+  const componentId = node?.kind === 'pane' ? node.ownerId : node?.id ?? '';
   const component = useRowComponent(componentId);
   const isSelected = useIsSelected(node?.kind === 'component' ? node.id : '');
   const dropState = useLayerRowDnd(elementRef, row?.id ?? '', dnd);

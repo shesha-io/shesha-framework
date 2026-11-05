@@ -57,7 +57,7 @@ export const resolveDrop = ({ index, relations, sourceId, targetId, instruction 
   switch (instruction.type) {
     case 'reorder-above':
     case 'reorder-below': {
-      if (target.kind === 'pane' || !isDefined(target.containerId))
+      if (target.kind === 'pane')
         return { kind: 'blocked', reason: PANE_REORDER_REASON };
       const position = positionWithout(relations, target.containerId, sourceId, target.id);
       if (position < 0)
@@ -73,7 +73,7 @@ export const resolveDrop = ({ index, relations, sourceId, targetId, instruction 
     }
     case 'reparent': {
       const anchor = getAncestorAtDepth(index, targetId, instruction.desiredLevel);
-      if (!isDefined(anchor) || anchor.kind === 'pane' || !isDefined(anchor.containerId))
+      if (!isDefined(anchor) || anchor.kind === 'pane')
         return { kind: 'blocked', reason: PANE_REORDER_REASON };
       const position = positionWithout(relations, anchor.containerId, sourceId, anchor.id);
       return position < 0 ? { kind: 'blocked', reason: undefined } : moveTo(sourceId, anchor.containerId, position + 1);
