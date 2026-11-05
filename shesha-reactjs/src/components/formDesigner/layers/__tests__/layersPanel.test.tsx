@@ -346,4 +346,16 @@ describe('LayersPanel: following the selection', () => {
 
     await waitFor(() => expect(scrollTo).toHaveBeenCalled());
   });
+
+  it('scrolls to the row the keyboard cursor lands on when the tree gets focus', () => {
+    const designer = createTestDesigner(sampleForm());
+    renderPanel(designer);
+    act(() => designer.setSelectedComponent('save'));
+    scrollTo.mockClear();
+
+    fireEvent.focus(screen.getByRole('tree'));
+
+    expect(screen.getByRole('tree')).toHaveAttribute('aria-activedescendant', 'layer-row-save');
+    expect(scrollTo).toHaveBeenCalled();
+  });
 });
