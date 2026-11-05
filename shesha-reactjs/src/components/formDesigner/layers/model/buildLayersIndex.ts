@@ -4,7 +4,7 @@ import { getComponentContainers, IComponentContainerInfo } from '@/providers/for
 import { getOwnContainerId } from '@/providers/formDesigner/structure/containers';
 import { getPaneGroupNoun } from '@/providers/formDesigner/structure/displayText';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { ILayerNode, ILayersIndex } from './types';
+import { IComponentLayerNode, ILayerNode, ILayersIndex, IPaneLayerNode } from './types';
 
 /**
  * Builds the Layers tree from the designer's flat markup. Pane ids always come from the owner's own settings
@@ -28,7 +28,7 @@ export const buildLayersIndex = (markup: IFlatComponentsStructure, getDefinition
     // panes that belong directly to the component; nested ones (a step's footer) hang under the pane holding them
     const panes = containers.filter((c) => c.id !== component.id && (!c.isNested || !isDefined(c.parentContainerId)));
     const ownContainerId = getOwnContainerId(component, definition, markup, containers);
-    const node: ILayerNode = {
+    const node: IComponentLayerNode = {
       id: componentId,
       kind: 'component',
       parentId,
@@ -74,7 +74,7 @@ export const buildLayersIndex = (markup: IFlatComponentsStructure, getDefinition
       return undefined;
     visited.add(pane.id);
 
-    const node: ILayerNode = { id: pane.id, kind: 'pane', parentId, ownerId, childIds: [], depth, dropContainerId: isDrawn ? pane.id : undefined, hasPanes: false };
+    const node: IPaneLayerNode = { id: pane.id, kind: 'pane', parentId, ownerId, childIds: [], depth, dropContainerId: isDrawn ? pane.id : undefined };
     nodes.set(pane.id, node);
 
     (markup.componentRelations[pane.id] ?? []).forEach((childId) => {

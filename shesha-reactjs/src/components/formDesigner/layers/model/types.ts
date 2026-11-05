@@ -1,25 +1,34 @@
-type LayerNodeKind = 'component' | 'pane';
-
-export interface ILayerNode {
+interface ILayerNodeBase {
   /** Component id, or the container id for pane rows */
   id: string;
-  kind: LayerNodeKind;
   /** Tree parent (a component or a pane); null at the top level */
   parentId: string | null;
-  /** Component rows: the flat-markup container the component sits in (ROOT_COMPONENT_KEY at the top level) */
-  containerId?: string | undefined;
-  /** Pane rows: the component that owns the pane */
-  ownerId?: string | undefined;
   /** Tree children, in canvas order */
   childIds: string[];
   depth: number;
   /** Where "inside" drops go: the component's own container, or the pane itself. Undefined when nothing can go inside */
   dropContainerId?: string | undefined;
-  /** Component rows whose children live in panes (Tabs, Wizard, Columns, Collapsible Panel) */
+}
+
+/** A component on the form */
+export interface IComponentLayerNode extends ILayerNodeBase {
+  kind: 'component';
+  /** The flat-markup container the component sits in (ROOT_COMPONENT_KEY at the top level) */
+  containerId: string;
+  /** Its children live in panes (Tabs, Wizard, Columns, Collapsible Panel) */
   hasPanes: boolean;
   /** Plural used in "Drop it into one of the tabs." */
   paneNoun?: string | undefined;
 }
+
+/** A tab pane, wizard step, column, or a panel's header or content */
+export interface IPaneLayerNode extends ILayerNodeBase {
+  kind: 'pane';
+  /** The component that owns the pane */
+  ownerId: string;
+}
+
+export type ILayerNode = IComponentLayerNode | IPaneLayerNode;
 
 export interface ILayersIndex {
   rootIds: string[];

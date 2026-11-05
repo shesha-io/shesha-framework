@@ -17,7 +17,7 @@ export const getLayerLabel = (node: ILayerNode, markup: IFlatComponentsStructure
     const component = markup.allComponents[node.id];
     return isConfigurableFormComponent(component) ? getComponentDisplayText(component) : node.id;
   }
-  const owner = isDefined(node.ownerId) ? markup.allComponents[node.ownerId] : undefined;
+  const owner = markup.allComponents[node.ownerId];
   const pane = isConfigurableFormComponent(owner) ? findPane(owner, node.id, getDefinition) : undefined;
   return isDefined(pane) ? getPaneLabel(pane) : node.id;
 };
