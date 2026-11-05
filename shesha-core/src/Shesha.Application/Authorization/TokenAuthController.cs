@@ -228,7 +228,7 @@ namespace Shesha.Authorization
         /// <summary>
         /// Send authentication one-time pin to the user with a specified <paramref name="userNameOrMobileNo"/>
         /// </summary>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPinAsync(string userNameOrMobileNo)

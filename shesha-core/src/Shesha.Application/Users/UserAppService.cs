@@ -1,12 +1,12 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
-using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.IdentityFramework;
 using Abp.Linq.Extensions;
 using Abp.Runtime.Session;
 using Abp.UI;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -224,7 +224,7 @@ namespace Shesha.Users
         /// Send One-time pin for password reset
         /// </summary>
         /// <param name="mobileNo">mobile number of the user</param>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ResetPasswordSendOtpResponse> ResetPasswordSendOtpAsync(string mobileNo)
@@ -267,7 +267,7 @@ namespace Shesha.Users
         /// <param name="username"></param>
         /// <returns></returns>
         /// <exception cref="UserFriendlyException"></exception>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         public async Task<List<ResetPasswordOptionDto>> GetUserPasswordResetOptionsAsync(string username)
         {
             var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
@@ -287,8 +287,6 @@ namespace Shesha.Users
             var isSMSOTPEnabled = securitySettings.UseResetPasswordViaSmsOtp;
             var isSecurityQuestionsEnabled = securitySettings.UseResetPasswordViaSecurityQuestions;
 
-            var hasPhoneNumber = !string.IsNullOrEmpty(person.PhoneNumber);
-            var hasEmail = !string.IsNullOrEmpty(person.EmailAddress);
             var hasQuestions = await (await _questionRepository.GetAllAsync()).Where(q => q.User == person).AnyAsync();
 
             if (supportedResetOptions.Length > 0)
@@ -300,7 +298,7 @@ namespace Shesha.Users
                     methodOption.Method = reflistItem;
                     var isAllowed = false;
 
-                    if (reflistItem == RefListPasswordResetMethods.SmsOtp && isSMSOTPEnabled && hasPhoneNumber)
+                    if (reflistItem == RefListPasswordResetMethods.SmsOtp && isSMSOTPEnabled && !string.IsNullOrEmpty(person.PhoneNumber))
                     {
                         var maskedPhoneNumber = person.PhoneNumber.MaskMobileNo();
                         methodOption.Prompt = $"SMS an OTP to {maskedPhoneNumber}";
@@ -308,15 +306,12 @@ namespace Shesha.Users
                         isAllowed = true;
 
                     }
-                    else if (reflistItem == RefListPasswordResetMethods.EmailLink && isEmailLinkEnabled && hasEmail)
+                    else if (reflistItem == RefListPasswordResetMethods.EmailLink && isEmailLinkEnabled && !string.IsNullOrEmpty(person.EmailAddress))
                     {
-                        if (!string.IsNullOrWhiteSpace(person.EmailAddress))
-                        {
-                            var maskedEmail = person.EmailAddress.MaskEmail();
-                            methodOption.Prompt = $"Email a link to {maskedEmail}";
-                            methodOption.MaskedIdentifier = maskedEmail;
-                            isAllowed = true;
-                        }
+                        var maskedEmail = person.EmailAddress.MaskEmail();
+                        methodOption.Prompt = $"Email a link to {maskedEmail}";
+                        methodOption.MaskedIdentifier = maskedEmail;
+                        isAllowed = true;
                     }
                     else if (reflistItem == RefListPasswordResetMethods.SecurityQuestions && isSecurityQuestionsEnabled && hasQuestions)
                     {
@@ -338,7 +333,7 @@ namespace Shesha.Users
         /// <param name="username"></param>
         /// <returns></returns>
         /// <exception cref="UserFriendlyException"></exception>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<bool> SendSmsOtpAsync(string username)
@@ -347,6 +342,8 @@ namespace Shesha.Users
             var user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == username);
 
             ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SmsOtp);
+            if (string.IsNullOrWhiteSpace(user.PhoneNumber))
+                throw new UserFriendlyException("User has no mobile number");
 
             await EnforceOtpCooldownAsync(user.PasswordResetCode, securitySettings.OtpCooldownSeconds);
 
@@ -392,7 +389,7 @@ namespace Shesha.Users
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         public async Task<List<SecurityQuestionDto>> GetSecurityQuestionsAsync(string username)
         {
             var user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == username);
@@ -410,7 +407,7 @@ namespace Shesha.Users
         /// <param name="input"></param>
         /// <returns>Supposed to return the token required to reset password</returns>
         /// <exception cref="UserFriendlyException"></exception>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ResetPasswordVerifyOtpResponse> ValidateResetCodeAsync(ResetPasswordValidateCodeInput input)
@@ -463,7 +460,7 @@ namespace Shesha.Users
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ResetPasswordVerifyOtpResponse> ValidateSecurityQuestionsAsync(SecurityQuestionVerificationDto input)
@@ -555,7 +552,7 @@ namespace Shesha.Users
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         public async Task<bool> SendEmailLinkAsync(string username)
         {
@@ -584,7 +581,7 @@ namespace Shesha.Users
         /// <summary>
         /// Verify one-time pin that was used for password reset. Returns a token that should be used for password update
         /// </summary>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         public async Task<ResetPasswordVerifyOtpResponse> ResetPasswordVerifyOtpAsync(ResetPasswordVerifyOtpInput input)
         {
             var otp = await _otpManager.GetOrNullAsync(input.OperationId);
@@ -617,7 +614,7 @@ namespace Shesha.Users
         /// <summary>
         /// Resets a password of the user using token
         /// </summary>
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         public async Task<bool> ResetPasswordUsingTokenAsync(ResetPasswordUsingTokenInput input)
         {
             var user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == input.Username);

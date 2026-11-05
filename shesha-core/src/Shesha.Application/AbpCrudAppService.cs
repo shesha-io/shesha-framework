@@ -14,7 +14,6 @@ using System.Linq.Dynamic.Core;
 namespace Shesha
 {
     /// <summary>
-    /// NOTE: it's a copy of <see cref="Abp.Application.Services.CrudAppServiceBase{TEntity, TEntityDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput}"/>
     /// This is a common base class for CrudAppService and AsyncCrudAppService classes.
     /// Inherit either from CrudAppService or AsyncCrudAppService, not from this class.
     /// </summary>

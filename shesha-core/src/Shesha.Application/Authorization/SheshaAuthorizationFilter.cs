@@ -1,6 +1,5 @@
 ﻿using Abp.AspNetCore.Mvc.Extensions;
 using Abp.AspNetCore.Mvc.Results;
-using Abp.Authorization;
 using Abp.Dependency;
 using Abp.Events.Bus;
 using Abp.Events.Bus.Exceptions;
@@ -10,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Threading.Tasks;
+using AbpAuthorizationException = Abp.Authorization.AbpAuthorizationException;
 
 namespace Shesha.Authorization
 {

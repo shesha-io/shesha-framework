@@ -154,7 +154,7 @@ namespace Shesha.Authorization.Users
             return IdentityResult.Success;
         }
 
-        public override async Task<IdentityResult> CheckDuplicateUsernameOrEmailAddressAsync(long? expectedUserId, string userName, string emailAddress)
+        public override async Task<IdentityResult> CheckDuplicateUsernameOrEmailAddressAsync(long? expectedUserId, string userName, string? emailAddress)
         {
             try
             {
@@ -254,9 +254,8 @@ namespace Shesha.Authorization.Users
                 TenantId = AbpSession.TenantId,
                 IsEmailConfirmed = true,
                 UserName = username,
-                //UserName ??= "", // just to prevent crash in the ABP layer, it should be validated before
-                Name = firstname, // todo: make a decision how to handle duplicated properties in the User and Person classes (option 1 - use Person as a source and sync onw way, option 2 - remove duplicates from User, but in some cases we needn't Person for a user)
-                Surname = lastname,
+                Name = firstname ?? string.Empty, // todo: make a decision how to handle duplicated properties in the User and Person classes (option 1 - use Person as a source and sync onw way, option 2 - remove duplicates from User, but in some cases we needn't Person for a user)
+                Surname = lastname ?? string.Empty,
                 RequireChangePassword = requireChangePassword,
                 SupportedPasswordResetMethods = supportedPasswordResetMethods
             };

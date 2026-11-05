@@ -13,7 +13,7 @@ namespace Shesha.Domain
     /// <summary>
     /// Role
     /// </summary>
-    [Entity(FriendlyName = "Role", 
+    [Entity(FriendlyName = "Role",
         TypeShortAlias = "Shesha.Core.ShaRole",
         IsConfigurable = false,
         CrudActions = CrudActions.All,

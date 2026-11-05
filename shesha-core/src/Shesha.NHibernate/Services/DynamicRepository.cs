@@ -129,7 +129,7 @@ namespace Shesha.Services
             }
 
             var currentTenantId = GetCurrentTenantIdOrNull();
-            var hardDeleteKey = Abp.Domain.Entities.EntityHelper.GetHardDeleteKey(entity, currentTenantId);
+            var hardDeleteKey = EntityHelper.GetHardDeleteKey(entity, currentTenantId);
             return objects.Contains(hardDeleteKey);
         }
 

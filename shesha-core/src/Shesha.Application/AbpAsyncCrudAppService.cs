@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Shesha
 {
     /// <summary>
-    /// Async CRUD application service. Note: it's a copy of <see cref="Abp.Application.Services.AsyncCrudAppService{TEntity, TEntityDto}"/>
+    /// Async CRUD application service
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <typeparam name="TEntityDto"></typeparam>

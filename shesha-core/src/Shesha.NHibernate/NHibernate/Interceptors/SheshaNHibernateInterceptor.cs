@@ -1,5 +1,4 @@
 ﻿using Abp;
-using Abp.Collections.Extensions;
 using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
@@ -23,6 +22,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using CollectionExtensions = Abp.CollectionExtensions;
 
 namespace Shesha.NHibernate.Interceptors
 {
@@ -318,7 +318,8 @@ namespace Shesha.NHibernate.Interceptors
                 return;
             }
 
-            if (generatesDomainEventsEntity.DomainEvents.IsNullOrEmpty())
+
+            if (CollectionExtensions.IsNullOrEmpty(generatesDomainEventsEntity.DomainEvents))
             {
                 return;
             }

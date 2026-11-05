@@ -15,7 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Abp" />
-    <PackageReference Include="Abp.Zero.Common" />
     <PackageReference Include="AsyncFixer">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -38,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Shesha.Zero.Common\Shesha.Zero.Common.csproj" />
     <ProjectReference Include="..\Shesha.Common\Shesha.Common.csproj" />
   </ItemGroup>
 

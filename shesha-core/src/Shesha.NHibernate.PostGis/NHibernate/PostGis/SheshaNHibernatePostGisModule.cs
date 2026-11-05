@@ -1,5 +1,6 @@
 ﻿using Abp;
 using Abp.AspNetCore;
+using Abp.Dependency;
 using Abp.Modules;
 using Shesha.NHibernate.Connection;
 using System.Reflection;
@@ -11,7 +12,7 @@ namespace Shesha.NHibernate.PostGis
     {
         public override void PreInitialize()
         {
-            IocManager.Register<IDbConnectionFactory, ConnectionFactory>(Abp.Dependency.DependencyLifeStyle.Singleton);
+            IocManager.Register<IDbConnectionFactory, ConnectionFactory>(DependencyLifeStyle.Singleton);
 
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
         }

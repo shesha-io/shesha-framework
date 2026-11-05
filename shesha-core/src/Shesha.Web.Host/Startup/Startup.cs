@@ -119,7 +119,8 @@ namespace Shesha.Web.Host.Startup
                         }
                     case DbmsType.PostgreSQL:
                         {
-                            config.UsePostgreSqlStorage(options => {
+                            config.UsePostgreSqlStorage(options =>
+                            {
                                 options.UseNpgsqlConnection(connStr);
                             });
                             break;
@@ -129,7 +130,8 @@ namespace Shesha.Web.Host.Startup
                         throw new InvalidOperationException($"Unsupported DbmsType '{dbms}' for Hangfire storage configuration. Supported types are SQLServer and PostgreSQL.");
                 }
             });
-            services.AddHangfireServer(config => {
+            services.AddHangfireServer(config =>
+            {
             });
 
             // add Shesha GraphQL
@@ -238,7 +240,7 @@ namespace Shesha.Web.Host.Startup
                     Type = SecuritySchemeType.ApiKey
                 });
 
-                options.ResolveConflictingActions(apiDescriptions => 
+                options.ResolveConflictingActions(apiDescriptions =>
                     apiDescriptions.FirstOrDefault()
                 );
             });

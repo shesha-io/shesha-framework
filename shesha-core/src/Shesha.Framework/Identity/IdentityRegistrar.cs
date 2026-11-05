@@ -5,6 +5,7 @@ using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
 using Shesha.Editions;
 using Shesha.MultiTenancy;
+using IServiceCollection = Microsoft.Extensions.DependencyInjection.IServiceCollection;
 
 namespace Shesha.Identity
 {

@@ -1,7 +1,6 @@
 ﻿using Abp.Authorization.Users;
 using Abp.Reflection;
 using Castle.Core.Logging;
-
 using NHibernate;
 using NHibernate.Dialect;
 using NHibernate.Driver;

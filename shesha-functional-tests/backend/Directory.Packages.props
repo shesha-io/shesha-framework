@@ -6,7 +6,6 @@
     <PackageVersion Include="Abp.Castle.Log4Net" Version="10.5.1" />
     <PackageVersion Include="Abp.HangFire.AspNetCore" Version="10.5.1" />
     <PackageVersion Include="Abp.TestBase" Version="10.5.1" />
-    <PackageVersion Include="Abp.ZeroCore" Version="10.5.1" />
     <PackageVersion Include="AsyncFixer" Version="2.1.0" />
     <PackageVersion Include="Bogus" Version="35.6.5" />
     <PackageVersion Include="Castle.LoggingFacility.MsLogging" Version="3.1.0" />
