@@ -1,4 +1,4 @@
-import { FC, KeyboardEvent, MouseEvent, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, FocusEvent, KeyboardEvent, MouseEvent, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { App, Button, theme, Tooltip } from 'antd';
 import { MinusSquareOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import { announce, cleanup as cleanupAnnouncements } from '@atlaskit/pragmatic-drag-and-drop-live-region';
@@ -163,17 +163,20 @@ const LayersPanelContent: FC = () => {
     onMoveSelected: moveSelected,
   });
 
-  /** Focus lands on the selected row, or the first row, scrolled into view so the list draws it */
-  const onTreeFocus = useCallback((): void => {
-    if (isDefined(activeId) && rows.some((row) => row.id === activeId))
-      return;
-    const selectedIndex = rows.findIndex((row) => row.id === selectedId);
-    const index = selectedIndex >= 0 ? selectedIndex : 0;
+  /**
+   * Focus lands on the row the keyboard cursor was on, else the selected row, else the first row. Keyboard focus also
+   * scrolls that row into view so the list draws it; a mouse press (on a row, or on the scrollbar, which focuses the
+   * tree too) leaves the scroll where the user put it
+   */
+  const onTreeFocus = useCallback((event: FocusEvent<HTMLElement>): void => {
+    const activeIndex = rows.findIndex((row) => row.id === activeId);
+    const index = activeIndex >= 0 ? activeIndex : Math.max(rows.findIndex((row) => row.id === selectedId), 0);
     const row = rows[index];
     if (!isDefined(row))
       return;
     setActiveId(row.id);
-    scrollToRow(index);
+    if (event.currentTarget.matches(':focus-visible'))
+      scrollToRow(index);
   }, [activeId, rows, selectedId, scrollToRow]);
 
   /** Pressing a row (to click or drag it) puts the keyboard cursor there rather than on the first row */
