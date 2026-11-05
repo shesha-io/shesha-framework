@@ -15,7 +15,7 @@ namespace Shesha.Permissions.Dtos
                     Localize(e.DisplayName)))
                 .ForMember(e => e.Id, c => c.MapFrom(e => e.Name))
                 .ForMember(e => e.IsDbPermission, c => c.MapFrom(e =>
-                    e.Properties != null && e.Properties.ContainsKey("IsDbPermission") && (bool)e.Properties["IsDbPermission"]
+                    e.Properties != null && e.Properties.ContainsKey("IsDbPermission") && (bool?)e.Properties["IsDbPermission"] == true
                     ))
                 .ForMember(e => e.ModuleId, c => c.MapFrom(e =>
                     e.Properties != null && e.Properties.ContainsKey("ModuleId") ? (Guid?)e.Properties["ModuleId"] : null

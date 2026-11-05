@@ -46,5 +46,14 @@ namespace Shesha.Extensions
             dictionary.Add(key, value);
             return value;
         }
+
+        internal static bool GetBoolOrDefault<T>(this Dictionary<string, T>? properties, string name)
+        {
+            return properties != null
+                && properties.TryGetValue(name, out var value)
+                && value != null
+                && value is bool boolValue
+                && boolValue == true;
+        }
     }
 }

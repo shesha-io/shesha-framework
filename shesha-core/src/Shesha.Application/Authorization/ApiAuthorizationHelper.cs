@@ -1,6 +1,5 @@
 ﻿using Abp.Application.Features;
 using Abp.Application.Services;
-using Abp.Authorization;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Localization;
@@ -16,6 +15,8 @@ using Shesha.Utilities;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using AbpAllowAnonymousAttribute = Abp.Authorization.AbpAllowAnonymousAttribute;
+using AuthorizationHelper = Abp.Authorization.AuthorizationHelper;
 
 namespace Shesha.Authorization
 {

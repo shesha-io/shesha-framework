@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.32630.193
+# Visual Studio Version 18
+VisualStudioVersion = 18.11.12328.437
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AFAA0841-BD93-466F-B8F4-FB4EEC86F1FC}"
 EndProject
@@ -55,6 +55,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shesha.Tests.ModuleB", "test\Shesha.Tests.ModuleB\Shesha.Tests.ModuleB.csproj", "{D140AFF0-4485-6214-3EB7-793EC812B972}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shesha.Testing", "src\Shesha.Testing\Shesha.Testing.csproj", "{6310F32E-E522-B9F0-E6E7-8158A025041C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shesha.Zero.Common", "src\Shesha.Zero.Common\Shesha.Zero.Common.csproj", "{073A97BE-F621-AEC9-E57F-F03345205AB1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Abp", "Abp", "{FF49D1B4-1C5C-4D0B-94A6-00C165CF7EB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shesha.ZeroCore", "src\Shesha.ZeroCore\Shesha.ZeroCore.csproj", "{F7E7DCD8-7D4D-A6E1-BC4D-8B0FA20A2995}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -146,6 +152,14 @@ Global
 		{6310F32E-E522-B9F0-E6E7-8158A025041C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6310F32E-E522-B9F0-E6E7-8158A025041C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6310F32E-E522-B9F0-E6E7-8158A025041C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{073A97BE-F621-AEC9-E57F-F03345205AB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{073A97BE-F621-AEC9-E57F-F03345205AB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{073A97BE-F621-AEC9-E57F-F03345205AB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{073A97BE-F621-AEC9-E57F-F03345205AB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7E7DCD8-7D4D-A6E1-BC4D-8B0FA20A2995}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7E7DCD8-7D4D-A6E1-BC4D-8B0FA20A2995}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7E7DCD8-7D4D-A6E1-BC4D-8B0FA20A2995}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7E7DCD8-7D4D-A6E1-BC4D-8B0FA20A2995}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -173,6 +187,9 @@ Global
 		{79C8061A-C56C-CD48-CA80-5053CDE0A5F9} = {F10AA149-2626-486E-85BB-9CD5365F3016}
 		{D140AFF0-4485-6214-3EB7-793EC812B972} = {F10AA149-2626-486E-85BB-9CD5365F3016}
 		{6310F32E-E522-B9F0-E6E7-8158A025041C} = {AFAA0841-BD93-466F-B8F4-FB4EEC86F1FC}
+		{073A97BE-F621-AEC9-E57F-F03345205AB1} = {FF49D1B4-1C5C-4D0B-94A6-00C165CF7EB4}
+		{FF49D1B4-1C5C-4D0B-94A6-00C165CF7EB4} = {AFAA0841-BD93-466F-B8F4-FB4EEC86F1FC}
+		{F7E7DCD8-7D4D-A6E1-BC4D-8B0FA20A2995} = {FF49D1B4-1C5C-4D0B-94A6-00C165CF7EB4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {95ED23F3-8DEA-456E-A44B-87A161CB696A}

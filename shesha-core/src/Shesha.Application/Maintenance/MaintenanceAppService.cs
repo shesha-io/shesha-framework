@@ -11,7 +11,7 @@ using Shesha.DynamicEntities;
 using Shesha.Elmah;
 using Shesha.Extensions;
 using Shesha.Modules;
-using Shesha.Permission;
+using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Settings;

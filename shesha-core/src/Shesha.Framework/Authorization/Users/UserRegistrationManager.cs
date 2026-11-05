@@ -44,7 +44,7 @@ namespace Shesha.Authorization.Users
             {
                 TenantId = tenant.Id,
                 Name = name,
-                Surname = surname,
+                Surname = surname ?? string.Empty,
                 EmailAddress = emailAddress,
                 IsActive = true,
                 UserName = userName,

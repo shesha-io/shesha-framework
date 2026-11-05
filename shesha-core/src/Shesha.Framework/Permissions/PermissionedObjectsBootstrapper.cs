@@ -7,7 +7,6 @@ using Shesha.Attributes;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
-using Shesha.Permissions;
 using Shesha.Services.VersionedFields;
 using Shesha.Startup;
 using System;
@@ -15,7 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Shesha.Permission
+namespace Shesha.Permissions
 {
     [DependsOnTypes(typeof(ConfigurableModuleBootstrapper))]
     public class PermissionedObjectsBootstrapper : BootstrapperBase, ITransientDependency

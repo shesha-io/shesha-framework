@@ -9,8 +9,6 @@
     <PackageVersion Include="Abp.HangFire.AspNetCore" Version="10.5.1" />
     <PackageVersion Include="Abp.MemoryDb" Version="10.5.1" />
     <PackageVersion Include="Abp.TestBase" Version="10.5.1" />
-    <PackageVersion Include="Abp.Zero.Common" Version="10.5.1" />
-    <PackageVersion Include="Abp.ZeroCore" Version="10.5.1" />
     <PackageVersion Include="AsyncFixer" Version="2.1.0" />
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.30.1" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />

@@ -44,7 +44,7 @@ namespace Shesha
             Configuration.MultiTenancy.IsEnabled = SheshaConsts.MultiTenancyEnabled;
 
             // Configure roles
-            AppRoleConfig.Configure(Configuration.Modules.Zero().RoleManagement);
+            //AppRoleConfig.Configure(Configuration.Modules.Zero().RoleManagement);
         }
 
         public override void Initialize()

@@ -7,11 +7,11 @@ using Shesha.Web.FormsDesigner;
 
 namespace Shesha.Web.Host.Startup
 {
-    [DependsOn(typeof(SheshaWebCoreModule), 
+    [DependsOn(typeof(SheshaWebCoreModule),
         typeof(SheshaFormsDesignerModule),
         typeof(AbpHangfireAspNetCoreModule),
         typeof(SheshaGraphQLModule))]
-    public class SheshaWebHostModule: AbpModule
+    public class SheshaWebHostModule : AbpModule
     {
         public SheshaWebHostModule()
         {

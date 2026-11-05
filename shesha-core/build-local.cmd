@@ -13,7 +13,7 @@ set "VERSION=0.47.0"
 
 REM Paths to the projects to pack (space-separated)
 rem add Shesha.Redis after merge
-set "PROJECTS=Shesha.Application,Shesha.Common,Shesha.Core,Shesha.Elmah,Shesha.FluentMigrator,Shesha.Framework,Shesha.GraphQL,Shesha.Import,Shesha.MongoRepository,Shesha.NHibernate,Shesha.NHibernate.PostGis,Shesha.RestSharp,Shesha.Scheduler,Shesha.Sms.Clickatell,Shesha.Web.FormsDesigner"
+set "PROJECTS=Shesha.Application,Shesha.Common,Shesha.Core,Shesha.Elmah,Shesha.FluentMigrator,Shesha.Framework,Shesha.GraphQL,Shesha.Import,Shesha.MongoRepository,Shesha.NHibernate,Shesha.NHibernate.PostGis,Shesha.RestSharp,Shesha.Scheduler,Shesha.Sms.Clickatell,Shesha.Web.FormsDesigner,Shesha.Zero.Common,Shesha.ZeroCore"
 
 REM ============================================================
 REM  Prepare folders

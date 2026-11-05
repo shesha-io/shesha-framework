@@ -298,7 +298,6 @@
         <PackageReference Include="Abp" />
         <PackageReference Include="Abp.AspNetCore" />
         <PackageReference Include="Abp.AutoMapper" />
-        <PackageReference Include="Abp.ZeroCore" />
     <PackageReference Include="AsyncFixer">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -333,6 +332,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Shesha.ZeroCore\Shesha.ZeroCore.csproj" />
         <ProjectReference Include="..\Shesha.FluentMigrator\Shesha.FluentMigrator.csproj" />
     </ItemGroup>
 

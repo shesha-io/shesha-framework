@@ -40,7 +40,6 @@
     <PackageReference Include="Abp.AspNetCore.SignalR" />
     <PackageReference Include="Abp.HangFire.AspNetCore" />
     <PackageReference Include="Abp.AspNetCore" />
-    <PackageReference Include="Abp.ZeroCore" />
     <PackageReference Include="AsyncFixer">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
