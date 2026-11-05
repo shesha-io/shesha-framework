@@ -163,12 +163,18 @@ const LayersPanelContent: FC = () => {
     onMoveSelected: moveSelected,
   });
 
-  /** Focus lands on the selected row, or the first row */
+  /** Focus lands on the selected row, or the first row, scrolled into view so the list draws it */
   const onTreeFocus = useCallback((): void => {
     if (isDefined(activeId) && rows.some((row) => row.id === activeId))
       return;
-    setActiveId(rows.find((row) => row.id === selectedId)?.id ?? rows[0]?.id);
-  }, [activeId, rows, selectedId]);
+    const selectedIndex = rows.findIndex((row) => row.id === selectedId);
+    const index = selectedIndex >= 0 ? selectedIndex : 0;
+    const row = rows[index];
+    if (!isDefined(row))
+      return;
+    setActiveId(row.id);
+    scrollToRow(index);
+  }, [activeId, rows, selectedId, scrollToRow]);
 
   /** Pressing a row (to click or drag it) puts the keyboard cursor there rather than on the first row */
   const onTreeMouseDown = useCallback((event: MouseEvent<HTMLElement>): void => {

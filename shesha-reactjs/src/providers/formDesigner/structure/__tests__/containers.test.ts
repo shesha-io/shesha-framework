@@ -30,6 +30,14 @@ describe('getOwnContainerId()', () => {
     expect(ownContainerOf(buildTestMarkup(sampleForm()), 'save')).toBeUndefined();
   });
 
+  it('is undefined for an empty Link, which draws no container until Custom Link is on', () => {
+    expect(ownContainerOf(buildTestMarkup([{ id: 'link', type: 'link' }]), 'link')).toBeUndefined();
+  });
+
+  it('is the id of a Link that holds a component', () => {
+    expect(ownContainerOf(buildTestMarkup(sampleForm()), 'link1')).toBe('link1');
+  });
+
   it('is undefined for Tabs, whose children live in panes', () => {
     expect(ownContainerOf(buildTestMarkup(sampleForm()), 'tabs1')).toBeUndefined();
   });
