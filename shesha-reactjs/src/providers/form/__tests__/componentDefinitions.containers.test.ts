@@ -10,8 +10,9 @@ describe('component definitions: own child containers', () => {
     expect(definitions.get(type)?.acceptsChildren).toBe(true);
   });
 
-  it('limits Link to one child', () => {
-    expect(definitions.get('link')?.itemsLimit).toBe(1);
+  // the canvas draws only one child for these, so Layers mustn't put a second one in
+  it.each(['link', 'setting'])('limits %s to one child', (type) => {
+    expect(definitions.get(type)?.itemsLimit).toBe(1);
   });
 
   // a Link draws its container only with Custom Link on, so it claims one only once it holds a component

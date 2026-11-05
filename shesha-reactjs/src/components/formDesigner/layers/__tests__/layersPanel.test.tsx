@@ -347,15 +347,53 @@ describe('LayersPanel: following the selection', () => {
     await waitFor(() => expect(scrollTo).toHaveBeenCalled());
   });
 
-  it('scrolls to the row the keyboard cursor lands on when the tree gets focus', () => {
+  /** jsdom doesn't tell keyboard focus from a mouse press, so :focus-visible is faked for this one focus */
+  const focusFromKeyboard = (element: HTMLElement): void => {
+    const matches = element.matches.bind(element);
+    const spy = vi.spyOn(element, 'matches').mockImplementation((selector) => selector === ':focus-visible' || matches(selector));
+    fireEvent.focus(element);
+    spy.mockRestore();
+  };
+
+  it('scrolls to the selected row when the keyboard brings focus to the tree', () => {
     const designer = createTestDesigner(sampleForm());
     renderPanel(designer);
     act(() => designer.setSelectedComponent('save'));
     scrollTo.mockClear();
 
-    fireEvent.focus(screen.getByRole('tree'));
+    focusFromKeyboard(screen.getByRole('tree'));
 
     expect(screen.getByRole('tree')).toHaveAttribute('aria-activedescendant', 'layer-row-save');
     expect(scrollTo).toHaveBeenCalled();
+  });
+
+  it('keeps the keyboard cursor where it was when focus comes back, and scrolls to it', () => {
+    const designer = createTestDesigner(sampleForm());
+    renderPanel(designer);
+    act(() => designer.setSelectedComponent('save'));
+    const tree = screen.getByRole('tree');
+    focusFromKeyboard(tree);
+    fireEvent.keyDown(tree, { key: 'Home' });
+    fireEvent.blur(tree);
+    scrollTo.mockClear();
+
+    focusFromKeyboard(tree);
+
+    expect(tree).toHaveAttribute('aria-activedescendant', 'layer-row-tabs1');
+    expect(scrollTo).toHaveBeenCalled();
+  });
+
+  it('leaves the scroll alone when a mouse press focuses the tree, as on its scrollbar', () => {
+    const designer = createTestDesigner(sampleForm());
+    renderPanel(designer);
+    act(() => designer.setSelectedComponent('save'));
+    const tree = screen.getByRole('tree');
+    scrollTo.mockClear();
+
+    fireEvent.mouseDown(tree);
+    fireEvent.focus(tree);
+
+    expect(tree).toHaveAttribute('aria-activedescendant', 'layer-row-save');
+    expect(scrollTo).not.toHaveBeenCalled();
   });
 });
