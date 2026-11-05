@@ -5,10 +5,8 @@ using Abp.Configuration.Startup;
 using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.Domain.Uow;
-using Abp.Linq;
 using Abp.Localization;
 using Abp.MultiTenancy;
-using Abp.Organizations;
 using Abp.Runtime.Caching;
 using Abp.Runtime.Session;
 using Abp.UI;
@@ -59,13 +57,9 @@ public class AbpUserManager<TRole, TUser> : UserManager<TUser>, IAbpUserManager<
     private readonly IPermissionManager _permissionManager;
     private readonly IUnitOfWorkManager _unitOfWorkManager;
     private readonly ICacheManager _cacheManager;
-    private readonly IRepository<OrganizationUnit, long> _organizationUnitRepository;
-    private readonly IRepository<UserOrganizationUnit, long> _userOrganizationUnitRepository;
-    private readonly IOrganizationUnitSettings _organizationUnitSettings;
     private readonly ISettingManager _settingManager;
     private readonly IOptions<IdentityOptions> _optionsAccessor;
     private readonly IRepository<UserLogin, long> _userLoginRepository;
-    private readonly IAsyncQueryableExecuter _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
 
     public AbpUserManager(
         AbpRoleManager<TRole, TUser> roleManager,
@@ -81,9 +75,6 @@ public class AbpUserManager<TRole, TUser> : UserManager<TUser>, IAbpUserManager<
         IPermissionManager permissionManager,
         IUnitOfWorkManager unitOfWorkManager,
         ICacheManager cacheManager,
-        IRepository<OrganizationUnit, long> organizationUnitRepository,
-        IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository,
-        IOrganizationUnitSettings organizationUnitSettings,
         ISettingManager settingManager,
         IRepository<UserLogin, long> userLoginRepository)
         : base(
@@ -100,9 +91,6 @@ public class AbpUserManager<TRole, TUser> : UserManager<TUser>, IAbpUserManager<
         _permissionManager = permissionManager;
         _unitOfWorkManager = unitOfWorkManager;
         _cacheManager = cacheManager;
-        _organizationUnitRepository = organizationUnitRepository;
-        _userOrganizationUnitRepository = userOrganizationUnitRepository;
-        _organizationUnitSettings = organizationUnitSettings;
         _settingManager = settingManager;
         _userLoginRepository = userLoginRepository;
         _optionsAccessor = optionsAccessor;
@@ -675,294 +663,6 @@ public class AbpUserManager<TRole, TUser> : UserManager<TUser>, IAbpUserManager<
         }
 
         return IdentityResult.Success;
-    }
-
-    public virtual async Task<bool> IsInOrganizationUnitAsync(long userId, long ouId)
-    {
-        return await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-            await IsInOrganizationUnitAsync(
-                await GetUserByIdAsync(userId),
-                await _organizationUnitRepository.GetAsync(ouId)
-            )
-        );
-    }
-
-    public virtual async Task<bool> IsInOrganizationUnitAsync(TUser user, OrganizationUnit ou)
-    {
-        return await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            return await _userOrganizationUnitRepository.CountAsync(uou =>
-                uou.UserId == user.Id && uou.OrganizationUnitId == ou.Id
-            ) > 0;
-        });
-    }
-
-    public virtual bool IsInOrganizationUnit(TUser user, OrganizationUnit ou)
-    {
-        return _unitOfWorkManager.WithUnitOfWork(() =>
-        {
-            return _userOrganizationUnitRepository.Count(uou =>
-                uou.UserId == user.Id && uou.OrganizationUnitId == ou.Id
-            ) > 0;
-        });
-    }
-
-    public virtual async Task AddToOrganizationUnitAsync(long userId, long ouId)
-    {
-        await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            await AddToOrganizationUnitAsync(
-                await GetUserByIdAsync(userId),
-                await _organizationUnitRepository.GetAsync(ouId)
-            );
-        });
-    }
-
-    public virtual async Task AddToOrganizationUnitAsync(TUser user, OrganizationUnit ou)
-    {
-        await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            var currentOus = await GetOrganizationUnitsAsync(user);
-
-            if (currentOus.Any(cou => cou.Id == ou.Id))
-            {
-                return;
-            }
-
-            await CheckMaxUserOrganizationUnitMembershipCountAsync(user.TenantId, currentOus.Count + 1);
-            await _userOrganizationUnitRepository.InsertAsync(new UserOrganizationUnit(user.TenantId, user.Id,
-                ou.Id));
-        });
-    }
-
-    public virtual void AddToOrganizationUnit(TUser user, OrganizationUnit ou)
-    {
-        _unitOfWorkManager.WithUnitOfWork(() =>
-        {
-            var currentOus = GetOrganizationUnits(user);
-
-            if (currentOus.Any(cou => cou.Id == ou.Id))
-            {
-                return;
-            }
-
-            CheckMaxUserOrganizationUnitMembershipCount(user.TenantId, currentOus.Count + 1);
-            _userOrganizationUnitRepository.Insert(new UserOrganizationUnit(user.TenantId, user.Id, ou.Id));
-        });
-    }
-
-    public virtual async Task RemoveFromOrganizationUnitAsync(long userId, long ouId)
-    {
-        await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            await RemoveFromOrganizationUnitAsync(
-                await GetUserByIdAsync(userId),
-                await _organizationUnitRepository.GetAsync(ouId)
-            );
-        });
-    }
-
-    public virtual async Task RemoveFromOrganizationUnitAsync(TUser user, OrganizationUnit ou)
-    {
-        await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            await _userOrganizationUnitRepository.DeleteAsync(uou =>
-                uou.UserId == user.Id && uou.OrganizationUnitId == ou.Id
-            );
-        });
-    }
-
-    public virtual void RemoveFromOrganizationUnit(TUser user, OrganizationUnit ou)
-    {
-        _unitOfWorkManager.WithUnitOfWork(() =>
-        {
-            _userOrganizationUnitRepository.Delete(
-                uou => uou.UserId == user.Id && uou.OrganizationUnitId == ou.Id
-            );
-        });
-    }
-
-    public virtual async Task SetOrganizationUnitsAsync(long userId, params long[] organizationUnitIds)
-    {
-        await SetOrganizationUnitsAsync(
-            await GetUserByIdAsync(userId),
-            organizationUnitIds
-        );
-    }
-
-    private async Task CheckMaxUserOrganizationUnitMembershipCountAsync(int? tenantId, int requestedCount)
-    {
-        var maxCount = await _organizationUnitSettings.GetMaxUserMembershipCountAsync(tenantId);
-        if (requestedCount > maxCount)
-        {
-            throw new AbpException($"Can not set more than {maxCount} organization unit for a user!");
-        }
-    }
-
-    private void CheckMaxUserOrganizationUnitMembershipCount(int? tenantId, int requestedCount)
-    {
-        var maxCount = _organizationUnitSettings.GetMaxUserMembershipCount(tenantId);
-        if (requestedCount > maxCount)
-        {
-            throw new AbpException($"Can not set more than {maxCount} organization unit for a user!");
-        }
-    }
-
-    public virtual async Task SetOrganizationUnitsAsync(TUser user, params long[] organizationUnitIds)
-    {
-        await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            if (organizationUnitIds == null)
-            {
-                organizationUnitIds = new long[0];
-            }
-
-            await CheckMaxUserOrganizationUnitMembershipCountAsync(user.TenantId, organizationUnitIds.Length);
-
-            var currentOus = await GetOrganizationUnitsAsync(user);
-
-            //Remove from removed OUs
-            foreach (var currentOu in currentOus)
-            {
-                if (!organizationUnitIds.Contains(currentOu.Id))
-                {
-                    await RemoveFromOrganizationUnitAsync(user, currentOu);
-                }
-            }
-
-            await _unitOfWorkManager.Current.SaveChangesAsync();
-
-            //Add to added OUs
-            foreach (var organizationUnitId in organizationUnitIds)
-            {
-                if (currentOus.All(ou => ou.Id != organizationUnitId))
-                {
-                    await AddToOrganizationUnitAsync(
-                        user,
-                        await _organizationUnitRepository.GetAsync(organizationUnitId)
-                    );
-                }
-            }
-        });
-    }
-
-    public virtual void SetOrganizationUnits(TUser user, params long[] organizationUnitIds)
-    {
-        _unitOfWorkManager.WithUnitOfWork(() =>
-        {
-            if (organizationUnitIds == null)
-            {
-                organizationUnitIds = new long[0];
-            }
-
-            CheckMaxUserOrganizationUnitMembershipCount(user.TenantId, organizationUnitIds.Length);
-
-            var currentOus = GetOrganizationUnits(user);
-
-            //Remove from removed OUs
-            foreach (var currentOu in currentOus)
-            {
-                if (!organizationUnitIds.Contains(currentOu.Id))
-                {
-                    RemoveFromOrganizationUnit(user, currentOu);
-                }
-            }
-
-            //Add to added OUs
-            foreach (var organizationUnitId in organizationUnitIds)
-            {
-                if (currentOus.All(ou => ou.Id != organizationUnitId))
-                {
-                    AddToOrganizationUnit(
-                        user,
-                        _organizationUnitRepository.Get(organizationUnitId)
-                    );
-                }
-            }
-        });
-    }
-
-
-    public virtual async Task<List<OrganizationUnit>> GetOrganizationUnitsAsync(TUser user)
-    {
-        return await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            var query = from uou in await _userOrganizationUnitRepository.GetAllAsync()
-                        join ou in await _organizationUnitRepository.GetAllAsync() on uou.OrganizationUnitId equals ou.Id
-                        where uou.UserId == user.Id
-                        select ou;
-
-            return await _asyncQueryableExecuter.ToListAsync(query);
-        });
-    }
-
-    public virtual List<OrganizationUnit> GetOrganizationUnits(TUser user)
-    {
-        return _unitOfWorkManager.WithUnitOfWork(() =>
-        {
-            var query = from uou in _userOrganizationUnitRepository.GetAll()
-                        join ou in _organizationUnitRepository.GetAll() on uou.OrganizationUnitId equals ou.Id
-                        where uou.UserId == user.Id
-                        select ou;
-
-            return query.ToList();
-        });
-    }
-
-    public virtual async Task<List<TUser>> GetUsersInOrganizationUnitAsync(
-        OrganizationUnit organizationUnit,
-        bool includeChildren = false)
-    {
-        return await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            if (!includeChildren)
-            {
-                var query = from uou in await _userOrganizationUnitRepository.GetAllAsync()
-                            join user in Users on uou.UserId equals user.Id
-                            where uou.OrganizationUnitId == organizationUnit.Id
-                            select user;
-
-                return await _asyncQueryableExecuter.ToListAsync(query);
-            }
-            else
-            {
-                var query = from uou in await _userOrganizationUnitRepository.GetAllAsync()
-                            join user in Users on uou.UserId equals user.Id
-                            join ou in await _organizationUnitRepository.GetAllAsync() on uou.OrganizationUnitId equals ou.Id
-                            where ou.Code.StartsWith(organizationUnit.Code)
-                            select user;
-
-                return await _asyncQueryableExecuter.ToListAsync(query);
-            }
-        });
-    }
-
-    public virtual List<TUser> GetUsersInOrganizationUnit(
-        OrganizationUnit organizationUnit,
-        bool includeChildren = false)
-    {
-        return _unitOfWorkManager.WithUnitOfWork(() =>
-        {
-            if (!includeChildren)
-            {
-                var query = from uou in _userOrganizationUnitRepository.GetAll()
-                            join user in Users on uou.UserId equals user.Id
-                            where uou.OrganizationUnitId == organizationUnit.Id
-                            select user;
-
-                return query.ToList();
-            }
-            else
-            {
-                var query = from uou in _userOrganizationUnitRepository.GetAll()
-                            join user in Users on uou.UserId equals user.Id
-                            join ou in _organizationUnitRepository.GetAll() on uou.OrganizationUnitId equals ou.Id
-                            where ou.Code.StartsWith(organizationUnit.Code)
-                            select user;
-
-                return query.ToList();
-            }
-        });
     }
 
     public virtual async Task InitializeOptionsAsync(int? tenantId)
