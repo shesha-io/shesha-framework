@@ -78,13 +78,5 @@ namespace Abp.Zero.Configuration
                 public const string RequireDigit = "Abp.Zero.UserManagement.PasswordComplexity.RequireDigit";
             }
         }
-
-        public static class OrganizationUnits
-        {
-            /// <summary>
-            /// "Abp.Zero.OrganizationUnits.MaxUserMembershipCount".
-            /// </summary>
-            public const string MaxUserMembershipCount = "Abp.Zero.OrganizationUnits.MaxUserMembershipCount";
-        }
     }
 }

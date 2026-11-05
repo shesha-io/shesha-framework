@@ -1,5 +1,4 @@
 ﻿using Abp.Authorization.Users;
-using Abp.Organizations;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,14 +31,4 @@ public interface IAbpRoleManager<TRole, TUser>
     Task GrantAllPermissionsAsync(TRole role);
     Task<IdentityResult> CreateStaticRoles(int tenantId);
     Task<IdentityResult> CheckDuplicateRoleNameAsync(int? expectedRoleId, string name, string displayName);
-    Task<List<TRole>> GetRolesInOrganizationUnitAsync(OrganizationUnit organizationUnit, bool includeChildren = false);
-    Task SetOrganizationUnitsAsync(int roleId, params long[] organizationUnitIds);
-    Task SetOrganizationUnitsAsync(TRole role, params long[] organizationUnitIds);
-    Task<bool> IsInOrganizationUnitAsync(int roleId, long ouId);
-    Task<bool> IsInOrganizationUnitAsync(TRole role, OrganizationUnit ou);
-    Task AddToOrganizationUnitAsync(int roleId, long ouId, int? tenantId);
-    Task AddToOrganizationUnitAsync(TRole role, OrganizationUnit ou);
-    Task RemoveFromOrganizationUnitAsync(int roleId, long organizationUnitId);
-    Task RemoveFromOrganizationUnitAsync(TRole role, OrganizationUnit ou);
-    Task<List<OrganizationUnit>> GetOrganizationUnitsAsync(TRole role);
 }

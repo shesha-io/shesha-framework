@@ -3,7 +3,6 @@ using Abp.Authorization;
 using Abp.Authorization.Roles;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Abp.Organizations;
 using Abp.Runtime.Caching;
 using Abp.UI;
 using Abp.Zero.Configuration;
@@ -29,8 +28,6 @@ namespace Shesha.Authorization.Roles
             ICacheManager cacheManager,
             IUnitOfWorkManager unitOfWorkManager,
             IRoleManagementConfig roleManagementConfig,
-            IRepository<OrganizationUnit, long> organizationUnitRepository,
-            IRepository<OrganizationUnitRole, long> organizationUnitRoleRepository,
             IRepository<Role> roleRepository)
             : base(
                   store,
@@ -40,9 +37,7 @@ namespace Shesha.Authorization.Roles
                   permissionManager,
                   cacheManager,
                   unitOfWorkManager,
-                  roleManagementConfig,
-                organizationUnitRepository,
-                organizationUnitRoleRepository)
+                  roleManagementConfig)
         {
             _unitOfWorkManager = unitOfWorkManager;
             _roleRepository = roleRepository;
