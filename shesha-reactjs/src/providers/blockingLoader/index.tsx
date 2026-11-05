@@ -78,11 +78,9 @@ export const BlockingLoaderProvider: FC<PropsWithChildren<BlockingLoaderProvider
 
   const loader = instance.getActiveLoader();
   return (
-    <div style={{ position: 'relative' }}>
-      <Context.Provider value={instance}>
-        {children}
-        {isDefined(loader) && <BlockingLoaderOverlay message={loader.message} isBlocking={loader.isBlocking} />}
-      </Context.Provider>
-    </div>
+    <Context.Provider value={instance}>
+      {children}
+      {isDefined(loader) && <BlockingLoaderOverlay message={loader.message} isBlocking={loader.isBlocking} />}
+    </Context.Provider>
   );
 };

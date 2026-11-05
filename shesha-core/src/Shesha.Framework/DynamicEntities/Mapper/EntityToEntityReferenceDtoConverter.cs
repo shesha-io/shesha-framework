@@ -2,6 +2,7 @@
 using AutoMapper;
 using Shesha.AutoMapper.Dto;
 using Shesha.Extensions;
+using Shesha.Reflection;
 
 namespace Shesha.DynamicEntities.Mapper
 {
@@ -17,8 +18,8 @@ namespace Shesha.DynamicEntities.Mapper
                 : new EntityReferenceDto<TId>
                 {
                     Id = source.Id,
-                    _displayName = source.GetDisplayName(),
-                    _className = source.GetClassName()
+                    _displayName = source.GetDisplayName() ?? "",
+                    _className = source.GetClassName().NotNull("Entity ClassName cannot be null"),
                 };
         }
     }

@@ -191,7 +191,7 @@ const SubFormWithMetadataProvider: FC<PropsWithChildren<ISubForWithMetadataProvi
   const getSubFormData = (): object => {
     const data = parentFormApi.getFormData?.();
     return !isNullOrWhiteSpace(props.propertyName) && isDefined(data)
-      ? (data as Record<string, unknown>)[props.propertyName] as object
+      ? (data as Record<string, unknown>)[props.propertyName.split('.').at(-1) ?? ""] as object
       : data ?? {};
   };
 
@@ -236,7 +236,7 @@ const SubFormWithMetadataProvider: FC<PropsWithChildren<ISubForWithMetadataProvi
     formInstance: parentFormApi.formInstance,
     formMode: parentFormApi.mode,
     data: isDefined(parentFormApi.data) && !isNullOrWhiteSpace(props.propertyName)
-      ? (parentFormApi.data as Record<string, unknown>)[props.propertyName] as object
+      ? (parentFormApi.data as Record<string, unknown>)[props.propertyName.split('.').at(-1) ?? ""] as object
       : {},
     defaultApiEndpoints: parentFormApi.defaultApiEndpoints,
     context: {},

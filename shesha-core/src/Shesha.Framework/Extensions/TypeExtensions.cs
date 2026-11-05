@@ -7,6 +7,19 @@ namespace Shesha.Extensions
     public static class TypeExtensions
     {
         /// <summary>
+        /// Get default value for type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static object? GetDefaultValue(this Type type)
+        {
+            if (type.IsValueType && Nullable.GetUnderlyingType(type) == null)
+                return Activator.CreateInstance(type);
+            // return null for Nullable<T>
+            return null;
+        }
+
+        /// <summary>
         /// Get base generic type for this type
         /// </summary>
         /// <param name="type"></param>

@@ -19,6 +19,7 @@ using Shesha.GraphQL.Middleware;
 using Shesha.GraphQL.Mvc;
 using Shesha.GraphQL.Provider;
 using Shesha.Metadata;
+using Shesha.Permissions.Entity;
 using Shesha.QuickSearch;
 using Shesha.Reflection;
 using Shesha.Specifications;
@@ -122,7 +123,7 @@ namespace Shesha
             // apply specifications
             query = SpecificationManager.ApplySpecifications(query, input.Specifications);
 
-            query = query.ApplyFilter<TEntity, TPrimaryKey>(input.Filter);
+            query = query.ApplyFilter<TEntity, TPrimaryKey>(input.Filter, true);
 
             if (this.QuickSearcher != null && !string.IsNullOrWhiteSpace(input.QuickSearch))
                 query = this.QuickSearcher.ApplyQuickSearch(query, input.QuickSearch);
@@ -135,7 +136,8 @@ namespace Shesha
         public override async Task<PagedResultDto<TEntityDto>> GetAllAsync(TGetAllInput input)
         {
             CheckGetAllPermission();
-
+            
+            var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var query = CreateFilteredQuery(input);
 
             var totalCount = await AsyncQueryableExecuter.CountAsync(query);
@@ -143,7 +145,9 @@ namespace Shesha
             query = ApplySorting(query, input);
             query = ApplyPaging(query, input);
 
-            var entities = await AsyncQueryableExecuter.ToListAsync(query);
+            var entities = (await AsyncQueryableExecuter.ToListAsync(query))
+                .Select(x => permissionedEntityProvider.GetPermissionedEntityOrEntity(x))
+                .ToList();
 
             return new PagedResultDto<TEntityDto>(
                 totalCount,
@@ -286,7 +290,8 @@ namespace Shesha
                 throw new AbpValidationException(string.Join("\r\n", validationResults.Select(r => r.ErrorMessage)), validationResults);
             }
 
-            return new GraphQLDataResult<PagedResultDto<TEntity>>(result);
+            var res = new GraphQLDataResult<PagedResultDto<TEntity>>(result);
+            return res;
         }
 
         private List<string> ExtractPropertiesInDotNotation(string properties)

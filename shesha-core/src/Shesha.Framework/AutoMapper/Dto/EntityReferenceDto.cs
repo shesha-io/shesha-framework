@@ -2,6 +2,8 @@
 using Abp.Domain.Entities;
 using Shesha.DynamicEntities;
 using Shesha.Extensions;
+using Shesha.Reflection;
+using System.Text.Json.Serialization;
 
 namespace Shesha.AutoMapper.Dto
 {
@@ -28,19 +30,21 @@ namespace Shesha.AutoMapper.Dto
             if (entity != null)
             {
                 Id = entity.GetId();
-                _displayName = entity.GetDisplayName();
-                _className = entity.GetType().GetRequiredFullName();
+                _displayName = entity.GetDisplayName() ?? "";
+                _className = entity.GetType().FullName.NotNull("Entity ClassName can not be null");
             }
         }
 
         /// <summary>
         /// Entity display name
         /// </summary>
-        public string? _displayName { get; init; }
+        [JsonPropertyName("_displayName")]
+        public string? _displayName { get; set; }
 
         /// <summary>
         /// Entity class name
         /// </summary>
-        public string? _className { get; internal set; }
+        [JsonPropertyName("_className")]
+        public string _className { get; set; }
     }
 }
