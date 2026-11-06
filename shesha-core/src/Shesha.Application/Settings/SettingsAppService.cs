@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Abp.Runtime.Validation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
-using Shesha.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Settings.Dto;
 using System.Collections.Generic;
@@ -16,13 +16,11 @@ namespace Shesha.Settings
     public class SettingsAppService : SheshaAppServiceBase
     {
         private readonly IShaSettingManager _settingProvider;
-        private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly ISettingDefinitionManager _settingDefinitionManager;
 
-        public SettingsAppService(IShaSettingManager settingProvider, IConfigurationFrameworkRuntime cfRuntime, ISettingDefinitionManager settingDefinitionManager)
+        public SettingsAppService(IShaSettingManager settingProvider, ISettingDefinitionManager settingDefinitionManager)
         {
             _settingProvider = settingProvider;
-            _cfRuntime = cfRuntime;
             _settingDefinitionManager = settingDefinitionManager;
         }
 
@@ -43,17 +41,29 @@ namespace Shesha.Settings
             return values;
         }
 
-        private SettingManagementContext? GetContext(string? appKey) 
+        private SettingManagementContext? GetContext(string? appKey, bool isUserSpecific)
         {
-            return !string.IsNullOrWhiteSpace(appKey)
-                ? new SettingManagementContext
-                {
-                    AppKey = appKey,
-                    // TODO: recheck usage of UserId, looks like the condition for appKey is wrong
-                    UserId = AbpSession.UserId
-                }
-                : null;
+            return new SettingManagementContext
+            {
+                AppKey = !string.IsNullOrWhiteSpace(appKey) ? appKey : null,
+                UserId = isUserSpecific ? AbpSession.UserId : null,
+                TenantId = AbpSession.TenantId,
+            };
         }
+
+        private SettingIdentifier ResolveSettingId(SettingIdentifierDto input)
+        {
+            // Empty category means that setting is already resolved
+            if (string.IsNullOrWhiteSpace(input.Category))
+                return new SettingIdentifier(input.Name, input.Module);
+
+            var resolvedDefinition = _settingDefinitionManager.GetAll().FirstOrDefault(s => s.ModuleAccessor == input.Module && s.CategoryAccessor == input.Category && s.Accessor == input.Name);
+            if (resolvedDefinition == null)
+                throw new AbpValidationException($"Setting not found ${input.Module}.${input.Category}.${input.Name}");
+
+            return new SettingIdentifier(resolvedDefinition.Name, resolvedDefinition.ModuleName);
+        }
+
 
         /// <summary>
         /// Get setting value
@@ -62,33 +72,16 @@ namespace Shesha.Settings
         [AllowAnonymous]
         public async Task<object?> GetValueAsync(GetSettingValueInput input)
         {
-            var value = await _settingProvider.GetOrNullAsync(input.Module, input.Name, GetContext(input.AppKey));
+            var settingId = ResolveSettingId(input);
+
+            var value = await _settingProvider.GetOrNullAsync(
+                settingId.Module,
+                settingId.Name,
+                GetContext(input.AppKey, false)
+            );
 
             return value;
         }
-
-        /// <summary>
-        /// Get user setting value
-        /// </summary>
-        [HttpPost]
-        public async Task<object?> GetUserValueAsync(GetDynamicSettingValueInput input)
-        {
-            var value = await _settingProvider.UserSpecificGetOrNullAsync(input.Module, input.Name, input.Datatype, input.DefaultValue, GetContext(input.AppKey));
-
-            return value;
-        }
-
-        /// <summary>
-        /// Update setting value
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task UpdateUserValueAsync(UpdateDynamicSettingValueInput input)
-        {
-            await _settingProvider.UpdateUserSettingAsync(input.Module, input.Name, input.Datatype, input.Value, GetContext(input.AppKey));
-        }
-
 
         /// <summary>
         /// Update setting value
@@ -99,7 +92,50 @@ namespace Shesha.Settings
         [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, PermissionNames.Application_Settings, PermissionNames.Application_Maintenance, IsConfigurable = false)]
         public async Task UpdateValueAsync(UpdateSettingValueInput input)
         {
-            await _settingProvider.SetAsync(input.Module, input.Name, input.Value, GetContext(input.AppKey));
+            var settingId = ResolveSettingId(input);
+
+            await _settingProvider.SetAsync(
+                settingId.Module, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                settingId.Name, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                input.Value,
+                GetContext(input.AppKey, false)
+            );
+        }
+
+        /// <summary>
+        /// Get user setting value
+        /// </summary>
+        [HttpPost]
+        [SheshaAuthorize(RefListPermissionedAccess.AnyAuthenticated, IsConfigurable = false)]
+        public async Task<object?> GetUserValueAsync(GetDynamicSettingValueInput input)
+        {
+            var value = await _settingProvider.UserSpecificGetOrNullAsync(
+                input.Module,
+                input.Name,
+                input.Datatype,
+                input.DefaultValue,
+                GetContext(input.AppKey, true)
+            );
+
+            return value;
+        }
+
+        /// <summary>
+        /// Update setting value
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [SheshaAuthorize(RefListPermissionedAccess.AnyAuthenticated, IsConfigurable = false)]
+        public async Task UpdateUserValueAsync(UpdateDynamicSettingValueInput input)
+        {
+            await _settingProvider.UpdateUserSettingAsync(
+                input.Module,
+                input.Name,
+                input.Datatype,
+                input.Value,
+                GetContext(input.AppKey, true)
+            );
         }
 
         [HttpGet]
