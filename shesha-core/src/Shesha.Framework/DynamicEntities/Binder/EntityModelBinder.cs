@@ -71,18 +71,6 @@ namespace Shesha.DynamicEntities.Binder
             _modelConfigurationManager = modelConfigurationManager;
         }
 
-        private List<JProperty> ExcludeFrameworkFields(List<JProperty> query)
-        {
-            return query.Where(x =>
-            x.Name.ToLower() != nameof(IEntity.Id).ToLower()
-            && x.Name != nameof(IHasFormFieldsList._formFields)
-            && x.Name != nameof(IHasJObjectField._jObject).ToCamelCase()
-            && x.Name != nameof(IHasClassNameField._className)
-            && x.Name != nameof(IHasDisplayNameField._displayName)
-            && x.Name != nameof(IHasDelayedUpdateField._delayedUpdate)
-            ).ToList();
-        }
-
         private bool IsFrameworkFields(JProperty prop)
         {
             return prop.Name.ToLower() == nameof(IEntity.Id).ToLower()

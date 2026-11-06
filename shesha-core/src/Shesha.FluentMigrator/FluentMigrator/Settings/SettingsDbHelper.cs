@@ -217,15 +217,6 @@ where
             });
         }
 
-        internal Guid? GetSettingValueId(Guid settingId)
-        {
-            var sql = @"select ""Id"" from ""Frwk_SettingValues"" where ""SettingConfigurationId"" = @settingId and ""ApplicationId"" is null";
-            return ExecuteScalar<Guid?>(sql, command =>
-            {
-                command.AddParameter("@settingId", settingId);
-            });
-        }
-
         internal Guid? GetSettingValueId(Guid settingId, Guid? appId, long? userId)
         {
             var userIdExists = QuerySchema.ColumnExists(null, "Frwk_SettingValues", "UserId");

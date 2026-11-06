@@ -45,14 +45,6 @@ namespace Shesha.GraphQL.UnitOfWork
 
             _disposed = true;
             _unitOfWorkCompleteHandle?.Dispose();
-        }
-
-        private void ThrowIfDisposed()
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(GetType().FullName);
-            }
-        }
+        }        
     }
 }

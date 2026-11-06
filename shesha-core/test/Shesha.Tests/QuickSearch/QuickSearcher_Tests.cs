@@ -106,18 +106,6 @@ namespace Shesha.Tests.QuickSearch
             Assert.Equal(expected, expression.ToString());
         }
 
-        private Guid? GetReflistId(ReferenceListIdentifier refListId)
-        {
-            var refListHelper = Resolve<IReferenceListHelper>();
-            Guid? id = null;
-            WithUnitOfWork(() =>
-            {
-                var refList = refListHelper.GetReferenceList(refListId);
-                id = refList.Id;
-            });
-            return id;
-        }
-
         private Guid? GetReflistRevisionId(ReferenceListIdentifier refListId)
         {
             var refListHelper = Resolve<IReferenceListHelper>();

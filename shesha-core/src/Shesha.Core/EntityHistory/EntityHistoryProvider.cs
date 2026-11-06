@@ -647,34 +647,6 @@ namespace Shesha.EntityHistory
             return list;
         }
 
-
-        private List<EntityHistoryItemDto> GetAuditedAsEvents(string entityTypeFullName, string entityId)
-        {
-            var events = _eventRepository.GetAllList(x =>
-                    x.EntityChange != null
-                    && x.EntityChange.EntityId == entityId
-                    && x.EntityChange.EntityTypeFullName == entityTypeFullName
-                    && x.EventType == EntityHistoryCommonEventTypes.PROPERTY_CHANGE_AS_EVENT
-                    && x.EntityPropertyChange != null
-                );
-
-            return events.Select(x =>
-            {
-                var ecs = _entityChangeSetRepository.Get(x.EntityChange.NotNull().EntityChangeSetId);
-                return new EntityHistoryItemDto()
-                {
-                    CreationTime = x.EntityChange.ChangeTime,
-                    ExtendedDescription = x.Description,
-                    EntityId = entityId,
-                    EntityTypeFullName = entityTypeFullName,
-                    EventText = x.EventName,
-                    HistoryItemType = (int?)EntityHistoryItemType.Event,
-                    UserFullName = GetPersonByUserId(ecs?.UserId)?.FullName ?? ecs?.ToString()
-                };
-            }
-            ).ToList();
-        }
-
         private List<EntityHistoryItemDto> GetGenericEntitiesAudit(Type itemType, string entityId)
         {
             var attrs = itemType.GetCustomAttributes<DisplayGenericEntitesAuditTrailAttribute>();

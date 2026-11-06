@@ -448,32 +448,6 @@ namespace Shesha.DynamicEntities
             return dto.NotNull();
         }
 
-        private IMapper GetModelConfigMapper(ModelUpdateType updateType)
-        {
-            var modelConfigMapperConfig = new MapperConfiguration(cfg =>
-            {
-                // Fix bug of Automapper < 11.0.0 under .net 7 https://stackoverflow.com/questions/74730425/system-datetime-on-t-maxintegertsystem-collections-generic-ienumerable1t
-                cfg.ShouldMapMethod = (m) => { return false; };
-
-                var mapExpression = cfg.CreateMap<ModelConfigurationDto, EntityConfig>()
-                    .ForMember(d => d.Id, o => o.Ignore());
-
-                if (updateType == ModelUpdateType.DecorProperties)
-                {
-                    mapExpression.ForMember(d => d.ClassName, s => s.Ignore());
-                    mapExpression.ForMember(d => d.Namespace, s => s.Ignore());
-                    mapExpression.ForMember(d => d.Module, s => s.Ignore());
-                    mapExpression.ForMember(d => d.InheritedFrom, s => s.Ignore());
-                }
-                else
-                {
-                    mapExpression.ForMember(d => d.Module, s => s.MapFrom(p => p.ModuleId != null ? _moduleRepository.Get(p.ModuleId ?? Guid.Empty) : null));
-                }
-            });
-
-            return modelConfigMapperConfig.CreateMapper();
-        }
-
         private void ActionPropertiesRecursive(List<ModelPropertyDto> properties, Action<ModelPropertyDto> action)
         {
             if (properties == null) return;

@@ -194,14 +194,6 @@ namespace Shesha.MongoRepository.Mongo
             disposed = true;
         }
 
-        private void ThrowIfDisposed()
-        {
-            if (disposed)
-            {
-                throw new ObjectDisposedException(GetType().FullName);
-            }
-        }
-
         #endregion
     }
 }

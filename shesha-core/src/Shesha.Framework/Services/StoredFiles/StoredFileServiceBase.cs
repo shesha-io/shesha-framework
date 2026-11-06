@@ -406,16 +406,6 @@ namespace Shesha.Services.StoredFiles
         }
 
         /// <summary>
-        /// returns next SortOrder for the new file
-        /// </summary>
-        protected async Task<int> GetNextSortOrderAsync<TId>(TId ownerId, string ownerType, Int64? category = null)
-        {
-            return string.IsNullOrWhiteSpace(ownerType) || ownerId == null
-                ? 0
-                : await GetAttachmentsQuery(ownerId, ownerType).MaxOrDefaultAsync(f => f.SortOrder, -1 /*count from 0*/) + 1;
-        }
-
-        /// <summary>
         /// Prepares a dictionary of files with unique file names as a key. Renames duplicated files like this `[fileName] ([num]).[extension]`
         /// </summary>
         public Dictionary<string, StoredFile> MakeUniqueFileNames(IList<StoredFile> files)

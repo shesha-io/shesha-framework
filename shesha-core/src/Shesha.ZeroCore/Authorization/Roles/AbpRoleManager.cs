@@ -3,7 +3,6 @@ using Abp.Authorization.Users;
 using Abp.Collections.Extensions;
 using Abp.Domain.Services;
 using Abp.Domain.Uow;
-using Abp.Linq;
 using Abp.Localization;
 using Abp.MultiTenancy;
 using Abp.Runtime.Caching;
@@ -51,7 +50,6 @@ public class AbpRoleManager<TRole, TUser> : RoleManager<TRole>, IAbpRoleManager<
     private readonly IPermissionManager _permissionManager;
     private readonly ICacheManager _cacheManager;
     private readonly IUnitOfWorkManager _unitOfWorkManager;
-    private readonly IAsyncQueryableExecuter _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
 
     public AbpRoleManager(
         AbpRoleStore<TRole, TUser> store,
