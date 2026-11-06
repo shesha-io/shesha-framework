@@ -3,11 +3,13 @@ import { setComponentDragImage, setItemDragImage } from './dragChip';
 interface IFakeDataTransfer {
   dataTransfer: DataTransfer;
   setDragImage: ReturnType<typeof vi.fn>;
+  setData: ReturnType<typeof vi.fn>;
 }
 
 const fakeDataTransfer = (): IFakeDataTransfer => {
   const setDragImage = vi.fn();
-  return { dataTransfer: { setDragImage } as unknown as DataTransfer, setDragImage };
+  const setData = vi.fn();
+  return { dataTransfer: { setDragImage, setData } as unknown as DataTransfer, setDragImage, setData };
 };
 
 const chipOf = (image: unknown): HTMLElement => (image as HTMLElement).firstElementChild as HTMLElement;
@@ -23,7 +25,7 @@ describe('dragChip', () => {
     setComponentDragImage(dataTransfer, <svg data-testid="icon" />, 'Text');
 
     expect(setDragImage).toHaveBeenCalledTimes(1);
-    const chip = chipOf(setDragImage.mock.calls[0][0]);
+    const chip = chipOf(setDragImage.mock.calls[0]?.[0]);
     expect(chip.textContent).toBe('Text');
     expect(chip.querySelector('[data-testid="icon"]')).not.toBeNull();
   });
@@ -35,7 +37,7 @@ describe('dragChip', () => {
 
     setItemDragImage(dataTransfer, item);
 
-    const chip = chipOf(setDragImage.mock.calls[0][0]);
+    const chip = chipOf(setDragImage.mock.calls[0]?.[0]);
     expect(chip.textContent).toBe('Text');
     expect(chip.querySelector('.icon')).not.toBeNull();
     expect(chip.querySelector('.anticon-info-circle')).toBeNull();
@@ -48,9 +50,27 @@ describe('dragChip', () => {
 
     setItemDragImage(dataTransfer, item);
 
-    const chip = chipOf(setDragImage.mock.calls[0][0]);
+    const chip = chipOf(setDragImage.mock.calls[0]?.[0]);
     expect(chip.textContent).toBe('First name');
     expect(chip.querySelector('.icon')).not.toBeNull();
+  });
+
+  it('sets drag data before the drag image, as SortableJS would', () => {
+    const { dataTransfer, setDragImage, setData } = fakeDataTransfer();
+
+    setComponentDragImage(dataTransfer, null, 'Text');
+
+    expect(setData).toHaveBeenCalledWith('Text', 'Text');
+    expect(setData.mock.invocationCallOrder[0]).toBeLessThan(setDragImage.mock.invocationCallOrder[0] ?? 0);
+  });
+
+  it('does nothing without drag image support', () => {
+    const setData = vi.fn();
+
+    setComponentDragImage({ setData } as unknown as DataTransfer, null, 'Text');
+
+    expect(setData).not.toHaveBeenCalled();
+    expect(document.body.childElementCount).toBe(0);
   });
 
   it('removes the chip once the browser has captured it', async () => {

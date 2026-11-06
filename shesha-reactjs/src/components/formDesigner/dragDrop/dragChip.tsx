@@ -48,6 +48,8 @@ const showChip = (dataTransfer: DataTransfer | null, fill: (chip: HTMLDivElement
   document.body.appendChild(host);
 
   const cleanup = fill(chip);
+  // this replaces SortableJS' own setData, which sets the drag data; some browsers (Firefox) don't start a drag without it
+  dataTransfer.setData('Text', chip.textContent);
   dataTransfer.setDragImage(host, CURSOR_OFFSET.x + HOST_PADDING, CURSOR_OFFSET.y + HOST_PADDING);
 
   setTimeout(() => {
