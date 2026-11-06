@@ -5,7 +5,6 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.IdentityFramework;
 using Abp.Json;
-using Abp.Organizations;
 using Abp.Runtime.Caching;
 using Abp.UI;
 using Microsoft.AspNetCore.Identity;
@@ -48,9 +47,6 @@ namespace Shesha.Authorization.Users
             IPermissionManager permissionManager,
             IUnitOfWorkManager unitOfWorkManager,
             ICacheManager cacheManager,
-            IRepository<OrganizationUnit, long> organizationUnitRepository,
-            IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository,
-            IOrganizationUnitSettings organizationUnitSettings,
             ISettingManager settingManager,
             IShaSettingManager settingProvider,
             IPasswordComplexitySettings passwordComplexitySettings,
@@ -70,9 +66,6 @@ namespace Shesha.Authorization.Users
                 permissionManager,
                 unitOfWorkManager,
                 cacheManager,
-                organizationUnitRepository,
-                userOrganizationUnitRepository,
-                organizationUnitSettings,
                 settingManager,
                 loginRepository)
         {

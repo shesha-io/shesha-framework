@@ -20,14 +20,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Packages\**" />
     <Compile Remove="Services\Dtos\**" />
+    <EmbeddedResource Remove="Packages\**" />
     <EmbeddedResource Remove="Services\Dtos\**" />
+    <None Remove="Packages\**" />
     <None Remove="Services\Dtos\**" />
     <None Include="README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Packages\package20230120_1145.shaconfig" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,10 +49,6 @@
     <ProjectReference Include="..\Shesha.Application\Shesha.Application.csproj" />
     <ProjectReference Include="..\Shesha.Elmah\Shesha.Elmah.csproj" />
     <ProjectReference Include="..\Shesha.NHibernate\Shesha.NHibernate.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Packages\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -356,22 +356,6 @@ namespace Shesha.Web.FormsDesigner.Services
             return await MapToEntityDtoAsync(entity);
         }
 
-        #region private methods
-
-        /// <summary>
-        /// Ger module by name
-        /// </summary>
-        /// <param name="moduleName"></param>
-        /// <returns></returns>
-        private async Task<Module?> GetModuleAsync(string? moduleName)
-        {
-            return !string.IsNullOrWhiteSpace(moduleName)
-                ? await _moduleRepository.FirstOrDefaultAsync(m => m.Name == moduleName)
-                : null;
-        }
-
-        #endregion
-
         [EntityAction(StandardEntityActions.List)]
         public override async Task<PagedResultDto<FormConfigurationDto>> GetAllAsync(FilteredPagedAndSortedResultRequestDto input)
         {

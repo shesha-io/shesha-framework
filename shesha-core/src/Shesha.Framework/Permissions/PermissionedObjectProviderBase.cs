@@ -1,6 +1,5 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Uow;
-using Abp.Modules;
 using Abp.Reflection;
 using Shesha.ConfigurationItems;
 using Shesha.Reflection;
@@ -48,11 +47,6 @@ namespace Shesha.Permissions
             module = await _moduleManager.GetOrCreateModuleAsync(assembly);
             _modules.Add(assembly, module);
             return module;
-        }
-
-        protected Type? GetModuleOfType(Type type)
-        {
-            return type.Assembly.GetTypes().FirstOrDefault(t => t.IsPublic && !t.IsAbstract && typeof(AbpModule).IsAssignableFrom(t));
         }
 
         protected string GetName(Type service, string? defaultName = null)

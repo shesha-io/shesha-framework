@@ -1,7 +1,6 @@
 ﻿using Abp.Auditing;
 using Abp.Dependency;
 using Abp.Domain.Entities;
-using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.EntityHistory;
@@ -190,23 +189,6 @@ namespace Shesha.NHibernate.EntityHistory
             entityChange.PropertyChanges = propertyChanges;
 
             return entityChange;
-        }
-
-        protected bool? IsAuditedProperty(PropertyInfo propertyInfo)
-        {
-            // do not save properties of audition
-            return
-                propertyInfo.Name == nameof(FullAuditedEntity.CreatorUserId)
-                || propertyInfo.Name == nameof(AuditedEntity<Guid, IEntity<long>>.CreatorUser)
-                || propertyInfo.Name == nameof(FullAuditedEntity.CreationTime)
-                || propertyInfo.Name == nameof(FullAuditedEntity.DeleterUserId)
-                || propertyInfo.Name == nameof(FullAuditedEntity<Guid, IEntity<long>>.DeleterUser)
-                || propertyInfo.Name == nameof(FullAuditedEntity.DeletionTime)
-                || propertyInfo.Name == nameof(FullAuditedEntity.LastModifierUserId)
-                || propertyInfo.Name == nameof(AuditedEntity<Guid, IEntity<long>>.LastModifierUser)
-                || propertyInfo.Name == nameof(FullAuditedEntity.LastModificationTime)
-                ? false
-                : base.IsAuditedPropertyInfo(propertyInfo);
         }
 
         /// <summary>

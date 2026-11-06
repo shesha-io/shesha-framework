@@ -19,14 +19,6 @@ namespace Abp.Zero.Configuration
                            ),
 
                        new SettingDefinition(
-                           AbpZeroSettingNames.OrganizationUnits.MaxUserMembershipCount,
-                           int.MaxValue.ToString(),
-                           new FixedLocalizableString("Maximum allowed organization unit membership count for a user."),
-                           scopes: SettingScopes.Application | SettingScopes.Tenant,
-                           clientVisibilityProvider: new VisibleSettingClientVisibilityProvider()
-                           ),
-
-                       new SettingDefinition(
                            AbpZeroSettingNames.UserManagement.TwoFactorLogin.IsEnabled,
                            "true",
                            new FixedLocalizableString("Is two factor login enabled."),

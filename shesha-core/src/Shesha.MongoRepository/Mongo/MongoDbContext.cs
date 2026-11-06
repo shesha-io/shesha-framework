@@ -1,7 +1,6 @@
 ﻿using MongoDB.Driver;
 using PluralizeService.Core;
 using Shesha.MongoRepository.Mongo;
-using System;
 
 namespace MongoDbRepository
 {
@@ -60,14 +59,6 @@ namespace MongoDbRepository
             client?.Dispose();
 
             disposed = true;
-        }
-
-        private void ThrowIfDisposed()
-        {
-            if (disposed)
-            {
-                throw new ObjectDisposedException(GetType().FullName);
-            }
         }
     }
 }

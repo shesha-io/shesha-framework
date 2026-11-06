@@ -1,5 +1,4 @@
 ﻿using Abp.Authorization.Roles;
-using Abp.Organizations;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -40,22 +39,6 @@ public interface IAbpUserManager<TRole, TUser>
     Task<IdentityResult> ChangePasswordAsync(TUser user, string newPassword);
     Task<IdentityResult> CheckDuplicateUsernameOrEmailAddressAsync(long? expectedUserId, string userName, string emailAddress);
     Task<IdentityResult> SetRolesAsync(TUser user, string[] roleNames);
-    Task<bool> IsInOrganizationUnitAsync(long userId, long ouId);
-    Task<bool> IsInOrganizationUnitAsync(TUser user, OrganizationUnit ou);
-    bool IsInOrganizationUnit(TUser user, OrganizationUnit ou);
-    Task AddToOrganizationUnitAsync(long userId, long ouId);
-    Task AddToOrganizationUnitAsync(TUser user, OrganizationUnit ou);
-    void AddToOrganizationUnit(TUser user, OrganizationUnit ou);
-    Task RemoveFromOrganizationUnitAsync(long userId, long ouId);
-    Task RemoveFromOrganizationUnitAsync(TUser user, OrganizationUnit ou);
-    void RemoveFromOrganizationUnit(TUser user, OrganizationUnit ou);
-    Task SetOrganizationUnitsAsync(long userId, params long[] organizationUnitIds);
-    Task SetOrganizationUnitsAsync(TUser user, params long[] organizationUnitIds);
-    void SetOrganizationUnits(TUser user, params long[] organizationUnitIds);
-    Task<List<OrganizationUnit>> GetOrganizationUnitsAsync(TUser user);
-    List<OrganizationUnit> GetOrganizationUnits(TUser user);
-    Task<List<TUser>> GetUsersInOrganizationUnitAsync(OrganizationUnit organizationUnit, bool includeChildren = false);
-    List<TUser> GetUsersInOrganizationUnit(OrganizationUnit organizationUnit, bool includeChildren = false);
     Task InitializeOptionsAsync(int? tenantId);
     void InitializeOptions(int? tenantId);
     Task AddTokenValidityKeyAsync(TUser user, string tokenValidityKey, DateTime expireDate, CancellationToken cancellationToken = default(CancellationToken));

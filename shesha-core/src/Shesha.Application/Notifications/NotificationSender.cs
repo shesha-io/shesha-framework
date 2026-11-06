@@ -259,8 +259,6 @@ namespace Shesha.Notifications
             return null;
         }
 
-        private IMessageSender GetMessageSender(NotificationMessage message) => GetMessageSenderOrNull(message) ?? throw new Exception($"{nameof(message.PartOf.FromPerson)} or {nameof(message.SenderText)} must not be null");
-
         private IMessageReceiver GetMessageReceiver(NotificationMessage message)
         {
             if (message.PartOf.ToPerson != null)

@@ -271,37 +271,6 @@ namespace Shesha
         }
 
         /// <summary>
-        /// Returns entity of the specified type with the specified <paramref name="id"/>
-        /// </summary>
-        /// <typeparam name="T">Type of entity</typeparam>
-        /// <param name="id">Id of the entity</param>
-        /// <param name="throwException">Throw exception if entity not found</param>
-        /// <returns></returns>
-        [Obsolete("Use GetEntityOrNullAsync or GetEntityAsync without `throwException` argument")]
-        protected async Task<T?> GetEntityAsync<T>(Guid id, bool throwException = true) where T : class, IEntity<Guid>
-        {
-            return throwException
-                ? await GetEntityAsync<T>(id)
-                : await GetEntityOrNullAsync<T>(id);
-        }
-
-        /// <summary>
-        /// Returns entity of the specified type with the specified <paramref name="id"/>
-        /// </summary>
-        /// <typeparam name="T">Type of entity</typeparam>
-        /// <typeparam name="TId">Id type</typeparam>
-        /// <param name="id">Id of the entity</param>
-        /// <param name="throwException">Throw exception if entity not found</param>
-        /// <returns></returns>
-        [Obsolete("Use GetEntityOrNullAsync or GetEntityAsync without `throwException` argument")]
-        protected async Task<T?> GetEntityAsync<T, TId>(TId id, bool throwException = true) where T : class, IEntity<TId> where TId : notnull
-        {
-            return throwException
-                ? await GetEntityAsync<T, TId>(id)
-                : await GetEntityOrNullAsync<T, TId>(id);
-        }
-
-        /// <summary>
         /// Runs validation
         /// </summary>
         /// <param name="entity"></param>

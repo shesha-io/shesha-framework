@@ -4,7 +4,6 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Linq;
-using Abp.Organizations;
 using Abp.Runtime.Session;
 using Abp.Zero;
 using Castle.Core.Logging;
@@ -71,8 +70,6 @@ public class AbpUserStore<TRole, TUser> :
     private readonly IRepository<UserLogin, long> _userLoginRepository;
     private readonly IRepository<UserClaim, long> _userClaimRepository;
     private readonly IRepository<UserPermissionSetting, long> _userPermissionSettingRepository;
-    private readonly IRepository<UserOrganizationUnit, long> _userOrganizationUnitRepository;
-    private readonly IRepository<OrganizationUnitRole, long> _organizationUnitRoleRepository;
     private readonly IRepository<UserToken, long> _userTokenRepository;
 
     private readonly IUnitOfWorkManager _unitOfWorkManager;
@@ -85,8 +82,6 @@ public class AbpUserStore<TRole, TUser> :
         IRepository<UserLogin, long> userLoginRepository,
         IRepository<UserClaim, long> userClaimRepository,
         IRepository<UserPermissionSetting, long> userPermissionSettingRepository,
-        IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository,
-        IRepository<OrganizationUnitRole, long> organizationUnitRoleRepository,
         IRepository<UserToken, long> userTokenRepository)
     {
         _unitOfWorkManager = unitOfWorkManager;
@@ -96,8 +91,6 @@ public class AbpUserStore<TRole, TUser> :
         _userLoginRepository = userLoginRepository;
         _userClaimRepository = userClaimRepository;
         _userPermissionSettingRepository = userPermissionSettingRepository;
-        _userOrganizationUnitRepository = userOrganizationUnitRepository;
-        _organizationUnitRoleRepository = organizationUnitRoleRepository;
         _userTokenRepository = userTokenRepository;
 
         AbpSession = NullAbpSession.Instance;
@@ -794,15 +787,7 @@ public class AbpUserStore<TRole, TUser> :
                                                                      where userRole.UserId == user.Id
                                                                      select role.Name);
 
-            var userOrganizationUnitRoles = await AsyncQueryableExecuter.ToListAsync(
-                from userOu in await _userOrganizationUnitRepository.GetAllAsync()
-                join roleOu in await _organizationUnitRoleRepository.GetAllAsync() on userOu.OrganizationUnitId equals roleOu
-                    .OrganizationUnitId
-                join userOuRoles in await _roleRepository.GetAllAsync() on roleOu.RoleId equals userOuRoles.Id
-                where userOu.UserId == user.Id
-                select userOuRoles.Name);
-
-            return userRoles.Union(userOrganizationUnitRoles).ToList();
+            return userRoles.ToList();
         });
     }
 
@@ -828,16 +813,7 @@ public class AbpUserStore<TRole, TUser> :
                 select role.Name
             ).ToList();
 
-            var userOrganizationUnitRoles = (
-                from userOu in _userOrganizationUnitRepository.GetAll()
-                join roleOu in _organizationUnitRoleRepository.GetAll() on userOu.OrganizationUnitId equals roleOu
-                    .OrganizationUnitId
-                join userOuRoles in _roleRepository.GetAll() on roleOu.RoleId equals userOuRoles.Id
-                where userOu.UserId == user.Id
-                select userOuRoles.Name
-            ).ToList();
-
-            return userRoles.Union(userOrganizationUnitRoles).ToList();
+            return userRoles.ToList();
         });
     }
 

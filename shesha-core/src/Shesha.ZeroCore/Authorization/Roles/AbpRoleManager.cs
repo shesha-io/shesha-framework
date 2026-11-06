@@ -1,13 +1,10 @@
 using Abp.Application.Features;
 using Abp.Authorization.Users;
 using Abp.Collections.Extensions;
-using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.Domain.Uow;
-using Abp.Linq;
 using Abp.Localization;
 using Abp.MultiTenancy;
-using Abp.Organizations;
 using Abp.Runtime.Caching;
 using Abp.Runtime.Session;
 using Abp.UI;
@@ -53,9 +50,6 @@ public class AbpRoleManager<TRole, TUser> : RoleManager<TRole>, IAbpRoleManager<
     private readonly IPermissionManager _permissionManager;
     private readonly ICacheManager _cacheManager;
     private readonly IUnitOfWorkManager _unitOfWorkManager;
-    private readonly IRepository<OrganizationUnit, long> _organizationUnitRepository;
-    private readonly IRepository<OrganizationUnitRole, long> _organizationUnitRoleRepository;
-    private readonly IAsyncQueryableExecuter _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
 
     public AbpRoleManager(
         AbpRoleStore<TRole, TUser> store,
@@ -66,9 +60,7 @@ public class AbpRoleManager<TRole, TUser> : RoleManager<TRole>, IAbpRoleManager<
         IPermissionManager permissionManager,
         ICacheManager cacheManager,
         IUnitOfWorkManager unitOfWorkManager,
-        IRoleManagementConfig roleManagementConfig,
-        IRepository<OrganizationUnit, long> organizationUnitRepository,
-        IRepository<OrganizationUnitRole, long> organizationUnitRoleRepository)
+        IRoleManagementConfig roleManagementConfig)
         : base(
             store,
             roleValidators,
@@ -81,8 +73,6 @@ public class AbpRoleManager<TRole, TUser> : RoleManager<TRole>, IAbpRoleManager<
         _unitOfWorkManager = unitOfWorkManager;
 
         RoleManagementConfig = roleManagementConfig;
-        _organizationUnitRepository = organizationUnitRepository;
-        _organizationUnitRoleRepository = organizationUnitRoleRepository;
         AbpStore = store;
         AbpSession = NullAbpSession.Instance;
         LocalizationManager = NullLocalizationManager.Instance;
@@ -437,162 +427,6 @@ public class AbpRoleManager<TRole, TUser> : RoleManager<TRole>, IAbpRoleManager<
         }
 
         return IdentityResult.Success;
-    }
-
-    /// <summary>
-    /// Gets roles of a given organizationUnit
-    /// </summary>
-    /// <param name="organizationUnit">OrganizationUnit to get belonging roles </param>
-    /// <param name="includeChildren">Includes roles for children organization units to result when true. Default is false</param>
-    /// <returns></returns>
-    public virtual async Task<List<TRole>> GetRolesInOrganizationUnitAsync(
-        OrganizationUnit organizationUnit,
-        bool includeChildren = false)
-    {
-        return await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            if (!includeChildren)
-            {
-                var query = from organizationUnitRole in await _organizationUnitRoleRepository.GetAllAsync()
-                            join role in await AbpStore.GetRolesAsync() on organizationUnitRole.RoleId equals role.Id
-                            where organizationUnitRole.OrganizationUnitId == organizationUnit.Id
-                            select role;
-
-                return await _asyncQueryableExecuter.ToListAsync(query);
-            }
-            else
-            {
-                var query = from organizationUnitRole in await _organizationUnitRoleRepository.GetAllAsync()
-                            join role in await AbpStore.GetRolesAsync() on organizationUnitRole.RoleId equals role.Id
-                            join ou in await _organizationUnitRepository.GetAllAsync() on organizationUnitRole.OrganizationUnitId
-                                equals
-                                ou.Id
-                            where ou.Code.StartsWith(organizationUnit.Code)
-                            select role;
-
-                return await _asyncQueryableExecuter.ToListAsync(query);
-            }
-        });
-    }
-
-    public virtual async Task SetOrganizationUnitsAsync(int roleId, params long[] organizationUnitIds)
-    {
-        await SetOrganizationUnitsAsync(
-            await GetRoleByIdAsync(roleId),
-            organizationUnitIds
-        );
-    }
-
-    public virtual async Task SetOrganizationUnitsAsync(TRole role, params long[] organizationUnitIds)
-    {
-        await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            if (organizationUnitIds == null)
-            {
-                organizationUnitIds = new long[0];
-            }
-
-            var currentOus = await GetOrganizationUnitsAsync(role);
-
-            //Remove from removed OUs
-            foreach (var currentOu in currentOus)
-            {
-                if (!organizationUnitIds.Contains(currentOu.Id))
-                {
-                    await RemoveFromOrganizationUnitAsync(role, currentOu);
-                }
-            }
-
-            //Add to added OUs
-            foreach (var organizationUnitId in organizationUnitIds)
-            {
-                if (currentOus.All(ou => ou.Id != organizationUnitId))
-                {
-                    await AddToOrganizationUnitAsync(
-                        role,
-                        await _organizationUnitRepository.GetAsync(organizationUnitId)
-                    );
-                }
-            }
-        });
-    }
-
-    public virtual async Task<bool> IsInOrganizationUnitAsync(int roleId, long ouId)
-    {
-        return await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-            await IsInOrganizationUnitAsync(
-                await GetRoleByIdAsync(roleId),
-                await _organizationUnitRepository.GetAsync(ouId)
-            )
-        );
-    }
-
-    public virtual async Task<bool> IsInOrganizationUnitAsync(TRole role, OrganizationUnit ou)
-    {
-        return await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            return await _organizationUnitRoleRepository.CountAsync(uou =>
-                uou.RoleId == role.Id && uou.OrganizationUnitId == ou.Id
-            ) > 0;
-        });
-    }
-
-    public virtual async Task AddToOrganizationUnitAsync(int roleId, long ouId, int? tenantId)
-    {
-        await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            await AddToOrganizationUnitAsync(
-                await GetRoleByIdAsync(roleId),
-                await _organizationUnitRepository.GetAsync(ouId)
-            );
-        });
-    }
-
-    public virtual async Task AddToOrganizationUnitAsync(TRole role, OrganizationUnit ou)
-    {
-        await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            if (await IsInOrganizationUnitAsync(role, ou))
-            {
-                return;
-            }
-
-            await _organizationUnitRoleRepository.InsertAsync(new OrganizationUnitRole(role.TenantId, role.Id, ou.Id));
-        });
-    }
-
-    public async Task RemoveFromOrganizationUnitAsync(int roleId, long organizationUnitId)
-    {
-        await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            await RemoveFromOrganizationUnitAsync(
-                await GetRoleByIdAsync(roleId),
-                await _organizationUnitRepository.GetAsync(organizationUnitId)
-            );
-        });
-    }
-
-    public virtual async Task RemoveFromOrganizationUnitAsync(TRole role, OrganizationUnit ou)
-    {
-        await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            await _organizationUnitRoleRepository.DeleteAsync(uor =>
-                uor.RoleId == role.Id && uor.OrganizationUnitId == ou.Id
-            );
-        });
-    }
-
-    public virtual async Task<List<OrganizationUnit>> GetOrganizationUnitsAsync(TRole role)
-    {
-        return await _unitOfWorkManager.WithUnitOfWorkAsync(async () =>
-        {
-            var query = from uor in await _organizationUnitRoleRepository.GetAllAsync()
-                        join ou in await _organizationUnitRepository.GetAllAsync() on uor.OrganizationUnitId equals ou.Id
-                        where uor.RoleId == role.Id
-                        select ou;
-
-            return await _asyncQueryableExecuter.ToListAsync(query);
-        });
     }
 
     private Task<TRole> FindByDisplayNameAsync(string displayName)

@@ -931,19 +931,6 @@ namespace Shesha.JsonLogic
             }
         }
 
-        private void ConvertTicksTimeSpan(Expression a, ref Expression b)
-        {
-            if (a.Type == typeof(TimeSpan) && b.Type == typeof(Int64))
-            {
-                var fromSecondsMethod = typeof(TimeSpan).GetRequiredMethod(nameof(TimeSpan.FromSeconds), new Type[] { typeof(double) });
-
-                b = Expression.Call(
-                    null,
-                    fromSecondsMethod,
-                    Expression.Convert(b, typeof(double)));
-            }
-        }
-
         private void ConvertNullable(Expression a, ref Expression b)
         {
             if (ExpressionExtensions.IsNullableExpression(a) && !ExpressionExtensions.IsNullableExpression(b))
@@ -1018,11 +1005,6 @@ namespace Shesha.JsonLogic
             ConvertNullable(right, ref left);
 
             return new ExpressionPair(left, right);
-        }
-
-        private Expression Compare<T>(ParameterExpression param, JToken[] tokens, Func<ExpressionPair, Expression> comparator)
-        {
-            return Compare<T>(param, tokens, pair => PrepareExpressionPair(pair), comparator);
         }
 
         private IEnumerable<ExpressionPair> SplitArgumentsIntoPair(Expression[] arguments)
@@ -1183,14 +1165,6 @@ namespace Shesha.JsonLogic
                 throw new ArgumentException($"Value must be of type {typeof(DateTime).FullName}");
 
             return (DateTime)value;
-        }
-
-        private TimeSpan EnsureTimeSpan(object? value)
-        {
-            if (value == null || value.GetType().GetUnderlyingTypeIfNullable() != typeof(TimeSpan))
-                throw new ArgumentException($"Value must be of type {typeof(TimeSpan).FullName}");
-
-            return (TimeSpan)value;
         }
 
         private bool EnsureBool(object? value)
