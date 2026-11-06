@@ -12,6 +12,11 @@ import { getAlignmentStyle } from '@/components/formDesigner/containers/util';
 import { ISettingContainerProps } from './settingComponentContainer';
 import { isDefined } from '@/utils/nullables';
 import DesignerFormComponent from '@/components/formDesigner/formComponent/designerFormComponent';
+import { SortableEvent } from 'sortablejs';
+import { DropContainerElement, DropContainerElementProvider, useDropContainerElementState } from '@/components/formDesigner/dragDrop/dropTargetContext';
+import { startDropTargetIndicator, stopDropTargetIndicator } from '@/components/formDesigner/dragDrop/dropTargetIndicator';
+import { COMPONENT_TYPE_ATTR, setComponentDragImage } from '@/components/formDesigner/dragDrop/dragChip';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 
 export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
   const {
@@ -30,6 +35,8 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
   const readOnly = useFormDesignerReadOnly();
   const formDesigner = useFormDesigner();
   const { addComponent, startDragging, endDragging } = formDesigner;
+
+  const dropTarget = useDropContainerElementState(containerId, direction);
 
   const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent.subFormIdPrefix}.`, ''));
 
@@ -60,11 +67,20 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
     }));
   }, [childIds]);
 
-  const onDragStart = (): void => {
+  const onDragStart = (evt: SortableEvent): void => {
     startDragging();
+    startDropTargetIndicator(evt.item);
+  };
+
+  const getToolboxComponent = useFormDesignerComponentGetter();
+  const setDragImage = (dataTransfer: DataTransfer, dragEl: HTMLElement): void => {
+    const type = dragEl.getAttribute(COMPONENT_TYPE_ATTR) ?? '';
+    const toolboxComponent = getToolboxComponent(type);
+    setComponentDragImage(dataTransfer, toolboxComponent?.icon, toolboxComponent?.name ?? type);
   };
 
   const onDragEnd = (): void => {
+    stopDropTargetIndicator();
     endDragging();
   };
 
@@ -80,32 +96,36 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
       )}
     >
       <>
-        <ReactSortable
-          disabled={readOnly}
-          onStart={onDragStart}
-          onEnd={onDragEnd}
-          list={componentsMapped}
-          setList={onSetList}
-          fallbackOnBody={true}
-          swapThreshold={0.5}
-          group={{
-            name: 'shared',
-          }}
-          sort={true}
-          draggable={`.${styles.shaComponent}`}
-          animation={75}
-          ghostClass={styles.shaComponentGhost}
-          emptyInsertThreshold={20}
-          handle={`.${styles.componentDragHandle}`}
-          scroll={true}
-          bubbleScroll={true}
-          direction={direction}
-          className={noDefaultStyling === true ? '' : styles.shaComponentsContainerInner}
-          style={{ ...style, ...incomingStyle }}
-        >
-          {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
-          {component.id && <DesignerFormComponent componentModel={component} />}
-        </ReactSortable>
+        <DropContainerElementProvider value={dropTarget}>
+          <ReactSortable
+            tag={DropContainerElement}
+            disabled={readOnly}
+            onStart={onDragStart}
+            onEnd={onDragEnd}
+            setData={setDragImage}
+            list={componentsMapped}
+            setList={onSetList}
+            fallbackOnBody={true}
+            swapThreshold={0.5}
+            group={{
+              name: 'shared',
+            }}
+            sort={true}
+            draggable={`.${styles.shaComponent}`}
+            animation={75}
+            ghostClass={styles.shaComponentGhost}
+            emptyInsertThreshold={20}
+            handle={`.${styles.componentDragHandle}`}
+            scroll={true}
+            bubbleScroll={true}
+            direction={direction}
+            className={noDefaultStyling === true ? '' : styles.shaComponentsContainerInner}
+            style={{ ...style, ...incomingStyle }}
+          >
+            {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
+            {component.id && <DesignerFormComponent componentModel={component} />}
+          </ReactSortable>
+        </DropContainerElementProvider>
       </>
     </ConditionalWrap>
   );
