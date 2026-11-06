@@ -89,6 +89,8 @@ namespace Shesha.Settings
                 else
                     return null;
             }
+            if (!setting.IsUserSpecific)
+                return null;
 
             var value = await _settingStore.GetSettingValueAsync(setting, context ?? GetCurrentContext());
             return value != null && value.Value != null
@@ -107,6 +109,8 @@ namespace Shesha.Settings
                 setting = _settingDefinitionManager.CreateUserSettingDefinition(module, name, dataType, value);
                 _settingDefinitionManager.AddDefinition(setting);
             }
+            if (!setting.IsUserSpecific)
+                throw new Exception($"Setting {setting.FullName} is not user specific and cannot be updated using '{nameof(UpdateUserSettingAsync)}'");
 
             var configuration = await EnsureConfigurationAsync(setting);
 

@@ -51,15 +51,19 @@ namespace Shesha.Settings
                 };
         }
 
-        private SettingDefinition? ResolveSetting(SettingIdentifierDto input)
+        private SettingIdentifier ResolveSettingId(SettingIdentifierDto input) 
         {
-            return _settingDefinitionManager.GetAll().FirstOrDefault(s => s.ModuleAccessor == input.Module && s.CategoryAccessor == input.Category && s.Accessor == input.Name && !s.IsUserSpecific);
-        }
+            // Empty category means that setting is already resolved
+            if (string.IsNullOrWhiteSpace(input.Category))
+                return new SettingIdentifier(input.Name, input.Module);
 
-        private SettingDefinition? ResolveUserSetting(string module, string name)
-        {
-            return _settingDefinitionManager.GetAll().FirstOrDefault(s => s.ModuleAccessor == module && s.Accessor == name && s.IsUserSpecific == true);
+            var resolvedDefinition = _settingDefinitionManager.GetAll().FirstOrDefault(s => s.ModuleAccessor == input.Module && s.CategoryAccessor == input.Category && s.Accessor == input.Name);
+            if (resolvedDefinition == null)
+                throw new AbpValidationException($"Setting not found ${input.Module}.${input.Category}.${input.Name}");
+
+            return new SettingIdentifier(resolvedDefinition.Name, resolvedDefinition.ModuleName);
         }
+        
 
         /// <summary>
         /// Get setting value
@@ -68,13 +72,11 @@ namespace Shesha.Settings
         [AllowAnonymous]
         public async Task<object?> GetValueAsync(GetSettingValueInput input)
         {
-            var settingDefinition = ResolveSetting(input);
-
-            EnsureUserSpecific(settingDefinition, false);
+            var settingId = ResolveSettingId(input);
 
             var value = await _settingProvider.GetOrNullAsync(
-                settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (get value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
-                settingDefinition?.Name ?? input.Name, // for backward compatibility (get value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                settingId.Module,
+                settingId.Name,
                 GetContext(input.AppKey, false)
             );
 
@@ -90,13 +92,11 @@ namespace Shesha.Settings
         [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, PermissionNames.Application_Settings, PermissionNames.Application_Maintenance, IsConfigurable = false)]
         public async Task UpdateValueAsync(UpdateSettingValueInput input)
         {
-            var settingDefinition = ResolveSetting(input);
-
-            EnsureUserSpecific(settingDefinition, false);
+            var settingId = ResolveSettingId(input);
 
             await _settingProvider.SetAsync(
-                settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
-                settingDefinition?.Name ?? input.Name, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                settingId.Module, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                settingId.Name, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
                 input.Value,
                 GetContext(input.AppKey, false)
             );
@@ -109,13 +109,9 @@ namespace Shesha.Settings
         [SheshaAuthorize(RefListPermissionedAccess.AnyAuthenticated, IsConfigurable = false)]
         public async Task<object?> GetUserValueAsync(GetDynamicSettingValueInput input)
         {
-            var settingDefinition = ResolveUserSetting(input.Module, input.Name);
-            
-            EnsureUserSpecific(settingDefinition, true);
-
             var value = await _settingProvider.UserSpecificGetOrNullAsync(
-                settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
-                settingDefinition?.Name ?? input.Name, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                input.Module,
+                input.Name,
                 input.Datatype,
                 input.DefaultValue,
                 GetContext(input.AppKey, true)
@@ -133,13 +129,9 @@ namespace Shesha.Settings
         [SheshaAuthorize(RefListPermissionedAccess.AnyAuthenticated, IsConfigurable = false)]
         public async Task UpdateUserValueAsync(UpdateDynamicSettingValueInput input)
         {
-            var settingDefinition = ResolveUserSetting(input.Module, input.Name);
-
-            EnsureUserSpecific(settingDefinition, true);
-
             await _settingProvider.UpdateUserSettingAsync(
-                settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
-                settingDefinition?.Name ?? input.Name, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                input.Module,
+                input.Name,
                 input.Datatype,
                 input.Value,
                 GetContext(input.AppKey, true)
@@ -154,14 +146,6 @@ namespace Shesha.Settings
             var result = settings.Select(s => new SettingConfigurationDto(s)).ToList();
 
             return Task.FromResult(result);
-        }
-
-        private void EnsureUserSpecific(SettingDefinition? settingDefinition, bool isUserSpecific) 
-        {
-            if (settingDefinition == null)
-                return;
-            if (settingDefinition.IsUserSpecific != isUserSpecific)
-                throw new AbpValidationException($"Setting {settingDefinition.FullName} {(settingDefinition.IsUserSpecific ? "is" : "isn't")} user specific");
         }
     }
 }
