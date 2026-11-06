@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Zero;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Roles;
@@ -85,7 +86,7 @@ namespace Shesha.Tests.ShaRole
                 {
                     using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                     {
-                        await _appointmentRepository.DeleteAsync(result.ShaRoleAppointment);
+                        await _appointmentRepository.DeleteAsync(result.ShaRoleAppointment.NotNull());
                         await _roleRepository.DeleteAsync(role);
                     }
                 }
@@ -164,7 +165,7 @@ namespace Shesha.Tests.ShaRole
                 {
                     using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                     {
-                        await _appointmentRepository.DeleteAsync(result.ShaRoleAppointment);
+                        await _appointmentRepository.DeleteAsync(result.ShaRoleAppointment.NotNull());
                         await _roleRepository.DeleteAsync(role);
                     }
                 }
