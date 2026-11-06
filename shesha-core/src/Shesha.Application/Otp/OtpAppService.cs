@@ -1,10 +1,12 @@
 ﻿using Abp.Dependency;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Shesha.Authorization;
 using Shesha.Domain.Enums;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
+using Shesha.RateLimiting;
 using System.Threading.Tasks;
 
 namespace Shesha.Otp
@@ -25,6 +27,7 @@ namespace Shesha.Otp
         /// Send one-time-pin
         /// </summary>
         [AllowAnonymous]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ISendPinResponse> SendPinAsync(SendPinInput input)
         {
             return await _otpManager.SendPinAsync(input);
@@ -34,6 +37,7 @@ namespace Shesha.Otp
         /// Resend one-time-pin
         /// </summary>
         [AllowAnonymous]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ISendPinResponse> ResendPinAsync(ResendPinInput input)
         {
             return await _otpManager.ResendPinAsync(input);
@@ -44,6 +48,7 @@ namespace Shesha.Otp
         /// Verify one-time-pin
         /// </summary>
         [AllowAnonymous]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
         {
             return await _otpManager.VerifyPinAsync(input);
@@ -60,6 +65,8 @@ namespace Shesha.Otp
                 Alphabet = input.Alphabet,
                 DefaultLifetime = input.DefaultLifetime,
                 IgnoreOtpValidation = input.IgnoreOtpValidation,
+                MaxVerifyAttempts = input.MaxVerifyAttempts,
+                MaxSendsPerDestinationPerHour = input.MaxSendsPerDestinationPerHour,
                 DefaultEmailBodyTemplate = input.EmailBodyTemplate,
                 DefaultEmailSubjectTemplate = input.EmailSubject,
                 DefaultRegistrationEmailSubjectTemplate = input.RegistrationEmailSubject,
@@ -82,6 +89,8 @@ namespace Shesha.Otp
                 Alphabet = emailSettings.Alphabet,
                 DefaultLifetime = emailSettings.DefaultLifetime,
                 IgnoreOtpValidation = emailSettings.IgnoreOtpValidation,
+                MaxVerifyAttempts = emailSettings.MaxVerifyAttempts,
+                MaxSendsPerDestinationPerHour = emailSettings.MaxSendsPerDestinationPerHour,
                 EmailSubject = emailSettings.DefaultEmailSubjectTemplate,
                 EmailBodyTemplate = emailSettings.DefaultEmailBodyTemplate,
                 RegistrationEmailSubject = emailSettings.DefaultRegistrationEmailSubjectTemplate,

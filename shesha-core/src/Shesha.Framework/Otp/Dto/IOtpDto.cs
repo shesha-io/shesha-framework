@@ -35,5 +35,10 @@ namespace Shesha.Otp.Dto
         OtpSendStatus SendStatus { get; }
 
         string ErrorMessage { get; }
+
+        /// <summary>
+        /// Number of verification attempts made against this OTP
+        /// </summary>
+        int VerifyAttempts { get; }
     }
 }

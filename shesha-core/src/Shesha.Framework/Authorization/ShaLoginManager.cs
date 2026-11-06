@@ -250,6 +250,8 @@ namespace Shesha.Authorization
                     return await CreateLoginResultAsync(user, tenant);
                 });
 
+                // without this the cleared reset code is rolled back and the OTP could be replayed until it expires
+                await uow.CompleteAsync();
             }
 
             await SaveLoginAttemptAsync(result, imei, tenancyName, mobileNo);

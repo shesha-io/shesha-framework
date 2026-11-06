@@ -35,6 +35,19 @@ namespace Shesha.Otp
         }
 
         /// inheritedDoc
+        /// <remarks>Not atomic: the cache has no compare-and-set, so concurrent requests may undercount attempts</remarks>
+        public async Task<int> IncrementVerifyAttemptsAsync(Guid operationId)
+        {
+            var dto = await GetAsync(operationId);
+            if (dto == null)
+                return 0;
+
+            dto.VerifyAttempts++;
+            await SaveAsync(dto);
+            return dto.VerifyAttempts;
+        }
+
+        /// inheritedDoc
         public async Task<OtpDto> GetAsync(Guid operationId)
         {
             return await _otpCache.Cache.GetOrDefaultAsync(operationId);

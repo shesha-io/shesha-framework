@@ -572,6 +572,7 @@ namespace Shesha.Users
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<bool> SendEmailLinkAsync(string username)
         {
             var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
@@ -597,16 +598,24 @@ namespace Shesha.Users
         /// Verify one-time pin that was used for password reset. Returns a token that should be used for password update
         /// </summary>
         [AllowAnonymous]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ResetPasswordVerifyOtpResponse> ResetPasswordVerifyOtpAsync(ResetPasswordVerifyOtpInput input)
         {
             var otp = await _otpManager.GetAsync(input.OperationId);
-            var personId = otp?.RecipientId.ToGuid() ?? Guid.Empty;
+            if (otp == null)
+                return ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(VerifyPinResponse.Failed("Wrong one time pin"));
+
+            var personId = otp.RecipientId.ToGuid();
             var user = personId != Guid.Empty
                 ? (await _personRepository.GetAsync(personId))?.User
                 : await GetUniqueUserByMobileNoAsync(input.MobileNo);
 
             if (user == null)
                 throw new Exception("User not found");
+
+            // only accept the OTP issued for this user's password reset (see ResetPasswordSendOtpAsync)
+            if (user.PasswordResetCode != otp.OperationId.ToString())
+                return ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(VerifyPinResponse.Failed("Wrong one time pin"));
 
             var otpRequest = ObjectMapper.Map<VerifyPinInput>(input);
             var otpResponse = await _otpManager.VerifyPinAsync(otpRequest);

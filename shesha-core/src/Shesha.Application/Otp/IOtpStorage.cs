@@ -30,5 +30,13 @@ namespace Shesha.Otp
         /// <param name="operationId"></param>
         /// <returns></returns>
         Task<OtpDto> GetAsync(Guid operationId);
+
+        /// <summary>
+        /// Increments the number of verification attempts of the OTP and returns the new value.
+        /// Implementations should make the increment atomic so that concurrent requests can't exceed the attempt limit.
+        /// </summary>
+        /// <param name="operationId"></param>
+        /// <returns>Number of verification attempts including the current one</returns>
+        Task<int> IncrementVerifyAttemptsAsync(Guid operationId);
     }
 }

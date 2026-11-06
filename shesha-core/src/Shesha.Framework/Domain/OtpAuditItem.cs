@@ -47,5 +47,10 @@ namespace Shesha.Domain
         
         [StringLength(int.MaxValue)]
         public virtual string ErrorMessage { get; set; }
+
+        /// <summary>
+        /// Number of verification attempts made against this OTP
+        /// </summary>
+        public virtual int VerifyAttempts { get; set; }
     }
 }
