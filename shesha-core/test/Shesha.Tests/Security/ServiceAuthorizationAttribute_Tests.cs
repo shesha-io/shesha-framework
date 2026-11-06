@@ -82,33 +82,33 @@ namespace Shesha.Tests.Security
         }
 
         /// <summary>
-        /// Verifies that NHibernateAppService.ExecuteHql — the highest-risk endpoint
-        /// (arbitrary HQL execution) — is protected by the class-level guard and has
-        /// no method-level [AllowAnonymous] override that could bypass it.
+        /// Verifies that NHibernateAppService is protected by a class-level guard.
         /// </summary>
         [Fact]
-        public void NHibernateAppService_ExecuteHql_should_be_guarded()
+        public void NHibernateAppService_should_be_guarded()
         {
-            // Class-level guard must be present
             var classAttr = GetClassSheshaAuthorize(typeof(NHibernateAppService));
             classAttr.Should().NotBeNull("NHibernateAppService must have class-level [SheshaAuthorize]");
             classAttr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
             classAttr.Permissions.Should().Contain("Application-Configure");
+        }
 
-            // ExecuteHql must NOT have [AllowAnonymous] that would bypass the class guard
-            var method = typeof(NHibernateAppService).GetMethod("ExecuteHql", BindingFlags.Public | BindingFlags.Instance);
-            method.Should().NotBeNull("ExecuteHql method should exist");
+        /// <summary>
+        /// Verifies that NHibernateAppService does not expose an endpoint that executes
+        /// arbitrary HQL. ExecuteHql was a debugging endpoint that allowed any caller with
+        /// Application-Configure or Application-Maintenance to query any mapped entity;
+        /// it was removed and must not be reintroduced.
+        /// </summary>
+        [Fact]
+        public void NHibernateAppService_should_not_expose_ExecuteHql()
+        {
+            var hqlMethods = typeof(NHibernateAppService)
+                .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                .Where(m => m.Name.Contains("Hql", StringComparison.OrdinalIgnoreCase))
+                .Select(m => m.Name)
+                .ToList();
 
-            var anonAttr = method.GetCustomAttribute<AllowAnonymousAttribute>();
-            anonAttr.Should().BeNull("ExecuteHql must NOT have [AllowAnonymous] — it executes arbitrary HQL");
-
-            // ExecuteHql should also not have its own [SheshaAuthorize] that weakens the class-level guard
-            var methodAuthAttr = method.GetCustomAttribute<SheshaAuthorizeAttribute>();
-            if (methodAuthAttr != null)
-            {
-                methodAuthAttr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions,
-                    "If ExecuteHql has method-level auth, it should not weaken the class-level guard");
-            }
+            hqlMethods.Should().BeEmpty("NHibernateAppService must not expose endpoints that execute arbitrary HQL");
         }
 
         /// <summary>

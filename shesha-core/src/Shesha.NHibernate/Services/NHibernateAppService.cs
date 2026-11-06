@@ -15,9 +15,7 @@ using Shesha.NHibernate.Session;
 using Shesha.Reflection;
 using Shesha.Authorization;
 using Shesha.Domain.Enums;
-using Shesha.Services.Dtos;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -47,17 +45,6 @@ namespace Shesha.Services
         public Task<string> GetConventionsAsync()
         {
             return Task.FromResult(Conventions.LastCompiledXml);
-        }
-
-        [HttpPost]
-        [Consumes("multipart/form-data")]
-        [DontWrapResult]
-        public IList ExecuteHql([FromForm] ExecuteHqlInput input)
-        {
-            var sessionFactory = StaticContext.IocManager.Resolve<ISessionFactory>();
-            var session = _currentSessionContext.Session;
-            var list = session.CreateQuery(input.Query).List();
-            return list;
         }
 
         /// <summary>
