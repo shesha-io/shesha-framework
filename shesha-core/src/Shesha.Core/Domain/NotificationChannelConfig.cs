@@ -11,6 +11,7 @@ namespace Shesha.Domain
     [DiscriminatorValue(ItemTypeName)]
     [SnakeCaseNaming]
     [Prefix(UsePrefixes = false)]
+    [Exposable(ItemTypeName)]
     public class NotificationChannelConfig : ConfigurationItem
     {
         public NotificationChannelConfig()
