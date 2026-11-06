@@ -13,6 +13,11 @@ namespace Shesha.Settings.Dto
         public string Name { get; set; }
 
         /// <summary>
+        /// Category name
+        /// </summary>
+        public string? Category { get; set; }
+
+        /// <summary>
         /// Module name
         /// </summary>
         public string Module { get; set; }
