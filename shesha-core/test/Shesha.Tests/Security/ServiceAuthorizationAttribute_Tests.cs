@@ -52,7 +52,6 @@ namespace Shesha.Tests.Security
         [Theory]
         [InlineData(typeof(ScheduledJobAppService), "Application-Maintenance")]
         [InlineData(typeof(EmailSenderAppService), "Application-Maintenance")]
-        [InlineData(typeof(OtpAppService), "Application-Maintenance")]
         public void Maintenance_services_should_require_pages_maintenance(Type serviceType, string expectedPermission)
         {
             var attr = GetClassSheshaAuthorize(serviceType);
@@ -141,9 +140,7 @@ namespace Shesha.Tests.Security
         {
             // Class-level guard exists
             var classAttr = GetClassSheshaAuthorize(typeof(OtpAppService));
-            classAttr.Should().NotBeNull();
-            classAttr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
-            classAttr.Permissions.Should().Contain("Application-Maintenance");
+            classAttr.Should().BeNull();
 
             // Methods that MUST be reachable by anonymous callers (login flow)
             var allowedAnonymous = new[] { "SendPinAsync", "ResendPinAsync", "VerifyPinAsync" };
@@ -163,6 +160,11 @@ namespace Shesha.Tests.Security
                 method.Should().NotBeNull();
                 method.GetCustomAttribute<AllowAnonymousAttribute>().Should().BeNull(
                     $"{methodName} must NOT have [AllowAnonymous] — it should inherit class-level pages:maintenance guard");
+
+                var methodAttr = method.GetCustomAttribute<SheshaAuthorizeAttribute>();
+                methodAttr.Should().NotBeNull($"{methodName} must NOT have [{nameof(SheshaAuthorizeAttribute)}]");
+                methodAttr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
+                methodAttr.Permissions.Should().Contain("Application-Maintenance");
             }
         }
     }
