@@ -13,6 +13,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 const ProcessMonitor: IToolboxComponent<IProcessMonitorProps> = {
   type: 'processMonitor',
   isInput: false,
+  acceptsChildren: true,
   name: 'Process Monitor',
   icon: <MonitorOutlined />,
   Factory: ({ model }) => {

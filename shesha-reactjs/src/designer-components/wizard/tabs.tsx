@@ -2,7 +2,9 @@ import classNames from 'classnames';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import ParentProvider from '@/providers/parentProvider/index';
-import { FC, useEffect, useMemo } from 'react';
+import { FC, useCallback, useEffect, useMemo } from 'react';
+import { useFormDesignerReveal } from '@/providers/formDesigner';
+import { isDefined } from '@/utils/nullables';
 import { ShaIcon } from '@/components/shaIcon';
 import { Button, Space, Steps } from 'antd';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
@@ -37,6 +39,16 @@ export const Tabs: FC<IWizardComponentProps> = ({ form, ...model }) => {
   const onChangeContextData = useDataContextManager().onChangeContextData;
 
   const { components, current, currentStep, visibleSteps, back, cancel, close, content, done, executeBooleanExpression, next, reset, setStep } = useWizard(model);
+  const revealIds = useMemo(
+    () => visibleSteps.flatMap((step) => (isDefined(step.stepFooter) ? [step.id, step.stepFooter.id] : [step.id])),
+    [visibleSteps],
+  );
+  const openStep = useCallback((containerId: string) => {
+    const stepIndex = visibleSteps.findIndex((step) => step.id === containerId || step.stepFooter?.id === containerId);
+    if (stepIndex >= 0)
+      setStep(stepIndex);
+  }, [visibleSteps, setStep]);
+  useFormDesignerReveal(revealIds, openStep);
   useEffect(() => onChangeContextData(), [onChangeContextData, current]);
 
   const contextData = useMemo(
