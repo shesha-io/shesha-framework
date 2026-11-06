@@ -65,7 +65,7 @@ namespace Shesha.Settings
         {
             var settingDefinition = ResolveSetting(input);
 
-            EnsureUserSpecific(settingDefinition, false);
+            EnsureNotUserSpecific(settingDefinition);
 
             var value = await _settingProvider.GetOrNullAsync(
                 settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (get value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
@@ -87,7 +87,7 @@ namespace Shesha.Settings
         {
             var settingDefinition = ResolveSetting(input);
 
-            EnsureUserSpecific(settingDefinition, false);
+            EnsureNotUserSpecific(settingDefinition);
 
             await _settingProvider.SetAsync(
                 settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
@@ -104,13 +104,9 @@ namespace Shesha.Settings
         [SheshaAuthorize(RefListPermissionedAccess.AnyAuthenticated, IsConfigurable = false)]
         public async Task<object?> GetUserValueAsync(GetDynamicSettingValueInput input)
         {
-            var settingDefinition = ResolveSetting(input);
-            
-            EnsureUserSpecific(settingDefinition, true);
-
             var value = await _settingProvider.UserSpecificGetOrNullAsync(
-                settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
-                settingDefinition?.Name ?? input.Name, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                input.Module,
+                input.Name,
                 input.Datatype,
                 input.DefaultValue,
                 GetContext(input.AppKey, true)
@@ -128,13 +124,9 @@ namespace Shesha.Settings
         [SheshaAuthorize(RefListPermissionedAccess.AnyAuthenticated, IsConfigurable = false)]
         public async Task UpdateUserValueAsync(UpdateDynamicSettingValueInput input)
         {
-            var settingDefinition = ResolveSetting(input);
-
-            EnsureUserSpecific(settingDefinition, true);
-
             await _settingProvider.UpdateUserSettingAsync(
-                settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
-                settingDefinition?.Name ?? input.Name, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                input.Module,
+                input.Name,
                 input.Datatype,
                 input.Value,
                 GetContext(input.AppKey, true)
@@ -151,12 +143,12 @@ namespace Shesha.Settings
             return Task.FromResult(result);
         }
 
-        private void EnsureUserSpecific(SettingDefinition? settingDefinition, bool isUserSpecific) 
+        private void EnsureNotUserSpecific(SettingDefinition? settingDefinition) 
         {
             if (settingDefinition == null)
                 return;
-            if (settingDefinition.IsUserSpecific != isUserSpecific)
-                throw new AbpValidationException($"Setting {settingDefinition.FullName} {(settingDefinition.IsUserSpecific ? "is" : "isn't")} user specific");
+            if (settingDefinition.IsUserSpecific)
+                throw new AbpValidationException($"Setting {settingDefinition.FullName} is user specific");
         }
     }
 }
