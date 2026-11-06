@@ -351,13 +351,13 @@ export class Authenticator implements IAuthenticator {
       return;
 
     const getRedirectUrlAsync = async (): Promise<string> => {
-      const rootPaths = ['/', '\\'];
+      const isEmptyOrRootPath = (val: string): boolean => isNullOrWhiteSpace(val) || ['/', '\\'].includes(val.trim());
 
       const currentPath = this.#router.path;
       const fullPath = this.#router.fullPath;
-      if (rootPaths.includes(currentPath) || isNullOrWhiteSpace(currentPath)) {
+      if (isEmptyOrRootPath(currentPath)) {
         const defaultUrl = await this.#settings.getSetting({ module: 'Shesha', name: 'Shesha.DefaultUrl' });
-        if (typeof defaultUrl === 'string' && !isNullOrWhiteSpace(defaultUrl) && !rootPaths.includes(defaultUrl))
+        if (typeof defaultUrl === 'string' && !isEmptyOrRootPath(defaultUrl))
           return defaultUrl;
       }
 
