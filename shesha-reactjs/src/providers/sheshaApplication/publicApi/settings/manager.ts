@@ -4,6 +4,7 @@ import qs from "qs";
 import { IAjaxResponse } from "@/interfaces";
 import { ISettingFullAccessor, ISettingIdentifier } from "@/providers/settings/models";
 import { isAjaxErrorResponse } from "@/interfaces/ajaxResponse";
+import { isNullOrWhiteSpace } from "@/utils";
 
 interface CategorySettingsMap {
   name: string;
@@ -15,7 +16,7 @@ interface ModuleSettingsMap {
   categories: Map<string, CategorySettingsMap>;
 }
 
-export const SETTINGS_URLS = {
+const SETTINGS_URLS = {
   GET_CONFIGURATIONS: '/api/services/app/Settings/GetConfigurations',
   GET_VALUE: '/api/services/app/Settings/GetValue',
   SET_VALUE: '/api/services/app/Settings/UpdateValue',
@@ -37,7 +38,7 @@ export class SettingsManager {
           throw new Error(`Category '${id.category}' not found in module '${id.module}'`);
 
         const settingName = category.settings.get(id.name);
-        if (!settingName)
+        if (isNullOrWhiteSpace(settingName))
           throw new Error(`Setting with name '${id.name}' not found in category '${id.category}' of module '${id.module}'`);
 
         return {
@@ -50,13 +51,11 @@ export class SettingsManager {
   };
 
   getValueAsync = <Value = unknown>(id: ISettingFullAccessor): Promise<Value | undefined> => {
-    return this.resolveSettingAsync(id).then((resolvedId) => {
-      const url = `${SETTINGS_URLS.GET_VALUE}?${qs.stringify(resolvedId)}`;
-      return this._httpClient.get<IAjaxResponse<Value>>(url)
-        .then((res) => {
-          return res.data.success ? res.data.result : undefined;
-        });
-    });
+    const url = `${SETTINGS_URLS.GET_VALUE}?${qs.stringify(id)}`;
+    return this._httpClient.get<IAjaxResponse<Value>>(url)
+      .then((res) => {
+        return res.data.success ? res.data.result : undefined;
+      });
   };
 
   setValueAsync = <Value = unknown>(id: ISettingFullAccessor, value: Value): Promise<void> => {

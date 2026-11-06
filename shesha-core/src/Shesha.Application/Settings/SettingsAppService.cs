@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
-using Shesha.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Settings.Dto;
 using System.Collections.Generic;
@@ -16,13 +15,11 @@ namespace Shesha.Settings
     public class SettingsAppService : SheshaAppServiceBase
     {
         private readonly IShaSettingManager _settingProvider;
-        private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly ISettingDefinitionManager _settingDefinitionManager;
 
-        public SettingsAppService(IShaSettingManager settingProvider, IConfigurationFrameworkRuntime cfRuntime, ISettingDefinitionManager settingDefinitionManager)
+        public SettingsAppService(IShaSettingManager settingProvider, ISettingDefinitionManager settingDefinitionManager)
         {
             _settingProvider = settingProvider;
-            _cfRuntime = cfRuntime;
             _settingDefinitionManager = settingDefinitionManager;
         }
 
@@ -43,7 +40,7 @@ namespace Shesha.Settings
             return values;
         }
 
-        private SettingManagementContext? GetContext(string? appKey) 
+        private SettingManagementContext? GetContext(string? appKey)
         {
             return !string.IsNullOrWhiteSpace(appKey)
                 ? new SettingManagementContext
@@ -55,6 +52,11 @@ namespace Shesha.Settings
                 : null;
         }
 
+        private SettingDefinition? ResolveSetting(SettingIdentifierDto input)
+        {
+            return _settingDefinitionManager.GetAll().FirstOrDefault(s => s.ModuleAccessor == input.Module && s.Accessor == input.Name);
+        }
+
         /// <summary>
         /// Get setting value
         /// </summary>
@@ -62,9 +64,32 @@ namespace Shesha.Settings
         [AllowAnonymous]
         public async Task<object?> GetValueAsync(GetSettingValueInput input)
         {
-            var value = await _settingProvider.GetOrNullAsync(input.Module, input.Name, GetContext(input.AppKey));
+            var settingDefinition = ResolveSetting(input);
+            var value = await _settingProvider.GetOrNullAsync(
+                settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (get value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                settingDefinition?.Name ?? input.Name, // for backward compatibility (get value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                GetContext(input.AppKey)
+            );
 
             return value;
+        }
+
+        /// <summary>
+        /// Update setting value
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, PermissionNames.Application_Settings, PermissionNames.Application_Maintenance, IsConfigurable = false)]
+        public async Task UpdateValueAsync(UpdateSettingValueInput input)
+        {
+            var settingDefinition = ResolveSetting(input);
+            await _settingProvider.SetAsync(
+                settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                settingDefinition?.Name ?? input.Name, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                input.Value,
+                GetContext(input.AppKey)
+            );
         }
 
         /// <summary>
@@ -73,7 +98,14 @@ namespace Shesha.Settings
         [HttpPost]
         public async Task<object?> GetUserValueAsync(GetDynamicSettingValueInput input)
         {
-            var value = await _settingProvider.UserSpecificGetOrNullAsync(input.Module, input.Name, input.Datatype, input.DefaultValue, GetContext(input.AppKey));
+            var settingDefinition = ResolveSetting(input);
+            var value = await _settingProvider.UserSpecificGetOrNullAsync(
+                settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                settingDefinition?.Name ?? input.Name, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                input.Datatype,
+                input.DefaultValue,
+                GetContext(input.AppKey)
+            );
 
             return value;
         }
@@ -86,20 +118,14 @@ namespace Shesha.Settings
         [HttpPost]
         public async Task UpdateUserValueAsync(UpdateDynamicSettingValueInput input)
         {
-            await _settingProvider.UpdateUserSettingAsync(input.Module, input.Name, input.Datatype, input.Value, GetContext(input.AppKey));
-        }
-
-
-        /// <summary>
-        /// Update setting value
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, PermissionNames.Application_Settings, PermissionNames.Application_Maintenance, IsConfigurable = false)]
-        public async Task UpdateValueAsync(UpdateSettingValueInput input)
-        {
-            await _settingProvider.SetAsync(input.Module, input.Name, input.Value, GetContext(input.AppKey));
+            var settingDefinition = ResolveSetting(input);
+            await _settingProvider.UpdateUserSettingAsync(
+                settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                settingDefinition?.Name ?? input.Name, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
+                input.Datatype,
+                input.Value,
+                GetContext(input.AppKey)
+            );
         }
 
         [HttpGet]
