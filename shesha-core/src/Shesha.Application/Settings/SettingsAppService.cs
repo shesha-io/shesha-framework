@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Abp.Runtime.Validation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.Domain.Enums;
@@ -40,21 +41,24 @@ namespace Shesha.Settings
             return values;
         }
 
-        private SettingManagementContext? GetContext(string? appKey)
+        private SettingManagementContext? GetContext(string? appKey, bool isUserSpecific)
         {
-            return !string.IsNullOrWhiteSpace(appKey)
-                ? new SettingManagementContext
+            return new SettingManagementContext
                 {
-                    AppKey = appKey,
-                    // TODO: recheck usage of UserId, looks like the condition for appKey is wrong
-                    UserId = AbpSession.UserId
-                }
-                : null;
+                    AppKey = !string.IsNullOrWhiteSpace(appKey) ? appKey : null,
+                    UserId = isUserSpecific ? AbpSession.UserId : null,
+                    TenantId = AbpSession.TenantId,
+                };
         }
 
         private SettingDefinition? ResolveSetting(SettingIdentifierDto input)
         {
-            return _settingDefinitionManager.GetAll().FirstOrDefault(s => s.ModuleAccessor == input.Module && s.CategoryAccessor == input.Category && s.Accessor == input.Name);
+            return _settingDefinitionManager.GetAll().FirstOrDefault(s => s.ModuleAccessor == input.Module && s.CategoryAccessor == input.Category && s.Accessor == input.Name && !s.IsUserSpecific);
+        }
+
+        private SettingDefinition? ResolveUserSetting(string module, string name)
+        {
+            return _settingDefinitionManager.GetAll().FirstOrDefault(s => s.ModuleAccessor == module && s.Accessor == name && s.IsUserSpecific == true);
         }
 
         /// <summary>
@@ -65,10 +69,13 @@ namespace Shesha.Settings
         public async Task<object?> GetValueAsync(GetSettingValueInput input)
         {
             var settingDefinition = ResolveSetting(input);
+
+            EnsureUserSpecific(settingDefinition, false);
+
             var value = await _settingProvider.GetOrNullAsync(
                 settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (get value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
                 settingDefinition?.Name ?? input.Name, // for backward compatibility (get value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
-                GetContext(input.AppKey)
+                GetContext(input.AppKey, false)
             );
 
             return value;
@@ -84,11 +91,14 @@ namespace Shesha.Settings
         public async Task UpdateValueAsync(UpdateSettingValueInput input)
         {
             var settingDefinition = ResolveSetting(input);
+
+            EnsureUserSpecific(settingDefinition, false);
+
             await _settingProvider.SetAsync(
                 settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
                 settingDefinition?.Name ?? input.Name, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
                 input.Value,
-                GetContext(input.AppKey)
+                GetContext(input.AppKey, false)
             );
         }
 
@@ -96,15 +106,19 @@ namespace Shesha.Settings
         /// Get user setting value
         /// </summary>
         [HttpPost]
+        [SheshaAuthorize(RefListPermissionedAccess.AnyAuthenticated, IsConfigurable = false)]
         public async Task<object?> GetUserValueAsync(GetDynamicSettingValueInput input)
         {
-            var settingDefinition = ResolveSetting(input);
+            var settingDefinition = ResolveUserSetting(input.Module, input.Name);
+            
+            EnsureUserSpecific(settingDefinition, true);
+
             var value = await _settingProvider.UserSpecificGetOrNullAsync(
                 settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
                 settingDefinition?.Name ?? input.Name, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
                 input.Datatype,
                 input.DefaultValue,
-                GetContext(input.AppKey)
+                GetContext(input.AppKey, true)
             );
 
             return value;
@@ -116,15 +130,19 @@ namespace Shesha.Settings
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
+        [SheshaAuthorize(RefListPermissionedAccess.AnyAuthenticated, IsConfigurable = false)]
         public async Task UpdateUserValueAsync(UpdateDynamicSettingValueInput input)
         {
-            var settingDefinition = ResolveSetting(input);
+            var settingDefinition = ResolveUserSetting(input.Module, input.Name);
+
+            EnsureUserSpecific(settingDefinition, true);
+
             await _settingProvider.UpdateUserSettingAsync(
                 settingDefinition?.ModuleName ?? input.Module, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
                 settingDefinition?.Name ?? input.Name, // for backward compatibility (set value by Module/Name instead of ModuleAccessor/CategoryAccessor/Accessor)
                 input.Datatype,
                 input.Value,
-                GetContext(input.AppKey)
+                GetContext(input.AppKey, true)
             );
         }
 
@@ -136,6 +154,14 @@ namespace Shesha.Settings
             var result = settings.Select(s => new SettingConfigurationDto(s)).ToList();
 
             return Task.FromResult(result);
+        }
+
+        private void EnsureUserSpecific(SettingDefinition? settingDefinition, bool isUserSpecific) 
+        {
+            if (settingDefinition == null)
+                return;
+            if (settingDefinition.IsUserSpecific != isUserSpecific)
+                throw new AbpValidationException($"Setting {settingDefinition.FullName} {(settingDefinition.IsUserSpecific ? "is" : "isn't")} user specific");
         }
     }
 }
