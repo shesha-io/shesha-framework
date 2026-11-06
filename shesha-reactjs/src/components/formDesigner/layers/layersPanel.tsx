@@ -1,4 +1,4 @@
-import { FC, FocusEvent, KeyboardEvent, MouseEvent, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, FocusEvent, KeyboardEvent, MouseEvent, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { App, Button, theme, Tooltip } from 'antd';
 import { MinusSquareOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import { announce, cleanup as cleanupAnnouncements } from '@atlaskit/pragmatic-drag-and-drop-live-region';
@@ -39,9 +39,18 @@ const LayersPanelContent: FC = () => {
 
   const [query, setQuery] = useState('');
   const deferredQuery = useDeferredValue(query);
+  // The index follows structure changes only. While searching, editing a label or name can change what matches, so
+  // the panel follows markup edits too; otherwise typing in the properties panel re-renders only the edited row
+  const searching = deferredQuery.trim() !== '';
+  const subscribeToMarkup = useCallback(
+    (onChange: () => void) => (searching ? designer.subscribe('markup', onChange) : () => undefined),
+    [designer, searching],
+  );
+  const getMarkup = useCallback(() => designer.state.formFlatMarkup, [designer]);
+  const markup = useSyncExternalStore(subscribeToMarkup, getMarkup, getMarkup);
   const search = useMemo(
-    () => searchLayers(layers.index, designer.state.formFlatMarkup, designer.getComponentDefinition, deferredQuery),
-    [layers.index, designer, deferredQuery],
+    () => searchLayers(layers.index, markup, designer.getComponentDefinition, deferredQuery),
+    [layers.index, markup, designer, deferredQuery],
   );
   const rows = useMemo(
     () => getVisibleRows(layers.index, expandedState.expanded, search?.visible),

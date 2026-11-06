@@ -162,6 +162,17 @@ describe('LayersPanel: search', () => {
     fireEvent.change(screen.getByPlaceholderText('Search layers'), { target: { value: 'pho' } });
     await waitFor(() => expect(document.querySelector('mark')?.textContent).toBe('Pho'));
   });
+
+  it('updates the results when a label is edited during a search', async () => {
+    const designer = createTestDesigner(sampleForm());
+    renderPanel(designer);
+    fireEvent.change(screen.getByPlaceholderText('Search layers'), { target: { value: 'town' } });
+    await waitFor(() => expect(rowLabels()).toEqual([]));
+
+    act(() => designer.updateComponent({ componentId: 'city', updater: (model) => ({ ...model, label: 'Town' }) }));
+
+    await waitFor(() => expect(rowLabels()).toEqual(['Panel', 'Town']));
+  });
 });
 
 describe('LayersPanel: keyboard', () => {
