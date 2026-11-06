@@ -4,6 +4,7 @@ import { IAddressCompomentBaseProps } from './models';
 import { COUNTRY_CODES } from '@/shesha-constants/country-codes';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { getDisplayNameOrUndefined } from '@/utils/object';
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 /** Google's Places API accepts at most 5 entries in `componentRestrictions.country`. */
 const MAX_COUNTRY_RESTRICTIONS = 5;
@@ -90,7 +91,7 @@ export const defaultStyles = (): IStyleValue => {
       gradient: { direction: 'to right', colors: [] },
       url: '',
     },
-    font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI', align: 'left' },
+    font: { weight: '400', size: 14, color: '#000', type: DEFAULT_FONT_TYPE, align: 'left' },
     border: {
       border: {
         all: { width: '1px', style: 'solid', color: '#d9d9d9' },

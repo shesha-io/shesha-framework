@@ -4,10 +4,12 @@ import './interFont.generated.css';
 import './baseFont.css';
 import { ColorScheme, IConfigurableTheme, IThemeActionsContext, IThemeStateContext, normalizeColorScheme, ResolvedTheme, THEME_CONTEXT_INITIAL_STATE, ThemeComponentGroup, UiActionsContext, UiStateContext } from './contexts';
 import { useResolvedTheme } from './useResolvedTheme';
+import { applyThemeDefaults } from './defaults';
+import { getApplicationColorTokens } from './tokens';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
-import { isNotNullOrWhiteSpace } from '@/utils/nullables';
-import { DEFAULT_FONT_FAMILY } from '@/designer-components/_settings/utils/font/utils';
+import { getThemeFontStack, THEME_FONT_VAR } from '@/designer-components/_settings/utils/font/utils';
+import { ensureWebFontLoaded } from '@/designer-components/_settings/utils/font/webFonts';
 
 export interface ThemeProviderProps {
   prefixCls?: string;
@@ -32,7 +34,8 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     // load theme settings
     const loaded = await settings.getSetting<IConfigurableTheme>({ module: 'Shesha', name: 'Shesha.ThemeSettings' });
     // Persisted settings predate the 'system' option, so the stored scheme may be empty or stale.
-    const theme: IConfigurableTheme = { ...loaded, sidebar: normalizeColorScheme(loaded.sidebar) };
+    // Fills in the label and input font defaults a theme is initialised with, where it saved none.
+    const theme: IConfigurableTheme = applyThemeDefaults({ ...loaded, sidebar: normalizeColorScheme(loaded.sidebar) });
     setState((prev) => ({ ...prev, theme: theme, initialTheme: theme }));
   });
 
@@ -70,19 +73,18 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     document.documentElement.style.colorScheme = resolvedTheme;
   }, [resolvedTheme]);
 
-  const themeConfig = useMemo<ThemeConfig>(() => {
-    const appTheme = state.theme.application;
-    const themeDefaults: ThemeConfig['token'] = {};
+  const fontFamily = useMemo(() => getThemeFontStack(state.theme.fontFamily), [state.theme.fontFamily]);
 
-    const theme: Partial<ThemeConfig['token']> = appTheme
-      ? {
-        ...(isNotNullOrWhiteSpace(appTheme.primaryColor) ? { colorPrimary: appTheme.primaryColor, colorLink: appTheme.primaryColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.infoColor) ? { colorInfo: appTheme.infoColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.successColor) ? { colorSuccess: appTheme.successColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.errorColor) ? { colorError: appTheme.errorColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.warningColor) ? { colorWarning: appTheme.warningColor } : {}),
-      }
-      : {};
+  // Components on the default font reference this variable (see `withFontFallback`), so a theme font
+  // change restyles them without re-rendering. Set on the root element so popups rendered into body get it too.
+  useEffect(() => {
+    ensureWebFontLoaded(fontFamily);
+    document.documentElement.style.setProperty(THEME_FONT_VAR, fontFamily);
+  }, [fontFamily]);
+
+  const themeConfig = useMemo<ThemeConfig>(() => {
+    const themeDefaults: ThemeConfig['token'] = {};
+    const theme = getApplicationColorTokens(state.theme.application);
 
     const result: ThemeConfig = {
       algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
@@ -92,7 +94,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
       token: {
         ...themeDefaults,
         ...theme,
-        fontFamily: DEFAULT_FONT_FAMILY,
+        fontFamily,
       },
       components: {
         Menu: {
@@ -101,7 +103,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
       },
     };
     return result;
-  }, [state.theme, isDark]);
+  }, [state.theme, isDark, fontFamily]);
 
   return (
     <UiStateContext.Provider value={stateWithResolvedTheme}>

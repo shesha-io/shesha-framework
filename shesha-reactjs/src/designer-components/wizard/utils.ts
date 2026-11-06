@@ -3,6 +3,7 @@ import { nanoid } from '@/utils/uuid';
 import { IWizardSequence, IWizardStepProps } from './models';
 import { IStyleValue } from "@/providers/form/models";
 import { CSSProperties } from 'react';
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 type StepDescriptionGetter = (description: string, index: number) => string;
 export const getStepDescritpion =
@@ -109,7 +110,7 @@ export const onAddNewItem = (items: IWizardStepProps[]): IWizardStepProps => {
 export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '' },
-    font: { weight: '400', size: 16, color: '#000', type: 'Segoe UI' },
+    font: { weight: '400', size: 16, color: '#000', type: DEFAULT_FONT_TYPE },
     dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: {
       radiusType: 'all',

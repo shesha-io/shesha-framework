@@ -1,6 +1,7 @@
 import { IInputStyles, IStyleValue } from '@/providers/form/models';
 import { isDefined } from '@/utils/nullables';
 import { ICheckboxComponentProps } from './interfaces';
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 export const defaultStyles = (prev?: ICheckboxComponentProps & IInputStyles): IStyleValue => {
   const hasDimension = (value: string | number | undefined): value is string | number =>
@@ -12,7 +13,7 @@ export const defaultStyles = (prev?: ICheckboxComponentProps & IInputStyles): IS
       weight: '400',
       size: 14,
       color: '',
-      type: 'Segoe UI',
+      type: DEFAULT_FONT_TYPE,
       align: 'left',
     },
     border: {

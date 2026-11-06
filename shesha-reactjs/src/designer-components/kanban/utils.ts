@@ -1,8 +1,9 @@
 import { IStyleValue } from "@/providers/form/models";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 export const defaultStyles = (): IStyleValue => {
   return {
-    font: { color: '#000', size: 14, weight: '400', type: 'Segoe UI' },
+    font: { color: '#000', size: 14, weight: '400', type: DEFAULT_FONT_TYPE },
     background: { type: 'color', color: '#fff' },
     dimensions: {
       width: 'auto',
@@ -31,7 +32,7 @@ export const defaultStyles = (): IStyleValue => {
 
 export const defaultColumnStyles = (): IStyleValue => {
   return {
-    font: { color: '#000', size: 14, weight: '400', type: 'Segoe UI' },
+    font: { color: '#000', size: 14, weight: '400', type: DEFAULT_FONT_TYPE },
     background: { type: 'color', color: '#00000005' },
     dimensions: { width: '300px', height: '500px', minHeight: '500px', maxHeight: '500px', minWidth: '300px', maxWidth: '300px' },
     shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },

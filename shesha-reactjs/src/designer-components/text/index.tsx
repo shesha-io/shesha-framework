@@ -6,7 +6,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { FONT_SIZES, ITextComponentProps, ITextComponentPropsV0, LevelType, TextComponentDefinition } from './models';
 import { getSettings } from './settingsForm';
-import { defaultStyles, remToPx } from './utils';
+import { defaultStyles, migrateDefaultContentType, remToPx } from './utils';
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
 import { GenericText } from './genericText';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
@@ -46,6 +46,7 @@ const TextComponent: TextComponentDefinition = {
     italic: false,
     underline: false,
     level: 0,
+    contentType: 'default',
     content: 'Your text here...',
   }),
   migrator: (m) =>
@@ -82,7 +83,8 @@ const TextComponent: TextComponentDefinition = {
             : typeof prev.content === 'string' ? prev.content.replaceAll('{{{', '%{{').replaceAll('{{', '{{data.').replaceAll('%{{', '{{{') : prev.content,
         };
         return migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(newModel)));
-      }),
+      })
+      .add<ITextComponentProps>(8, migrateDefaultContentType),
   previewConfiguration: {
     version: 'latest',
     type: 'text',
@@ -91,6 +93,7 @@ const TextComponent: TextComponentDefinition = {
     italic: false,
     underline: false,
     level: 0,
+    contentType: 'default',
     content: 'Your text here...',
     id: 'text',
   },

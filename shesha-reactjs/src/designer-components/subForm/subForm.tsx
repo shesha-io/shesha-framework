@@ -16,6 +16,7 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { ValidateErrorEntity } from '@/interfaces';
 import { isNonEmptyArray } from '@/utils/array';
 import { useStyles } from './styles';
+import { useResolvedFormLayout } from '@/providers/form/useResolvedFormLayout';
 
 const { Link } = Typography;
 
@@ -41,6 +42,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly, formSelectionMode }) => {
     allComponents,
     components,
   } = useSubForm();
+  const formLayout = useResolvedFormLayout(formSettings);
 
   const form = useForm();
 
@@ -138,8 +140,8 @@ const SubForm: FC<ISubFormProps> = ({ readOnly, formSelectionMode }) => {
               <ComponentsContainerProvider ContainerComponent={ComponentsContainerSubForm}>
                 <FormItemProvider
                   namePrefix={propertyName}
-                  labelCol={formSettings?.labelCol}
-                  wrapperCol={formSettings?.wrapperCol}
+                  labelCol={formLayout.labelCol}
+                  wrapperCol={formLayout.wrapperCol}
                 >
                   <ComponentsContainer containerId={ROOT_COMPONENT_KEY} readOnly={readOnly} />
                 </FormItemProvider>

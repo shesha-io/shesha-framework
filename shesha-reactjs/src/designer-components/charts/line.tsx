@@ -16,6 +16,7 @@ import useStyles from './styles';
 import ChartLoader from './components/chartLoader';
 import { useChartFilters } from './hooks/useChartFilters';
 import { isDefined } from '@/utils/nullables';
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 const LineChartComponent: IToolboxComponent<IChartProps> = {
   type: 'lineChart',
@@ -149,19 +150,19 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(9, (prev) => ({
       ...prev,
       titleFont: prev.titleFont ?? {
-        family: 'Segoe UI',
+        family: DEFAULT_FONT_TYPE,
         size: 16,
         weight: '400',
         color: '#000000',
       },
       axisLabelFont: prev.axisLabelFont ?? prev.titleFont ?? {
-        family: 'Segoe UI',
+        family: DEFAULT_FONT_TYPE,
         size: 16,
         weight: '400',
         color: '#000000',
       },
       legendFont: prev.legendFont ?? {
-        family: 'Segoe UI',
+        family: DEFAULT_FONT_TYPE,
         size: 12,
         weight: '400',
         color: '#000000',
@@ -170,7 +171,7 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(10, (prev) => ({
       ...prev,
       axisLabelFont: prev.axisLabelFont ?? prev.titleFont ?? {
-        family: 'Segoe UI',
+        family: DEFAULT_FONT_TYPE,
         size: 16,
         weight: '400',
         color: '#000000',

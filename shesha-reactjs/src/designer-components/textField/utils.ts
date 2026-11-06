@@ -4,6 +4,7 @@ import { ISettingIdentifier } from '@/providers/settings/models';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useMemo } from 'react';
 import { TextType } from './interfaces';
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 export interface ITextTypeFormatConfig {
   pattern: RegExp;
@@ -95,7 +96,7 @@ export const defaultStyles = (): IStyleValue => {
       weight: '400',
       size: 14,
       color: '#000',
-      type: 'Segoe UI',
+      type: DEFAULT_FONT_TYPE,
       align: 'left',
     },
     border: {
