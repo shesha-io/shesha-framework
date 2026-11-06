@@ -1149,16 +1149,22 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
         type: 'number',
       });
 
+    // Length rules only make sense for text. Multi-value components (e.g. autocomplete in `multiple` mode)
+    // can inherit minLength/maxLength from string metadata, so skip arrays instead of failing with "is not a valid string"
+    const skipArrays = (value: unknown): unknown => Array.isArray(value) ? undefined : value;
+
     if (isDefined(validate.minLength))
       rules.push({
         min: validate.minLength,
         type: 'string',
+        transform: skipArrays,
       });
 
     if (isDefined(validate.maxLength))
       rules.push({
         max: validate.maxLength,
         type: 'string',
+        transform: skipArrays,
       });
 
     if (!isNullOrWhiteSpace(validate.validator) && options) {
