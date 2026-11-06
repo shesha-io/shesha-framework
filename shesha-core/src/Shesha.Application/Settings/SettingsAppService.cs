@@ -53,12 +53,7 @@ namespace Shesha.Settings
 
         private SettingDefinition? ResolveSetting(SettingIdentifierDto input)
         {
-            return _settingDefinitionManager.GetAll().FirstOrDefault(s => s.ModuleAccessor == input.Module && s.CategoryAccessor == input.Category && s.Accessor == input.Name && !s.IsUserSpecific);
-        }
-
-        private SettingDefinition? ResolveUserSetting(string module, string name)
-        {
-            return _settingDefinitionManager.GetAll().FirstOrDefault(s => s.ModuleAccessor == module && s.Accessor == name && s.IsUserSpecific == true);
+            return _settingDefinitionManager.GetAll().FirstOrDefault(s => s.ModuleAccessor == input.Module && s.CategoryAccessor == input.Category && s.Accessor == input.Name);
         }
 
         /// <summary>
@@ -109,7 +104,7 @@ namespace Shesha.Settings
         [SheshaAuthorize(RefListPermissionedAccess.AnyAuthenticated, IsConfigurable = false)]
         public async Task<object?> GetUserValueAsync(GetDynamicSettingValueInput input)
         {
-            var settingDefinition = ResolveUserSetting(input.Module, input.Name);
+            var settingDefinition = ResolveSetting(input);
             
             EnsureUserSpecific(settingDefinition, true);
 
@@ -133,7 +128,7 @@ namespace Shesha.Settings
         [SheshaAuthorize(RefListPermissionedAccess.AnyAuthenticated, IsConfigurable = false)]
         public async Task UpdateUserValueAsync(UpdateDynamicSettingValueInput input)
         {
-            var settingDefinition = ResolveUserSetting(input.Module, input.Name);
+            var settingDefinition = ResolveSetting(input);
 
             EnsureUserSpecific(settingDefinition, true);
 
