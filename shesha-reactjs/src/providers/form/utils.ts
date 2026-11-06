@@ -1145,26 +1145,17 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
         type: 'number',
       });
 
-    // Length rules only make sense for text. Multi-value components (e.g. autocomplete in `multiple` mode)
-    // can inherit minLength/maxLength from string metadata, so skip the check for arrays instead of failing
-    // with "is not a valid string". A validator is used rather than `transform` so the value passed to
-    // subsequent rules (e.g. custom validators) stays unchanged
-    const fieldLabel = component.label || component.propertyName;
-    const lengthRule = (isValid: (length: number) => boolean, message: string): Rule => ({
-      validator: (_rule: RuleObject, value: unknown) => {
-        if (value === undefined || value === null || value === '' || Array.isArray(value))
-          return Promise.resolve();
-        if (typeof value !== 'string')
-          return Promise.reject(new Error(`${fieldLabel} is not a valid string`));
-        return isValid(value.length) ? Promise.resolve() : Promise.reject(new Error(message));
-      },
-    });
-
     if (validate.minLength)
-      rules.push(lengthRule(length => length >= validate.minLength, `${fieldLabel} must be at least ${validate.minLength} characters`));
+      rules.push({
+        min: validate.minLength,
+        type: 'string',
+      });
 
     if (validate.maxLength)
-      rules.push(lengthRule(length => length <= validate.maxLength, `${fieldLabel} cannot be longer than ${validate.maxLength} characters`));
+      rules.push({
+        max: validate.maxLength,
+        type: 'string',
+      });
 
     if (validate.validator)
       rules.push({
