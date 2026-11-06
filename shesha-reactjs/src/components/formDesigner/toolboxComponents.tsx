@@ -10,6 +10,9 @@ import { useFormDesigner } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
 import { useFormDesignerComponentGroups } from '@/providers/form/hooks';
 import { isDefined } from '@/utils/nullables';
+import { SortableEvent } from 'sortablejs';
+import { startDropTargetIndicator, stopDropTargetIndicator } from './dragDrop/dropTargetIndicator';
+import { setItemDragImage } from './dragDrop/dragChip';
 
 type PanelType = Required<CollapseProps>['items'][number];
 
@@ -48,11 +51,13 @@ export const ToolboxComponents: FC = () => {
     setOpenedKeys(Array.isArray(key) ? key : [key]);
   };
 
-  const onDragStart = (): void => {
+  const onDragStart = (evt: SortableEvent): void => {
     startDraggingNewItem();
+    startDropTargetIndicator(evt.item);
   };
 
   const onDragEnd = (): void => {
+    stopDropTargetIndicator();
     endDraggingNewItem();
   };
 
@@ -91,6 +96,7 @@ export const ToolboxComponents: FC = () => {
               ghostClass={styles.shaComponentGhost}
               onStart={onDragStart}
               onEnd={onDragEnd}
+              setData={setItemDragImage}
               className={styles.shaToolboxPanelComponents}
             >
 
