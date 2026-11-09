@@ -34,6 +34,9 @@ namespace Shesha.UserRegistrations
         public async Task<PublicRegistrationSettingsDto> GetSettingsAsync()
         {
             var s = await _userManagementSettings.UserManagementSettings.GetValueAsync();
+            if (s == null)
+                return new PublicRegistrationSettingsDto { SupportedRegistrationMethods = SupportedRegistrationMethods.None };
+
             var isEnabled = SelfRegistrationManager.IsSelfRegistrationEnabled(s);
 
             return new PublicRegistrationSettingsDto

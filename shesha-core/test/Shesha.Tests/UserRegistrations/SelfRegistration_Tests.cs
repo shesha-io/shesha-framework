@@ -685,6 +685,22 @@ namespace Shesha.Tests.UserRegistrations
         }
 
         [Fact]
+        public async Task Login_with_an_incomplete_registration_fails_clearly_without_the_registration_managerAsync()
+        {
+            ConfigureTokenAuth();
+            var app = await CreateAppAsync(AdditionalInfoSettings());
+            var input = NewInput();
+            var result = await RegisterAsync(app, input);
+
+            // e.g. a derived controller or container setup that doesn't inject the property: the user must not be logged in
+            // without the additional registration form
+            var ex = await Should.ThrowAsync<InvalidOperationException>(() => AuthenticateAsync(input.UserName, Password, c => c.SelfRegistrationManager = null));
+
+            ex.Message.ShouldContain(nameof(ISelfRegistrationManager));
+            (await GetRegistrationAsync(result.UserId)).IsComplete.ShouldBeFalse();
+        }
+
+        [Fact]
         public async Task Login_with_an_incomplete_registration_issues_a_new_completion_tokenAsync()
         {
             ConfigureTokenAuth();
@@ -751,7 +767,7 @@ namespace Shesha.Tests.UserRegistrations
             return await WithUowAsync(() => Resolve<IRepository<ShaUserRegistration, Guid>>().GetAll().SingleAsync(r => r.UserId == userId));
         }
 
-        private async Task<AuthenticateResultModel> AuthenticateAsync(string userName, string password)
+        private async Task<AuthenticateResultModel> AuthenticateAsync(string userName, string password, Action<TokenAuthController> configure = null)
         {
             AbpSession.UserId = null;
 
@@ -762,7 +778,9 @@ namespace Shesha.Tests.UserRegistrations
             history.IsEnabledForAnonymousUsers = false;
             try
             {
-                return await WithUowAsync(() => Resolve<TokenAuthController>().AuthenticateAsync(new AuthenticateModel
+                var controller = Resolve<TokenAuthController>();
+                configure?.Invoke(controller);
+                return await WithUowAsync(() => controller.AuthenticateAsync(new AuthenticateModel
                 {
                     UserNameOrEmailAddress = userName,
                     Password = password,

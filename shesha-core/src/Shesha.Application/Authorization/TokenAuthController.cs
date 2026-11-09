@@ -108,13 +108,17 @@ namespace Shesha.Authorization
             var registration = await _userRegistration.FirstOrDefaultAsync(e => e.UserId == loginResult.User.Id);
             if (registration != null && !registration.IsComplete && registration.AdditionalRegistrationInfoForm != null)
             {
+                // fail clearly rather than log the user in without the additional registration form
+                var registrationManager = SelfRegistrationManager
+                    ?? throw new InvalidOperationException($"{nameof(SelfRegistrationManager)} wasn't injected into {GetType().Name}, so users with an incomplete registration can't log in. Make sure {nameof(ISelfRegistrationManager)} is registered and the property is injected.");
+
                 return new AuthenticateResultModel
                 {
                     ResultType = AuthenticateResultType.RedirectNoAuth,
                     RedirectModule = registration.AdditionalRegistrationInfoForm.Module,
                     RedirectForm = registration.AdditionalRegistrationInfoForm.Name,
                     UserId = registration.UserId,
-                    RegistrationCompletionToken = await SelfRegistrationManager.IssueCompletionTokenAsync(registration),
+                    RegistrationCompletionToken = await registrationManager.IssueCompletionTokenAsync(registration),
                 };
             }
 
