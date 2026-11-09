@@ -234,6 +234,64 @@ namespace Shesha.Tests.UserRegistrations
 
         #endregion
 
+        #region Contact verification for new accounts
+
+        [Fact]
+        public async Task A_new_account_requires_a_verified_otpAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            RemoveOtp(input);
+
+            var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, input));
+
+            ex.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
+            (await UserExistsAsync(input.UserName)).ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task A_new_account_rejects_a_wrong_pinAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            input.OtpPin = "000000";
+
+            var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, input));
+
+            ex.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
+            (await UserExistsAsync(input.UserName)).ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task A_new_account_rejects_an_otp_sent_to_a_different_email_addressAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            // the caller verified their own address, then submits an address they don't own
+            ProvideOtp(input, sentTo: $"caller-{Guid.NewGuid():N}@selfreg.test");
+
+            var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, input));
+
+            ex.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
+            (await UserExistsAsync(input.UserName)).ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task Mobile_registration_requires_the_mobile_number_to_be_verifiedAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s => s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber));
+
+            var verifiedEmailOnly = NewInput();
+            var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, verifiedEmailOnly));
+            ex.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
+
+            var verifiedMobile = NewInput();
+            ProvideOtp(verifiedMobile, sentTo: verifiedMobile.MobileNumber);
+            (await RegisterAsync(app, verifiedMobile)).UserId.ShouldBeGreaterThan(0);
+        }
+
+        #endregion
+
         #region Creation modes and account takeover protection
 
         [Fact]
@@ -283,6 +341,7 @@ namespace Shesha.Tests.UserRegistrations
         {
             var app = await CreateAppAsync(EnabledSettings(s => s.CreationMode = RefListSelfRegistrationCreationMode.LinkIfExistsOtherwiseCreate));
             var input = NewInput();
+            RemoveOtp(input);
             await CreatePreRegisteredPersonAsync(input.EmailAddress, mobile: null);
 
             var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, input));
@@ -584,10 +643,13 @@ namespace Shesha.Tests.UserRegistrations
             config.Expiration = TimeSpan.FromHours(1);
         }
 
-        private static SelfRegistrationInput NewInput(string domain = "selfreg.test")
+        /// <summary>
+        /// A registration request whose email address has been verified with a one-time pin, as the registration forms do
+        /// </summary>
+        private SelfRegistrationInput NewInput(string domain = "selfreg.test")
         {
             var id = Guid.NewGuid().ToString("N");
-            return new SelfRegistrationInput
+            var input = new SelfRegistrationInput
             {
                 UserName = $"selfreg-{id}",
                 EmailAddress = $"selfreg-{id}@{domain}",
@@ -597,6 +659,19 @@ namespace Shesha.Tests.UserRegistrations
                 Password = Password,
                 PasswordConfirmation = Password,
             };
+            ProvideOtp(input, sentTo: input.EmailAddress);
+            return input;
+        }
+
+        private static void RemoveOtp(SelfRegistrationInput input)
+        {
+            input.OtpOperationId = null;
+            input.OtpPin = null;
+        }
+
+        private async Task<bool> UserExistsAsync(string userName)
+        {
+            return await WithUowAsync(() => _userRepository.GetAll().AnyAsync(u => u.UserName == userName));
         }
 
         private void ProvideOtp(SelfRegistrationInput input, string sentTo)

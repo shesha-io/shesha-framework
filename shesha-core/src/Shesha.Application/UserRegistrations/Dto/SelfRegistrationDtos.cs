@@ -32,8 +32,9 @@ namespace Shesha.UserRegistrations.Dto
         public string MobileNumber { get; set; }
 
         /// <summary>
-        /// Operation id of a one-time pin sent to <see cref="EmailAddress"/> or <see cref="MobileNumber"/>.
-        /// Required to link the new account to a pre-registered Person.
+        /// Operation id of a verified one-time pin (or email link) sent to <see cref="EmailAddress"/> or <see cref="MobileNumber"/>.
+        /// Required: it proves the registrant controls the contact they register with (the email address or mobile number,
+        /// depending on the front-end's registration method) and, when linking, the pre-registered Person's contact.
         /// </summary>
         public Guid? OtpOperationId { get; set; }
 

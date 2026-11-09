@@ -35,6 +35,7 @@ namespace Shesha.UserRegistrations
     {
         public const string RegistrationDisabledMessage = "Self-registration is not available.";
         public const string OwnershipNotVerifiedMessage = "Please verify your email address or mobile number with a one-time pin to link your account.";
+        public const string ContactNotVerifiedMessage = "Please verify your email address or mobile number with a one-time pin before registering.";
         public const string MisconfiguredMessage = "Self-registration is not configured correctly. Please contact the system administrator.";
         public const string InvalidCompletionTokenMessage = "This registration link is invalid or has expired. Please log in to finish your registration.";
 
@@ -97,6 +98,8 @@ namespace Shesha.UserRegistrations
 
             if (plan.Action == SelfRegistrationAction.LinkToExisting)
                 await EnsureOwnershipVerifiedAsync(input, existingPerson);
+            else
+                await EnsureContactVerifiedAsync(input, settings.SupportedRegistrationMethods);
 
             var userName = settings.UserEmailAsUsername ? input.EmailAddress : input.UserName;
             var user = await _userManager.CreateUserAsync(
@@ -292,22 +295,53 @@ namespace Shesha.UserRegistrations
         /// </summary>
         protected virtual async Task EnsureOwnershipVerifiedAsync(SelfRegistrationInput input, Person person)
         {
-            if (input.OtpOperationId == null || string.IsNullOrWhiteSpace(input.OtpPin))
-                throw new UserFriendlyException(OwnershipNotVerifiedMessage);
+            var sentTo = await GetVerifiedOtpDestinationAsync(input);
 
-            var otp = await _otpManager.GetAsync(input.OtpOperationId.Value);
-            if (otp == null)
-                throw new UserFriendlyException(OwnershipNotVerifiedMessage);
-
-            var verification = await _otpManager.VerifyPinAsync(new VerifyPinInput { OperationId = input.OtpOperationId.Value, Pin = input.OtpPin });
-            if (!verification.IsSuccess)
-                throw new UserFriendlyException(OwnershipNotVerifiedMessage);
-
-            var sentTo = NormalizeContact(otp.SendTo);
             var provedEmail = sentTo != null && sentTo == NormalizeContact(input.EmailAddress) && sentTo == NormalizeContact(person.EmailAddress1);
             var provedMobile = sentTo != null && sentTo == NormalizeContact(input.MobileNumber) && sentTo == NormalizeContact(person.MobileNumber1);
             if (!provedEmail && !provedMobile)
                 throw new UserFriendlyException(OwnershipNotVerifiedMessage);
+        }
+
+        /// <summary>
+        /// A new account must prove the registrant controls the contact used to register: the email address for
+        /// <see cref="SupportedRegistrationMethods.EmailAddress"/>, the mobile number for <see cref="SupportedRegistrationMethods.MobileNumber"/>,
+        /// otherwise either. The registration forms verify it with a one-time pin (or email link) before calling Register;
+        /// this enforces it on the server so a direct call can't register an address the caller doesn't own.
+        /// </summary>
+        protected virtual async Task EnsureContactVerifiedAsync(SelfRegistrationInput input, SupportedRegistrationMethods method)
+        {
+            var sentTo = await GetVerifiedOtpDestinationAsync(input, ContactNotVerifiedMessage);
+
+            var provedEmail = sentTo == NormalizeContact(input.EmailAddress);
+            var provedMobile = sentTo == NormalizeContact(input.MobileNumber);
+            var proved = method switch
+            {
+                SupportedRegistrationMethods.EmailAddress => provedEmail,
+                SupportedRegistrationMethods.MobileNumber => provedMobile,
+                _ => provedEmail || provedMobile,
+            };
+            if (!proved)
+                throw new UserFriendlyException(ContactNotVerifiedMessage);
+        }
+
+        /// <summary>
+        /// Verifies the one-time pin in the input and returns the normalised address/number it was sent to; throws when it isn't valid
+        /// </summary>
+        private async Task<string> GetVerifiedOtpDestinationAsync(SelfRegistrationInput input, string failureMessage = OwnershipNotVerifiedMessage)
+        {
+            if (input.OtpOperationId == null || string.IsNullOrWhiteSpace(input.OtpPin))
+                throw new UserFriendlyException(failureMessage);
+
+            var otp = await _otpManager.GetAsync(input.OtpOperationId.Value);
+            if (otp == null)
+                throw new UserFriendlyException(failureMessage);
+
+            var verification = await _otpManager.VerifyPinAsync(new VerifyPinInput { OperationId = input.OtpOperationId.Value, Pin = input.OtpPin });
+            if (!verification.IsSuccess)
+                throw new UserFriendlyException(failureMessage);
+
+            return NormalizeContact(otp.SendTo) ?? throw new UserFriendlyException(failureMessage);
         }
 
         private static string NormalizeContact(string value)
