@@ -390,6 +390,35 @@ namespace Shesha.Tests.UserRegistrations
         }
 
         [Fact]
+        public async Task Linking_by_mobile_number_ignores_spaces_in_the_stored_numberAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s => s.CreationMode = RefListSelfRegistrationCreationMode.MustAlreadyExist));
+            var input = NewInput();
+            var preRegisteredId = await CreatePreRegisteredPersonAsync(email: null, mobile: WithSpaces(input.MobileNumber));
+            ProvideOtp(input, sentTo: input.MobileNumber);
+
+            var result = await RegisterAsync(app, input);
+
+            result.PersonId.ShouldBe(preRegisteredId);
+        }
+
+        [Fact]
+        public async Task Linking_by_mobile_number_ignores_spaces_in_the_registered_numberAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s => s.CreationMode = RefListSelfRegistrationCreationMode.MustAlreadyExist));
+            var input = NewInput();
+            var preRegisteredId = await CreatePreRegisteredPersonAsync(email: null, mobile: input.MobileNumber);
+            input.MobileNumber = WithSpaces(input.MobileNumber);
+            ProvideOtp(input, sentTo: input.MobileNumber);
+
+            var result = await RegisterAsync(app, input);
+
+            result.PersonId.ShouldBe(preRegisteredId);
+        }
+
+        private static string WithSpaces(string mobile) => $"{mobile[..3]} {mobile[3..5]} {mobile[5..8]} {mobile[8..]}";
+
+        [Fact]
         public async Task LinkIfExists_creates_a_new_person_when_none_matchesAsync()
         {
             var app = await CreateAppAsync(EnabledSettings(s => s.CreationMode = RefListSelfRegistrationCreationMode.LinkIfExistsOtherwiseCreate));

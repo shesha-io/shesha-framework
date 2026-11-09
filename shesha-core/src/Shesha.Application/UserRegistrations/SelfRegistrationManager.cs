@@ -282,9 +282,12 @@ namespace Shesha.UserRegistrations
             if (!hasEmail && !hasMobile)
                 return new List<Person>();
 
+            // Mobile numbers are compared with spaces removed on both sides, so "082 123 4567" matches "0821234567".
+            // Other formats (e.g. +27 vs a leading 0) aren't reconciled.
             var emailLower = email?.ToLower();
+            var mobileCompact = hasMobile ? mobile.Replace(" ", "") : null;
             return await _personRepository.GetAll()
-                .Where(p => hasEmail && p.EmailAddress1.ToLower() == emailLower || hasMobile && p.MobileNumber1 == mobile)
+                .Where(p => hasEmail && p.EmailAddress1.ToLower() == emailLower || hasMobile && p.MobileNumber1.Replace(" ", "") == mobileCompact)
                 .Take(2)
                 .ToListAsync();
         }
