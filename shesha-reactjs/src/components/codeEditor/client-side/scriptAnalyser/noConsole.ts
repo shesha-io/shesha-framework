@@ -3,7 +3,7 @@ import { IDisposable, editor } from 'monaco-editor';
 import { findConsoleUsages } from './utils';
 
 export const NO_CONSOLE_OWNER = 'no-console';
-export const NO_CONSOLE_MESSAGE = 'Console output left in script';
+const NO_CONSOLE_MESSAGE = 'Console output left in script';
 
 export const registerNoConsoleAnalyser = (monaco: Monaco, model: editor.ITextModel): IDisposable => {
   const validate = (): void => {

@@ -78,6 +78,12 @@ export const useStyles = createStyles(({ css, cx }) => {
                     background-color: #2a2d2e;
                 }
 
+                &:focus-visible {
+                    background-color: #2a2d2e;
+                    outline: 1px solid #3794ff;
+                    outline-offset: -1px;
+                }
+
                 .${rowIcon} {
                     &.error {
                         color: ${errorColor};

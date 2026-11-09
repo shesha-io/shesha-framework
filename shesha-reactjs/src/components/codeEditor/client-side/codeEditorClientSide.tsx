@@ -1,5 +1,5 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
-import { FC, PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
+import { FC, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import * as React from "react";
 import { Monaco } from '@monaco-editor/react';
@@ -27,7 +27,7 @@ import { isNonEmptyArray } from "@/utils/array";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { withMonaco } from "./loaderWrapper";
 import { firstNonEmptyString } from "@/utils/string";
-import { ScriptAnalyser, registerNoConsoleAnalyser } from "./scriptAnalyser";
+import { NO_CONSOLE_OWNER, ScriptAnalyser, registerNoConsoleAnalyser } from "./scriptAnalyser";
 
 interface EditorFileNamesState {
   modelFilePath: string;
@@ -169,6 +169,34 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     resultType,
     metadataFetcher,
     environment]);
+
+  useEffect(() => {
+    if (!editorReady)
+      return undefined;
+    const monaco = monacoInst.current;
+    if (!isDefined(monaco))
+      return undefined;
+
+    const matchesScriptFile = (candidate: editor.ITextModel): boolean =>
+      _.trimStart(candidate.uri.path, '/') === fileNamesState.modelFilePath;
+
+    let registration: IDisposable | null = null;
+    const registerIfPresent = (): void => {
+      if (isDefined(registration))
+        return;
+      const model = monaco.editor.getModels().find(matchesScriptFile);
+      if (isDefined(model))
+        registration = registerNoConsoleAnalyser(monaco, model);
+    };
+
+    registerIfPresent();
+    const creationSubscription = monaco.editor.onDidCreateModel(() => registerIfPresent());
+
+    return () => {
+      creationSubscription.dispose();
+      registration?.dispose();
+    };
+  }, [editorReady, fileNamesState.modelFilePath]);
 
   const addExtraLib = (monaco: Monaco, content: string, filePath: string): IDisposable | null => {
     const uri = monaco.Uri.parse(filePath);
@@ -320,15 +348,13 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
           marker.severity = monaco.MarkerSeverity.Warning;
         });
         monaco.editor.removeAllMarkers('typescript');
-        monaco.editor.setModelMarkers(model, 'typescript', markers);
+        monaco.editor.setModelMarkers(model, 'typescript', markers.filter((marker) => marker.owner !== NO_CONSOLE_OWNER));
       }
     };
 
     monaco.editor.onDidChangeMarkers(() => applyDeprecatedDecorations());
-    if (model) {
+    if (model)
       model.onDidChangeContent(() => setTimeout(applyDeprecatedDecorations, 100));
-      addDisposable(registerNoConsoleAnalyser(monaco, model));
-    }
     setTimeout(applyDeprecatedDecorations, 500);
 
     setEditorReady(true);
@@ -371,6 +397,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
           </div>
           {showAnalyser && editorReady && isDefined(monacoInst.current) && (
             <ScriptAnalyser
+              key={fileNamesState.modelFilePath}
               monaco={monacoInst.current}
               filePath={fileNamesState.modelFilePath}
               onNavigate={navigateToModel}

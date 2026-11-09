@@ -7,7 +7,7 @@ import { DiagnosticSeverity, ScriptDiagnostic } from './models';
 import { markerToDiagnostic, sortDiagnostics, summariseDiagnostics } from './utils';
 import { useStyles } from './styles';
 
-export interface IScriptAnalyserProps {
+interface IScriptAnalyserProps {
   monaco: Monaco;
   filePath: string;
   onNavigate: (fileUri: UriComponents, position: IPosition) => void;
@@ -57,7 +57,19 @@ export const ScriptAnalyser: FC<IScriptAnalyserProps> = ({ monaco, filePath, onN
       return <div className={styles.empty}>No issues detected</div>;
 
     return diagnostics.map((diagnostic) => (
-      <div key={diagnostic.key} className={styles.row} onClick={() => onDiagnosticClick(diagnostic)}>
+      <div
+        key={diagnostic.key}
+        className={styles.row}
+        role="button"
+        tabIndex={0}
+        onClick={() => onDiagnosticClick(diagnostic)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onDiagnosticClick(diagnostic);
+          }
+        }}
+      >
         <SeverityIcon severity={diagnostic.severity} className={styles.rowIcon} />
         <span className={styles.message}>{diagnostic.message}</span>
         <span className={styles.source}>{diagnostic.source}</span>
