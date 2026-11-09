@@ -119,7 +119,7 @@ namespace Shesha.GraphQL.Provider.Queries
 
                     var result = new PagedResultDto<TEntity>
                     {
-                        Items = entities,
+                        Items = entities.Select(x => permissionedEntityProvider.GetPermissionedEntityOrEntity(x)).ToList(),
                         TotalCount = totalCount
                     };
 
