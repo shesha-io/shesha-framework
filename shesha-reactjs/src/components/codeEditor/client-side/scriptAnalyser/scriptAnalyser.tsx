@@ -1,7 +1,7 @@
 import { FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
 import { IPosition, Uri, UriComponents } from 'monaco-editor';
-import { CloseCircleFilled, ExclamationCircleFilled, InfoCircleFilled } from '@ant-design/icons';
+import { CaretDownOutlined, CaretRightOutlined, CloseCircleFilled, ExclamationCircleFilled, InfoCircleFilled } from '@ant-design/icons';
 import _ from 'lodash';
 import { DiagnosticSeverity, ScriptDiagnostic } from './models';
 import { markerToDiagnostic, sortDiagnostics, summariseDiagnostics } from './utils';
@@ -23,6 +23,7 @@ const SeverityIcon: FC<{ severity: number; className: string }> = ({ severity, c
 
 export const ScriptAnalyser: FC<IScriptAnalyserProps> = ({ monaco, filePath, onNavigate }) => {
   const { styles } = useStyles();
+  const [expanded, setExpanded] = useState(false);
 
   const normalisedPath = useMemo(() => _.trimStart(filePath, '/'), [filePath]);
   const matchesFile = useCallback((resource: Uri): boolean => {
@@ -80,8 +81,23 @@ export const ScriptAnalyser: FC<IScriptAnalyserProps> = ({ monaco, filePath, onN
 
   return (
     <div className={styles.scriptAnalyser}>
-      <div className={styles.header}>
-        <span className={styles.title}>Script Analyser</span>
+      <div
+        className={styles.header}
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
+        onClick={() => setExpanded(!expanded)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            setExpanded(!expanded);
+          }
+        }}
+      >
+        <span className={styles.title}>
+          {expanded ? <CaretDownOutlined /> : <CaretRightOutlined />}
+          Script Analyser
+        </span>
         <span className={styles.summary}>
           <span className={styles.errorCount}>
             <CloseCircleFilled />
@@ -97,9 +113,11 @@ export const ScriptAnalyser: FC<IScriptAnalyserProps> = ({ monaco, filePath, onN
           </span>
         </span>
       </div>
-      <div className={styles.list}>
-        {renderRows()}
-      </div>
+      {expanded && (
+        <div className={styles.list}>
+          {renderRows()}
+        </div>
+      )}
     </div>
   );
 };

@@ -35,12 +35,28 @@ export const useStyles = createStyles(({ css, cx }) => {
             align-items: center;
             padding: 4px 12px;
             background-color: #252526;
+            cursor: pointer;
+            user-select: none;
+
+            &:hover {
+                background-color: #2a2d2e;
+            }
+
+            &:focus-visible {
+                outline: 1px solid #3794ff;
+                outline-offset: -1px;
+            }
 
             .${title} {
                 text-transform: uppercase;
                 font-size: 11px;
                 letter-spacing: 1px;
                 color: #bbbbbb;
+
+                .anticon {
+                    margin-right: 8px;
+                    font-size: 10px;
+                }
             }
 
             .${summary} {
