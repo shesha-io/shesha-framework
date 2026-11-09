@@ -685,6 +685,29 @@ namespace Shesha.Tests.UserRegistrations
         }
 
         [Fact]
+        public async Task Otp_login_with_an_incomplete_registration_redirects_to_the_additional_info_formAsync()
+        {
+            ConfigureTokenAuth();
+            var app = await CreateAppAsync(AdditionalInfoSettings());
+            var input = NewInput();
+            var registered = await RegisterAsync(app, input);
+
+            var login = await OtpAuthenticateAsync(registered.UserId, input.MobileNumber);
+
+            login.ResultType.ShouldBe(AuthenticateResultType.RedirectNoAuth);
+            login.AccessToken.ShouldBeNull();
+            login.UserId.ShouldBe(registered.UserId);
+            login.RedirectForm.ShouldBe("extra-info");
+            login.RegistrationCompletionToken.ShouldNotBeNullOrWhiteSpace();
+
+            // and once the registration is complete, OTP login works normally
+            await CompleteAsync(registered.UserId, login.RegistrationCompletionToken);
+            var afterCompletion = await OtpAuthenticateAsync(registered.UserId, input.MobileNumber);
+            afterCompletion.ResultType.ShouldBe(AuthenticateResultType.Success);
+            afterCompletion.AccessToken.ShouldNotBeNullOrWhiteSpace();
+        }
+
+        [Fact]
         public async Task Login_with_an_incomplete_registration_fails_clearly_without_the_registration_managerAsync()
         {
             ConfigureTokenAuth();
@@ -784,6 +807,40 @@ namespace Shesha.Tests.UserRegistrations
                 {
                     UserNameOrEmailAddress = userName,
                     Password = password,
+                }));
+            }
+            finally
+            {
+                history.IsEnabledForAnonymousUsers = historyForAnonymous;
+            }
+        }
+
+        /// <summary>
+        /// Logs in with a one-time pin, as <c>TokenAuth/OtpAuthenticateSendPin</c> followed by <c>TokenAuth/OtpAuthenticate</c> would
+        /// </summary>
+        private async Task<AuthenticateResultModel> OtpAuthenticateAsync(long userId, string mobileNo)
+        {
+            // what OtpAuthenticateSendPin does: an OTP for the user, whose operation id is kept as the user's reset code
+            var otp = new OtpDto { OperationId = Guid.NewGuid(), Pin = "654321", SendTo = mobileNo, RecipientId = userId.ToString(), ExpiresOn = DateTime.Now.AddMinutes(5) };
+            _otps[otp.OperationId] = otp;
+            await WithUowAsync(async () =>
+            {
+                var user = await _userRepository.GetAsync(userId);
+                user.PasswordResetCode = otp.OperationId.ToString();
+                await _userRepository.UpdateAsync(user);
+            });
+
+            AbpSession.UserId = null;
+            var history = Resolve<IEntityHistoryConfiguration>();
+            var historyForAnonymous = history.IsEnabledForAnonymousUsers;
+            history.IsEnabledForAnonymousUsers = false; // see AuthenticateAsync
+            try
+            {
+                return await WithUowAsync(() => Resolve<TokenAuthController>().OtpAuthenticateAsync(new OtpAuthenticateModel
+                {
+                    MobileNo = mobileNo,
+                    OperationId = otp.OperationId,
+                    Code = otp.Pin,
                 }));
             }
             finally
