@@ -4,6 +4,7 @@ using Abp.Timing;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
@@ -41,6 +42,18 @@ namespace Shesha.Domain
         /// 
         /// </summary>
         public virtual string GoToUrlAfterRegistration { get; set; }
+
+        /// <summary>
+        /// SHA-256 hash (hex) of the single-use token that lets the registrant complete the additional registration
+        /// information step before they are able to log in. The token itself is never stored.
+        /// </summary>
+        [StringLength(64)]
+        public virtual string CompletionTokenHash { get; set; }
+
+        /// <summary>
+        /// Expiry of the token in <see cref="CompletionTokenHash"/>
+        /// </summary>
+        public virtual DateTime? CompletionTokenExpiresOn { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaUserRegistration"/> class.

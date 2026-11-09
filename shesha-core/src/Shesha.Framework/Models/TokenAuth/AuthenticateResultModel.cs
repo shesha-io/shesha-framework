@@ -21,6 +21,12 @@ namespace Shesha.Models.TokenAuth
         public string RedirectUrl { get; set; }
         public string RedirectModule { get; set; }
         public string RedirectForm { get; set; }
+
+        /// <summary>
+        /// Single-use token returned with <see cref="AuthenticateResultType.RedirectNoAuth"/> when the user still has to
+        /// complete their registration; the additional registration form passes it to UserRegistration/CompleteRegistration
+        /// </summary>
+        public string RegistrationCompletionToken { get; set; }
         public bool RequireChangePassword { get; set; }
     }
 }

@@ -38,5 +38,34 @@ namespace Shesha.UserManagements.Configurations
         /// Form Name
         /// </summary>
         public string AdditionalRegistrationInfoFormName { get; set; }
+
+        /// <summary>
+        /// Allows anonymous users to register an account from this front-end.
+        /// Null on values saved before this property existed: self-registration is then treated as enabled when the value
+        /// was explicitly saved with a registration method other than <see cref="SupportedRegistrationMethods.None"/>.
+        /// </summary>
+        public bool? AllowSelfRegistration { get; set; }
+
+        /// <summary>
+        /// Whether registration creates a new Person or links to a pre-registered one.
+        /// Null means <see cref="RefListSelfRegistrationCreationMode.AlwaysCreateNew"/>.
+        /// </summary>
+        public RefListSelfRegistrationCreationMode? CreationMode { get; set; }
+
+        /// <summary>
+        /// Email domains allowed to register, separated by commas, semicolons or spaces (e.g. "gov.za, example.com").
+        /// Empty allows all domains.
+        /// </summary>
+        public string AllowedEmailDomains { get; set; }
+
+        /// <summary>
+        /// Names of Shesha roles (ShaRole) appointed to the new Person on registration.
+        /// </summary>
+        public List<string> DefaultRoles { get; set; }
+
+        /// <summary>
+        /// Full class name or alias of the Person entity type to create (Person or a sub-class). Empty creates a Person.
+        /// </summary>
+        public string PersonEntityType { get; set; }
     }
 }

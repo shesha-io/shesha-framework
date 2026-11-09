@@ -9,6 +9,7 @@ using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.Persons;
 using Shesha.UserManagements.Configurations;
+using Shesha.UserRegistrations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -28,21 +29,21 @@ namespace Shesha.UserManagements
         private readonly IRepository<Person, Guid> _repository;
         private readonly IRepository<ShaUserRegistration, Guid> _userRegistration;
         private readonly ISecuritySettings _securitySettings;
-        private readonly IUserManagementSettings _userManagementSettings;
+        private readonly ISelfRegistrationSettingsProvider _userManagementSettingsProvider;
 
         public UserManagementAppService(
             IRepository<Person, Guid> repository, 
             UserManager userManager, 
             IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository,
             ISecuritySettings securitySettings,
-            IUserManagementSettings userManagementSettings,
+            ISelfRegistrationSettingsProvider userManagementSettingsProvider,
             IRepository<ShaUserRegistration, Guid> userRegistration)
         {
             _userManager = userManager;
             _rolePersonRepository = rolePersonRepository;
             _repository = repository;
             _securitySettings = securitySettings;
-            _userManagementSettings = userManagementSettings;
+            _userManagementSettingsProvider = userManagementSettingsProvider;
             _userRegistration = userRegistration;
         }
 
@@ -58,7 +59,8 @@ namespace Shesha.UserManagements
         public async Task<PersonAccountDto> CreateAsync(CreatePersonAccountDto input)
         {
             //CheckCreatePermission();
-            var registrationSettings = await _userManagementSettings.UserManagementSettings.GetValueAsync();
+            // the setting is client-specific: fall back to the value saved without a front-end so admin user creation keeps its configuration
+            var registrationSettings = (await _userManagementSettingsProvider.GetSettingsAsync()).Settings;
 
             // Performing additional validations
             var validationResults = new List<ValidationResult>();

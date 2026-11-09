@@ -19,6 +19,7 @@ using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Models.TokenAuth;
 using Shesha.RateLimiting;
+using Shesha.UserRegistrations;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -49,6 +50,11 @@ namespace Shesha.Authorization
         private readonly AbpUserClaimsPrincipalFactory<User, Role> _claimsPrincipalFactory;
         private readonly IConfiguration _appConfiguration;
         private readonly IRepository<UserLogin, long> _userLoginRepository;
+
+        /// <summary>
+        /// Issues completion tokens for incomplete self-registrations (property-injected to keep the constructor unchanged for derived controllers)
+        /// </summary>
+        public SelfRegistrationManager SelfRegistrationManager { get; set; }
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -89,28 +95,28 @@ namespace Shesha.Authorization
         [EnableRateLimiting(SheshaRateLimitingPolicies.Auth)]        
         public async Task<AuthenticateResultModel> AuthenticateAsync([FromBody] AuthenticateModel model)
         {
-            // Check for user registration status
-            var registration = await _userRegistration.FirstOrDefaultAsync(e => e.UserNameOrEmailAddress == model.UserNameOrEmailAddress);
-
-            if (registration != null && !registration.IsComplete)
-            {
-                // Return a result indicating a client-side redirect
-                return new AuthenticateResultModel
-                {
-                    ResultType = AuthenticateResultType.RedirectNoAuth,
-                    RedirectModule = registration.AdditionalRegistrationInfoForm.Module,
-                    RedirectForm = registration.AdditionalRegistrationInfoForm.Name,
-                    UserId = registration.UserId
-                };
-            }
-
-            // Attempt login authentication
+            // Attempt login authentication. This runs before the registration check so that nothing about an
+            // incomplete registration (including the user's id) is revealed without the correct password.
             var loginResult = await GetLoginResultAsync(
                 model.UserNameOrEmailAddress,
                 model.Password,
                 model.IMEI,
                 GetTenancyNameOrNull()
             );
+
+            // Users who haven't completed their registration are sent back to the additional registration form
+            var registration = await _userRegistration.FirstOrDefaultAsync(e => e.UserId == loginResult.User.Id);
+            if (registration != null && !registration.IsComplete && registration.AdditionalRegistrationInfoForm != null)
+            {
+                return new AuthenticateResultModel
+                {
+                    ResultType = AuthenticateResultType.RedirectNoAuth,
+                    RedirectModule = registration.AdditionalRegistrationInfoForm.Module,
+                    RedirectForm = registration.AdditionalRegistrationInfoForm.Name,
+                    UserId = registration.UserId,
+                    RegistrationCompletionToken = await SelfRegistrationManager.IssueCompletionTokenAsync(registration),
+                };
+            }
 
             // Return the authenticate result
             var authenticateResult = await GetAuthenticateResultAsync(loginResult, model.IMEI);

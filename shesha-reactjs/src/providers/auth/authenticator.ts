@@ -134,7 +134,9 @@ export class Authenticator implements IAuthenticator {
                     reject(new Error('Redirecting to another page.'));
                 }
                 if (Boolean(response?.result?.redirectModule) && Boolean(response?.result?.redirectForm)) {
-                    this.#redirect(`/no-auth/${response.result.redirectModule}/${response.result.redirectForm}?user=${response.result.userId}`);
+                    const completionToken = response.result.registrationCompletionToken;
+                    const tokenParam = completionToken ? `&token=${encodeURIComponent(completionToken)}` : '';
+                    this.#redirect(`/no-auth/${response.result.redirectModule}/${response.result.redirectForm}?user=${response.result.userId}${tokenParam}`);
                     reject(new Error('Redirecting to another form.'));
                 }
             } else if (response?.result?.resultType === 1) {

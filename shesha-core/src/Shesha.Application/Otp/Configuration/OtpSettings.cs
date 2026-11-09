@@ -57,7 +57,8 @@ namespace Shesha.Otp.Configuration
         public string DefaultRegistrationEmailSubjectTemplate { get; set; }
 
         /// <summary>
-        /// Registration email link body template
+        /// Registration email link body template. Placeholders: <c>{{token}}</c>, <c>{{userid}}</c> and <c>{{operationId}}</c>;
+        /// include <c>&amp;operationId={{operationId}}&amp;registration=1</c> in the link so it works in any browser.
         /// </summary>
         public string DefaultRegistrationEmailBodyTemplate { get; set; }
     }
