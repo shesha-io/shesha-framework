@@ -114,6 +114,9 @@ namespace Shesha.UserRegistrations.Dto
     /// </summary>
     public class CompleteRegistrationInput
     {
+        /// <summary>
+        /// Id of the user whose registration to complete
+        /// </summary>
         public long UserId { get; set; }
 
         /// <summary>
@@ -152,22 +155,25 @@ namespace Shesha.UserRegistrations.Dto
         /// Whether registration creates a new Person, links to a pre-registered one, or either
         /// </summary>
         public RefListSelfRegistrationCreationMode CreationMode { get; set; }
-/// <summary>
-/// Module of the additional registration information form
-/// </summary>
 
         /// <summary>
         /// True when registrants must complete an additional registration information form
         /// </summary>
         public bool AdditionalRegistrationInfo { get; set; }
 
+        /// <summary>
+        /// Module of the additional registration information form
+        /// </summary>
         public string AdditionalRegistrationInfoFormModule { get; set; }
-/// <summary>
-/// URL to go to once the registration is complete
-/// </summary>
 
+        /// <summary>
+        /// Name of the additional registration information form
+        /// </summary>
         public string AdditionalRegistrationInfoFormName { get; set; }
 
+        /// <summary>
+        /// URL to go to once the registration is complete
+        /// </summary>
         public string GoToUrlAfterRegistration { get; set; }
     }
 }
