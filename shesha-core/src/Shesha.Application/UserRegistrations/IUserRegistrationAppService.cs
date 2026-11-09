@@ -10,12 +10,12 @@ namespace Shesha.UserRegistrations
     public interface IUserRegistrationAppService : IApplicationService
     {
         /// <summary>
-        /// Registration settings of the calling front-end, limited to values the login and registration forms need
+        /// Registration settings, limited to values the login and registration forms need
         /// </summary>
         Task<PublicRegistrationSettingsDto> GetSettingsAsync();
 
         /// <summary>
-        /// Registers a new user account from the calling front-end
+        /// Registers a new user account
         /// </summary>
         Task<SelfRegistrationResult> RegisterAsync(SelfRegistrationInput input);
 

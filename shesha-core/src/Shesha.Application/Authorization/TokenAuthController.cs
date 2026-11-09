@@ -54,7 +54,7 @@ namespace Shesha.Authorization
         /// <summary>
         /// Issues completion tokens for incomplete self-registrations (property-injected to keep the constructor unchanged for derived controllers)
         /// </summary>
-        public SelfRegistrationManager SelfRegistrationManager { get; set; }
+        public ISelfRegistrationManager SelfRegistrationManager { get; set; }
 
         public TokenAuthController(
             LogInManager logInManager,

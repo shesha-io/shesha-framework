@@ -37,7 +37,8 @@ namespace Shesha.Tests.UserRegistrations
 {
     /// <summary>
     /// End-to-end self-registration through <see cref="UserRegistrationAppService"/> against the test database.
-    /// Each test uses its own front-end application key and unique email addresses so tests don't interfere.
+    /// The user management setting is global: each test names its settings with <see cref="CreateAppAsync"/>, and they're saved
+    /// just before each call. Tests use unique email addresses so they don't interfere, and the original value is restored afterwards.
     /// </summary>
     public class SelfRegistration_Tests : SheshaNhTestBase, IAsyncLifetime
     {
@@ -46,7 +47,8 @@ namespace Shesha.Tests.UserRegistrations
         private readonly IUnitOfWorkManager _uowManager;
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<User, long> _userRepository;
-        private readonly List<string> _appKeys = new();
+        private readonly Dictionary<string, UserManagementSettings> _settingsByApp = new();
+        private string _originalSettingsJson;
         private readonly Dictionary<Guid, OtpDto> _otps = new();
 
         public SelfRegistration_Tests()
@@ -89,37 +91,22 @@ namespace Shesha.Tests.UserRegistrations
         }
 
         [Fact]
-        public async Task Settings_are_per_front_end_applicationAsync()
+        public async Task The_built_in_default_does_not_enable_self_registrationAsync()
         {
-            var publicPortal = await CreateAppAsync(EnabledSettings());
-            var adminPortal = await CreateAppAsync(new UserManagementSettings { AllowSelfRegistration = false, SupportedRegistrationMethods = SupportedRegistrationMethods.EmailAddress });
+            var app = await CreateAppAsync(settings: null);
 
-            (await GetPublicSettingsAsync(publicPortal)).IsSelfRegistrationEnabled.ShouldBeTrue();
-            var adminSettings = await GetPublicSettingsAsync(adminPortal);
-            adminSettings.IsSelfRegistrationEnabled.ShouldBeFalse();
-            adminSettings.SupportedRegistrationMethods.ShouldBe(SupportedRegistrationMethods.None, "the login form hides the Register link when the method is None");
-
-            (await RegisterAsync(publicPortal, NewInput())).UserId.ShouldBeGreaterThan(0);
-            await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(adminPortal, NewInput()));
+            (await GetPublicSettingsAsync(app)).IsSelfRegistrationEnabled.ShouldBeFalse();
+            var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, NewInput()));
+            ex.Message.ShouldBe(SelfRegistrationManager.RegistrationDisabledMessage);
         }
 
         [Fact]
-        public async Task Application_without_its_own_value_falls_back_to_the_global_valueAsync()
+        public async Task A_value_saved_before_AllowSelfRegistration_existed_keeps_registration_enabledAsync()
         {
-            var provider = Resolve<ISelfRegistrationSettingsProvider>();
-            var appWithoutValue = await CreateAppAsync(settings: null);
-            var appWithValue = await CreateAppAsync(new UserManagementSettings { AllowSelfRegistration = false, SupportedRegistrationMethods = SupportedRegistrationMethods.EmailAddress, GoToUrlAfterRegistration = "/app-specific" });
+            var app = await CreateAppAsync(EnabledSettings(s => s.AllowSelfRegistration = null));
 
-            await WithGlobalSettingsAsync(new UserManagementSettings { AllowSelfRegistration = true, SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber, GoToUrlAfterRegistration = "/global" }, async () =>
-            {
-                var fallback = await WithUowAsync(() => provider.GetSettingsAsync(appWithoutValue));
-                fallback.IsSelfRegistrationEnabled.ShouldBeTrue();
-                fallback.Settings.GoToUrlAfterRegistration.ShouldBe("/global");
-
-                var own = await WithUowAsync(() => provider.GetSettingsAsync(appWithValue));
-                own.IsSelfRegistrationEnabled.ShouldBeFalse();
-                own.Settings.GoToUrlAfterRegistration.ShouldBe("/app-specific");
-            });
+            (await GetPublicSettingsAsync(app)).IsSelfRegistrationEnabled.ShouldBeTrue();
+            (await RegisterAsync(app, NewInput())).UserId.ShouldBeGreaterThan(0);
         }
 
         #endregion
@@ -839,10 +826,11 @@ namespace Shesha.Tests.UserRegistrations
         }
 
         /// <summary>
-        /// Registers anonymously from the specified front-end application
+        /// Saves the settings named <paramref name="appKey"/>, then registers anonymously from that front-end application
         /// </summary>
         private async Task<SelfRegistrationResult> RegisterAsync(string appKey, SelfRegistrationInput input)
         {
+            await ApplySettingsAsync(appKey);
             AbpSession.UserId = null;
             using var scope = Resolve<IConfigurationFrameworkRuntime>().BeginScope(s => s.FrontEndApplication = appKey);
             return await Resolve<IUserRegistrationAppService>().RegisterAsync(input);
@@ -850,69 +838,58 @@ namespace Shesha.Tests.UserRegistrations
 
         private async Task<PublicRegistrationSettingsDto> GetPublicSettingsAsync(string appKey)
         {
+            await ApplySettingsAsync(appKey);
             AbpSession.UserId = null;
             using var scope = Resolve<IConfigurationFrameworkRuntime>().BeginScope(s => s.FrontEndApplication = appKey);
             return await Resolve<IUserRegistrationAppService>().GetSettingsAsync();
         }
 
         /// <summary>
-        /// Creates a front-end application, optionally with its own user management settings, and returns its AppKey
+        /// Names a set of user management settings (null: nothing saved, so the built-in default applies) and returns the name,
+        /// which is also used as the front-end AppKey. The settings are saved when the test registers or reads them.
         /// </summary>
-        private async Task<string> CreateAppAsync(UserManagementSettings settings)
+        private Task<string> CreateAppAsync(UserManagementSettings settings)
         {
             var appKey = $"selfreg-test-{Guid.NewGuid():N}";
-            _appKeys.Add(appKey);
+            _settingsByApp[appKey] = settings;
+            return Task.FromResult(appKey);
+        }
 
-            await WithUowAsync(async () =>
-            {
-                await Resolve<IRepository<FrontEndApp, Guid>>().InsertAsync(new FrontEndApp { AppKey = appKey, Name = appKey });
-            });
-
+        private async Task ApplySettingsAsync(string appKey)
+        {
+            var settings = _settingsByApp[appKey];
             if (settings != null)
-                await SaveSettingsAsync(settings, appKey);
-
-            return appKey;
+                await WithUowAsync(() => Resolve<IShaSettingManager>().SetAsync(SettingsModule, UserManagementSettingNames.UserManagement, settings));
+            else
+                await SetStoredSettingsJsonAsync(null);
         }
 
-        private async Task SaveSettingsAsync(UserManagementSettings settings, string appKey)
-        {
-            var module = typeof(IUserManagementSettings).GetConfigurableModuleName();
-            await WithUowAsync(() => Resolve<IShaSettingManager>().SetAsync(module, UserManagementSettingNames.UserManagement, settings,
-                new SettingManagementContext { AppKey = appKey }));
-        }
+        private static string SettingsModule => typeof(IUserManagementSettings).GetConfigurableModuleName();
 
-        private async Task WithGlobalSettingsAsync(UserManagementSettings settings, Func<Task> action)
-        {
-            var store = Resolve<Services.Settings.ISettingStore>();
-            var definition = Resolve<ISettingDefinitionManager>().Get(typeof(IUserManagementSettings).GetConfigurableModuleName(), UserManagementSettingNames.UserManagement);
-            var original = await WithUowAsync(() => store.GetValueAsync(definition, new SettingManagementContext { AppKey = string.Empty }));
+        private SettingDefinition SettingsDefinition => Resolve<ISettingDefinitionManager>().Get(SettingsModule, UserManagementSettingNames.UserManagement);
 
-            await SaveSettingsAsync(settings, string.Empty);
-            try
-            {
-                await action();
-            }
-            finally
-            {
-                await RestoreGlobalValueAsync(definition, original);
-            }
-        }
-
-        private async Task RestoreGlobalValueAsync(SettingDefinition definition, string originalJson)
+        /// <summary>
+        /// Sets the stored setting value to <paramref name="json"/>; null deletes it
+        /// </summary>
+        private async Task SetStoredSettingsJsonAsync(string json)
         {
             await WithUowAsync(async () =>
             {
                 var repo = Resolve<IRepository<SettingValue, Guid>>();
-                var value = await Resolve<Services.Settings.ISettingStore>().GetSettingValueAsync(definition, new SettingManagementContext { AppKey = string.Empty });
-                if (value == null)
-                    return;
-                if (originalJson == null)
-                    await repo.DeleteAsync(value);
-                else
+                var value = await Resolve<Services.Settings.ISettingStore>().GetSettingValueAsync(SettingsDefinition, new SettingManagementContext());
+                if (json == null)
                 {
-                    value.Value = originalJson;
+                    if (value != null)
+                        await repo.DeleteAsync(value);
+                }
+                else if (value != null)
+                {
+                    value.Value = json;
                     await repo.UpdateAsync(value);
                 }
+                else
+                    await Resolve<IShaSettingManager>().SetAsync(SettingsModule, UserManagementSettingNames.UserManagement,
+                        Newtonsoft.Json.JsonConvert.DeserializeObject<UserManagementSettings>(json));
             });
         }
 
@@ -957,25 +934,19 @@ namespace Shesha.Tests.UserRegistrations
             return result;
         }
 
-        public Task InitializeAsync() => Task.CompletedTask;
+        public async Task InitializeAsync()
+        {
+            // read the stored row rather than the cached value, which can still hold the previous test's settings
+            var stored = await WithUowAsync(() => Resolve<Services.Settings.ISettingStore>().GetSettingValueAsync(SettingsDefinition, new SettingManagementContext()));
+            _originalSettingsJson = stored?.Value;
+        }
 
         /// <summary>
-        /// Removes the per-test settings and front-end applications so they don't accumulate in the shared test database
+        /// Restores the user management setting the test started with
         /// </summary>
         public async Task DisposeAsync()
         {
-            await WithUowAsync(async () =>
-            {
-                var values = Resolve<IRepository<SettingValue, Guid>>();
-                var apps = Resolve<IRepository<FrontEndApp, Guid>>();
-                foreach (var appKey in _appKeys)
-                {
-                    foreach (var value in await values.GetAll().Where(v => v.Application.AppKey == appKey).ToListAsync())
-                        await values.DeleteAsync(value);
-                    foreach (var app in await apps.GetAll().Where(a => a.AppKey == appKey).ToListAsync())
-                        await apps.DeleteAsync(app);
-                }
-            });
+            await SetStoredSettingsJsonAsync(_originalSettingsJson);
         }
 
         #endregion

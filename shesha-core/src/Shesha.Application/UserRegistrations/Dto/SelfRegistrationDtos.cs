@@ -10,7 +10,7 @@ namespace Shesha.UserRegistrations.Dto
     public class SelfRegistrationInput
     {
         /// <summary>
-        /// Username. Ignored when the front-end uses the email address as username.
+        /// Username. Ignored when the email address is used as the username.
         /// </summary>
         public string UserName { get; set; }
 
@@ -52,7 +52,7 @@ namespace Shesha.UserRegistrations.Dto
         /// <summary>
         /// Operation id of a verified one-time pin (or email link) sent to <see cref="EmailAddress"/> or <see cref="MobileNumber"/>.
         /// Required: it proves the registrant controls the contact they register with (the email address or mobile number,
-        /// depending on the front-end's registration method) and, when linking, the pre-registered Person's contact.
+        /// depending on the configured registration method) and, when linking, the pre-registered Person's contact.
         /// </summary>
         public Guid? OtpOperationId { get; set; }
 
@@ -127,7 +127,7 @@ namespace Shesha.UserRegistrations.Dto
     }
 
     /// <summary>
-    /// Registration settings that are safe to expose to anonymous users of a front-end
+    /// Registration settings that are safe to expose to anonymous users
     /// </summary>
     public class PublicRegistrationSettingsDto
     {

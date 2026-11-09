@@ -27,11 +27,11 @@ using System.Threading.Tasks;
 namespace Shesha.UserRegistrations
 {
     /// <summary>
-    /// Anonymous self-registration: validates the request against the front-end's settings, creates the user account,
+    /// Anonymous self-registration: validates the request against the user management settings, creates the user account,
     /// creates or links the Person, appoints default roles and raises <see cref="UserSelfRegisteredEventData"/>.
-    /// Methods are virtual so projects can replace the manager to customise individual steps.
+    /// Methods are virtual so projects can register a subclass as <see cref="ISelfRegistrationManager"/> to customise individual steps.
     /// </summary>
-    public class SelfRegistrationManager : DomainService, ITransientDependency
+    public class SelfRegistrationManager : DomainService, ISelfRegistrationManager, ITransientDependency
     {
         public const string RegistrationDisabledMessage = "Self-registration is not available.";
         public const string OwnershipNotVerifiedMessage = "Please verify your email address or mobile number with a one-time pin to link your account.";
@@ -49,6 +49,7 @@ namespace Shesha.UserRegistrations
         private readonly IOtpManager _otpManager;
         private readonly ISecuritySettings _securitySettings;
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
+        private readonly IUserManagementSettings _userManagementSettings;
 
         public IEventBus EventBus { get; set; } = NullEventBus.Instance;
 
@@ -64,7 +65,8 @@ namespace Shesha.UserRegistrations
             IEntityConfigurationStore entityConfigurationStore,
             IOtpManager otpManager,
             ISecuritySettings securitySettings,
-            IConfigurationFrameworkRuntime cfRuntime)
+            IConfigurationFrameworkRuntime cfRuntime,
+            IUserManagementSettings userManagementSettings)
         {
             _userManager = userManager;
             _personRepository = personRepository;
@@ -75,21 +77,27 @@ namespace Shesha.UserRegistrations
             _otpManager = otpManager;
             _securitySettings = securitySettings;
             _cfRuntime = cfRuntime;
+            _userManagementSettings = userManagementSettings;
         }
 
         /// <summary>
-        /// Registers a new user from an anonymous request: verifies the one-time pin, creates or links the Person, creates the user,
-        /// appoints the default roles, records the registration and raises <see cref="UserSelfRegisteredEventData"/>.
+        /// True when anonymous users may register: self-registration is allowed and a registration method is configured.
+        /// Values saved before <see cref="UserManagementSettings.AllowSelfRegistration"/> existed (null) keep working when they have a
+        /// registration method; the built-in default sets it to false.
         /// </summary>
-        /// <param name="input">Registration details, including the one-time pin that proves the registrant controls their email address or mobile number</param>
-        /// <param name="effective">Settings of the front-end the registration comes from</param>
-        /// <returns>The new user and Person, and what the registrant must do next</returns>
-        public virtual async Task<SelfRegistrationResult> RegisterAsync(SelfRegistrationInput input, EffectiveUserManagementSettings effective)
+        public static bool IsSelfRegistrationEnabled(UserManagementSettings settings)
         {
-            if (!effective.IsSelfRegistrationEnabled)
-                throw new UserFriendlyException(RegistrationDisabledMessage);
+            return settings != null
+                && settings.SupportedRegistrationMethods != SupportedRegistrationMethods.None
+                && (settings.AllowSelfRegistration ?? true);
+        }
 
-            var settings = effective.Settings;
+        /// <inheritdoc />
+        public virtual async Task<SelfRegistrationResult> RegisterAsync(SelfRegistrationInput input)
+        {
+            var settings = await _userManagementSettings.UserManagementSettings.GetValueAsync();
+            if (!IsSelfRegistrationEnabled(settings))
+                throw new UserFriendlyException(RegistrationDisabledMessage);
 
             input.EmailAddress = input.EmailAddress?.Trim();
             input.MobileNumber = input.MobileNumber?.Trim();
@@ -181,10 +189,7 @@ namespace Shesha.UserRegistrations
         /// </summary>
         public virtual TimeSpan CompletionTokenLifetime => TimeSpan.FromHours(1);
 
-        /// <summary>
-        /// Issues a new single-use completion token for an incomplete registration, replacing any previous one.
-        /// Only the token's hash is stored; the token itself is returned to the registrant.
-        /// </summary>
+        /// <inheritdoc />
         public virtual async Task<string> IssueCompletionTokenAsync(ShaUserRegistration registration)
         {
             var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(32)).ToLowerInvariant();
@@ -194,11 +199,7 @@ namespace Shesha.UserRegistrations
             return token;
         }
 
-        /// <summary>
-        /// Returns the incomplete registration of the specified user when <paramref name="token"/> is its current, unexpired
-        /// completion token; otherwise throws. Projects can call this from their own anonymous endpoints to authorise
-        /// saving the additional registration information for <paramref name="userId"/>.
-        /// </summary>
+        /// <inheritdoc />
         public virtual async Task<ShaUserRegistration> GetRegistrationForCompletionAsync(long userId, string token)
         {
             var registration = string.IsNullOrWhiteSpace(token)
@@ -219,9 +220,7 @@ namespace Shesha.UserRegistrations
             return registration;
         }
 
-        /// <summary>
-        /// Marks the registration as complete (after the additional registration info form), invalidates the token and returns the URL to go to
-        /// </summary>
+        /// <inheritdoc />
         public virtual async Task<string> CompleteRegistrationAsync(long userId, string token)
         {
             var registration = await GetRegistrationForCompletionAsync(userId, token);
@@ -335,7 +334,7 @@ namespace Shesha.UserRegistrations
         }
 
         /// <summary>
-        /// A new account must be registered with the front-end's registration method: the verified contact must be the email
+        /// A new account must be registered with the configured registration method: the verified contact must be the email
         /// address for <see cref="SupportedRegistrationMethods.EmailAddress"/>, the mobile number for
         /// <see cref="SupportedRegistrationMethods.MobileNumber"/>, otherwise either.
         /// </summary>
@@ -369,7 +368,7 @@ namespace Shesha.UserRegistrations
         /// belongs to a Person. Saving an unverified contact would let a registrant claim someone else's email address or mobile number
         /// and stop its owner from registering.
         /// The registrant can add the other contact after registering. When the email address can't be left out (it's the username,
-        /// or the front-end restricts email domains), registration is refused instead.
+        /// or email domains are restricted), registration is refused instead.
         /// </summary>
         protected virtual void KeepOnlyVerifiedContact(SelfRegistrationInput input, string verifiedContact, UserManagementSettings settings)
         {
@@ -413,7 +412,7 @@ namespace Shesha.UserRegistrations
         }
 
         /// <summary>
-        /// Appoints the front-end's default roles to the Person. Roles that don't exist are logged and skipped.
+        /// Appoints the configured default roles to the Person. Roles that don't exist are logged and skipped.
         /// </summary>
         protected virtual async Task AppointDefaultRolesAsync(Person person, List<string> roleNames)
         {
@@ -436,7 +435,7 @@ namespace Shesha.UserRegistrations
         }
 
         /// <summary>
-        /// Records the registration. It's complete straight away unless the front-end requires an additional registration information form.
+        /// Records the registration. It's complete straight away unless the settings require an additional registration information form.
         /// </summary>
         protected virtual async Task<ShaUserRegistration> SaveRegistrationAsync(User user, UserManagementSettings settings)
         {

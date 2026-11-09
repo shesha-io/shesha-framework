@@ -13,20 +13,23 @@ namespace Shesha.Tests.UserRegistrations
     {
         [Theory]
         // explicit switch wins (unless the method is None)
-        [InlineData(true, SupportedRegistrationMethods.EmailAddress, false, true)]
-        [InlineData(true, SupportedRegistrationMethods.EmailAddress, true, true)]
-        [InlineData(false, SupportedRegistrationMethods.EmailAddress, true, false)]
-        [InlineData(true, SupportedRegistrationMethods.None, true, false)]
-        // legacy values (switch not saved): enabled only when explicitly saved with a method
-        [InlineData(null, SupportedRegistrationMethods.MobileNumber, true, true)]
-        [InlineData(null, SupportedRegistrationMethods.None, true, false)]
-        // built-in default (never saved) must not open anonymous registration
-        [InlineData(null, SupportedRegistrationMethods.MobileNumber, false, false)]
-        public void IsSelfRegistrationEnabled(bool? allow, SupportedRegistrationMethods method, bool isStored, bool expected)
+        [InlineData(true, SupportedRegistrationMethods.EmailAddress, true)]
+        [InlineData(false, SupportedRegistrationMethods.EmailAddress, false)]
+        [InlineData(true, SupportedRegistrationMethods.None, false)]
+        // values saved before the switch existed (null): enabled only when saved with a method
+        [InlineData(null, SupportedRegistrationMethods.MobileNumber, true)]
+        [InlineData(null, SupportedRegistrationMethods.None, false)]
+        public void IsSelfRegistrationEnabled(bool? allow, SupportedRegistrationMethods method, bool expected)
         {
             var settings = new UserManagementSettings { AllowSelfRegistration = allow, SupportedRegistrationMethods = method };
 
-            SelfRegistrationSettingsProvider.IsSelfRegistrationEnabled(settings, isStored).ShouldBe(expected);
+            SelfRegistrationManager.IsSelfRegistrationEnabled(settings).ShouldBe(expected);
+        }
+
+        [Fact]
+        public void Missing_settings_do_not_enable_self_registration()
+        {
+            SelfRegistrationManager.IsSelfRegistrationEnabled(null).ShouldBeFalse();
         }
 
         [Theory]

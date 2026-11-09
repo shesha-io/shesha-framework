@@ -40,9 +40,9 @@ namespace Shesha.UserManagements.Configurations
         public string AdditionalRegistrationInfoFormName { get; set; }
 
         /// <summary>
-        /// Allows anonymous users to register an account from this front-end.
-        /// Null on values saved before this property existed: self-registration is then treated as enabled when the value
-        /// was explicitly saved with a registration method other than <see cref="SupportedRegistrationMethods.None"/>.
+        /// Allows anonymous users to register an account.
+        /// The built-in default is false. Null only appears on values saved before this property existed: self-registration
+        /// is then treated as enabled when the saved registration method isn't <see cref="SupportedRegistrationMethods.None"/>.
         /// </summary>
         public bool? AllowSelfRegistration { get; set; }
 
