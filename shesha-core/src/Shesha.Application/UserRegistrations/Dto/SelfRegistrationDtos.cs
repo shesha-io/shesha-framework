@@ -14,21 +14,39 @@ namespace Shesha.UserRegistrations.Dto
         /// </summary>
         public string UserName { get; set; }
 
+        /// <summary>
+        /// Password for the new account
+        /// </summary>
         [Required]
         public string Password { get; set; }
 
+        /// <summary>
+        /// Must match <see cref="Password"/>
+        /// </summary>
         [Required]
         public string PasswordConfirmation { get; set; }
 
+        /// <summary>
+        /// First name of the registrant
+        /// </summary>
         [Required(AllowEmptyStrings = false)]
         public string FirstName { get; set; }
 
+        /// <summary>
+        /// Last name of the registrant
+        /// </summary>
         [Required(AllowEmptyStrings = false)]
         public string LastName { get; set; }
 
+        /// <summary>
+        /// Email address of the registrant. Saved only when it's the contact the one-time pin verified.
+        /// </summary>
         [EmailAddress]
         public string EmailAddress { get; set; }
 
+        /// <summary>
+        /// Mobile number of the registrant. Saved only when it's the contact the one-time pin verified.
+        /// </summary>
         public string MobileNumber { get; set; }
 
         /// <summary>
@@ -49,8 +67,14 @@ namespace Shesha.UserRegistrations.Dto
     /// </summary>
     public class SelfRegistrationResult
     {
+        /// <summary>
+        /// Id of the user
+        /// </summary>
         public long UserId { get; set; }
 
+        /// <summary>
+        /// Id of the new or linked Person
+        /// </summary>
         public Guid PersonId { get; set; }
 
         /// <summary>
@@ -58,6 +82,9 @@ namespace Shesha.UserRegistrations.Dto
         /// </summary>
         public bool LinkedToExistingPerson { get; set; }
 
+        /// <summary>
+        /// URL to go to once the registration is complete
+        /// </summary>
         public string GoToUrlAfterRegistration { get; set; }
 
         /// <summary>
@@ -65,8 +92,14 @@ namespace Shesha.UserRegistrations.Dto
         /// </summary>
         public bool RequiresAdditionalRegistrationInfo { get; set; }
 
+        /// <summary>
+        /// Module of the additional registration information form
+        /// </summary>
         public string AdditionalRegistrationInfoFormModule { get; set; }
 
+        /// <summary>
+        /// Name of the additional registration information form
+        /// </summary>
         public string AdditionalRegistrationInfoFormName { get; set; }
 
         /// <summary>
@@ -100,17 +133,38 @@ namespace Shesha.UserRegistrations.Dto
         /// </summary>
         public bool IsSelfRegistrationEnabled { get; set; }
 
+        /// <summary>
+        /// Contact the registrant verifies: email address, mobile number, or either
+        /// </summary>
         public SupportedRegistrationMethods SupportedRegistrationMethods { get; set; }
 
+        /// <summary>
+        /// True when the registration form asks the registrant to verify their email address. The server always requires a verified one-time pin.
+        /// </summary>
         public bool RequireEmailVerification { get; set; }
 
+        /// <summary>
+        /// True when the email address is used as the username
+        /// </summary>
         public bool UserEmailAsUsername { get; set; }
 
+        /// <summary>
+        /// Whether registration creates a new Person, links to a pre-registered one, or either
+        /// </summary>
         public RefListSelfRegistrationCreationMode CreationMode { get; set; }
+/// <summary>
+/// Module of the additional registration information form
+/// </summary>
 
+        /// <summary>
+        /// True when registrants must complete an additional registration information form
+        /// </summary>
         public bool AdditionalRegistrationInfo { get; set; }
 
         public string AdditionalRegistrationInfoFormModule { get; set; }
+/// <summary>
+/// URL to go to once the registration is complete
+/// </summary>
 
         public string AdditionalRegistrationInfoFormName { get; set; }
 

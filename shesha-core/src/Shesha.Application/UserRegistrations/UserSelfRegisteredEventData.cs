@@ -12,6 +12,9 @@ namespace Shesha.UserRegistrations
     /// </summary>
     public class UserSelfRegisteredEventData : EventData
     {
+        /// <summary>
+        /// Creates the event data
+        /// </summary>
         public UserSelfRegisteredEventData(User user, Person person, bool linkedToExistingPerson, string frontEndApplication, UserManagementSettings settings)
         {
             User = user;
@@ -21,6 +24,9 @@ namespace Shesha.UserRegistrations
             Settings = settings;
         }
 
+        /// <summary>
+        /// The new user
+        /// </summary>
         public User User { get; }
 
         /// <summary>

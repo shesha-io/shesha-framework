@@ -21,8 +21,14 @@ namespace Shesha.UserRegistrations
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly IUserManagementSettings _userManagementSettings;
 
+        /// <summary>
+        /// Current session, used for the tenant
+        /// </summary>
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
+        /// <summary>
+        /// Creates the settings provider
+        /// </summary>
         public SelfRegistrationSettingsProvider(
             ISettingDefinitionManager definitionManager,
             ISettingStore settingStore,
@@ -35,6 +41,7 @@ namespace Shesha.UserRegistrations
             _userManagementSettings = userManagementSettings;
         }
 
+        /// <inheritdoc />
         public async Task<EffectiveUserManagementSettings> GetSettingsAsync(string appKey = null)
         {
             var definition = _definitionManager.Get(

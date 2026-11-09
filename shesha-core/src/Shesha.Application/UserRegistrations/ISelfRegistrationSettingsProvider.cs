@@ -20,6 +20,11 @@ namespace Shesha.UserRegistrations
     /// </summary>
     public class EffectiveUserManagementSettings
     {
+        /// <summary>
+        /// Creates the effective settings
+        /// </summary>
+        /// <param name="settings">Raw settings value</param>
+        /// <param name="isSelfRegistrationEnabled">True when anonymous users may register</param>
         public EffectiveUserManagementSettings(UserManagementSettings settings, bool isSelfRegistrationEnabled)
         {
             Settings = settings;

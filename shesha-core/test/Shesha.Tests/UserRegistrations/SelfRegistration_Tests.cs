@@ -435,7 +435,7 @@ namespace Shesha.Tests.UserRegistrations
 
             var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, input));
 
-            ex.Message.ShouldBe(SelfRegistrationManager.OwnershipNotVerifiedMessage);
+            ex.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
         }
 
         [Fact]
@@ -449,7 +449,7 @@ namespace Shesha.Tests.UserRegistrations
 
             var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, input));
 
-            ex.Message.ShouldBe(SelfRegistrationManager.OwnershipNotVerifiedMessage);
+            ex.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
         }
 
         [Fact]
@@ -462,7 +462,7 @@ namespace Shesha.Tests.UserRegistrations
 
             var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, input));
 
-            ex.Message.ShouldBe(SelfRegistrationManager.OwnershipNotVerifiedMessage);
+            ex.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
         }
 
         [Fact]
@@ -503,6 +503,44 @@ namespace Shesha.Tests.UserRegistrations
             var result = await RegisterAsync(app, input);
 
             result.PersonId.ShouldBe(preRegisteredId);
+        }
+
+        [Theory]
+        [InlineData(RefListSelfRegistrationCreationMode.AlwaysCreateNew)]
+        [InlineData(RefListSelfRegistrationCreationMode.MustAlreadyExist)]
+        [InlineData(RefListSelfRegistrationCreationMode.LinkIfExistsOtherwiseCreate)]
+        public async Task Without_an_otp_the_response_does_not_reveal_whether_a_person_existsAsync(RefListSelfRegistrationCreationMode mode)
+        {
+            var app = await CreateAppAsync(EnabledSettings(s => s.CreationMode = mode));
+            var registered = NewInput();
+            RemoveOtp(registered);
+            await CreatePreRegisteredPersonAsync(registered.EmailAddress, mobile: null);
+            var unknown = NewInput();
+            RemoveOtp(unknown);
+
+            var registeredEx = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, registered));
+            var unknownEx = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, unknown));
+
+            registeredEx.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
+            unknownEx.Message.ShouldBe(registeredEx.Message);
+        }
+
+        [Fact]
+        public async Task Verifying_one_contact_does_not_reveal_whether_another_is_registeredAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.CreationMode = RefListSelfRegistrationCreationMode.AlwaysCreateNew;
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+            }));
+            var input = NewInput();
+            await CreatePreRegisteredPersonAsync(input.EmailAddress, mobile: null);
+            ProvideOtp(input, sentTo: input.MobileNumber);
+
+            // the email address belongs to an existing Person, but only the mobile number was verified, so it isn't matched
+            var result = await RegisterAsync(app, input);
+
+            result.LinkedToExistingPerson.ShouldBeFalse();
         }
 
         private static string WithSpaces(string mobile) => $"{mobile[..3]} {mobile[3..5]} {mobile[5..8]} {mobile[8..]}";

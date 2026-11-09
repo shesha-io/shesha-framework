@@ -52,6 +52,9 @@ namespace Shesha.UserRegistrations
 
         public IEventBus EventBus { get; set; } = NullEventBus.Instance;
 
+        /// <summary>
+        /// Creates the self-registration manager
+        /// </summary>
         public SelfRegistrationManager(
             UserManager userManager,
             IRepository<Person, Guid> personRepository,
@@ -74,6 +77,13 @@ namespace Shesha.UserRegistrations
             _cfRuntime = cfRuntime;
         }
 
+        /// <summary>
+        /// Registers a new user from an anonymous request: verifies the one-time pin, creates or links the Person, creates the user,
+        /// appoints the default roles, records the registration and raises <see cref="UserSelfRegisteredEventData"/>.
+        /// </summary>
+        /// <param name="input">Registration details, including the one-time pin that proves the registrant controls their email address or mobile number</param>
+        /// <param name="effective">Settings of the front-end the registration comes from</param>
+        /// <returns>The new user and Person, and what the registrant must do next</returns>
         public virtual async Task<SelfRegistrationResult> RegisterAsync(SelfRegistrationInput input, EffectiveUserManagementSettings effective)
         {
             if (!effective.IsSelfRegistrationEnabled)
@@ -87,6 +97,11 @@ namespace Shesha.UserRegistrations
 
             ValidateInput(input, settings);
 
+            // Verify the one-time pin before looking up existing Persons or accounts, and match only the verified contact,
+            // so the response can't be used to find out whether an email address or mobile number is registered
+            var verifiedContact = await EnsureContactVerifiedAsync(input);
+            KeepOnlyVerifiedContact(input, verifiedContact, settings);
+
             var personType = ResolvePersonType(settings.PersonEntityType);
             var matches = await FindMatchingPersonsAsync(input.EmailAddress, input.MobileNumber);
             if (matches.Count > 1)
@@ -97,10 +112,10 @@ namespace Shesha.UserRegistrations
             if (plan.Action == SelfRegistrationAction.Reject)
                 throw new UserFriendlyException(plan.RejectionReason);
 
-            var verifiedContact = plan.Action == SelfRegistrationAction.LinkToExisting
-                ? await EnsureOwnershipVerifiedAsync(input, existingPerson)
-                : await EnsureContactVerifiedAsync(input, settings.SupportedRegistrationMethods);
-            KeepOnlyVerifiedContact(input, verifiedContact, settings);
+            if (plan.Action == SelfRegistrationAction.LinkToExisting)
+                EnsureOwnershipVerified(verifiedContact, existingPerson);
+            else
+                EnsureRegistrationMethodVerified(input, verifiedContact, settings.SupportedRegistrationMethods);
 
             var userName = settings.UserEmailAsUsername ? input.EmailAddress : input.UserName;
             var user = await _userManager.CreateUserAsync(
@@ -224,6 +239,9 @@ namespace Shesha.UserRegistrations
             return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token))).ToLowerInvariant();
         }
 
+        /// <summary>
+        /// Validates the mandatory fields and the email address (format and allowed domains); throws an <see cref="AbpValidationException"/> listing every problem
+        /// </summary>
         protected virtual void ValidateInput(SelfRegistrationInput input, UserManagementSettings settings)
         {
             var errors = new List<ValidationResult>();
@@ -271,11 +289,18 @@ namespace Shesha.UserRegistrations
             return type;
         }
 
+        /// <summary>
+        /// Creates an instance of the configured Person entity type. Override to initialise project-specific properties.
+        /// </summary>
         protected virtual Person CreatePersonInstance(Type personType)
         {
             return (Person)Activator.CreateInstance(personType);
         }
 
+        /// <summary>
+        /// Finds Persons whose email address (case-insensitive) or mobile number (ignoring spaces) matches. Returns at most two,
+        /// which is enough to tell whether the match is ambiguous.
+        /// </summary>
         protected virtual async Task<List<Person>> FindMatchingPersonsAsync(string email, string mobile)
         {
             var hasEmail = !string.IsNullOrWhiteSpace(email);
@@ -294,35 +319,30 @@ namespace Shesha.UserRegistrations
         }
 
         /// <summary>
-        /// The registrant must show they control the email address or mobile number of the pre-registered Person:
-        /// the one-time pin must be valid and must have been sent to that address/number.
+        /// The registrant must prove they control the email address or mobile number they register with: the one-time pin
+        /// (or email link) must be valid and must have been sent to one of them. The registration forms verify it before
+        /// calling Register; this enforces it on the server so a direct call can't register an address the caller doesn't own.
         /// </summary>
         /// <returns>The normalised email address or mobile number the one-time pin was sent to</returns>
-        protected virtual async Task<string> EnsureOwnershipVerifiedAsync(SelfRegistrationInput input, Person person)
+        protected virtual async Task<string> EnsureContactVerifiedAsync(SelfRegistrationInput input)
         {
-            var sentTo = await GetVerifiedOtpDestinationAsync(input);
+            var sentTo = await GetVerifiedOtpDestinationAsync(input, ContactNotVerifiedMessage);
 
-            var provedEmail = sentTo != null && sentTo == NormalizeContact(input.EmailAddress) && sentTo == NormalizeContact(person.EmailAddress1);
-            var provedMobile = sentTo != null && sentTo == NormalizeContact(input.MobileNumber) && sentTo == NormalizeContact(person.MobileNumber1);
-            if (!provedEmail && !provedMobile)
-                throw new UserFriendlyException(OwnershipNotVerifiedMessage);
+            if (sentTo != NormalizeContact(input.EmailAddress) && sentTo != NormalizeContact(input.MobileNumber))
+                throw new UserFriendlyException(ContactNotVerifiedMessage);
 
             return sentTo;
         }
 
         /// <summary>
-        /// A new account must prove the registrant controls the contact used to register: the email address for
-        /// <see cref="SupportedRegistrationMethods.EmailAddress"/>, the mobile number for <see cref="SupportedRegistrationMethods.MobileNumber"/>,
-        /// otherwise either. The registration forms verify it with a one-time pin (or email link) before calling Register;
-        /// this enforces it on the server so a direct call can't register an address the caller doesn't own.
+        /// A new account must be registered with the front-end's registration method: the verified contact must be the email
+        /// address for <see cref="SupportedRegistrationMethods.EmailAddress"/>, the mobile number for
+        /// <see cref="SupportedRegistrationMethods.MobileNumber"/>, otherwise either.
         /// </summary>
-        /// <returns>The normalised email address or mobile number the one-time pin was sent to</returns>
-        protected virtual async Task<string> EnsureContactVerifiedAsync(SelfRegistrationInput input, SupportedRegistrationMethods method)
+        protected virtual void EnsureRegistrationMethodVerified(SelfRegistrationInput input, string verifiedContact, SupportedRegistrationMethods method)
         {
-            var sentTo = await GetVerifiedOtpDestinationAsync(input, ContactNotVerifiedMessage);
-
-            var provedEmail = sentTo == NormalizeContact(input.EmailAddress);
-            var provedMobile = sentTo == NormalizeContact(input.MobileNumber);
+            var provedEmail = verifiedContact == NormalizeContact(input.EmailAddress);
+            var provedMobile = verifiedContact == NormalizeContact(input.MobileNumber);
             var proved = method switch
             {
                 SupportedRegistrationMethods.EmailAddress => provedEmail,
@@ -331,8 +351,16 @@ namespace Shesha.UserRegistrations
             };
             if (!proved)
                 throw new UserFriendlyException(ContactNotVerifiedMessage);
+        }
 
-            return sentTo;
+        /// <summary>
+        /// Linking is only allowed when the verified contact is the pre-registered Person's own email address or mobile number.
+        /// Persons are matched on the verified contact only, so this is a safeguard for overrides of <see cref="FindMatchingPersonsAsync"/>.
+        /// </summary>
+        protected virtual void EnsureOwnershipVerified(string verifiedContact, Person person)
+        {
+            if (verifiedContact != NormalizeContact(person.EmailAddress1) && verifiedContact != NormalizeContact(person.MobileNumber1))
+                throw new UserFriendlyException(OwnershipNotVerifiedMessage);
         }
 
         /// <summary>
@@ -361,7 +389,7 @@ namespace Shesha.UserRegistrations
         /// <summary>
         /// Verifies the one-time pin in the input and returns the normalised address/number it was sent to; throws when it isn't valid
         /// </summary>
-        private async Task<string> GetVerifiedOtpDestinationAsync(SelfRegistrationInput input, string failureMessage = OwnershipNotVerifiedMessage)
+        private async Task<string> GetVerifiedOtpDestinationAsync(SelfRegistrationInput input, string failureMessage)
         {
             if (input.OtpOperationId == null || string.IsNullOrWhiteSpace(input.OtpPin))
                 throw new UserFriendlyException(failureMessage);
@@ -384,6 +412,9 @@ namespace Shesha.UserRegistrations
                 : new string(value.Where(c => !char.IsWhiteSpace(c)).ToArray()).ToLowerInvariant();
         }
 
+        /// <summary>
+        /// Appoints the front-end's default roles to the Person. Roles that don't exist are logged and skipped.
+        /// </summary>
         protected virtual async Task AppointDefaultRolesAsync(Person person, List<string> roleNames)
         {
             if (roleNames == null || !roleNames.Any())
@@ -404,6 +435,9 @@ namespace Shesha.UserRegistrations
             }
         }
 
+        /// <summary>
+        /// Records the registration. It's complete straight away unless the front-end requires an additional registration information form.
+        /// </summary>
         protected virtual async Task<ShaUserRegistration> SaveRegistrationAsync(User user, UserManagementSettings settings)
         {
             var hasAdditionalForm = settings.AdditionalRegistrationInfo
@@ -425,6 +459,9 @@ namespace Shesha.UserRegistrations
             return registration;
         }
 
+        /// <summary>
+        /// Password reset methods to enable on the new user: the methods enabled in the security settings
+        /// </summary>
         protected virtual async Task<long> GetSupportedPasswordResetMethodsAsync()
         {
             var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();

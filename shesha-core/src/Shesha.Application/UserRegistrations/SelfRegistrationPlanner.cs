@@ -26,6 +26,9 @@ namespace Shesha.UserRegistrations
             RejectionReason = rejectionReason;
         }
 
+        /// <summary>
+        /// What to do with the registration
+        /// </summary>
         public SelfRegistrationAction Action { get; }
 
         /// <summary>
@@ -33,8 +36,17 @@ namespace Shesha.UserRegistrations
         /// </summary>
         public string RejectionReason { get; }
 
+        /// <summary>
+        /// Create a new Person for the registrant
+        /// </summary>
         public static SelfRegistrationPlan CreateNew() => new(SelfRegistrationAction.CreateNew, null);
+        /// <summary>
+        /// Link the new user to the matching pre-registered Person
+        /// </summary>
         public static SelfRegistrationPlan LinkToExisting() => new(SelfRegistrationAction.LinkToExisting, null);
+        /// <summary>
+        /// Refuse the registration with the specified user-facing reason
+        /// </summary>
         public static SelfRegistrationPlan Reject(string reason) => new(SelfRegistrationAction.Reject, reason);
     }
 

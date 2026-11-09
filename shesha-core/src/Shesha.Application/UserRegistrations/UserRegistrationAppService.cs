@@ -16,6 +16,9 @@ namespace Shesha.UserRegistrations
         private readonly ISelfRegistrationSettingsProvider _settingsProvider;
         private readonly SelfRegistrationManager _registrationManager;
 
+        /// <summary>
+        /// Creates the self-registration app service
+        /// </summary>
         public UserRegistrationAppService(ISelfRegistrationSettingsProvider settingsProvider, SelfRegistrationManager registrationManager)
         {
             _settingsProvider = settingsProvider;
