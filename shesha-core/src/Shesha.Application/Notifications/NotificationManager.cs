@@ -66,14 +66,20 @@ namespace Shesha.Notifications
                     return defaultChannels;
             }
 
+            var liveChannels = _notificationChannelRepository
+                .GetAll()
+                .Where(channel => channel.IsLast && channel.VersionStatus == ConfigurationItemVersionStatus.Live);
+
             // Step 2: Check for Parsed Override Channels
             if (type.ParsedOverrideChannels.Any())
             {
-                var overrideChannels = await _notificationChannelRepository
-                    .GetAll()
-                    .Where(channel => type.ParsedOverrideChannels.Contains(
-                        new NotificationChannelIdentifier(channel.Module.Name, channel.Name)))
-                    .ToListAsync();
+                // Look each channel up by name and module (plain values the database can compare).
+                // Building a NotificationChannelIdentifier inside the query can't be translated to SQL
+                // and made NHibernate throw NotSupportedException("New").
+                var overrideChannels = type.ParsedOverrideChannels
+                    .SelectMany(identifier => liveChannels
+                        .Where(new ByNameAndModuleSpecification<NotificationChannelConfig>(identifier.Name, identifier.Module).ToExpression()))
+                    .ToList();
 
                 return overrideChannels;
             }
@@ -90,10 +96,6 @@ namespace Shesha.Notifications
             };
             if (selectedNotifications == null)
                 return new();
-
-            var liveChannels = _notificationChannelRepository
-                .GetAll()
-                .Where(channel => channel.IsLast && channel.VersionStatus == ConfigurationItemVersionStatus.Live);
 
             var result = selectedNotifications
                 .SelectMany(identifier => liveChannels
