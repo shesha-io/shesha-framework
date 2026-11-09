@@ -158,7 +158,7 @@ namespace Shesha.Tests.UserRegistrations
                 person.User.Id.ShouldBe(user.Id);
                 person.FirstName.ShouldBe(input.FirstName);
                 person.EmailAddress1.ShouldBe(input.EmailAddress);
-                person.MobileNumber1.ShouldBe(input.MobileNumber);
+                person.MobileNumber1.ShouldBeNull("only the email address was verified");
 
                 var registration = await Resolve<IRepository<ShaUserRegistration, Guid>>().GetAll().SingleAsync(r => r.UserId == user.Id);
                 registration.IsComplete.ShouldBeFalse();
@@ -288,6 +288,95 @@ namespace Shesha.Tests.UserRegistrations
             var verifiedMobile = NewInput();
             ProvideOtp(verifiedMobile, sentTo: verifiedMobile.MobileNumber);
             (await RegisterAsync(app, verifiedMobile)).UserId.ShouldBeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task Email_registration_does_not_save_an_unverified_mobile_numberAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+
+            var result = await RegisterAsync(app, input);
+
+            await WithUowAsync(async () =>
+            {
+                var user = await _userRepository.GetAsync(result.UserId);
+                user.EmailAddress.ShouldBe(input.EmailAddress);
+                user.PhoneNumber.ShouldBeNullOrEmpty();
+
+                var person = await _personRepository.GetAll().SingleAsync(p => p.Id == result.PersonId);
+                person.EmailAddress1.ShouldBe(input.EmailAddress);
+                person.MobileNumber1.ShouldBeNull();
+            });
+        }
+
+        [Fact]
+        public async Task Mobile_registration_does_not_save_an_unverified_email_addressAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s => s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber));
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+
+            var result = await RegisterAsync(app, input);
+
+            await WithUowAsync(async () =>
+            {
+                var user = await _userRepository.GetAsync(result.UserId);
+                user.EmailAddress.ShouldBeNullOrEmpty();
+                user.PhoneNumber.ShouldBe(input.MobileNumber);
+
+                var person = await _personRepository.GetAll().SingleAsync(p => p.Id == result.PersonId);
+                person.EmailAddress1.ShouldBeNull();
+                person.MobileNumber1.ShouldBe(input.MobileNumber);
+            });
+        }
+
+        [Fact]
+        public async Task An_unverified_email_address_does_not_block_its_owner_from_registeringAsync()
+        {
+            var mobileApp = await CreateAppAsync(EnabledSettings(s => s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber));
+            var emailApp = await CreateAppAsync(EnabledSettings());
+            var squatter = NewInput();
+            var ownersEmail = squatter.EmailAddress;
+            ProvideOtp(squatter, sentTo: squatter.MobileNumber);
+            await RegisterAsync(mobileApp, squatter);
+
+            var owner = NewInput();
+            owner.EmailAddress = ownersEmail;
+            ProvideOtp(owner, sentTo: owner.EmailAddress);
+
+            (await RegisterAsync(emailApp, owner)).UserId.ShouldBeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task Mobile_registration_is_refused_when_an_unverified_email_is_the_usernameAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.UserEmailAsUsername = true;
+            }));
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+
+            var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, input));
+            ex.Message.ShouldBe(SelfRegistrationManager.EmailNotVerifiedMessage);
+            (await UserExistsAsync(input.EmailAddress)).ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task Mobile_registration_is_refused_when_email_domains_are_restricted_and_the_email_is_unverifiedAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.AllowedEmailDomains = "selfreg.test";
+            }));
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+
+            var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, input));
+            ex.Message.ShouldBe(SelfRegistrationManager.EmailNotVerifiedMessage);
         }
 
         #endregion

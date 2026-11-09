@@ -36,6 +36,7 @@ namespace Shesha.UserRegistrations
         public const string RegistrationDisabledMessage = "Self-registration is not available.";
         public const string OwnershipNotVerifiedMessage = "Please verify your email address or mobile number with a one-time pin to link your account.";
         public const string ContactNotVerifiedMessage = "Please verify your email address or mobile number with a one-time pin before registering.";
+        public const string EmailNotVerifiedMessage = "Please verify your email address with a one-time pin before registering.";
         public const string MisconfiguredMessage = "Self-registration is not configured correctly. Please contact the system administrator.";
         public const string InvalidCompletionTokenMessage = "This registration link is invalid or has expired. Please log in to finish your registration.";
 
@@ -96,10 +97,10 @@ namespace Shesha.UserRegistrations
             if (plan.Action == SelfRegistrationAction.Reject)
                 throw new UserFriendlyException(plan.RejectionReason);
 
-            if (plan.Action == SelfRegistrationAction.LinkToExisting)
-                await EnsureOwnershipVerifiedAsync(input, existingPerson);
-            else
-                await EnsureContactVerifiedAsync(input, settings.SupportedRegistrationMethods);
+            var verifiedContact = plan.Action == SelfRegistrationAction.LinkToExisting
+                ? await EnsureOwnershipVerifiedAsync(input, existingPerson)
+                : await EnsureContactVerifiedAsync(input, settings.SupportedRegistrationMethods);
+            KeepOnlyVerifiedContact(input, verifiedContact, settings);
 
             var userName = settings.UserEmailAsUsername ? input.EmailAddress : input.UserName;
             var user = await _userManager.CreateUserAsync(
@@ -296,7 +297,8 @@ namespace Shesha.UserRegistrations
         /// The registrant must show they control the email address or mobile number of the pre-registered Person:
         /// the one-time pin must be valid and must have been sent to that address/number.
         /// </summary>
-        protected virtual async Task EnsureOwnershipVerifiedAsync(SelfRegistrationInput input, Person person)
+        /// <returns>The normalised email address or mobile number the one-time pin was sent to</returns>
+        protected virtual async Task<string> EnsureOwnershipVerifiedAsync(SelfRegistrationInput input, Person person)
         {
             var sentTo = await GetVerifiedOtpDestinationAsync(input);
 
@@ -304,6 +306,8 @@ namespace Shesha.UserRegistrations
             var provedMobile = sentTo != null && sentTo == NormalizeContact(input.MobileNumber) && sentTo == NormalizeContact(person.MobileNumber1);
             if (!provedEmail && !provedMobile)
                 throw new UserFriendlyException(OwnershipNotVerifiedMessage);
+
+            return sentTo;
         }
 
         /// <summary>
@@ -312,7 +316,8 @@ namespace Shesha.UserRegistrations
         /// otherwise either. The registration forms verify it with a one-time pin (or email link) before calling Register;
         /// this enforces it on the server so a direct call can't register an address the caller doesn't own.
         /// </summary>
-        protected virtual async Task EnsureContactVerifiedAsync(SelfRegistrationInput input, SupportedRegistrationMethods method)
+        /// <returns>The normalised email address or mobile number the one-time pin was sent to</returns>
+        protected virtual async Task<string> EnsureContactVerifiedAsync(SelfRegistrationInput input, SupportedRegistrationMethods method)
         {
             var sentTo = await GetVerifiedOtpDestinationAsync(input, ContactNotVerifiedMessage);
 
@@ -326,6 +331,31 @@ namespace Shesha.UserRegistrations
             };
             if (!proved)
                 throw new UserFriendlyException(ContactNotVerifiedMessage);
+
+            return sentTo;
+        }
+
+        /// <summary>
+        /// Only the contact the one-time pin was sent to is proven, so the other one isn't saved: new users are created with their
+        /// email address confirmed, both contacts can be used to reset the password, and registration refuses a contact that already
+        /// belongs to a Person. Saving an unverified contact would let a registrant claim someone else's email address or mobile number
+        /// and stop its owner from registering.
+        /// The registrant can add the other contact after registering. When the email address can't be left out (it's the username,
+        /// or the front-end restricts email domains), registration is refused instead.
+        /// </summary>
+        protected virtual void KeepOnlyVerifiedContact(SelfRegistrationInput input, string verifiedContact, UserManagementSettings settings)
+        {
+            if (input.EmailAddress != null && NormalizeContact(input.EmailAddress) != verifiedContact)
+            {
+                var emailRequired = settings.UserEmailAsUsername || EmailDomainPolicy.ParseDomains(settings.AllowedEmailDomains).Count > 0;
+                if (emailRequired)
+                    throw new UserFriendlyException(EmailNotVerifiedMessage);
+
+                input.EmailAddress = null;
+            }
+
+            if (input.MobileNumber != null && NormalizeContact(input.MobileNumber) != verifiedContact)
+                input.MobileNumber = null;
         }
 
         /// <summary>
