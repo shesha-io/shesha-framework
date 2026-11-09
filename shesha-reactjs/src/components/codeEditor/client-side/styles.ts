@@ -7,6 +7,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   const workspaceSplit = "sha-code-editor-workspace-split";
   const code = "sha-code-editor-code";
   const tree = "sha-code-editor-tree";
+  const editorColumn = cx("sha-code-editor-column", css`
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+  `);
+  const editorPane = cx("sha-code-editor-pane", css`
+        flex: 1;
+        min-height: 0;
+        position: relative;
+  `);
 
   const background = "#2e3138";
 
@@ -103,5 +114,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
     workspaceSplit,
     code,
     tree,
+    editorColumn,
+    editorPane,
   };
 });
