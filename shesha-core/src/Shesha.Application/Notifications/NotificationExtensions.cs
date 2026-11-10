@@ -1,4 +1,6 @@
 ﻿using Shesha.Domain;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Shesha.Notifications
 {
@@ -16,7 +18,8 @@ namespace Shesha.Notifications
             dst.CanOptOut = src.CanOptOut;
             dst.Category = src.Category;
             dst.OrderIndex = src.OrderIndex;
-            dst.OverrideChannels = src.OverrideChannels;
+            dst.OverrideChannels = src.OverrideChannels?.Select(c => new ConfigurationItemIdentifierDto { Name = c.Name, Module = c.Module }).ToList() 
+                ?? new List<ConfigurationItemIdentifierDto>();
 
             return dst;
         }

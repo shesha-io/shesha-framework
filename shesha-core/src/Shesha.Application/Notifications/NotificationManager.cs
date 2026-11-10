@@ -67,13 +67,18 @@ namespace Shesha.Notifications
             }
 
             // Step 2: Check for Parsed Override Channels
-            if (type.ParsedOverrideChannels.Any())
+            if (type.OverrideChannels != null && type.OverrideChannels.Any())
             {
-                var overrideChannels = await _notificationChannelRepository
-                    .GetAll()
-                    .Where(channel => type.ParsedOverrideChannels.Contains(
-                        new NotificationChannelIdentifier(channel.Module.Name, channel.Name)))
-                    .ToListAsync();
+                var overrideChannels = new List<NotificationChannelConfig>();
+                foreach (var channel in type.OverrideChannels)
+                {
+                    var dbChannel = await _notificationChannelRepository
+                        .GetAll()
+                        .Where(channel => channel.VersionStatus == ConfigurationItemVersionStatus.Live)
+                        .FirstOrDefaultAsync(new ByNameAndModuleSpecification<NotificationChannelConfig>(channel.Name, channel.Module).ToExpression());
+                    if (dbChannel != null)
+                        overrideChannels.Add(dbChannel);
+                }
 
                 return overrideChannels;
             }
