@@ -3,7 +3,7 @@ using System;
 
 namespace Shesha.Authorization
 {
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method | AttributeTargets.Class)]
     public class SheshaAuthorizeAttribute: Attribute
     {
 
@@ -12,14 +12,21 @@ namespace Shesha.Authorization
         /// </summary>
         public string[] Permissions { get; }
 
-        public bool IsConfigurable { get; set; }
+        /// <summary>
+        /// Access type
+        /// </summary>
+        public RefListPermissionedAccess Access { get; }
 
-        public RefListPermissionedAccess Access { get; set; }
+        /// <summary>
+        /// Allows to configure permissions using the Configurator
+        /// </summary>
+        public bool IsConfigurable { get; set; }
 
         public SheshaAuthorizeAttribute(RefListPermissionedAccess access, params string[] permissions)
         {
             Access = access;
             Permissions = permissions;
+            IsConfigurable = true;
         }
     }
 }

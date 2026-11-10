@@ -5,6 +5,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.JsonLogic;
+using Shesha.Permissions.Entity;
 using Shesha.QuickSearch.Cache;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -27,6 +28,7 @@ namespace Shesha.QuickSearch
         private readonly ICacheManager _cacheManager;
         private readonly IRepository<ReferenceListItem, Guid> _refListItemRepository;
         private readonly IReferenceListHelper _refListHelper;
+        private readonly IPermissionedEntityProvider _permissionedEntityProvider;
         /// <summary>
         /// Cache of the quick search properties
         /// </summary>
@@ -40,6 +42,7 @@ namespace Shesha.QuickSearch
             IRepository<ReferenceListItem, Guid> refListItemRepository, 
             ICacheManager cacheManager, 
             IReferenceListHelper refListHelper,
+            IPermissionedEntityProvider permissionedEntityProvider,
             IQuickSearchPropertiesCacheHolder quickSearchPropertiesCacheHolder)
         {
             _entityConfigurationStore = entityConfigurationStore;
@@ -47,6 +50,7 @@ namespace Shesha.QuickSearch
             _cacheManager = cacheManager;
             _refListHelper = refListHelper;
             _quickSearchPropertiesCache = quickSearchPropertiesCacheHolder.Cache;
+            _permissionedEntityProvider = permissionedEntityProvider;
         }
 
         /// <summary>
@@ -136,7 +140,7 @@ namespace Shesha.QuickSearch
                                     var propConfig = nestedEntityConfig.Properties[nestedPropertyDisplayName];
                                     if (propConfig != null && propConfig.IsMapped) 
                                     {
-                                        var propExpression = ExpressionExtensions.GetMemberExpression(parameter, $"{prop.Name}.{nestedPropertyDisplayName}");
+                                        var propExpression = ExpressionExtensions.GetMemberExpression(parameter, $"{prop.Name}.{nestedPropertyDisplayName}", _permissionedEntityProvider);
                                         var constExpression = Expression.Constant(quickSearch);
 
                                         // note: `in` arguments are reversed
@@ -389,6 +393,9 @@ namespace Shesha.QuickSearch
                             if (!TryGetProperty(currentEntityConfig, parts[i], out property))
                                 return null;
 
+                            if (!_permissionedEntityProvider.IsPropertyGranted(property.PropertyInfo))
+                                return null;
+
                             if (!property.IsMapped)
                                 return null;
 
@@ -407,8 +414,13 @@ namespace Shesha.QuickSearch
                         }
                     }
                     else {
-                        if (TryGetProperty(currentEntityConfig, propName, out property))
-                            effectivePathParts.Add(property.PropertyInfo.Name);
+                        if (!TryGetProperty(currentEntityConfig, propName, out property))
+                            return null;
+
+                        if (!_permissionedEntityProvider.IsPropertyGranted(property.PropertyInfo))
+                            return null;
+
+                        effectivePathParts.Add(property.PropertyInfo.Name);
                     }
 
                     if (property == null)
@@ -446,7 +458,9 @@ namespace Shesha.QuickSearch
         public List<string> GetTopLevelProperties<TEntity>() 
         {
             var entityConfig = _entityConfigurationStore.Get(typeof(TEntity));
-            return entityConfig.Properties.Select(p => p.Key).ToList();
+            return entityConfig.Properties
+                .Where(p => _permissionedEntityProvider.IsPropertyGranted(p.Value.PropertyInfo))
+                .Select(p => p.Key).ToList();
         }
 
         #endregion

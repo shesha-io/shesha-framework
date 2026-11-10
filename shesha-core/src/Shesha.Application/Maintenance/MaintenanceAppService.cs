@@ -1,4 +1,3 @@
-using Abp.AspNetCore.Mvc.Authorization;
 using Abp.Domain.Uow;
 using Abp.Reflection;
 using Abp.Web.Models;
@@ -25,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Controllers
 {
-    [AbpMvcAuthorize(PermissionNames.Application_Maintenance)]
+    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance, IsConfigurable = false)]
     public class MaintenanceAppService : SheshaAppServiceBase
     {
         [HttpPost]

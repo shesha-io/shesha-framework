@@ -18,6 +18,7 @@ using Shesha.GraphQL.Dtos;
 using Shesha.GraphQL.Provider.GraphTypes;
 using Shesha.JsonLogic;
 using Shesha.NHibernate;
+using Shesha.Permissions.Entity;
 using Shesha.QuickSearch;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -38,10 +39,15 @@ namespace Shesha.GraphQL.Provider.Queries
     /// </summary>
     public class EntityQuery<TEntity, TId> : ObjectGraphType, ITransientDependency where TEntity : class, IEntity<TId>, new()
     {
-        private readonly IJsonLogic2LinqConverter _jsonLogicConverter;
         private readonly IEntityTypeConfigurationStore _entityConfigStore;
         private readonly ISessionProvider _sessionProvider;
         private readonly ILogger _logger;
+
+        /// <summary>
+        /// Used only when the execution has no RequestServices (background/job-initiated queries).
+        /// Both call sites set ExecutionOptions.RequestServices only when there is an HttpContext.
+        /// </summary>
+        private readonly IServiceProvider _fallbackServiceProvider;
 
         public EntityQuery(IServiceProvider serviceProvider)
         {
@@ -49,20 +55,18 @@ namespace Shesha.GraphQL.Provider.Queries
 
             Name = entityName + "Query";
 
-            _jsonLogicConverter = serviceProvider.GetRequiredService<IJsonLogic2LinqConverter>();
             _entityConfigStore = serviceProvider.GetRequiredService<IEntityTypeConfigurationStore>();
+            _fallbackServiceProvider = serviceProvider;
+
             _sessionProvider = serviceProvider.GetRequiredService<ISessionProvider>();
             _logger = serviceProvider.GetService<ILoggerFactory>()?.Create(GetType()) ?? NullLogger.Instance;
-
-            var repository = serviceProvider.GetRequiredService<IRepository<TEntity, TId>>();
-            var asyncExecuter = serviceProvider.GetRequiredService<IAsyncQueryableExecuter>();
-            var entityFetcher = serviceProvider.GetService<IEntityFetcher>();
-            var quickSearcher = serviceProvider.GetRequiredService<IQuickSearcher>();
-            var specificationManager = serviceProvider.GetRequiredService<ISpecificationManager>();
 
             Field<GraphQLGenericType<TEntity>>(entityName)
                 .Argument(MakeGetInputType(), nameof(IEntity.Id))
                 .ResolveAsync(async context => {
+                    var services = ResolveServices(context);
+                    var repository = services.GetRequiredService<IRepository<TEntity, TId>>();
+
                     var id = context.GetArgument<TId>(nameof(IEntity.Id));
 
                     return await repository.GetAsync(id);
@@ -73,7 +77,17 @@ namespace Shesha.GraphQL.Provider.Queries
                 .ResolveAsync(async context => {
                     var input = context.GetArgument<ListRequestDto>("input");
 
-                    var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
+                    var services = ResolveServices(context);
+                    var repository = services.GetRequiredService<IRepository<TEntity, TId>>();
+                    var asyncExecuter = services.GetRequiredService<IAsyncQueryableExecuter>();
+                    var entityFetcher = services.GetService<IEntityFetcher>();
+                    var quickSearcher = services.GetRequiredService<IQuickSearcher>();
+                    var specificationManager = services.GetRequiredService<ISpecificationManager>();
+                    var permissionedEntityProvider = services.GetRequiredService<IPermissionedEntityProvider>();
+                    var jsonLogicConverter = services.GetRequiredService<IJsonLogic2LinqConverter>();
+                    jsonLogicConverter.CheckPropertiesPermissions = true;
+
+                    var unitOfWorkManager = services.GetRequiredService<IUnitOfWorkManager>();
                     var uow = unitOfWorkManager.Current;
 
                     var query = await repository.GetAllAsync();
@@ -83,7 +97,7 @@ namespace Shesha.GraphQL.Provider.Queries
                     query = specificationManager.ApplySpecifications(query, input.Specifications);
 
                     // filter entities
-                    query = AddFilter(query, input.Filter);
+                    query = AddFilter(jsonLogicConverter, query, input.Filter);
 
                     // add quick search
                     if (!string.IsNullOrWhiteSpace(input.QuickSearch))
@@ -93,7 +107,7 @@ namespace Shesha.GraphQL.Provider.Queries
                     var totalCount = query.Count();
 
                     // apply sorting
-                    query = ApplySorting(query, input.Sorting);
+                    query = ApplySorting(query, input.Sorting, permissionedEntityProvider);
 
                     // apply paging
                     var pageQuery = query.Skip(input.SkipCount);
@@ -106,7 +120,7 @@ namespace Shesha.GraphQL.Provider.Queries
 
                     var result = new PagedResultDto<TEntity>
                     {
-                        Items = entities,
+                        Items = entities.Select(x => permissionedEntityProvider.GetPermissionedEntityOrEntity(x)).ToList(),
                         TotalCount = totalCount
                     };
 
@@ -118,7 +132,15 @@ namespace Shesha.GraphQL.Provider.Queries
                 .ResolveAsync(async context => {
                     var input = context.GetArgument<TreeRequestDto>("input");
 
-                    var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
+                    var services = ResolveServices(context);
+                    var repository = services.GetRequiredService<IRepository<TEntity, TId>>();
+                    var asyncExecuter = services.GetRequiredService<IAsyncQueryableExecuter>();
+                    var entityFetcher = services.GetService<IEntityFetcher>();
+                    var sessionProvider = services.GetRequiredService<ISessionProvider>();
+                    var jsonLogicConverter = services.GetRequiredService<IJsonLogic2LinqConverter>();
+                    jsonLogicConverter.CheckPropertiesPermissions = true;
+
+                    var unitOfWorkManager = services.GetRequiredService<IUnitOfWorkManager>();
                     var uow = unitOfWorkManager.Current;
 
                     if (input.ParentId.HasValue)
@@ -139,11 +161,11 @@ namespace Shesha.GraphQL.Provider.Queries
 
                         var parentPropertyColumnName = MappingHelper.GetForeignKeyColumn(parentProperty.PropertyInfo);
 
-                        var treeEntities = await GetTreeQueryAsync(entityConfig.TableName, parentPropertyColumnName, idColumnName, isDeletedColumnName, input.ParentId);
+                        var treeEntities = await GetTreeQueryAsync(sessionProvider, entityConfig.TableName, parentPropertyColumnName, idColumnName, isDeletedColumnName, input.ParentId);
 
                         // filter entities
                         var entities = !string.IsNullOrWhiteSpace(input.Filter)
-                            ? AddFilter(treeEntities.AsQueryable(), input.Filter).ToList()
+                            ? AddFilter(jsonLogicConverter, treeEntities.AsQueryable(), input.Filter).ToList()
                             : treeEntities.ToList();
 
                         var result = new PagedResultDto<TEntity>
@@ -159,7 +181,7 @@ namespace Shesha.GraphQL.Provider.Queries
                         query.SetReadOnly();
 
                         // filter entities
-                        query = AddFilter(query, input.Filter);
+                        query = AddFilter(jsonLogicConverter, query, input.Filter);
 
                         var entities = entityFetcher != null
                             ? await entityFetcher.ToListAsync(query, GetEntityPropertiesFromContext(context))
@@ -177,18 +199,28 @@ namespace Shesha.GraphQL.Provider.Queries
                 });
         }
 
-        private DbmsType GetDbmsType()
+        /// <summary>
+        /// Services MUST be resolved per invocation from the execution's RequestServices so they are
+        /// tracked in the LIVE request scope and released at request end. Resolving them from a
+        /// provider captured at construction time pins them in a dead scope forever.
+        /// </summary>
+        private IServiceProvider ResolveServices(IResolveFieldContext context)
         {
-            return _sessionProvider.Session.Connection is NpgsqlConnection
+            return context.RequestServices ?? _fallbackServiceProvider;
+        }
+
+        private DbmsType GetDbmsType(ISessionProvider sessionProvider)
+        {
+            return sessionProvider.Session.Connection is NpgsqlConnection
                 ? DbmsType.PostgreSQL
                 : DbmsType.SQLServer;
         }
 
-        private async Task<IList<TEntity>> GetTreeQueryAsync(string tableName, string parentIdColumnName, string idColumnName, string? isDeletedColumnName, Guid? parentId)
+        private async Task<IList<TEntity>> GetTreeQueryAsync(ISessionProvider sessionProvider, string tableName, string parentIdColumnName, string idColumnName, string? isDeletedColumnName, Guid? parentId)
         {
-            var sql = GenerateTreeSubnodesQuery(tableName, parentIdColumnName, idColumnName, isDeletedColumnName, GetDbmsType());
+            var sql = GenerateTreeSubnodesQuery(tableName, parentIdColumnName, idColumnName, isDeletedColumnName, GetDbmsType(sessionProvider));
 
-            var entities = await _sessionProvider.Session.CreateSQLQuery(sql)
+            var entities = await sessionProvider.Session.CreateSQLQuery(sql)
                      .AddEntity("ent", typeof(TEntity))
                      .SetParameter("id", parentId)
                      .SetReadOnly(true)
@@ -301,15 +333,16 @@ from
         /// </summary>
         /// <param name="query">Queryable to be filtered</param>
         /// <param name="filter">String representation of JsonLogic filter</param>
+        /// <param name="jsonLogicConverter"></param>
         /// <returns></returns>
-        private IQueryable<TEntity> AddFilter(IQueryable<TEntity> query, string filter) 
+        private IQueryable<TEntity> AddFilter(IJsonLogic2LinqConverter jsonLogicConverter, IQueryable<TEntity> query, string filter)
         {
             if (string.IsNullOrWhiteSpace(filter))
                 return query;
 
             var jsonLogic = JObject.Parse(filter);
 
-            var expression = _jsonLogicConverter.ParseExpressionOf<TEntity>(jsonLogic);
+            var expression = jsonLogicConverter.ParseExpressionOf<TEntity>(jsonLogic);
 
             return expression != null
                 ? query.Where(expression)
@@ -321,13 +354,14 @@ from
         /// </summary>
         /// <param name="query">Queryable to be sorted</param>
         /// <param name="sorting">Sorting string (in the standard SQL format e.g. "Property1 asc, Property2 desc")</param>
+        /// <param name="permissionedEntityProvider"></param>
         /// <returns></returns>
-        private IQueryable<TEntity> ApplySorting(IQueryable<TEntity> query, string sorting)
+        private IQueryable<TEntity> ApplySorting(IQueryable<TEntity> query, string sorting, IPermissionedEntityProvider permissionedEntityProvider)
         {
             if (string.IsNullOrWhiteSpace(sorting))
                 return query;
 
-            SortingValidator.EnsureSortingAllowed(typeof(TEntity), sorting);
+            SortingValidator.EnsureSortingAllowed(typeof(TEntity), sorting, permissionedEntityProvider);
 
             var entityConfig = _entityConfigStore.Get(typeof(TEntity));
             var resolution = EntitySortingResolver.Resolve(
