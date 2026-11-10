@@ -19,7 +19,7 @@ namespace Shesha.DynamicEntities.Mapper
                     { 
                         Id = source.Id, 
                         _displayName = source.GetDisplayName(),
-                        _className = source.GetClassName()
+                        _className = source.GetClassName().NotNullOrWhiteSpace()
                     };
         }
     }
