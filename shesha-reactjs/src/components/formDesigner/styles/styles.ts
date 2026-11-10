@@ -1,7 +1,7 @@
 import { getFormDesignerBackgroundSvg } from '@/components/sidebarContainer/styles/svg/dropHint';
 import { createStyles, sheshaStyles } from '@/styles';
 import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
-import { DROP_TARGET_DIRECTION_ATTR, DROP_TARGET_LABEL_ATTR } from '../dragDrop/models';
+import { DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from '../dragDrop/models';
 
 export const designerClassNames = {
   componentDragHandle: "sha-component-drag-handle",
@@ -492,7 +492,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         .${shaDropHintContainer}:has(+ [${DROP_TARGET_LABEL_ATTR}] > .${shaComponentGhost}) {
             display: none !important;
         }
-        [${DROP_TARGET_DIRECTION_ATTR}="horizontal"] > .${shaComponentGhost} {
+        [${DROP_TARGET_LAYOUT_ATTR}="horizontal"] > .${shaComponentGhost} {
             width: 0 !important;
             height: auto !important;
             min-height: 24px !important;

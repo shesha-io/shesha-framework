@@ -13,11 +13,22 @@ import _ from 'lodash';
 import { isToolboxDroppableDataItem } from '../dataSourceTree';
 import { isToolboxDroppableComponent } from '../toolboxComponents';
 import { isDefined } from '@/utils/nullables';
-import { SortableEvent } from 'sortablejs';
+import Sortable, { SortableEvent } from 'sortablejs';
 import { DropContainerElement, DropContainerElementProvider, useDropContainerElementState } from '../dragDrop/dropTargetContext';
 import { startDropTargetIndicator, stopDropTargetIndicator } from '../dragDrop/dropTargetIndicator';
 import { COMPONENT_TYPE_ATTR, setComponentDragImage } from '../dragDrop/dragChip';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { getDropDirection } from '../dragDrop/dropDirection';
+import { ContainerDirection } from '../common/interfaces';
+
+/**
+ * Tells SortableJS whether to compare the dragged item with its neighbours side by side or one above another. Read
+ * from the container's layout rather than its `direction` setting, so a Container styled as a flex row sorts like a
+ * row. SortableJS calls it with the Sortable as `this`.
+ */
+function getSortableDirection(this: Sortable): ContainerDirection {
+  return getDropDirection(this.el);
+}
 
 export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProps>> = (props) => {
   const {
@@ -167,7 +178,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
             handle={`.${styles.componentDragHandle}`}
             scroll={true}
             bubbleScroll={true}
-            direction={direction}
+            direction={getSortableDirection}
             className={noDefaultStyling === true ? '' : styles.shaComponentsContainerInner}
             style={style}
             {...additionalDomProperties}

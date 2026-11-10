@@ -1,5 +1,6 @@
 import { designerClassNames } from '../styles/styles';
-import { DROP_TARGET_FRAME_ATTR, DROP_TARGET_LABEL_ATTR } from './models';
+import { DROP_TARGET_FRAME_ATTR, DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from './models';
+import { getDropDirection } from './dropDirection';
 
 /** Height of the name drawn above the highlighted component. */
 const LABEL_HEIGHT = 18;
@@ -175,7 +176,7 @@ const getHighlightTarget = (container: HTMLElement): HTMLElement => {
 
 /**
  * SortableJS moves the dragged element into the container it will be dropped into, so its parent is the drop target.
- * Runs on every dragover, so it only compares elements and attributes, it never reads layout.
+ * Runs on every dragover, so it only compares elements and attributes; styles are read only when the container changes.
  */
 const trackContainer = (): void => {
   if (!elements || !draggedElement) return;
@@ -183,6 +184,9 @@ const trackContainer = (): void => {
   const parent = draggedElement.parentElement;
   const container = parent?.hasAttribute(DROP_TARGET_LABEL_ATTR) === true ? parent : null;
   if (container === currentContainer) return;
+
+  // the insertion line runs across the container's layout, so it is vertical between the items of a row
+  container?.setAttribute(DROP_TARGET_LAYOUT_ATTR, getDropDirection(container));
 
   if (currentTarget) resizeObserver?.unobserve(currentTarget);
   currentContainer = container;

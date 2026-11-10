@@ -1,4 +1,4 @@
-import { DROP_TARGET_FRAME_ATTR, DROP_TARGET_LABEL_ATTR } from './models';
+import { DROP_TARGET_FRAME_ATTR, DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from './models';
 import { designerClassNames } from '../styles/styles';
 import { startDropTargetIndicator, stopDropTargetIndicator } from './dropTargetIndicator';
 
@@ -172,6 +172,22 @@ describe('dropTargetIndicator', () => {
     await flushFrame();
 
     expect(getFrame()?.style.display).toBe('none');
+  });
+
+  it('marks a row container so the insertion line is drawn vertically', () => {
+    const column = createContainer('Panel', { left: 0, top: 0, width: 100, height: 100 });
+    const row = createContainer('Container', { left: 0, top: 200, width: 300, height: 50 });
+    row.style.display = 'flex';
+    row.style.flexDirection = 'row';
+    const dragged = document.createElement('div');
+    column.appendChild(dragged);
+
+    startDropTargetIndicator(dragged);
+    expect(column.getAttribute(DROP_TARGET_LAYOUT_ATTR)).toBe('vertical');
+
+    row.appendChild(dragged);
+    document.dispatchEvent(new Event('dragover'));
+    expect(row.getAttribute(DROP_TARGET_LAYOUT_ATTR)).toBe('horizontal');
   });
 
   it('hides when the drag ends', async () => {
