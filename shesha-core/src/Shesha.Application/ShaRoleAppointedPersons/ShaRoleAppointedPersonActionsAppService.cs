@@ -6,6 +6,7 @@ using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.EntityReferences;
+using Shesha.Reflection;
 using Shesha.Roles;
 using Shesha.ShaRoleAppointedPersons.Dto;
 using System;
