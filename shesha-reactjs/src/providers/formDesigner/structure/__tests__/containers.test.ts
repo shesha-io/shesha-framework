@@ -38,6 +38,15 @@ describe('getOwnContainerId()', () => {
     expect(ownContainerOf(buildTestMarkup(sampleForm()), 'link1')).toBe('link1');
   });
 
+  it('is undefined for a Link once its component is moved out, so nothing can be hidden in a plain Link', () => {
+    const markup = buildTestMarkup(sampleForm());
+    expect(ownContainerOf({ ...markup, componentRelations: { ...markup.componentRelations, link1: [] } }, 'link1')).toBeUndefined();
+  });
+
+  it('is undefined for an empty Link saved with an empty components list', () => {
+    expect(ownContainerOf(buildTestMarkup([{ id: 'link', type: 'link', components: [] }]), 'link')).toBeUndefined();
+  });
+
   it('is undefined for Tabs, whose children live in panes', () => {
     expect(ownContainerOf(buildTestMarkup(sampleForm()), 'tabs1')).toBeUndefined();
   });

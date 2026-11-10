@@ -8,6 +8,7 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
  * The container a component keeps its non-pane children in: its own id, or undefined when it has none.
  * Components whose children live in panes (Tabs, Wizard, Columns, Collapsible Panel...) only get one when their
  * definition says `acceptsChildren`, because once they've been edited the designer lists their panes under their own id.
+ * Any other component (a Link) draws a container only when set up to, so it claims one only while it holds a component.
  */
 export const getOwnContainerId = (
   component: IConfigurableFormComponent,
@@ -19,9 +20,7 @@ export const getOwnContainerId = (
     return component.id;
   if (containers.some((container) => container.id !== component.id))
     return undefined;
-  return containers.some((container) => container.id === component.id) || isDefined(markup.componentRelations[component.id])
-    ? component.id
-    : undefined;
+  return (markup.componentRelations[component.id]?.length ?? 0) > 0 ? component.id : undefined;
 };
 
 export interface IContainerOwnership {
