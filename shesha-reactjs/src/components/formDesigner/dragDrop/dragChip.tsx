@@ -30,8 +30,14 @@ const CHIP_STYLE: Partial<CSSStyleDeclaration> = {
  * Shows `chip` as the drag image instead of the browser's snapshot of the dragged element. The browser captures the
  * image during `dragstart`, so the chip only has to exist for that moment.
  */
-const showChip = (dataTransfer: DataTransfer | null, fill: (chip: HTMLDivElement) => (() => void) | void): void => {
-  if (!dataTransfer || typeof dataTransfer.setDragImage !== 'function') return;
+const showChip = (dataTransfer: DataTransfer | null, text: string, fill: (chip: HTMLDivElement) => (() => void) | void): void => {
+  if (!dataTransfer) return;
+
+  // this replaces SortableJS' own setData, which sets the drag data; some browsers (Firefox) don't start a drag without
+  // it, so it is set even when the custom drag image can't be
+  dataTransfer.setData('Text', text);
+
+  if (typeof dataTransfer.setDragImage !== 'function') return;
 
   const host = document.createElement('div');
   Object.assign(host.style, {
@@ -48,8 +54,6 @@ const showChip = (dataTransfer: DataTransfer | null, fill: (chip: HTMLDivElement
   document.body.appendChild(host);
 
   const cleanup = fill(chip);
-  // this replaces SortableJS' own setData, which sets the drag data; some browsers (Firefox) don't start a drag without it
-  dataTransfer.setData('Text', chip.textContent);
   dataTransfer.setDragImage(host, CURSOR_OFFSET.x + HOST_PADDING, CURSOR_OFFSET.y + HOST_PADDING);
 
   setTimeout(() => {
@@ -60,7 +64,7 @@ const showChip = (dataTransfer: DataTransfer | null, fill: (chip: HTMLDivElement
 
 /** Drag image for a component already on the canvas: its toolbox icon and name. */
 export const setComponentDragImage = (dataTransfer: DataTransfer | null, icon: ReactNode, name: string): void => {
-  showChip(dataTransfer, (chip) => {
+  showChip(dataTransfer, name, (chip) => {
     const root = createRoot(chip);
     flushSync(() => {
       root.render(<>{icon}<span>{name}</span></>);
@@ -71,9 +75,9 @@ export const setComponentDragImage = (dataTransfer: DataTransfer | null, icon: R
 
 /** Drag image for a toolbox or data source item: a copy of the item's own icon and title. */
 export const setItemDragImage = (dataTransfer: DataTransfer | null, item: HTMLElement): void => {
-  showChip(dataTransfer, (chip) => {
-    // toolbox items wrap their icon and title in a single element, data source items hold them directly
-    const content = item.childElementCount === 1 && item.firstElementChild ? item.firstElementChild : item;
+  // toolbox items wrap their icon and title in a single element, data source items hold them directly
+  const content = item.childElementCount === 1 && item.firstElementChild ? item.firstElementChild : item;
+  showChip(dataTransfer, content.textContent, (chip) => {
     Array.from(content.childNodes).forEach((node) => chip.appendChild(node.cloneNode(true)));
     // the toolbox info icon only makes sense next to the toolbox item
     chip.querySelectorAll('.anticon-info-circle').forEach((icon) => icon.remove());

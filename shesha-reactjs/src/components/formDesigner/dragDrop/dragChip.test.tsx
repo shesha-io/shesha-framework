@@ -64,12 +64,23 @@ describe('dragChip', () => {
     expect(setData.mock.invocationCallOrder[0]).toBeLessThan(setDragImage.mock.invocationCallOrder[0] ?? 0);
   });
 
-  it('does nothing without drag image support', () => {
+  it('still sets drag data without drag image support, but adds no chip', () => {
     const setData = vi.fn();
 
     setComponentDragImage({ setData } as unknown as DataTransfer, null, 'Text');
 
-    expect(setData).not.toHaveBeenCalled();
+    expect(setData).toHaveBeenCalledWith('Text', 'Text');
+    expect(document.body.childElementCount).toBe(0);
+  });
+
+  it('still sets an item\'s drag data without drag image support', () => {
+    const setData = vi.fn();
+    const item = document.createElement('div');
+    item.innerHTML = '<span>First name</span>';
+
+    setItemDragImage({ setData } as unknown as DataTransfer, item);
+
+    expect(setData).toHaveBeenCalledWith('Text', 'First name');
     expect(document.body.childElementCount).toBe(0);
   });
 
