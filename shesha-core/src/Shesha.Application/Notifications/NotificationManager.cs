@@ -72,8 +72,10 @@ namespace Shesha.Notifications
                 var overrideChannels = new List<NotificationChannelConfig>();
                 foreach (var channel in type.OverrideChannels)
                 {
-                    // TODO: check versioned query
-                    var dbChannel = await _notificationChannelRepository.FirstOrDefaultAsync(new ByNameAndModuleSpecification<NotificationChannelConfig>(channel.Name, channel.Module).ToExpression());
+                    var dbChannel = await _notificationChannelRepository
+                        .GetAll()
+                        .Where(channel => channel.VersionStatus == ConfigurationItemVersionStatus.Live)
+                        .FirstOrDefaultAsync(new ByNameAndModuleSpecification<NotificationChannelConfig>(channel.Name, channel.Module).ToExpression());
                     if (dbChannel != null)
                         overrideChannels.Add(dbChannel);
                 }
