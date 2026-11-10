@@ -131,6 +131,8 @@ namespace Shesha
             IocManager.RegisterSettingAccessor<IUserManagementSettings>(s => {
                 s.UserManagementSettings.WithDefaultValue(new UserManagementSettings
                 {
+                   // explicit false, so null only appears on values saved before the property existed (see AllowSelfRegistration)
+                   AllowSelfRegistration = false,
                    SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber,
                    RequireEmailVerification = false,
                    GoToUrlAfterRegistration = "/",

@@ -4,6 +4,7 @@ using Shesha.Domain.Enums;
 using Shesha.Otp;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
+using Shesha.Settings;
 using Shesha.Sms;
 using Shouldly;
 using System;
@@ -41,6 +42,48 @@ namespace Shesha.Tests.Otp
 
             response.IsSuccess.ShouldBe(true);
             response.ErrorMessage.ShouldBeNullOrEmpty();
+        }
+
+        [Fact]
+        public async Task RegistrationEmailLink_carries_the_operation_id_TestAsync()
+        {
+            var otpSettings = new OtpSettings
+            {
+                PasswordLength = 6,
+                Alphabet = "0123456789",
+                DefaultLifetime = 60,
+                DefaultRegistrationEmailSubjectTemplate = OtpDefaults.DefaultRegistrationEmailSubjectTemplate,
+                DefaultRegistrationEmailBodyTemplate = OtpDefaults.DefaultRegistrationEmailBodyTemplate,
+            };
+            var accessor = new Mock<ISettingAccessor<OtpSettings>>();
+            accessor.Setup(a => a.GetValueAsync(It.IsAny<SettingManagementContext>())).ReturnsAsync(otpSettings);
+            accessor.Setup(a => a.GetValue(It.IsAny<SettingManagementContext>())).Returns(otpSettings);
+            var settings = new Mock<IOtpSettings>();
+            settings.SetupGet(s => s.OneTimePins).Returns(accessor.Object);
+
+            var otpStorage = new Mock<IOtpStorage>();
+            otpStorage.Setup(s => s.SaveAsync(It.IsAny<OtpDto>())).Returns(Task.CompletedTask);
+
+            string sentBody = null;
+            var emailSender = new Mock<IEmailSender>();
+            emailSender.Setup(s => s.SendAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Callback<string, string, string, bool>((to, subject, body, isHtml) => sentBody = body)
+                .Returns(Task.CompletedTask);
+
+            var otp = new OtpManager(MockISmsGatewayFactory(), emailSender.Object, otpStorage.Object, new OtpGenerator(settings.Object), settings.Object);
+
+            var response = await otp.SendPinAsync(new SendPinInput
+            {
+                SendTo = "new.user@example.test",
+                SendType = OtpSendType.EmailLink,
+                RecipientId = "bmV3LnVzZXJAZXhhbXBsZS50ZXN0",
+                ActionType = OtpActionTypes.Registration,
+            });
+
+            sentBody.ShouldNotBeNull();
+            sentBody.ShouldContain($"operationId={response.OperationId}", Case.Sensitive, "the link must work in a browser that didn't request it");
+            sentBody.ShouldContain("registration=1");
+            sentBody.ShouldNotContain("{{");
         }
 
         private async Task<IVerifyPinResponse> CheckOtpCommonAsync(Action<VerifyPinInput> transformAction)

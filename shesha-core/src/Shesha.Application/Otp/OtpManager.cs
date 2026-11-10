@@ -236,6 +236,8 @@ namespace Shesha.Otp
 
                         var body = bodyTemplate.Replace("{{token}}", otp.Pin);
                         body = body.Replace("{{userid}}", otp.RecipientId);
+                        // lets the link be verified in any browser, not only the one that requested it
+                        body = body.Replace("{{operationId}}", otp.OperationId.ToString());
                         await _emailSender.SendAsync(otp.SendTo, subjectTemplate, body, true);
                         break;
                     }
