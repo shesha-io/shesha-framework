@@ -396,6 +396,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             > .${shaComponentsContainer} > .${shaDropHintContainer} {
                 display: none;
             }
+
+            /*
+             * The canvas clips its overflow, so a top-level component flush with its left edge loses the left side of
+             * its selection/hover border (at fractional canvas zoom the 1px border falls on the clip edge and is
+             * snapped away). A small inset keeps that border inside the visible area.
+             */
+            > .${shaComponentsContainer} > .sha-components-container-inner {
+                padding-inline: 2px;
+            }
         }
 
         .${shaComponentGhost} {
