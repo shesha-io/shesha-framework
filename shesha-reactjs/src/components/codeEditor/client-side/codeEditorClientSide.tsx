@@ -1,5 +1,5 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
-import { FC, PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
+import { FC, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import * as React from "react";
 import { Monaco } from '@monaco-editor/react';
@@ -27,6 +27,7 @@ import { isNonEmptyArray } from "@/utils/array";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { withMonaco } from "./loaderWrapper";
 import { firstNonEmptyString } from "@/utils/string";
+import { NO_CONSOLE_OWNER, ScriptAnalyser, registerNoConsoleAnalyser } from "./scriptAnalyser";
 
 interface EditorFileNamesState {
   modelFilePath: string;
@@ -110,6 +111,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
   const { styles } = useStyles();
   const [activePane, setActivePane] = useState<string | null>(null);
   const [internalReadOnly, setInternalReadOnly] = useState(false);
+  const [editorReady, setEditorReady] = useState(false);
   const isDevMode = useIsDevMode();
 
   const { getMetadata } = useMetadataDispatcher();
@@ -167,6 +169,34 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     resultType,
     metadataFetcher,
     environment]);
+
+  useEffect(() => {
+    if (!editorReady)
+      return undefined;
+    const monaco = monacoInst.current;
+    if (!isDefined(monaco))
+      return undefined;
+
+    const matchesScriptFile = (candidate: editor.ITextModel): boolean =>
+      _.trimStart(candidate.uri.path, '/') === fileNamesState.modelFilePath;
+
+    let registration: IDisposable | null = null;
+    const registerIfPresent = (): void => {
+      if (isDefined(registration))
+        return;
+      const model = monaco.editor.getModels().find(matchesScriptFile);
+      if (isDefined(model))
+        registration = registerNoConsoleAnalyser(monaco, model);
+    };
+
+    registerIfPresent();
+    const creationSubscription = monaco.editor.onDidCreateModel(() => registerIfPresent());
+
+    return () => {
+      creationSubscription.dispose();
+      registration?.dispose();
+    };
+  }, [editorReady, fileNamesState.modelFilePath]);
 
   const addExtraLib = (monaco: Monaco, content: string, filePath: string): IDisposable | null => {
     const uri = monaco.Uri.parse(filePath);
@@ -318,7 +348,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
           marker.severity = monaco.MarkerSeverity.Warning;
         });
         monaco.editor.removeAllMarkers('typescript');
-        monaco.editor.setModelMarkers(model, 'typescript', markers);
+        monaco.editor.setModelMarkers(model, 'typescript', markers.filter((marker) => marker.owner !== NO_CONSOLE_OWNER));
       }
     };
 
@@ -326,6 +356,8 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     if (model)
       model.onDidChangeContent(() => setTimeout(applyDeprecatedDecorations, 100));
     setTimeout(applyDeprecatedDecorations, 500);
+
+    setEditorReady(true);
   };
 
   const onExplorerClick = (): void => {
@@ -341,26 +373,37 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
   };
 
   const showTree = isDevMode && (props.language === 'typescript' || props.language === 'javascript');
+  const showAnalyser = props.language === 'typescript' || props.language === 'javascript';
   const finalReadOnly = readOnly || internalReadOnly;
 
   const renderCodeEditor = (): React.JSX.Element => {
     return codeEditorEnvironment
       ? (
-        <>
-          <CodeEditorMayHaveTemplate
-            path={fileNamesState.modelFilePath}
-            language={props.language}
-            theme="vs-dark"
-            value={value ?? ""}
-            onChange={onChange}
-            options={{
-              automaticLayout: true,
-              readOnly: finalReadOnly,
-            }}
-            onMount={onEditorMount}
-            template={codeEditorEnvironment.template}
-          />
-        </>
+        <div className={styles.editorColumn}>
+          <div className={styles.editorPane}>
+            <CodeEditorMayHaveTemplate
+              path={fileNamesState.modelFilePath}
+              language={props.language}
+              theme="vs-dark"
+              value={value ?? ""}
+              onChange={onChange}
+              options={{
+                automaticLayout: true,
+                readOnly: finalReadOnly,
+              }}
+              onMount={onEditorMount}
+              template={codeEditorEnvironment.template}
+            />
+          </div>
+          {showAnalyser && editorReady && isDefined(monacoInst.current) && (
+            <ScriptAnalyser
+              key={fileNamesState.modelFilePath}
+              monaco={monacoInst.current}
+              filePath={fileNamesState.modelFilePath}
+              onNavigate={navigateToModel}
+            />
+          )}
+        </div>
       )
       : <CodeEditorLoadingProgressor message="Load environment..." />;
   };
