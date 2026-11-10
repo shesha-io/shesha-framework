@@ -1,7 +1,8 @@
 import { Form, FormInstance, FormProps } from 'antd';
 import { RefObject, PropsWithChildren, ComponentProps, ReactNode } from 'react';
 import { useForm } from '@/providers';
-import { IFormSettings, resolveFormColon } from '@/providers/form/models';
+import { IFormSettings, resolveFormLayout } from '@/providers/form/models';
+import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { useThemeState } from '@/providers/theme';
 import { useDelayedUpdateOrUndefined } from '../delayedUpdateProvider/index';
 import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
@@ -15,12 +16,16 @@ interface FormWrapperProps<TData extends object = object> {
   delayedUpdate?: RefObject<IDelayedUpdateGroup[] | undefined> | undefined;
 }
 
-const extractantdFormPropertiesFromFormSettings = (formSettings: IFormSettings | undefined, themeColon: boolean | undefined): Partial<Pick<ComponentProps<typeof Form>, 'layout' | 'colon' | 'labelCol' | 'wrapperCol' | 'size'>> => {
+const extractantdFormPropertiesFromFormSettings = (formSettings: IFormSettings | undefined, theme: IConfigurableTheme): Partial<Pick<ComponentProps<typeof Form>, 'layout' | 'colon' | 'labelCol' | 'wrapperCol' | 'labelAlign' | 'size'>> => {
   if (!formSettings) return {};
-  const { layout, labelCol, wrapperCol, size } = formSettings;
-  // The form's own Colon setting, falling back to the theme's.
-  const colon = resolveFormColon(formSettings.colon, formSettings.isSettingsForm === true, themeColon);
-  return { ...removeUndefinedProperties({ layout, labelCol, wrapperCol, size }), ...(colon !== undefined ? { colon } : {}) };
+  // The form's own layout settings, falling back to (or inheriting) the theme's.
+  const { size } = formSettings;
+  const { layout, labelCol, wrapperCol, labelAlign, colon } = resolveFormLayout(formSettings, theme);
+  return {
+    ...removeUndefinedProperties({ layout, labelCol, wrapperCol, size }),
+    ...(labelAlign !== undefined ? { labelAlign } : {}),
+    ...(colon !== undefined ? { colon } : {}),
+  };
 };
 
 
@@ -39,7 +44,7 @@ export const FormWrapper = <TData extends object = object>({ initialValues, onVa
   };
 
   const { theme } = useThemeState();
-  const formProps = extractantdFormPropertiesFromFormSettings(formSettings, theme.colon);
+  const formProps = extractantdFormPropertiesFromFormSettings(formSettings, theme);
   return (
     <Form<TData>
       component={false}

@@ -10,6 +10,7 @@ import CrudActionButtons from "./crudActionButtons";
 import { ItemContainerForm } from "./itemContainerForm";
 import { useStyles } from './styles/styles';
 import { ConfigurationLoadingError } from '@/providers/configurationItemsLoader/errors';
+import { useResolvedFormLayout } from '@/providers/form/useResolvedFormLayout';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -89,6 +90,7 @@ export const DataListItemRenderer = <TValue extends object = object>(props: IDat
     isNewObject,
   } = props;
   const { styles } = useStyles();
+  const formLayout = useResolvedFormLayout(formSettings);
   const itemListId = `${listId}_${!!itemId ? itemId.toString() : itemIndex}`;
 
   return (
@@ -115,7 +117,7 @@ export const DataListItemRenderer = <TValue extends object = object>(props: IDat
 
                   <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
                     {/* add FormItemProvider to reset namePrefix and other SubForm settings if DataList uses inside SubForm*/}
-                    <FormItemProvider namePrefix="" labelCol={formSettings.labelCol} wrapperCol={formSettings.wrapperCol}>
+                    <FormItemProvider namePrefix="" labelCol={formLayout.labelCol} wrapperCol={formLayout.wrapperCol}>
                       <ComponentsContainer containerId="root" />
                     </FormItemProvider>
                   </ComponentsContainerProvider>

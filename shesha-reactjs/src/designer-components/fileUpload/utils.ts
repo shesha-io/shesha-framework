@@ -1,5 +1,6 @@
 import { IStyleValue } from "@/providers/form/models";
 import { emptyStyleBox } from "../attachmentsEditor/utils";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 /**
  * Code-level defaults for the component. These are the render-time fallback for every style slot the
@@ -12,7 +13,7 @@ import { emptyStyleBox } from "../attachmentsEditor/utils";
 export const defaultStyles = (): IStyleValue => {
   return {
     font: {
-      type: 'Segoe UI',
+      type: DEFAULT_FONT_TYPE,
       align: 'left',
       size: 14,
       weight: '400',

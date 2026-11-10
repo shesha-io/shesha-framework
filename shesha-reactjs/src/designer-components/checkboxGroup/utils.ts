@@ -1,5 +1,6 @@
 import { IInputStyles, INestedStyleValue, IStyleValue } from '@/providers/form/models';
 import { isNullOrWhiteSpace } from '@/utils';
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 // Default Appearance styles: the wrapper's own values, plus the nested `checkbox` set describing a
 // checkbox in the group. Mirrors the standalone Checkbox component so both look consistent out of
@@ -11,7 +12,7 @@ export const defaultStyles = (prev?: IInputStyles): INestedStyleValue<'checkbox'
 const defaultWrapperStyles = (): IStyleValue => {
   return {
     font: {
-      type: 'Segoe UI',
+      type: DEFAULT_FONT_TYPE,
       color: '#000',
       size: 14,
       weight: '400',

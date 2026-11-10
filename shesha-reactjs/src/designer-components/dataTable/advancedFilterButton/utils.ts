@@ -1,11 +1,12 @@
 import { IButtonComponentProps, IButtonStyleValue } from "@/designer-components/button/interfaces";
 import { isNullOrWhiteSpace } from "@/utils";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 export const defaultStyles = (prev?: IButtonComponentProps | undefined): IButtonStyleValue => {
   return {
     buttonType: isNullOrWhiteSpace(prev?.buttonType) ? 'link' : prev.buttonType,
     background: { type: 'color' },
-    font: { weight: '400', size: 14, type: 'Segoe UI', align: 'center' },
+    font: { weight: '400', size: 14, type: DEFAULT_FONT_TYPE, align: 'center' },
     border: {
       border: { all: { width: '1px', style: 'none', color: '#d9d9d9' } },
       radius: { all: 8 },

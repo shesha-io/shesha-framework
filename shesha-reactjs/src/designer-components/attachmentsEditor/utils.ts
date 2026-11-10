@@ -1,5 +1,6 @@
 import { IStyleValue } from "@/providers/form/models";
 import { IAttachmentsEditorDeviceStyles } from "./interfaces";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 /** Margin/padding slot shared by every default style set below. */
 export const emptyStyleBox = (): IStyleValue['stylingBoxJson'] => ({
@@ -46,7 +47,7 @@ export const defaultStyles = (): IAttachmentsEditorDeviceStyles => {
 export const containerDefaultStyles = (): IStyleValue => {
   return {
     font: {
-      type: 'Segoe UI',
+      type: DEFAULT_FONT_TYPE,
       align: 'left',
       size: 14,
       weight: '400',
@@ -129,7 +130,7 @@ export const thumbnailDefaultStyles = (): IStyleValue => {
 export const downloadedFileDefaultStyles = (): IStyleValue => {
   return {
     font: {
-      type: 'Segoe UI',
+      type: DEFAULT_FONT_TYPE,
       align: 'left',
       size: 14,
       weight: '400',

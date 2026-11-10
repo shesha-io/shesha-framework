@@ -10,6 +10,8 @@ import { isFormFullName } from '@/providers/form/utils';
 import { FormItemProvider } from '@/providers/formItem';
 import { useFormById } from '@/providers/formManager/hooks';
 import { UpToDateForm } from '@/providers/formManager/interfaces';
+import { useResolvedFormLayout } from '@/providers/form/useResolvedFormLayout';
+import { IResolvedFormLayout } from '@/providers/form/models';
 import ParentProvider from '@/providers/parentProvider/index';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -27,7 +29,8 @@ const MODE_READONLY_FALSE = { readOnly: false };
 
 interface FormCellRenderProps {
   formId: FormIdentifier;
-  children: (form: UpToDateForm) => React.ReactElement;
+  /** Renders the loaded form; `layout` is its layout with the theme's Form Span settings filled in. */
+  children: (form: UpToDateForm, layout: IResolvedFormLayout) => React.ReactElement;
 }
 
 const getFormLoadingErorr = (formId: FormIdentifier, error: unknown): React.ReactElement => {
@@ -47,13 +50,14 @@ const FormCellRender: FC<FormCellRenderProps> = ({ formId, children }) => {
     throw new Error('FormId is required');
 
   const formLoading = useFormById({ formId: formId, skipCache: false });
+  const layout = useResolvedFormLayout(formLoading.form?.settings);
 
   return formLoading.state === 'loading'
     ? <LoadingOutlined />
     : formLoading.state === 'error'
       ? getFormLoadingErorr(formId, formLoading.error)
       : isDefined(formLoading.form)
-        ? children(formLoading.form)
+        ? children(formLoading.form, layout)
         : undefined;
 };
 
@@ -85,10 +89,10 @@ const ReadFormCell = <D extends object = object, V = number>(props: IFormCellPro
     ? undefined
     : (
       <FormCellRender formId={props.columnConfig.displayFormId}>
-        {(form) => (
+        {(form, layout) => (
           <AttributeDecorator attributes={attributes}>
             <div className={styles.shaFormCell} style={styleMinHeight}>
-              <FormItemProvider labelCol={form.settings.labelCol}>
+              <FormItemProvider labelCol={layout.labelCol}>
                 <ParentProvider model={MODE_READONLY_TRUE} formMode="readonly" formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                     <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
@@ -130,14 +134,14 @@ export const CreateFormCell = (props: ICreateFormCellProps): ReactNode => {
     ? undefined
     : (
       <FormCellRender formId={props.columnConfig.createFormId}>
-        {(form) => (
+        {(form, layout) => (
           <AttributeDecorator attributes={attributes}>
             <div
               className={styles.shaFormCell}
               style={styleMinHeight}
               {...(isFormFullName(createFormId) ? { "data-sha-form-name": getFormFullNameDisplayText(createFormId) } : {})}
             >
-              <FormItemProvider labelCol={form.settings.labelCol}>
+              <FormItemProvider labelCol={layout.labelCol}>
                 <ParentProvider model={MODE_READONLY_FALSE} formMode="edit" formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                     <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
@@ -169,10 +173,10 @@ const EditFormCell = <D extends object = object, V = number>(props: IFormCellPro
     ? <ReadFormCell {...props} />
     : (
       <FormCellRender formId={props.columnConfig.editFormId}>
-        {(form) => (
+        {(form, layout) => (
           <AttributeDecorator attributes={attributes}>
             <div className={styles.shaFormCell} style={styleMinHeight}>
-              <FormItemProvider labelCol={form.settings.labelCol}>
+              <FormItemProvider labelCol={layout.labelCol}>
                 <ParentProvider model={MODE_READONLY_FALSE} formMode="edit" formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                     <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />

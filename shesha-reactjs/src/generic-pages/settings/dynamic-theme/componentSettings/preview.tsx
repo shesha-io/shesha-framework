@@ -9,6 +9,7 @@ import { getPreviewComponentModel, getPreviewValue, getPreviewVariants, IPreview
 import { ComponentPreviewContext } from "@/providers/componentPreview";
 import { isDefined, isNotNullOrWhiteSpace } from "@/utils";
 import { CardTitle } from "../cardTitle";
+import { PreviewThemeProvider } from "./previewThemeProvider";
 
 export interface IComponentDefaultsPreviewProps {
   componentDefinition: IToolboxComponent;
@@ -23,18 +24,15 @@ interface IPreviewFormProps {
   theme: IConfigurableTheme;
   className: string;
   formErrors: IFormValidationErrors | undefined;
-  /** Sample value for the component's field, set under `propertyName`. */
-  previewValue: unknown;
-  propertyName: string | undefined;
+  /** Sample field values, by property name, for components that display their value. */
+  previewValues: Record<string, unknown> | undefined;
 }
-
-/** One variant's form. Each is its own form so their values - and validation errors - stay independent. */
-const PreviewForm: FC<IPreviewFormProps> = ({ markup, theme, className, formErrors, previewValue, propertyName }) => {
+export const PreviewForm: FC<IPreviewFormProps> = ({ markup, theme, className, formErrors, previewValues }) => {
   const shaFormRef = useRef<IShaFormInstance | undefined>(undefined);
 
   const initialValues = useMemo(
-    (): object => isDefined(previewValue) && isNotNullOrWhiteSpace(propertyName) ? { ...theme, [propertyName]: previewValue } : theme,
-    [theme, previewValue, propertyName],
+    (): object => isDefined(previewValues) ? { ...theme, ...previewValues } : theme,
+    [theme, previewValues],
   );
 
   // The form assigns the ref in its own effect, which runs before this one.
@@ -110,19 +108,21 @@ export const ComponentDefaultsPreview: FC<IComponentDefaultsPreviewProps> = ({ c
         />
       )}
     >
-      <ComponentPreviewContext.Provider value={true}>
-        {markups.map(({ key, markup, formErrors, propertyName }) => (
-          <PreviewForm
-            key={key}
-            markup={markup}
-            theme={theme}
-            className={styles.appearanceForm}
-            formErrors={formErrors}
-            previewValue={previewValue}
-            propertyName={propertyName}
-          />
-        ))}
-      </ComponentPreviewContext.Provider>
+      {/* One provider for all variants: the edited theme, so unsaved styles, fonts and inherited layout show. */}
+      <PreviewThemeProvider theme={theme}>
+        <ComponentPreviewContext.Provider value={true}>
+          {markups.map(({ key, markup, formErrors, propertyName }) => (
+            <PreviewForm
+              key={key}
+              markup={markup}
+              theme={theme}
+              className={styles.appearanceForm}
+              formErrors={formErrors}
+              previewValues={isDefined(previewValue) && isNotNullOrWhiteSpace(propertyName) ? { [propertyName]: previewValue } : undefined}
+            />
+          ))}
+        </ComponentPreviewContext.Provider>
+      </PreviewThemeProvider>
     </Card>
   );
 };

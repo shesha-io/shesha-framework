@@ -5,6 +5,7 @@ import { IStatusMap, IStatusMappings } from '@/components/statusTag';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { jsonSafeParse } from '@/utils/object';
 import { DEFAULT_STATUS_FLAG, IStatusLegacyRow, isStatusLegacyRow, isStatusValueRow } from './rows';
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 /**
  * The complete background shape, as `card` and `drawer` define it. Every slot must be present or the
@@ -55,7 +56,7 @@ export const defaultStyles = (): IStyleValue => {
     font: {
       weight: '400',
       size: 14,
-      type: 'Segoe UI',
+      type: DEFAULT_FONT_TYPE,
       align: 'center',
     },
     border: {

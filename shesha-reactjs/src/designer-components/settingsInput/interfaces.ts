@@ -39,6 +39,8 @@ export interface IDropdownOption {
   label: string | React.ReactNode;
   value: string | number | null;
   icon?: string | React.ReactNode;
+  /** Style of the option's label, e.g. a font family option shown in its own font. */
+  style?: React.CSSProperties | undefined;
 }
 
 export interface IHasModelType {

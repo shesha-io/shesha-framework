@@ -1,5 +1,6 @@
 import { nanoid } from "@/utils/uuid";
 import { ButtonGroupItemProps, IButtonGroupItem, IStyleValue } from "../..";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 const initialValues = (): IStyleValue => {
   return {
@@ -10,7 +11,7 @@ const initialValues = (): IStyleValue => {
       position: 'center',
       gradient: { direction: 'to right', colors: [] },
     },
-    font: { weight: '400', size: 14, align: 'center', type: 'Segoe UI' },
+    font: { weight: '400', size: 14, align: 'center', type: DEFAULT_FONT_TYPE },
     dimensions: { width: 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: {
       radiusType: 'all',

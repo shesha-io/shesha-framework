@@ -1,7 +1,7 @@
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IAutocompleteComponentProps } from '@/designer-components/autocomplete/interfaces';
-import { getPreviewComponentModel, getPreviewModelExtras, getPreviewValue, getPreviewVariants } from '../previewModel';
+import { getDataTablePreviewModel, getPreviewComponentModel, getPreviewModelExtras, getPreviewValue, getPreviewVariants, SAMPLE_TABLE_PROPERTY } from '../previewModel';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
 
 const makeDefinition = (type: string, previewConfiguration?: IConfigurableFormComponent): IToolboxComponent => ({
@@ -71,6 +71,8 @@ describe('getPreviewComponentModel', () => {
       entityType: { name: 'DummyTable', module: 'Shesha' },
       displayPropName: 'city',
       fields: ['city'],
+      size: 'small',
+      desktop: { size: 'small' },
     });
   });
 
@@ -106,9 +108,9 @@ describe('getPreviewComponentModel', () => {
     expect(typeof model['version']).toBe('number');
   });
 
-  it('returns the declared preview configuration untouched for a component with no extras', () => {
+  it('returns the declared preview configuration, at the small size, for a component with no extras', () => {
     expect(getPreviewComponentModel(makeDefinition('textField', textFieldPreviewConfiguration)))
-      .toEqual(textFieldPreviewConfiguration);
+      .toEqual({ ...textFieldPreviewConfiguration, size: 'small', desktop: { size: 'small' } });
   });
 });
 
@@ -173,5 +175,46 @@ describe('getPreviewComponentModel - variants', () => {
 
   it('is unchanged when no variant is passed', () => {
     expect(getPreviewComponentModel(dropdownDef)).toEqual(getPreviewComponentModel(dropdownDef, undefined));
+  });
+});
+
+describe('getDataTablePreviewModel', () => {
+  const definition = getComponentDefinitions().get('datatable');
+  if (!definition) throw new Error('datatable is not registered');
+  const context = getDataTablePreviewModel(definition) as unknown as Record<string, unknown>;
+  const table = (context['components'] as Array<Record<string, unknown>>)[0];
+
+  it('wraps the table in an in-memory data context bound to the sample rows', () => {
+    expect(context['type']).toBe('dataContext');
+    expect(context['sourceType']).toBe('Form');
+    expect(context['propertyName']).toBe(SAMPLE_TABLE_PROPERTY);
+  });
+
+  it('creates the table as when dropped, with sample data columns', () => {
+    expect(table?.['type']).toBe('datatable');
+    expect(table?.['parentId']).toBe(context['id']);
+    expect((table?.['items'] as Array<{ propertyName: string }>).map((c) => c.propertyName)).toEqual(['name', 'email', 'city']);
+    // A default the table only gets from its initModel/migrations.
+    expect(table?.['canEditInline']).toBe('no');
+  });
+});
+
+describe('preview size', () => {
+  it('renders every preview at the small size', () => {
+    const model = getPreviewComponentModel(makeDefinition('textField'));
+    expect(model.size).toBe('small');
+    expect(model.desktop?.size).toBe('small');
+  });
+
+  it('keeps the small size on each variant', () => {
+    const [variant] = getPreviewVariants('dropdown') ?? [];
+    expect(getPreviewComponentModel(makeDefinition('dropdown'), variant).desktop?.size).toBe('small');
+  });
+
+  it('renders the sample Data Table at the small size', () => {
+    const definition = getComponentDefinitions().get('datatable');
+    if (!definition) throw new Error('datatable is not registered');
+    const [table] = (getDataTablePreviewModel(definition) as unknown as { components: IConfigurableFormComponent[] }).components;
+    expect(table?.size).toBe('small');
   });
 });

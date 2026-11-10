@@ -3,6 +3,7 @@ import { ITabPaneProps } from "./models";
 import { IStyleValue } from "@/providers/form/models";
 import { BorderStyle } from "../_settings/utils/border/interfaces";
 import { TabPlacement } from "antd/es/tabs";
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 const initialBorder: BorderStyle = { width: '1px', color: '#f0f0f0', style: 'solid' };
 
@@ -10,7 +11,7 @@ export const defaultStyles: IStyleValue = {
   font: {
     size: 14,
     weight: '500',
-    type: 'Segoe UI',
+    type: DEFAULT_FONT_TYPE,
     color: '',
   },
   background: { type: 'color', color: '#FFFFFF' },
@@ -35,7 +36,7 @@ export const defaultCardStyles: IStyleValue = {
   font: {
     size: 14,
     weight: '400',
-    type: 'Segoe UI',
+    type: DEFAULT_FONT_TYPE,
     color: 'var(--primary-color)',
   },
   dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },

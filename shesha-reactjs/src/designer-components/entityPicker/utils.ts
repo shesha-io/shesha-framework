@@ -1,6 +1,7 @@
 import { IStyleValue } from "@/providers/form/models";
 import { IEntityPickerComponentProps } from "./interfaces";
 
+import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 
 export const defaultStyles = (prev?: IEntityPickerComponentProps): IStyleValue => {
   const size = prev?.size;
@@ -19,7 +20,7 @@ export const defaultStyles = (prev?: IEntityPickerComponentProps): IStyleValue =
     },
     font: {
       color: '#000',
-      type: 'Segoe UI',
+      type: DEFAULT_FONT_TYPE,
       align: 'left',
       size: 14,
       weight: '400',

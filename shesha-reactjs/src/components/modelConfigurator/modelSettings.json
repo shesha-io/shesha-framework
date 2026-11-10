@@ -234,7 +234,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -285,7 +285,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -336,7 +336,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -428,7 +428,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -508,7 +508,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -588,7 +588,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -705,7 +705,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -784,7 +784,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -863,7 +863,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -956,7 +956,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -1035,7 +1035,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -1114,7 +1114,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -1207,7 +1207,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -1286,7 +1286,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -1365,7 +1365,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -1458,7 +1458,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -1537,7 +1537,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -1616,7 +1616,7 @@
                                 },
                                 "font": {
                                     "color": "#000",
-                                    "type": "Segoe UI",
+                                    "type": "Inter Variable",
                                     "align": "left",
                                     "size": 14,
                                     "weight": "400"
@@ -1769,7 +1769,7 @@
                                         },
                                         "font": {
                                             "color": "",
-                                            "type": "Segoe UI",
+                                            "type": "Inter Variable",
                                             "align": "left",
                                             "size": 14,
                                             "weight": "400"
@@ -1829,7 +1829,7 @@
                                         },
                                         "font": {
                                             "color": "",
-                                            "type": "Segoe UI",
+                                            "type": "Inter Variable",
                                             "align": "left",
                                             "size": 14,
                                             "weight": "400"
@@ -1889,7 +1889,7 @@
                                         },
                                         "font": {
                                             "color": "",
-                                            "type": "Segoe UI",
+                                            "type": "Inter Variable",
                                             "align": "left",
                                             "size": 14,
                                             "weight": "400"
@@ -2108,7 +2108,7 @@
                                         },
                                         "font": {
                                             "color": "",
-                                            "type": "Segoe UI",
+                                            "type": "Inter Variable",
                                             "align": "left",
                                             "size": 14,
                                             "weight": "500"
@@ -2133,7 +2133,7 @@
                                             "font": {
                                                 "size": 14,
                                                 "weight": "400",
-                                                "type": "Segoe UI",
+                                                "type": "Inter Variable",
                                                 "color": "#000000"
                                             },
                                             "dimensions": {
@@ -2215,7 +2215,7 @@
                                         },
                                         "font": {
                                             "color": "",
-                                            "type": "Segoe UI",
+                                            "type": "Inter Variable",
                                             "align": "left",
                                             "size": 14,
                                             "weight": "500"
@@ -2240,7 +2240,7 @@
                                             "font": {
                                                 "size": 14,
                                                 "weight": "400",
-                                                "type": "Segoe UI",
+                                                "type": "Inter Variable",
                                                 "color": "#000000"
                                             },
                                             "dimensions": {
@@ -2322,7 +2322,7 @@
                                         },
                                         "font": {
                                             "color": "",
-                                            "type": "Segoe UI",
+                                            "type": "Inter Variable",
                                             "align": "left",
                                             "size": 14,
                                             "weight": "500"
@@ -2347,7 +2347,7 @@
                                             "font": {
                                                 "size": 14,
                                                 "weight": "400",
-                                                "type": "Segoe UI",
+                                                "type": "Inter Variable",
                                                 "color": "#000000"
                                             },
                                             "dimensions": {
@@ -2379,7 +2379,7 @@
                                         "font": {
                                             "size": 14,
                                             "weight": "400",
-                                            "type": "Segoe UI",
+                                            "type": "Inter Variable",
                                             "color": "#000000"
                                         },
                                         "dimensions": {
@@ -2512,7 +2512,7 @@
                 },
                 "font": {
                     "color": "",
-                    "type": "Segoe UI",
+                    "type": "Inter Variable",
                     "align": "left",
                     "size": 14,
                     "weight": "500"
@@ -2537,7 +2537,7 @@
                     "font": {
                         "size": 14,
                         "weight": "400",
-                        "type": "Segoe UI",
+                        "type": "Inter Variable",
                         "color": "#000000"
                     },
                     "dimensions": {
@@ -2620,7 +2620,7 @@
                 },
                 "font": {
                     "color": "",
-                    "type": "Segoe UI",
+                    "type": "Inter Variable",
                     "align": "left",
                     "size": 14,
                     "weight": "500"
@@ -2645,7 +2645,7 @@
                     "font": {
                         "size": 14,
                         "weight": "400",
-                        "type": "Segoe UI",
+                        "type": "Inter Variable",
                         "color": "#000000"
                     },
                     "dimensions": {
@@ -2727,7 +2727,7 @@
                 },
                 "font": {
                     "color": "",
-                    "type": "Segoe UI",
+                    "type": "Inter Variable",
                     "align": "left",
                     "size": 14,
                     "weight": "500"
@@ -2752,7 +2752,7 @@
                     "font": {
                         "size": 14,
                         "weight": "400",
-                        "type": "Segoe UI",
+                        "type": "Inter Variable",
                         "color": "#000000"
                     },
                     "dimensions": {
@@ -2784,7 +2784,7 @@
                 "font": {
                     "size": 14,
                     "weight": "400",
-                    "type": "Segoe UI",
+                    "type": "Inter Variable",
                     "color": "#000000"
                 },
                 "dimensions": {

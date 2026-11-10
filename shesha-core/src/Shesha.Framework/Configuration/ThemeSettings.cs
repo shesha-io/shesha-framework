@@ -51,6 +51,22 @@ namespace Shesha.Configuration
         {
             public string? Default { get; set; }
             public string? Secondary { get; set; }
+            public string? Link { get; set; }
+        }
+
+        /// <summary>
+        /// Font settings (matches the frontend IFontValue)
+        /// </summary>
+        public class FontSettings
+        {
+            public double? Size { get; set; }
+            /// <summary>
+            /// Font type (family) name, e.g. 'Inter Variable'
+            /// </summary>
+            public string? Type { get; set; }
+            public string? Weight { get; set; }
+            public string? Color { get; set; }
+            public string? Align { get; set; }
         }
 
         public class MarginPaddingSettings
@@ -67,6 +83,14 @@ namespace Shesha.Configuration
         public string? LayoutBackground { get; set; }
         public ThemeSettings.TextSettings? Text { get; set; }
         public string? SidebarBackground { get; set; }
+        /// <summary>
+        /// Application-wide font type name. Unset means the default font (Inter)
+        /// </summary>
+        public string? FontFamily { get; set; }
+        /// <summary>
+        /// Font of form item labels. Unset parts inherit the application font
+        /// </summary>
+        public ThemeSettings.FontSettings? LabelFont { get; set; }
         public int? LabelSpan { get; set; }
         public int? ComponentSpan { get; set; }
         /// <summary>

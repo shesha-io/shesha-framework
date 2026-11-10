@@ -2,6 +2,7 @@ import { IFormValidationErrors, IToolboxComponent } from '@/interfaces/formDesig
 import { getEmptyFlatMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { upgradeComponent } from '@/providers/form/utils';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { IDataColumnsProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
 
 /** Sample entity used to give data-driven components something to render in the preview. */
 const DUMMY_ENTITY_TYPE = { name: 'DummyTable', module: 'Shesha' };
@@ -155,6 +156,16 @@ export const getPreviewVariants = (componentType: string | undefined): IPreviewV
   isNullOrWhiteSpace(componentType) ? undefined : previewVariantsByType[componentType];
 
 /**
+ * Every preview renders at the small size. `size` is a style value, resolved per device from the
+ * model's own device styles (see `getEffectiveStyle`), so it is set there as well as on the model.
+ */
+const withSmallSize = (model: IConfigurableFormComponent): IConfigurableFormComponent => ({
+  ...model,
+  size: 'small',
+  desktop: { ...model.desktop, size: 'small' },
+});
+
+/**
  * Model used to render the preview of a component on the Component Defaults panel: the component's
  * own `previewConfiguration` when it declares one, a generic model otherwise, with the preview-only
  * extras for its type applied on top.
@@ -182,18 +193,77 @@ export const getPreviewComponentModel = (
     : { ...baseModel, ...extras };
 
   if (!variant)
-    return model;
+    return withSmallSize(model);
 
   // Each variant needs its own id and propertyName, otherwise the renderings share form state and
   // a value selected in one appears in all of them. The variant's own properties come last so it
   // can override anything the base model or the extras set.
   const variantKey = variant.label.replace(/\W+/g, '-').toLowerCase();
-  return {
+  return withSmallSize({
     ...model,
     ...variant.model,
     id: `${model.id}-${variantKey}`,
     propertyName: `${model.propertyName}-${variantKey}`,
     // The caption above each rendering names the variant, so an inner label just repeats it.
     label: model.label,
+  } as IConfigurableFormComponent);
+};
+
+/** Columns and rows of the sample Data Table: plain text so it needs no metadata or backend. */
+const SAMPLE_TABLE_COLUMNS: Array<{ propertyName: string; caption: string }> = [
+  { propertyName: 'name', caption: 'Name' },
+  { propertyName: 'email', caption: 'Email' },
+  { propertyName: 'city', caption: 'City' },
+];
+
+export const SAMPLE_TABLE_ROWS = [
+  { name: 'Thandi Mokoena', email: 'thandi@example.com', city: 'Johannesburg' },
+  { name: 'Pieter van Wyk', email: 'pieter@example.com', city: 'Cape Town' },
+  { name: 'Sipho Dlamini', email: 'sipho@example.com', city: 'Durban' },
+];
+
+/** Form field holding {@link SAMPLE_TABLE_ROWS} for the Data Table preview. */
+export const SAMPLE_TABLE_PROPERTY = 'sampleTableRows';
+
+/**
+ * A Data Table with sample rows, for previewing it outside a real form. A table renders nothing
+ * without a data context, so it is wrapped in one whose source is the form field
+ * {@link SAMPLE_TABLE_PROPERTY} (an in-memory source): the caller puts {@link SAMPLE_TABLE_ROWS}
+ * there. The table itself is created as when dropped in the designer, so it has all its defaults.
+ */
+export const getDataTablePreviewModel = (tableDefinition: IToolboxComponent): IConfigurableFormComponent => {
+  const contextId = 'datatablePreviewContext';
+  const table = createNewComponentModel(tableDefinition, {
+    type: tableDefinition.type,
+    id: tableDefinition.type,
+    propertyName: `${tableDefinition.type}Appearance`,
+    parentId: contextId,
+    hidden: false,
+    version: 'latest',
+  });
+  const items: IDataColumnsProps[] = SAMPLE_TABLE_COLUMNS.map(({ propertyName, caption }, index) => ({
+    id: `${tableDefinition.type}-${propertyName}`,
+    itemType: 'item',
+    columnType: 'data',
+    propertyName,
+    caption,
+    sortOrder: index,
+    isVisible: true,
+    allowSorting: true,
+    displayComponent: { type: standardCellComponentTypes.defaultDisplay },
+    editComponent: { type: standardCellComponentTypes.notEditable },
+    createComponent: { type: standardCellComponentTypes.notEditable },
+  }));
+
+  return {
+    type: 'dataContext',
+    id: contextId,
+    propertyName: SAMPLE_TABLE_PROPERTY,
+    parentId: 'root',
+    hidden: false,
+    version: 'latest',
+    sourceType: 'Form',
+    dataFetchingMode: 'fetchAll',
+    components: [withSmallSize({ ...table, items } as IConfigurableFormComponent)],
   } as IConfigurableFormComponent;
 };

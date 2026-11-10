@@ -17,6 +17,7 @@ import { OnFormFinishFailedHandler, OnFormValuesChangeHandler } from '../configu
 import { IStyleValue, useThemeActions } from '@/providers';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { getStyleBoxValue } from '@/designer-components/styleBox/utils';
+import { getGroupStyleForComponent } from '@/utils/style';
 
 interface IProps<TModel extends IConfigurableFormComponent> {
   readOnly: boolean;
@@ -61,7 +62,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       // its group's shared appearance.
       // Only apply theme group styles if the component has an explicit themeGroup property
       const groupStyle = toolboxComponent.themeGroup !== undefined
-        ? getComponentGroupStyle(toolboxComponent.themeGroup)
+        ? getGroupStyleForComponent(getComponentGroupStyle(toolboxComponent.themeGroup), toolboxComponent) ?? {}
         : {};
       defaultModel?.setDefaultModel('Theme group Style', { ['desktop']: groupStyle } as TModel);
       const themeStyle = getComponentStyle(toolboxComponent.type);
