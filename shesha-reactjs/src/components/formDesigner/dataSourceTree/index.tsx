@@ -9,6 +9,9 @@ import { useFormDesigner } from '@/providers/formDesigner';
 import { getIconByPropertyMetadata } from '@/utils/metadata';
 import { useStyles } from '../styles/styles';
 import { isDefined } from '@/utils/nullables';
+import { SortableEvent } from 'sortablejs';
+import { startDropTargetIndicator, stopDropTargetIndicator } from '../dragDrop/dropTargetIndicator';
+import { setItemDragImage } from '../dragDrop/dragChip';
 
 interface IProps {
   items: IPropertyMetadata[];
@@ -100,11 +103,13 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText = "" }
       metadata: node.meta,
     };
 
-    const onDragStart = (): void => {
+    const onDragStart = (evt: SortableEvent): void => {
       startDraggingNewItem();
+      startDropTargetIndicator(evt.item);
     };
 
     const onDragEnd = (): void => {
+      stopDropTargetIndicator();
       endDraggingNewItem();
     };
 
@@ -124,6 +129,7 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText = "" }
         ghostClass={styles.shaComponentGhost}
         onStart={onDragStart}
         onEnd={onDragEnd}
+        setData={setItemDragImage}
       >
         <div className={styles.shaToolboxComponent}>
           {icon}

@@ -6,6 +6,7 @@ import { Tooltip } from 'antd';
 import { useFormDesigner, useFormDesignerSelectedComponentId, useFormDesignerIsDebug } from '@/providers/formDesigner';
 import { FunctionOutlined } from '@ant-design/icons';
 import { isDefined } from '@/utils';
+import { COMPONENT_TYPE_ATTR } from '../dragDrop/dragChip';
 
 interface IDragWrapperProps {
   componentId: string;
@@ -91,7 +92,7 @@ const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => {
 
   return (
     <div
-      {...{ [DRAG_WRAPPER_MARKER]: true }}
+      {...{ [DRAG_WRAPPER_MARKER]: true, [COMPONENT_TYPE_ATTR]: componentModel.type }}
       className={props.className}
       onClick={onClick}
       onMouseOver={onMouseOver}

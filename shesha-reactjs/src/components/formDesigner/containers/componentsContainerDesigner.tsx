@@ -13,6 +13,22 @@ import _ from 'lodash';
 import { isToolboxDroppableDataItem } from '../dataSourceTree';
 import { isToolboxDroppableComponent } from '../toolboxComponents';
 import { isDefined } from '@/utils/nullables';
+import Sortable, { SortableEvent } from 'sortablejs';
+import { DropContainerElement, DropContainerElementProvider, useDropContainerElementState } from '../dragDrop/dropTargetContext';
+import { startDropTargetIndicator, stopDropTargetIndicator } from '../dragDrop/dropTargetIndicator';
+import { COMPONENT_TYPE_ATTR, setComponentDragImage } from '../dragDrop/dragChip';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { getDropDirection } from '../dragDrop/dropDirection';
+import { ContainerDirection } from '../common/interfaces';
+
+/**
+ * Tells SortableJS whether to compare the dragged item with its neighbours side by side or one above another. Read
+ * from the container's layout rather than its `direction` setting, so a Container styled as a flex row sorts like a
+ * row. SortableJS calls it with the Sortable as `this`.
+ */
+function getSortableDirection(this: Sortable): ContainerDirection {
+  return getDropDirection(this.el);
+}
 
 export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProps>> = (props) => {
   const {
@@ -36,6 +52,8 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
   const readOnly = useFormDesignerReadOnly();
   const formDesigner = useFormDesigner();
   const { updateChildComponents, addComponent, addDataProperty, startDragging, endDragging } = useFormDesigner();
+
+  const dropTarget = useDropContainerElementState(containerId, direction);
 
   const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent.subFormIdPrefix}.`, ''));
 
@@ -101,11 +119,20 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     }
   };
 
-  const onDragStart = (): void => {
+  const onDragStart = (evt: SortableEvent): void => {
     startDragging();
+    startDropTargetIndicator(evt.item);
+  };
+
+  const getToolboxComponent = useFormDesignerComponentGetter();
+  const setDragImage = (dataTransfer: DataTransfer, dragEl: HTMLElement): void => {
+    const type = dragEl.getAttribute(COMPONENT_TYPE_ATTR) ?? '';
+    const toolboxComponent = getToolboxComponent(type);
+    setComponentDragImage(dataTransfer, toolboxComponent?.icon, toolboxComponent?.name ?? type);
   };
 
   const onDragEnd = (): void => {
+    stopDropTargetIndicator();
     endDragging();
   };
 
@@ -128,33 +155,37 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     >
       <>
         {childIds.length === 0 && showHintWhenEmpty && <div className={styles.shaDropHintContainer}><div className={styles.shaDropHint}>Drag and Drop form component</div></div>}
-        <ReactSortable
-          disabled={readOnly}
-          onStart={onDragStart}
-          onEnd={onDragEnd}
-          list={componentsMapped}
-          setList={onSetList}
-          fallbackOnBody={true}
-          swapThreshold={0.5}
-          invertSwap={true}
-          group={{
-            name: 'shared',
-          }}
-          sort={true}
-          draggable={`.${styles.shaComponent}`}
-          animation={75}
-          ghostClass={styles.shaComponentGhost}
-          emptyInsertThreshold={emptyInsertThreshold}
-          handle={`.${styles.componentDragHandle}`}
-          scroll={true}
-          bubbleScroll={true}
-          direction={direction}
-          className={noDefaultStyling === true ? '' : styles.shaComponentsContainerInner}
-          style={style}
-          {...additionalDomProperties}
-        >
-          {renderComponents()}
-        </ReactSortable>
+        <DropContainerElementProvider value={dropTarget}>
+          <ReactSortable
+            tag={DropContainerElement}
+            disabled={readOnly}
+            onStart={onDragStart}
+            onEnd={onDragEnd}
+            setData={setDragImage}
+            list={componentsMapped}
+            setList={onSetList}
+            fallbackOnBody={true}
+            swapThreshold={0.5}
+            invertSwap={true}
+            group={{
+              name: 'shared',
+            }}
+            sort={true}
+            draggable={`.${styles.shaComponent}`}
+            animation={75}
+            ghostClass={styles.shaComponentGhost}
+            emptyInsertThreshold={emptyInsertThreshold}
+            handle={`.${styles.componentDragHandle}`}
+            scroll={true}
+            bubbleScroll={true}
+            direction={getSortableDirection}
+            className={noDefaultStyling === true ? '' : styles.shaComponentsContainerInner}
+            style={style}
+            {...additionalDomProperties}
+          >
+            {renderComponents()}
+          </ReactSortable>
+        </DropContainerElementProvider>
       </>
 
       {children}

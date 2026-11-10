@@ -24,6 +24,7 @@ import { createPortal } from "react-dom";
 import { ComponentProperties } from "../componentPropertiesPanel/componentProperties";
 import { useComponentValidationResults } from "@/providers/validator/hooks";
 import { getDesignerIndicators } from "./designerIndicators";
+import { DropTargetOwnerProvider } from "../dragDrop/dropTargetContext";
 interface IDesignerFormComponentProps {
   componentModel: UnwrapCodeEvaluators<IComponentModelProps>;
   sourceComponentModel: IComponentModelProps;
@@ -70,6 +71,13 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
     return result;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSelected, settingsPanelElement, readOnly, component, resolvedTheme]);
+
+  // containers rendered by this component name themselves after it while something is dropped into them: by the
+  // component's own name (e.g. "panel1"), or by its type when it has none
+  const ownerName = typeof componentModel.componentName === 'string' && componentModel.componentName.trim() !== ''
+    ? componentModel.componentName.trim()
+    : toolboxComponent.name;
+  const dropTargetOwner = useMemo(() => ({ name: ownerName, model: componentModel }), [ownerName, componentModel]);
 
   const { showPermissions, showCustomLogic, showHidden } = getDesignerIndicators(sourceComponentModel);
 
@@ -127,7 +135,9 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
         </Show>
       </span>
 
-      <KnownFormComponent componentModel={componentModel} toolboxComponent={toolboxComponent} apiContext={apiContext} />
+      <DropTargetOwnerProvider value={dropTargetOwner}>
+        <KnownFormComponent componentModel={componentModel} toolboxComponent={toolboxComponent} apiContext={apiContext} />
+      </DropTargetOwnerProvider>
 
       {settingsEditor}
 

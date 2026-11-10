@@ -1,6 +1,7 @@
 import { getFormDesignerBackgroundSvg } from '@/components/sidebarContainer/styles/svg/dropHint';
 import { createStyles, sheshaStyles } from '@/styles';
 import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
+import { DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from '../dragDrop/models';
 
 export const designerClassNames = {
   componentDragHandle: "sha-component-drag-handle",
@@ -395,6 +396,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             > .${shaComponentsContainer} > .${shaDropHintContainer} {
                 display: none;
             }
+
+            /*
+             * The canvas clips its overflow, so a top-level component flush with its left edge loses the left side of
+             * its selection/hover border (at fractional canvas zoom the 1px border falls on the clip edge and is
+             * snapped away). A small inset keeps that border inside the visible area.
+             */
+            > .${shaComponentsContainer} > .sha-components-container-inner {
+                padding-inline: 2px;
+            }
         }
 
         .${shaComponentGhost} {
@@ -402,6 +412,122 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             border-radius: 2px;
             opacity: 0.7;    
             min-height: 48px;
+        }
+        /**
+         * Inside a drop container the ghost sits exactly where the dragged item will land, so it is drawn as an
+         * insertion line. The ghost itself takes no space (the line is a pseudo-element), so moving it never shifts
+         * the components around it and SortableJS has nothing to re-evaluate. The overrides beat styles the dragged
+         * component brings along (its own size, padding, selection border).
+         */
+        [${DROP_TARGET_LABEL_ATTR}] > .${shaComponentGhost} {
+            position: relative !important;
+            display: block !important;
+            flex: 0 0 0 !important;
+            align-self: stretch !important;
+            box-sizing: border-box !important;
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            height: 0 !important;
+            min-height: 0 !important;
+            max-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            opacity: 1 !important;
+            overflow: visible !important;
+
+            > * {
+                display: none !important;
+            }
+
+            &::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: -1px;
+                height: 3px;
+                border-radius: 2px;
+                background: ${token.colorPrimary};
+                pointer-events: none;
+                z-index: 10;
+            }
+
+            /* at the edges of a container the line is drawn inwards, so a scrolling container cannot clip it */
+            &:first-child::before {
+                top: 0;
+            }
+            &:last-child::before {
+                top: -3px;
+            }
+            /*
+             * alone in an empty container the line takes the place of the drop hint (hidden below), so the
+             * container keeps its size under the pointer instead of collapsing to nothing
+             */
+            &:only-child {
+                height: 40px !important;
+                min-height: 40px !important;
+                max-height: 40px !important;
+
+                &::before {
+                    top: calc(50% - 1.5px);
+                }
+            }
+        }
+        /*
+         * An empty container's drop list has no height and sits below its drop hint, so the pointer is over the hint
+         * rather than the list. While empty, the list covers the hint, so dropping anywhere on the hint works.
+         */
+        .${shaComponentsContainer}:has(> .${shaDropHintContainer} + [${DROP_TARGET_LABEL_ATTR}]:empty) {
+            position: relative;
+        }
+        .${shaDropHintContainer} + [${DROP_TARGET_LABEL_ATTR}]:empty {
+            position: absolute !important;
+            inset: 0;
+            z-index: 1;
+        }
+        .${shaDropHintContainer}:has(+ [${DROP_TARGET_LABEL_ATTR}] > .${shaComponentGhost}) {
+            display: none !important;
+        }
+        [${DROP_TARGET_LAYOUT_ATTR}="horizontal"] > .${shaComponentGhost} {
+            width: 0 !important;
+            height: auto !important;
+            min-height: 24px !important;
+            max-height: none !important;
+
+            &::before {
+                top: 0;
+                bottom: 0;
+                left: -1px;
+                right: auto;
+                width: 3px;
+                height: auto;
+            }
+            &:first-child::before,
+            &:last-child::before,
+            &:only-child::before {
+                top: 0;
+            }
+            &:first-child::before {
+                left: 0;
+            }
+            &:last-child::before {
+                left: -3px;
+            }
+            &:only-child {
+                width: 3px !important;
+                min-width: 3px !important;
+                max-width: 3px !important;
+                height: auto !important;
+                max-height: none !important;
+
+                &::before {
+                    left: 0;
+                }
+            }
         }
         .${shaToolboxPanelComponents}{
             margin: -1rem -0.8rem;
