@@ -42,7 +42,7 @@ import {
 } from "./contexts";
 import { BaseHistoryItem, FormDesignerSubscription, FormDesignerSubscriptionType, IComponentSettingsEditorsCache } from "./models";
 import { IUndoRedoManager, UndoRedoManager } from "./undoRedoManager";
-import { haveRelationsChanged } from "./structure/relations";
+import { havePanesChanged, haveRelationsChanged } from "./structure/relations";
 import { buildContainerOwnership, IContainerOwnership } from "./structure/containers";
 import { getComponentDisplayText } from "./structure/displayText";
 import { computeMove } from "./structure/moveComponent";
@@ -967,18 +967,19 @@ export class FormDesignerInstance implements IFormDesignerInstance {
   };
 
   private updateState = (updater: (state: FormDesignerFormState) => FormDesignerFormState, description: string): void => {
-    const relationsBefore = this.state.formFlatMarkup.componentRelations;
+    const markupBefore = this.state.formFlatMarkup;
     if (this.undoableState.executeChange(updater, description)) {
       this.isDataModified = true;
-      this.notifySubscribers(this.withStructureChange(relationsBefore, ['markup', 'selection', 'history', 'data-modified']));
+      this.notifySubscribers(this.withStructureChange(markupBefore, ['markup', 'selection', 'history', 'data-modified']));
 
       void this.validateFormAsync();
     }
   };
 
-  /** Bumps structureVersion when the parent/child lists changed, and adds 'structure' to the notification */
-  private withStructureChange = (relationsBefore: IComponentRelations, types: FormDesignerSubscriptionType[]): FormDesignerSubscriptionType[] => {
-    if (!haveRelationsChanged(relationsBefore, this.state.formFlatMarkup.componentRelations))
+  /** Bumps structureVersion when the parent/child lists or a component's panes changed, and adds 'structure' to the notification */
+  private withStructureChange = (markupBefore: IFlatComponentsStructure, types: FormDesignerSubscriptionType[]): FormDesignerSubscriptionType[] => {
+    const markup = this.state.formFlatMarkup;
+    if (!haveRelationsChanged(markupBefore.componentRelations, markup.componentRelations) && !havePanesChanged(markupBefore, markup, this.getComponentDefinition))
       return types;
     this.structureVersion++;
     return [...types, 'structure'];
@@ -986,19 +987,19 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   undo = (): void => {
     this.log('FD: ◀ undo');
-    const relationsBefore = this.state.formFlatMarkup.componentRelations;
+    const markupBefore = this.state.formFlatMarkup;
     this.undoableState.undo();
     this.isDataModified = this.undoableState.index > 0;
-    this.notifySubscribers(this.withStructureChange(relationsBefore, ['markup', 'selection', 'history', 'data-modified']));
+    this.notifySubscribers(this.withStructureChange(markupBefore, ['markup', 'selection', 'history', 'data-modified']));
     void this.validateFormAsync();
   };
 
   redo = (): void => {
     this.log('FD: ▶ redo');
-    const relationsBefore = this.state.formFlatMarkup.componentRelations;
+    const markupBefore = this.state.formFlatMarkup;
     this.undoableState.redo();
     this.isDataModified = true;
-    this.notifySubscribers(this.withStructureChange(relationsBefore, ['markup', 'selection', 'history', 'data-modified']));
+    this.notifySubscribers(this.withStructureChange(markupBefore, ['markup', 'selection', 'history', 'data-modified']));
     void this.validateFormAsync();
   };
 

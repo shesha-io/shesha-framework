@@ -43,6 +43,15 @@ describe('FormDesignerInstance: structure signal', () => {
     expect(onStructure).not.toHaveBeenCalled();
   });
 
+  it('does not bump structureVersion when a Sizable Columns column is resized', () => {
+    const designer = createTestDesigner([{ id: 'sc', type: 'sizableColumns', columns: [{ id: 'col-1', size: 50, components: [] }, { id: 'col-2', size: 50, components: [] }] }]);
+    const before = designer.structureVersion;
+
+    designer.updateComponent({ componentId: 'sc', updater: (model) => ({ ...model, columns: [{ id: 'col-1', size: 30, components: [] }, { id: 'col-2', size: 70, components: [] }] }) });
+
+    expect(designer.structureVersion).toBe(before);
+  });
+
   it('bumps structureVersion on undo and redo of a structural change, although the restored state is a deep copy', () => {
     const designer = createTestDesigner(tree());
     designer.updateChildComponents({ containerId: 'root', componentIds: ['t2', 'c1'] });

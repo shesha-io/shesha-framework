@@ -8,6 +8,7 @@ vi.mock('@/providers/formDesigner/formValidator', async (importOriginal) => {
   return { ...actual, FormValidator: FormValidatorStub };
 });
 
+import { MISSING_CONTAINER_REASON } from '../structure/moveComponent';
 import { createTestDesigner } from './testDesigner';
 import { sampleForm } from './testMarkup';
 
@@ -21,6 +22,20 @@ describe('FormDesignerInstance.moveComponent()', () => {
     expect(designer.history.length).toBe(historyLength + 1);
     expect(designer.history[designer.historyIndex]?.description).toBe('Moved Email');
     expect(designer.state.formFlatMarkup.componentRelations['pane-b']).toEqual(['email']);
+  });
+
+  it('refuses a move into a column removed in the properties panel, and allows it again after undo', () => {
+    const designer = createTestDesigner([
+      { id: 'sc', type: 'sizableColumns', columns: [{ id: 'col-1', size: 50, components: [] }, { id: 'col-2', size: 50, components: [] }] },
+      { id: 'name', type: 'textField', label: 'Name' },
+    ]);
+    designer.getContainerOwnership();
+
+    designer.updateComponent({ componentId: 'sc', updater: (model) => ({ ...model, columns: [{ id: 'col-1', size: 100, components: [] }] }) });
+    expect(designer.moveComponent({ componentId: 'name', containerId: 'col-2', index: 0 })).toEqual({ ok: false, reason: MISSING_CONTAINER_REASON });
+
+    designer.undo();
+    expect(designer.moveComponent({ componentId: 'name', containerId: 'col-2', index: 0 })).toEqual({ ok: true });
   });
 
   it('notifies "structure" once', () => {
