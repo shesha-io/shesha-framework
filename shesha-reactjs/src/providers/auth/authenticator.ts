@@ -27,6 +27,7 @@ import { extractAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxRes
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { IShaRouter } from '../shaRouting/contexts';
 import { extractErrorInfo } from '@/utils/errors';
+import { SubscribeFunc, SubscriptionManager } from '@/utils/subscriptions/subscriptionManager';
 import { isNonEmptyArray } from '@/utils/array';
 
 type RerenderTrigger = () => void;
@@ -38,6 +39,8 @@ const enum AuthenticateResultType {
   Redirect = 1,
   RedirectNoAuth = 2,
 };
+
+export type AuthenticatorEvents = 'state';
 
 export interface AuthenticatorArgs {
   httpClient: HttpClientApi;
@@ -95,11 +98,20 @@ class Authenticator implements IAuthenticator {
     return this.state.status === 'ready' && isDefined(this.#loginInfo?.user);
   }
 
+  #subscriptionManager: SubscriptionManager<AuthenticatorEvents, IAuthenticator>;
+
+  subscribe: SubscribeFunc<AuthenticatorEvents, IAuthenticator> = (type, callback) => {
+    return this.#subscriptionManager.subscribe(type, callback);
+  };
+
+  notifySubscribers = (types: AuthenticatorEvents[]): void => this.#subscriptionManager.notifySubscribers(types, this);
+
   constructor(args: AuthenticatorArgs, forceRootUpdate: RerenderTrigger) {
     this.#httpClient = args.httpClient;
     this.#settings = args.settings;
     this.#shaRouter = args.shaRouter;
     this.#rerender = forceRootUpdate;
+    this.#subscriptionManager = new SubscriptionManager<AuthenticatorEvents, IAuthenticator>();
     this.state = { status: 'waiting' };
 
     const {
@@ -228,6 +240,7 @@ class Authenticator implements IAuthenticator {
   #updateState = (status: AuthenticationStatus, hint?: string, error?: IErrorInfo): void => {
     this.state = { status, hint, error };
     this.#rerender();
+    this.notifySubscribers(['state']);
   };
 
   #stripReturnUrl = (url: string): string => {
@@ -288,6 +301,8 @@ class Authenticator implements IAuthenticator {
 
     // Get the current token before clearing (needed for logout API call)
     const currentToken = this.#getToken();
+
+    this.#updateState('inprogress', 'Logging out');
 
     // Clear token from localStorage FIRST - this ensures any component that tries
     // to read it after this point will not find it

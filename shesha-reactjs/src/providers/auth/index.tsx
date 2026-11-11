@@ -5,11 +5,13 @@ import {
   PropsWithChildren,
   useContext,
   useLayoutEffect,
+  useEffect,
+  useState,
 } from 'react';
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { useShaRouting } from '@/providers/shaRouting';
-import { useAuthenticatorInstance } from './authenticator';
-import { IAuthenticator } from './models';
+import { AuthenticatorEvents, useAuthenticatorInstance } from './authenticator';
+import { AuthenticationState, IAuthenticator } from './models';
 import { useHttpClient } from '../sheshaApplication/publicApi/http/hooks';
 import { useSheshaApplication } from '../sheshaApplication';
 import { useSettings } from '../settings';
@@ -99,15 +101,23 @@ const useAuth = (): IAuthenticator => {
   return context;
 };
 
-/**
- * @deprecated use useAuth instead
- */
-const useAuthActions = useAuth;
-/**
- * @deprecated use useAuth instead
- */
-const useAuthState = useAuth;
+const useAuthSubscription = (instance: IAuthenticator, eventType: AuthenticatorEvents): object => {
+  const [dummy, forceUpdate] = useState({});
+  useEffect(() => {
+    return instance.subscribe(eventType, () => forceUpdate({}));
+  }, [instance, eventType]);
+
+  return dummy;
+};
+
+const useAuthState = (): AuthenticationState => {
+  const instance = useAuth();
+
+  useAuthSubscription(instance, 'state');
+
+  return instance.state;
+};
 
 export default AuthProvider;
 
-export { AuthProvider, useAuth, useAuthOrUndefined, useAuthActions, useAuthState, type IAuthenticator };
+export { AuthProvider, useAuth, useAuthOrUndefined, useAuthState, type IAuthenticator };

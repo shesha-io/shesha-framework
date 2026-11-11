@@ -1,9 +1,10 @@
 import { ComponentType, FC, Fragment, useEffect } from 'react';
 import * as React from 'react';
-import { useAuth, useShaRouting } from '@/providers';
+import { useAuth, useAuthState, useShaRouting } from '@/providers';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
 import SheshaLoader from '@/components/sheshaLoader';
 import { IdleTimerWrapper } from '@/components/idleTimerRenderer/wrapper';
+import { isNullOrWhiteSpace } from '@/utils';
 
 interface IComponentWithAuthProps {
   unauthorizedRedirectUrl: string;
@@ -12,7 +13,8 @@ interface IComponentWithAuthProps {
 }
 const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
   const { landingPage, unauthorizedRedirectUrl } = props;
-  const { state: authState, isLoggedIn, checkAuthAsync: checkAuth } = useAuth();
+  const { isLoggedIn, checkAuthAsync: checkAuth } = useAuth();
+  const authState = useAuthState();
   const [, forceUpdate] = React.useState({});
 
   const { router } = useShaRouting();
@@ -32,7 +34,7 @@ const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
 
   return isLoggedIn
     ? <Fragment>{props.children(router.query)}</Fragment>
-    : <SheshaLoader message={authState.hint || "Initializing..."} />;
+    : <SheshaLoader message={!isNullOrWhiteSpace(authState.hint) ? authState.hint : "Initializing..."} />;
 };
 
 /**
