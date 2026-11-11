@@ -49,8 +49,10 @@ namespace Shesha.Domain
         public virtual string ErrorMessage { get; set; }
 
         /// <summary>
-        /// Number of verification attempts made against this OTP
+        /// Number of verification attempts made against this OTP. Only changed by an atomic increment
+        /// (see IOtpStorage.IncrementVerifyAttemptsAsync), so entity updates never overwrite it
         /// </summary>
+        [ReadonlyProperty(Insert = true)]
         public virtual int VerifyAttempts { get; set; }
     }
 }

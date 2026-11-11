@@ -7,6 +7,7 @@ using Moq;
 using Shesha.Authorization;
 using Shesha.Configuration.Security;
 using Shesha.Domain.Enums;
+using Shesha.Locks;
 using Shesha.Otp;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
@@ -15,6 +16,7 @@ using Shesha.Sms;
 using Shesha.Users;
 using Shouldly;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -82,6 +84,57 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
+        public async Task ResendPin_should_be_rejected_once_max_attempts_reachedAsync()
+        {
+            var (manager, _, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 2);
+
+            for (var i = 0; i < 2; i++)
+                await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "000000" });
+
+            var ex = await Should.ThrowAsync<UserFriendlyException>(() => manager.ResendPinAsync(new ResendPinInput { OperationId = operationId }));
+            ex.Message.ShouldContain("Too many");
+        }
+
+        [Fact]
+        public async Task ResendPin_should_be_allowed_within_attempt_limitAsync()
+        {
+            var (manager, _, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 2);
+
+            await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "000000" });
+
+            (await manager.ResendPinAsync(new ResendPinInput { OperationId = operationId })).OperationId.ShouldBe(operationId);
+        }
+
+        [Fact]
+        public async Task CacheOtpStorage_should_count_concurrent_attempts_exactlyAsync()
+        {
+            var operationId = Guid.NewGuid();
+            var storage = CreateCacheOtpStorage(new OtpDto { OperationId = operationId, Pin = Pin, ExpiresOn = DateTime.Now.AddMinutes(5) });
+
+            var results = await Task.WhenAll(Enumerable.Range(0, 20).Select(_ => Task.Run(() => storage.IncrementVerifyAttemptsAsync(operationId))));
+
+            results.OrderBy(r => r).ShouldBe(Enumerable.Range(1, 20));
+            (await storage.GetAsync(operationId)).VerifyAttempts.ShouldBe(20);
+        }
+
+        [Fact]
+        public async Task CacheOtpStorage_update_should_keep_attempts_counted_concurrentlyAsync()
+        {
+            var operationId = Guid.NewGuid();
+            var storage = CreateCacheOtpStorage(new OtpDto { OperationId = operationId, Pin = Pin, ExpiresOn = DateTime.Now.AddMinutes(5) });
+
+            var updates = Enumerable.Range(0, 5).Select(_ => Task.Run(() => storage.UpdateAsync(operationId, dto =>
+            {
+                dto.SendStatus = OtpSendStatus.Sent;
+                return Task.CompletedTask;
+            })));
+            var increments = Enumerable.Range(0, 10).Select(_ => Task.Run(() => storage.IncrementVerifyAttemptsAsync(operationId)));
+            await Task.WhenAll(updates.Concat(increments));
+
+            (await storage.GetAsync(operationId)).VerifyAttempts.ShouldBe(10);
+        }
+
+        [Fact]
         public async Task VerifyPin_should_fail_for_unknown_operationAsync()
         {
             var (manager, _, _) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
@@ -134,6 +187,17 @@ namespace Shesha.Tests.Otp
             await throttle.CheckAndRegisterSendAsync("User@Example.com", OtpSendType.Email);
             await throttle.CheckAndRegisterSendAsync("user@example.com ", OtpSendType.EmailLink);
             await Should.ThrowAsync<UserFriendlyException>(() => throttle.CheckAndRegisterSendAsync("USER@EXAMPLE.COM", OtpSendType.Email));
+        }
+
+        [Fact]
+        public async Task Throttle_should_reject_send_when_destination_is_lockedAsync()
+        {
+            var lockFactory = new Mock<ILockFactory>();
+            lockFactory.Setup(f => f.DoExclusiveAsync(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>(), It.IsAny<Func<Task>>()))
+                .ReturnsAsync(false);
+            var throttle = CreateThrottle(cooldownSeconds: 0, maxSendsPerHour: 10, lockFactory.Object);
+
+            await Should.ThrowAsync<UserFriendlyException>(() => throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms));
         }
 
         [Fact]
@@ -223,7 +287,35 @@ namespace Shesha.Tests.Otp
             return new OtpManager(smsGatewayFactory.Object, Mock.Of<IEmailSender>(), otpStorage.Object, generator.Object, otpSettings, throttle);
         }
 
-        private static OtpSendThrottle CreateThrottle(int cooldownSeconds, int maxSendsPerHour)
+        private static CacheOtpStorage CreateCacheOtpStorage(OtpDto otp)
+        {
+            // stores copies, like a distributed cache, and yields between read and write so that unsynchronized
+            // read-modify-write would lose updates
+            var store = new ConcurrentDictionary<Guid, OtpDto>();
+            store[otp.OperationId] = otp;
+            OtpDto Copy(OtpDto d) => new OtpDto { OperationId = d.OperationId, Pin = d.Pin, ExpiresOn = d.ExpiresOn, SendStatus = d.SendStatus, VerifyAttempts = d.VerifyAttempts };
+
+            var typedCache = new Mock<ITypedCache<Guid, OtpDto>>();
+            typedCache.Setup(c => c.GetOrDefaultAsync(It.IsAny<Guid>()))
+                .Returns<Guid>(async id =>
+                {
+                    await Task.Delay(1);
+                    return store.TryGetValue(id, out var d) ? Copy(d) : null;
+                });
+            typedCache.Setup(c => c.SetAsync(It.IsAny<Guid>(), It.IsAny<OtpDto>(), It.IsAny<TimeSpan?>(), It.IsAny<DateTimeOffset?>()))
+                .Returns<Guid, OtpDto, TimeSpan?, DateTimeOffset?>(async (id, d, _, _) =>
+                {
+                    await Task.Delay(1);
+                    store[id] = Copy(d);
+                });
+
+            var otpCache = new Mock<IOtpCache>();
+            otpCache.Setup(c => c.Cache).Returns(typedCache.Object);
+
+            return new CacheOtpStorage(otpCache.Object, new NamedLockFactory());
+        }
+
+        private static OtpSendThrottle CreateThrottle(int cooldownSeconds, int maxSendsPerHour, ILockFactory lockFactory = null)
         {
             var store = new Dictionary<string, OtpSendHistory>();
             var typedCache = new Mock<ITypedCache<string, OtpSendHistory>>();
@@ -247,7 +339,7 @@ namespace Shesha.Tests.Otp
 
             var otpSettings = MockOtpSettings(new OtpSettings { MaxSendsPerDestinationPerHour = maxSendsPerHour });
 
-            return new OtpSendThrottle(cacheHolder.Object, otpSettings, securitySettings.Object);
+            return new OtpSendThrottle(cacheHolder.Object, otpSettings, securitySettings.Object, lockFactory ?? new NamedLockFactory());
         }
 
         private static IOtpSettings MockOtpSettings(OtpSettings value)

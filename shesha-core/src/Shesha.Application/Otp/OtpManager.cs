@@ -48,6 +48,10 @@ namespace Shesha.Otp
             if (otp.ExpiresOn < DateTime.Now)
                 throw new UserFriendlyException("OTP has expired, try to request a new one");
 
+            // resending doesn't reset the attempt counter, so the pin could no longer be verified
+            if (otp.SendType != OtpSendType.EmailLink && otp.VerifyAttempts >= GetMaxVerifyAttempts(settings))
+                throw new UserFriendlyException(TooManyAttemptsMessage);
+
             // note: we ignore _otpSettings.IgnoreOtpValidation here, the user pressed `resend` manually
 
             // resends count towards the same per-destination limits as new pins
@@ -186,14 +190,10 @@ namespace Shesha.Otp
                 // once (e.g. link scanners in mail clients), so the attempt limit only applies to numeric pins.
                 if (!isEmailLink)
                 {
-                    var maxAttempts = settings.MaxVerifyAttempts > 0
-                        ? settings.MaxVerifyAttempts
-                        : OtpDefaults.DefaultMaxVerifyAttempts;
-
                     // the attempt is counted before the pin is checked so that concurrent requests can't exceed the limit
                     var attempts = await _otpStorage.IncrementVerifyAttemptsAsync(input.OperationId);
-                    if (attempts > maxAttempts)
-                        return VerifyPinResponse.Failed("Too many incorrect attempts, request a new one-time pin");
+                    if (attempts > GetMaxVerifyAttempts(settings))
+                        return VerifyPinResponse.Failed(TooManyAttemptsMessage);
                 }
 
                 if (!PinMatches(pinDto.Pin, input.Pin))
@@ -207,6 +207,15 @@ namespace Shesha.Otp
             }
 
             return VerifyPinResponse.Success();
+        }
+
+        private const string TooManyAttemptsMessage = "Too many incorrect attempts, request a new one-time pin";
+
+        private static int GetMaxVerifyAttempts(OtpSettings settings)
+        {
+            return settings.MaxVerifyAttempts > 0
+                ? settings.MaxVerifyAttempts
+                : OtpDefaults.DefaultMaxVerifyAttempts;
         }
 
         /// <summary>

@@ -4,11 +4,11 @@ using Abp.UI;
 using Shesha.Cache;
 using Shesha.Configuration.Security;
 using Shesha.Domain.Enums;
+using Shesha.Locks;
 using Shesha.Otp.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Shesha.Otp
@@ -57,20 +57,21 @@ namespace Shesha.Otp
     public class OtpSendThrottle : IOtpSendThrottle, ITransientDependency
     {
         private static readonly TimeSpan Window = TimeSpan.FromHours(1);
-
-        // Serializes check-and-register within this process. The cache has no atomic operations, so the limits are
-        // approximate across multiple instances
-        private static readonly SemaphoreSlim Lock = new SemaphoreSlim(1, 1);
+        private static readonly TimeSpan LockExpiry = TimeSpan.FromSeconds(30);
+        private static readonly TimeSpan LockWait = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan LockRetry = TimeSpan.FromMilliseconds(100);
 
         private readonly IOtpSendThrottleCache _cache;
         private readonly IOtpSettings _otpSettings;
         private readonly ISecuritySettings _securitySettings;
+        private readonly ILockFactory _lockFactory;
 
-        public OtpSendThrottle(IOtpSendThrottleCache cache, IOtpSettings otpSettings, ISecuritySettings securitySettings)
+        public OtpSendThrottle(IOtpSendThrottleCache cache, IOtpSettings otpSettings, ISecuritySettings securitySettings, ILockFactory lockFactory)
         {
             _cache = cache;
             _otpSettings = otpSettings;
             _securitySettings = securitySettings;
+            _lockFactory = lockFactory;
         }
 
         /// <inheritdoc/>
@@ -86,8 +87,9 @@ namespace Shesha.Otp
                 : OtpDefaults.DefaultMaxSendsPerDestinationPerHour;
             var cooldownSeconds = (await _securitySettings.SecuritySettings.GetValueAsync())?.OtpCooldownSeconds ?? 0;
 
-            await Lock.WaitAsync();
-            try
+            // Check-and-register runs under a lock per destination. The lock is local by default and distributed when
+            // Redis is configured, in which case the cache is shared too, so the limits hold across instances
+            var acquired = await _lockFactory.DoExclusiveAsync($"OtpSendThrottle:{key}", LockExpiry, LockWait, LockRetry, async () =>
             {
                 var now = DateTime.UtcNow;
                 var history = await _cache.Cache.GetOrDefaultAsync(key) ?? new OtpSendHistory();
@@ -109,11 +111,11 @@ namespace Shesha.Otp
                 recentSends.Add(now);
                 history.SentOnUtc = recentSends;
                 await _cache.Cache.SetAsync(key, history, absoluteExpireTime: new DateTimeOffset(now.Add(Window)));
-            }
-            finally
-            {
-                Lock.Release();
-            }
+            });
+
+            // another request for the same destination holds the lock
+            if (!acquired)
+                throw new UserFriendlyException("Too many OTP requests. Please try again later.");
         }
 
         /// <summary>

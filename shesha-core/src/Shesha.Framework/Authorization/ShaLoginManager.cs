@@ -19,6 +19,7 @@ using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
+using Shesha.Locks;
 using Shesha.MultiTenancy;
 using Shesha.Otp;
 using Shesha.Otp.Dto;
@@ -205,54 +206,64 @@ namespace Shesha.Authorization
             
             ShaLoginResult<TUser> result = null;
 
-            using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew)) 
+            // Only one login per OTP runs at a time, so that two concurrent requests can't both use the same OTP before
+            // the reset code is cleared. The lock is local by default and distributed when Redis is configured
+            var lockFactory = IocResolver.Resolve<ILockFactory>();
+            var acquired = await lockFactory.DoExclusiveAsync($"LoginViaOtp:{operationId}", TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(100), async () =>
             {
-                result = await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) => {
+                using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew)) 
+                {
+                    result = await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) => {
 
-                    var otp = await OtpManager.GetAsync(operationId);
-                    if (otp == null)
-                        return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant);
-                    var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
-                    {
-                        OperationId = operationId,
-                        Pin = code
-                    });
-
-                    var user = !string.IsNullOrWhiteSpace(otp.RecipientId)
-                            ? await UserManager.FindByIdAsync(otp.RecipientId)
-                            : null;
-
-                    if (user == null)
-                        return new ShaLoginResult<TUser>(ShaLoginResultType.UserNotFound, tenant);
-
-                    if (await UserManager.IsLockedOutAsync(user))
-                        return new ShaLoginResult<TUser>(ShaLoginResultType.LockedOut, tenant, user);
-
-                    if (!verificationResult.IsSuccess || user.PasswordResetCode != otp.OperationId.ToString())
-                    {
-                        if (shouldLockout)
+                        var otp = await OtpManager.GetAsync(operationId);
+                        if (otp == null)
+                            return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant);
+                        var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
                         {
-                            if (await TryLockOutAsync(tenant?.Id, user.Id))
-                                return new ShaLoginResult<TUser>(ShaLoginResultType.LockedOut, tenant, user);
+                            OperationId = operationId,
+                            Pin = code
+                        });
+
+                        var user = !string.IsNullOrWhiteSpace(otp.RecipientId)
+                                ? await UserManager.FindByIdAsync(otp.RecipientId)
+                                : null;
+
+                        if (user == null)
+                            return new ShaLoginResult<TUser>(ShaLoginResultType.UserNotFound, tenant);
+
+                        if (await UserManager.IsLockedOutAsync(user))
+                            return new ShaLoginResult<TUser>(ShaLoginResultType.LockedOut, tenant, user);
+
+                        if (!verificationResult.IsSuccess || user.PasswordResetCode != otp.OperationId.ToString())
+                        {
+                            if (shouldLockout)
+                            {
+                                if (await TryLockOutAsync(tenant?.Id, user.Id))
+                                    return new ShaLoginResult<TUser>(ShaLoginResultType.LockedOut, tenant, user);
+                            }
+
+                            return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant, user);
                         }
 
-                        return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant, user);
-                    }
+                        // authenticated using internal account, check IMEI
+                        if (!(await CheckImeiAsync(imei)))
+                            return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
 
-                    // authenticated using internal account, check IMEI
-                    if (!(await CheckImeiAsync(imei)))
-                        return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
+                        // clear reset code
+                        user.PasswordResetCode = null;
+                        await UserManager.UpdateAsync(user);
 
-                    // clear reset code
-                    user.PasswordResetCode = null;
-                    await UserManager.UpdateAsync(user);
+                        return await CreateLoginResultAsync(user, tenant);
+                    });
 
-                    return await CreateLoginResultAsync(user, tenant);
-                });
+                    // without this the cleared reset code is rolled back and the OTP could be replayed until it expires
+                    await uow.CompleteAsync();
+                }
+            });
 
-                // without this the cleared reset code is rolled back and the OTP could be replayed until it expires
-                await uow.CompleteAsync();
-            }
+            // another request is using the same OTP
+            if (!acquired)
+                result = new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP);
 
             await SaveLoginAttemptAsync(result, imei, tenancyName, mobileNo);
 
