@@ -246,6 +246,8 @@ export class Authenticator implements IAuthenticator {
         // Get the current token before clearing (needed for logout API call)
         const currentToken = this.#getToken();
 
+        this.#updateState('inprogress', 'Logging out', null);
+
         // Clear token from localStorage FIRST - this ensures any component that tries
         // to read it after this point will not find it
         this.#clearAccessToken();
