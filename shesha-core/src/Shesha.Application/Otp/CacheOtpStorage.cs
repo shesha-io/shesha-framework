@@ -1,24 +1,21 @@
-﻿using Abp.UI;
-using Shesha.Locks;
-using Shesha.Otp.Dto;
+﻿using Shesha.Otp.Dto;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Shesha.Otp
 {
     public class CacheOtpStorage: IOtpStorage
     {
-        private static readonly TimeSpan LockExpiry = TimeSpan.FromSeconds(30);
-        private static readonly TimeSpan LockWait = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan LockRetry = TimeSpan.FromMilliseconds(100);
+        // The cache has no atomic operations, so read-modify-write operations run under a lock. The lock is per
+        // instance, like the in-memory cache this storage is normally used with
+        private static readonly SemaphoreSlim Lock = new SemaphoreSlim(1, 1);
 
         private readonly IOtpCache _otpCache;
-        private readonly ILockFactory _lockFactory;
 
-        public CacheOtpStorage(IOtpCache otpCache, ILockFactory lockFactory)
+        public CacheOtpStorage(IOtpCache otpCache)
         {
             _otpCache = otpCache;
-            _lockFactory = lockFactory;
         }
 
         /// inheritedDoc
@@ -35,47 +32,59 @@ namespace Shesha.Otp
         }
 
         /// inheritedDoc
-        /// <remarks>
-        /// Runs under the same lock as <see cref="IncrementVerifyAttemptsAsync"/> so that an update can't overwrite
-        /// attempts counted in the meantime
-        /// </remarks>
         public async Task UpdateAsync(Guid operationId, Func<OtpDto, Task> updateAction)
         {
-            var acquired = await _lockFactory.DoExclusiveAsync(GetLockKey(operationId), LockExpiry, LockWait, LockRetry, async () =>
+            await Lock.WaitAsync();
+            try
             {
                 var dto = await GetAsync(operationId);
                 await updateAction.Invoke(dto);
                 await SaveAsync(dto);
-            });
-
-            if (!acquired)
-                throw new UserFriendlyException("The one-time pin is being processed, please try again");
+            }
+            finally
+            {
+                Lock.Release();
+            }
         }
 
         /// inheritedDoc
-        /// <remarks>
-        /// The cache has no atomic increment, so the read and write run under a lock per OTP. The lock is local by
-        /// default and distributed when Redis is configured
-        /// </remarks>
         public async Task<int> IncrementVerifyAttemptsAsync(Guid operationId)
         {
-            var attempts = 0;
-            var acquired = await _lockFactory.DoExclusiveAsync(GetLockKey(operationId), LockExpiry, LockWait, LockRetry, async () =>
+            await Lock.WaitAsync();
+            try
             {
                 var dto = await GetAsync(operationId);
                 if (dto == null)
-                    return;
+                    return 0;
 
                 dto.VerifyAttempts++;
                 await SaveAsync(dto);
-                attempts = dto.VerifyAttempts;
-            });
-
-            // another request for the same OTP holds the lock: fail closed, the caller treats this as over the limit
-            return acquired ? attempts : int.MaxValue;
+                return dto.VerifyAttempts;
+            }
+            finally
+            {
+                Lock.Release();
+            }
         }
 
-        private static string GetLockKey(Guid operationId) => $"CacheOtpStorage:{operationId}";
+        /// inheritedDoc
+        public async Task<bool> TryConsumeAsync(Guid operationId)
+        {
+            await Lock.WaitAsync();
+            try
+            {
+                var dto = await GetAsync(operationId);
+                if (dto == null || dto.ExpiresOn.HasValue && dto.ExpiresOn.Value <= DateTime.Now)
+                    return false;
+
+                await _otpCache.Cache.RemoveAsync(operationId);
+                return true;
+            }
+            finally
+            {
+                Lock.Release();
+            }
+        }
 
         /// inheritedDoc
         public async Task<OtpDto> GetAsync(Guid operationId)

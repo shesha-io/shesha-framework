@@ -38,6 +38,12 @@ namespace Shesha.Otp
             return await _otpStorage.GetAsync(operationId);
         }
 
+        /// inheritedDoc
+        public async Task<bool> TryConsumeAsync(Guid operationId)
+        {
+            return await _otpStorage.TryConsumeAsync(operationId);
+        }
+
         public async Task<ISendPinResponse> ResendPinAsync(ResendPinInput input)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();

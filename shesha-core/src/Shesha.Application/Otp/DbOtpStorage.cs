@@ -50,6 +50,27 @@ namespace Shesha.Otp
             }
         }
 
+        /// inheritedDoc
+        public async Task<bool> TryConsumeAsync(Guid operationId)
+        {
+            // A single conditional `update` in a dedicated session: the database lets only one concurrent call change
+            // the row, on any instance, and the change is committed even if the caller's unit of work rolls back.
+            // Expiring the OTP makes it fail verification from now on. It's set clearly in the past, so that a concurrent
+            // call can't still see it as valid because of datetime rounding
+            var entityName = typeof(OtpAuditItem).FullName;
+            var now = DateTime.Now;
+            using (var session = _sessionFactory.OpenSession())
+            {
+                var updated = await session.CreateQuery($"update {entityName} set ExpiresOn = :consumedExpiry where Id = :id and (ExpiresOn is null or ExpiresOn > :now)")
+                    .SetParameter("id", operationId)
+                    .SetParameter("now", now)
+                    .SetParameter("consumedExpiry", now.AddMinutes(-1))
+                    .ExecuteUpdateAsync();
+
+                return updated == 1;
+            }
+        }
+
         /// <summary>
         /// Save OTP to the DB
         /// </summary>
