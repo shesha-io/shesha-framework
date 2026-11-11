@@ -27,6 +27,7 @@ namespace Shesha.Domain
     [Prefix(UsePrefixes = false)]
     [DiscriminatorValue(ItemTypeName)]
     [SnakeCaseNaming]
+    [Exposable(ItemTypeName)]
     public class ShaRole : ConfigurationItem
     {
         public const string ItemTypeName = "role";
