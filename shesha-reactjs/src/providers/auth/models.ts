@@ -1,6 +1,8 @@
 import { IEntityReferenceDto, IErrorInfo, ILoginForm } from '@/interfaces';
 import { GetCurrentLoginInfoOutput, InitializationErrorsInfoDto, UserLoginInfoDto } from '@/apis/session';
 import { IHttpHeaders } from "@/interfaces/accessToken";
+import { SubscribeFunc } from '@/utils/subscriptions/subscriptionManager';
+import { AuthenticatorEvents } from './authenticator';
 
 export type AuthenticationStatus = 'waiting' | 'inprogress' | 'ready' | 'failed';
 export interface AuthenticationState {
@@ -51,4 +53,7 @@ export interface IAuthenticator {
 
   // Refresh HTTP authorization headers after token refresh
   refreshAuthHeaders: () => void;
+
+  // subscribe to events
+  subscribe: SubscribeFunc<AuthenticatorEvents, IAuthenticator>;
 }
