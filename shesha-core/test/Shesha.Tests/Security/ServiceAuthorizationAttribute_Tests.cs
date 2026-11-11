@@ -4,6 +4,7 @@ using Shesha.Api;
 using Shesha.Authorization;
 using Shesha.Authorization.Settings;
 using Shesha.ConfigurationItems;
+using Shesha.DeviceForceUpdate;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.Email;
@@ -78,6 +79,44 @@ namespace Shesha.Tests.Security
         {
             var attr = GetMethodAllowAnonymous(typeof(OtpAppService), methodName);
             attr.Should().BeNull($"OtpAppService.{methodName} should inherit class-level auth (pages:maintenance)");
+        }
+
+        /// <summary>
+        /// Verifies that DeviceForceUpdateAppService requires the settings permissions at class level, so
+        /// Create and the inherited Update/Delete/Get/GetAll endpoints cannot be called by any authenticated user.
+        /// </summary>
+        [Fact]
+        public void DeviceForceUpdateAppService_should_require_settings_permissions()
+        {
+            var attr = GetClassSheshaAuthorize(typeof(DeviceForceUpdateAppService));
+
+            attr.Should().NotBeNull("DeviceForceUpdateAppService must have class-level [SheshaAuthorize]");
+            attr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
+            attr.Permissions.Should().BeEquivalentTo("Application-Configure", "Application-Settings", "Application-Maintenance");
+        }
+
+        [Theory]
+        [InlineData("CreateAsync")]
+        [InlineData("UpdateAsync")]
+        [InlineData("DeleteAsync")]
+        public void DeviceForceUpdateAppService_write_methods_should_inherit_class_guard(string methodName)
+        {
+            var method = typeof(DeviceForceUpdateAppService).GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+            method.Should().NotBeNull();
+            method.GetCustomAttribute<SheshaAuthorizeAttribute>().Should().BeNull($"{methodName} must not override the class-level guard");
+            method.GetCustomAttribute<AllowAnonymousAttribute>().Should().BeNull($"{methodName} must not be anonymous");
+        }
+
+        [Fact]
+        public void DeviceForceUpdateAppService_GetForceUpdateByOSType_should_be_AnyAuthenticated()
+        {
+            var method = typeof(DeviceForceUpdateAppService).GetMethod(nameof(DeviceForceUpdateAppService.GetForceUpdateByOSTypeAsync), BindingFlags.Public | BindingFlags.Instance);
+            method.Should().NotBeNull();
+            method.GetCustomAttribute<AllowAnonymousAttribute>().Should().BeNull();
+
+            var attr = method.GetCustomAttribute<SheshaAuthorizeAttribute>();
+            attr.Should().NotBeNull("reading the force update must stay available to any authenticated user");
+            attr.Access.Should().Be(RefListPermissionedAccess.AnyAuthenticated);
         }
 
         /// <summary>
