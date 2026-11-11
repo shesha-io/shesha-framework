@@ -1,11 +1,16 @@
-﻿using Shesha.Domain.Attributes;
+﻿using Shesha.Authorization;
+using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
 {
     [Entity(
         FriendlyName = "Notification Channel",
-        TypeShortAlias = "Shesha.Domain.NotificationChannelConfig"
+        TypeShortAlias = "Shesha.Domain.NotificationChannelConfig",
+        CrudActions = CrudActions.Read,
+        IsConfigurable = false,
+        CrudActionsAccess = CrudActionsAccess.RequiresPermissions,
+        CrudActionsPermissions = [PermissionNames.Application_Configure]
     )]
     [JoinedProperty("notification_channels", Schema = "frwk")]
     [DiscriminatorValue(ItemTypeName)]

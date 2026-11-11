@@ -1,4 +1,5 @@
-﻿using Shesha.Domain.Attributes;
+﻿using Shesha.Authorization;
+using Shesha.Domain.Attributes;
 using Shesha.Domain.Constants;
 using Shesha.Domain.Enums;
 using System.Collections.Generic;
@@ -11,7 +12,11 @@ namespace Shesha.Domain
     [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-notification-type-create")]
     [Entity(
         FriendlyName = "Notification",
-        TypeShortAlias = "Shesha.Domain.NotificationTypeConfig"
+        TypeShortAlias = "Shesha.Domain.NotificationTypeConfig",
+        CrudActions = CrudActions.Read,
+        IsConfigurable = false,
+        CrudActionsAccess = CrudActionsAccess.RequiresPermissions,
+        CrudActionsPermissions = [PermissionNames.Application_Configure]
     )]
     [SnakeCaseNaming]
     public class NotificationTypeConfig : ConfigurationItem, INotificationTypeSpecificProps
