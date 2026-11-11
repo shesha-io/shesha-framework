@@ -3,6 +3,7 @@ using Abp.Domain.Uow;
 using Abp.Zero;
 using Shesha.Domain;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Roles;
 using Shesha.Testing.Fixtures;
 using System;
