@@ -143,7 +143,41 @@ namespace Shesha.Tests.Otp
             var results = await Task.WhenAll(Enumerable.Range(0, 10).Select(_ => Task.Run(() => storage.TryConsumeAsync(operationId))));
 
             results.Count(r => r).ShouldBe(1);
-            (await storage.GetAsync(operationId)).ShouldBeNull();
+            (await storage.GetAsync(operationId)).ConsumedOn.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task VerifyPin_should_fail_for_consumed_otpAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+            storage[operationId].ConsumedOn = DateTime.Now;
+
+            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task ResendPin_should_be_rejected_for_consumed_otpAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+            storage[operationId].ConsumedOn = DateTime.Now;
+
+            await Should.ThrowAsync<UserFriendlyException>(() => manager.ResendPinAsync(new ResendPinInput { OperationId = operationId }));
+        }
+
+        [Fact]
+        public async Task VerifyPin_should_fail_when_otp_disappears_before_attempt_is_countedAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+            var otp = storage[operationId];
+
+            // the OTP is read, then removed before the attempt is counted
+            var otpStorage = new Mock<IOtpStorage>();
+            otpStorage.Setup(s => s.GetAsync(operationId)).ReturnsAsync(otp);
+            otpStorage.Setup(s => s.IncrementVerifyAttemptsAsync(operationId)).ReturnsAsync(0);
+            manager = new OtpManager(Mock.Of<ISmsGatewayFactory>(), Mock.Of<IEmailSender>(), otpStorage.Object, Mock.Of<IOtpGenerator>(),
+                MockOtpSettings(new OtpSettings { MaxVerifyAttempts = 3 }), Mock.Of<IOtpSendThrottle>());
+
+            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeFalse();
         }
 
         [Fact]
@@ -295,7 +329,7 @@ namespace Shesha.Tests.Otp
             // read-modify-write would lose updates
             var store = new ConcurrentDictionary<Guid, OtpDto>();
             store[otp.OperationId] = otp;
-            OtpDto Copy(OtpDto d) => new OtpDto { OperationId = d.OperationId, Pin = d.Pin, ExpiresOn = d.ExpiresOn, SendStatus = d.SendStatus, VerifyAttempts = d.VerifyAttempts };
+            OtpDto Copy(OtpDto d) => new OtpDto { OperationId = d.OperationId, Pin = d.Pin, ExpiresOn = d.ExpiresOn, SendStatus = d.SendStatus, VerifyAttempts = d.VerifyAttempts, ConsumedOn = d.ConsumedOn };
 
             var typedCache = new Mock<ITypedCache<Guid, OtpDto>>();
             typedCache.Setup(c => c.GetOrDefaultAsync(It.IsAny<Guid>()))
@@ -309,12 +343,6 @@ namespace Shesha.Tests.Otp
                 {
                     await Task.Delay(1);
                     store[id] = Copy(d);
-                });
-            typedCache.Setup(c => c.RemoveAsync(It.IsAny<Guid>()))
-                .Returns<Guid>(async id =>
-                {
-                    await Task.Delay(1);
-                    store.TryRemove(id, out _);
                 });
 
             var otpCache = new Mock<IOtpCache>();

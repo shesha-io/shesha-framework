@@ -37,5 +37,10 @@ namespace Shesha.Otp.Dto
         /// Number of verification attempts made against this OTP
         /// </summary>
         public int VerifyAttempts { get; set; }
+
+        /// <summary>
+        /// When the OTP was used, null if it hasn't been used. A used OTP can't be accepted again
+        /// </summary>
+        public DateTime? ConsumedOn { get; set; }
     }
 }

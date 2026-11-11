@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace Shesha.Otp
 {
+    /// <summary>
+    /// Cache storage for one-time-pins
+    /// </summary>
     public class CacheOtpStorage: IOtpStorage
     {
         // The cache has no atomic operations, so read-modify-write operations run under a lock. The lock is per
@@ -13,6 +16,9 @@ namespace Shesha.Otp
 
         private readonly IOtpCache _otpCache;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public CacheOtpStorage(IOtpCache otpCache)
         {
             _otpCache = otpCache;
@@ -38,6 +44,9 @@ namespace Shesha.Otp
             try
             {
                 var dto = await GetAsync(operationId);
+                if (dto == null)
+                    return;
+
                 await updateAction.Invoke(dto);
                 await SaveAsync(dto);
             }
@@ -74,10 +83,11 @@ namespace Shesha.Otp
             try
             {
                 var dto = await GetAsync(operationId);
-                if (dto == null || dto.ExpiresOn.HasValue && dto.ExpiresOn.Value <= DateTime.Now)
+                if (dto == null || dto.ConsumedOn.HasValue || dto.ExpiresOn.HasValue && dto.ExpiresOn.Value <= DateTime.Now)
                     return false;
 
-                await _otpCache.Cache.RemoveAsync(operationId);
+                dto.ConsumedOn = DateTime.Now;
+                await SaveAsync(dto);
                 return true;
             }
             finally

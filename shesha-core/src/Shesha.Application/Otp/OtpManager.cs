@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 
 namespace Shesha.Otp
 {
+    /// <summary>
+    /// Sends and verifies one-time pins
+    /// </summary>
     public class OtpManager : IOtpManager, ITransientDependency
     {
         private readonly ISmsGatewayFactory _smsGatewayFactory;
@@ -22,6 +25,9 @@ namespace Shesha.Otp
         private readonly IOtpSettings _otpSettings;
         private readonly IOtpSendThrottle _sendThrottle;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public OtpManager(ISmsGatewayFactory smsGatewayFactory, IEmailSender emailSender, IOtpStorage otpStorage, IOtpGenerator passwordGenerator, IOtpSettings otpSettings, IOtpSendThrottle sendThrottle)
         {
             _smsGatewayFactory = smsGatewayFactory;
@@ -44,6 +50,7 @@ namespace Shesha.Otp
             return await _otpStorage.TryConsumeAsync(operationId);
         }
 
+        /// inheritedDoc
         public async Task<ISendPinResponse> ResendPinAsync(ResendPinInput input)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
@@ -53,6 +60,9 @@ namespace Shesha.Otp
 
             if (otp.ExpiresOn < DateTime.Now)
                 throw new UserFriendlyException("OTP has expired, try to request a new one");
+
+            if (otp.ConsumedOn.HasValue)
+                throw new UserFriendlyException("OTP has already been used, try to request a new one");
 
             // resending doesn't reset the attempt counter, so the pin could no longer be verified
             if (otp.SendType != OtpSendType.EmailLink && otp.VerifyAttempts >= GetMaxVerifyAttempts(settings))
@@ -104,6 +114,7 @@ namespace Shesha.Otp
 
         }
 
+        /// inheritedDoc
         public async Task<ISendPinResponse> SendPinAsync(SendPinInput input)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
@@ -181,13 +192,14 @@ namespace Shesha.Otp
             return response;
         }
 
+        /// inheritedDoc
         public async Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             if (!settings.IgnoreOtpValidation)
             {
                 var pinDto = await _otpStorage.GetAsync(input.OperationId);
-                if (pinDto == null)
+                if (pinDto == null || pinDto.ConsumedOn.HasValue)
                     return VerifyPinResponse.Failed("Wrong one time pin");
 
                 var isEmailLink = pinDto.SendType == OtpSendType.EmailLink;
@@ -198,6 +210,11 @@ namespace Shesha.Otp
                 {
                     // the attempt is counted before the pin is checked so that concurrent requests can't exceed the limit
                     var attempts = await _otpStorage.IncrementVerifyAttemptsAsync(input.OperationId);
+
+                    // no attempt was counted: the OTP no longer exists, so the copy read above can't be trusted
+                    if (attempts <= 0)
+                        return VerifyPinResponse.Failed("Wrong one time pin");
+
                     if (attempts > GetMaxVerifyAttempts(settings))
                         return VerifyPinResponse.Failed(TooManyAttemptsMessage);
                 }
@@ -217,6 +234,9 @@ namespace Shesha.Otp
 
         private const string TooManyAttemptsMessage = "Too many incorrect attempts, request a new one-time pin";
 
+        /// <summary>
+        /// Maximum number of verification attempts per OTP, falling back to the default when not configured
+        /// </summary>
         private static int GetMaxVerifyAttempts(OtpSettings settings)
         {
             return settings.MaxVerifyAttempts > 0

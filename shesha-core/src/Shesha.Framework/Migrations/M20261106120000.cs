@@ -9,6 +9,9 @@ namespace Shesha.Migrations
     [Migration(20261106120000)]
     public class M20261106120000 : OneWayMigration
     {
+        /// <summary>
+        /// Adds the <c>VerifyAttempts</c> column to <c>Frwk_OtpAuditItems</c>
+        /// </summary>
         public override void Up()
         {
             if (!Schema.Table("Frwk_OtpAuditItems").Column("VerifyAttempts").Exists())

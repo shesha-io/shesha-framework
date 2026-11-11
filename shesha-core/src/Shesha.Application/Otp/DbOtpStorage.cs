@@ -32,11 +32,13 @@ namespace Shesha.Otp
         /// inheritedDoc
         public async Task<int> IncrementVerifyAttemptsAsync(Guid operationId)
         {
-            // A dedicated session executes a single atomic `update` outside the caller's transaction, so concurrent
-            // verification requests can't read the same counter value, and a rollback of the caller's unit of work
-            // doesn't undo the attempt
+            // Runs in its own session and transaction, outside any ambient transaction, so a rollback of the caller
+            // doesn't undo the attempt. The `update` holds the row lock until commit, so a concurrent increment waits
+            // and each call reads back the value its own increment produced
             var entityName = typeof(OtpAuditItem).FullName;
+            using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             using (var session = _sessionFactory.OpenSession())
+            using (var transaction = session.BeginTransaction())
             {
                 await session.CreateQuery($"update {entityName} set VerifyAttempts = VerifyAttempts + 1 where Id = :id")
                     .SetParameter("id", operationId)
@@ -46,6 +48,8 @@ namespace Shesha.Otp
                     .SetParameter("id", operationId)
                     .UniqueResultAsync<int?>();
 
+                await transaction.CommitAsync();
+
                 return attempts ?? 0;
             }
         }
@@ -53,18 +57,17 @@ namespace Shesha.Otp
         /// inheritedDoc
         public async Task<bool> TryConsumeAsync(Guid operationId)
         {
-            // A single conditional `update` in a dedicated session: the database lets only one concurrent call change
-            // the row, on any instance, and the change is committed even if the caller's unit of work rolls back.
-            // Expiring the OTP makes it fail verification from now on. It's set clearly in the past, so that a concurrent
-            // call can't still see it as valid because of datetime rounding
+            // A single conditional `update` in its own session, outside any ambient transaction: the database lets only
+            // one concurrent call change the row, on any instance, and the change is kept even if the caller rolls back.
+            // ConsumedOn isn't written by entity updates, so a resend extending the expiry can't make the OTP valid again
             var entityName = typeof(OtpAuditItem).FullName;
             var now = DateTime.Now;
+            using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             using (var session = _sessionFactory.OpenSession())
             {
-                var updated = await session.CreateQuery($"update {entityName} set ExpiresOn = :consumedExpiry where Id = :id and (ExpiresOn is null or ExpiresOn > :now)")
+                var updated = await session.CreateQuery($"update {entityName} set ConsumedOn = :now where Id = :id and ConsumedOn is null and (ExpiresOn is null or ExpiresOn > :now)")
                     .SetParameter("id", operationId)
                     .SetParameter("now", now)
-                    .SetParameter("consumedExpiry", now.AddMinutes(-1))
                     .ExecuteUpdateAsync();
 
                 return updated == 1;
@@ -111,6 +114,9 @@ namespace Shesha.Otp
         public async Task UpdateAsync(Guid operationId, Func<OtpDto, Task> updateAction)
         {
             var dto = await GetAsync(operationId);
+            if (dto == null)
+                return;
+
             await updateAction.Invoke(dto);
             await SaveOrUpdateAsync(dto, false);
         }
@@ -142,6 +148,7 @@ namespace Shesha.Otp
                     SendStatus = item.SendStatus,
                     ErrorMessage = item.ErrorMessage,
                     VerifyAttempts = item.VerifyAttempts,
+                    ConsumedOn = item.ConsumedOn,
                 };
             }
         }

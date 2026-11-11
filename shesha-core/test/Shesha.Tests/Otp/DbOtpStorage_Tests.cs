@@ -69,7 +69,36 @@ namespace Shesha.Tests.Otp
 
             results.Count(r => r).ShouldBe(1);
             (await storage.TryConsumeAsync(operationId)).ShouldBeFalse();
-            (await storage.GetAsync(operationId)).ExpiresOn.Value.ShouldBeLessThan(DateTime.Now);
+            (await storage.GetAsync(operationId)).ConsumedOn.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task Update_should_not_restore_consumed_otp_TestAsync()
+        {
+            var storage = Resolve<DbOtpStorage>();
+            var operationId = await SaveOtpAsync(storage);
+
+            // the OTP is consumed while an update (e.g. a resend extending the expiry) holds an older copy of it
+            await storage.UpdateAsync(operationId, async dto =>
+            {
+                (await storage.TryConsumeAsync(operationId)).ShouldBeTrue();
+                dto.ExpiresOn = DateTime.Now.AddMinutes(10);
+            });
+
+            (await storage.GetAsync(operationId)).ConsumedOn.ShouldNotBeNull();
+            (await storage.TryConsumeAsync(operationId)).ShouldBeFalse();
+            (await Resolve<IOtpManager>().VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "123456" })).IsSuccess.ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task IncrementVerifyAttempts_should_return_distinct_counts_when_concurrent_TestAsync()
+        {
+            var storage = Resolve<DbOtpStorage>();
+            var operationId = await SaveOtpAsync(storage);
+
+            var results = await Task.WhenAll(Enumerable.Range(0, 10).Select(_ => Task.Run(() => storage.IncrementVerifyAttemptsAsync(operationId))));
+
+            results.OrderBy(r => r).ShouldBe(Enumerable.Range(1, 10));
         }
 
         [Fact]

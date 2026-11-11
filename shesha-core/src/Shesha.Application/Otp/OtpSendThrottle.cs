@@ -35,6 +35,9 @@ namespace Shesha.Otp
     /// <inheritdoc/>
     public class OtpSendThrottleCache : CacheHolder<string, OtpSendHistory>, IOtpSendThrottleCache, ISingletonDependency
     {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public OtpSendThrottleCache(ICacheManager cacheManager) : base("OtpSendThrottleCache", cacheManager)
         {
         }
@@ -66,6 +69,9 @@ namespace Shesha.Otp
         private readonly IOtpSettings _otpSettings;
         private readonly ISecuritySettings _securitySettings;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public OtpSendThrottle(IOtpSendThrottleCache cache, IOtpSettings otpSettings, ISecuritySettings securitySettings)
         {
             _cache = cache;
@@ -119,6 +125,7 @@ namespace Shesha.Otp
         /// <summary>
         /// Normalizes the destination so that formatting variations (spaces, dashes, case) map to the same key
         /// </summary>
+        /// <returns>Cache key for the destination, or null if the destination is empty</returns>
         private static string NormalizeDestination(string sendTo, OtpSendType sendType)
         {
             if (string.IsNullOrWhiteSpace(sendTo))

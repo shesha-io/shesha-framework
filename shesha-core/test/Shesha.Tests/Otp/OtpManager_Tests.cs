@@ -106,6 +106,7 @@ namespace Shesha.Tests.Otp
                 storage.Add(dto.OperationId, dto.Pin);
                 return Task.CompletedTask;
             });
+            otpStorage.Setup(s => s.IncrementVerifyAttemptsAsync(It.IsAny<Guid>())).ReturnsAsync(1);
             otpStorage.Setup(s => s.GetAsync(It.IsAny<Guid>())).Returns<Guid>(id => Task.FromResult(new OtpDto
             {
                 Pin = storage[id],
@@ -164,6 +165,7 @@ namespace Shesha.Tests.Otp
                 return Task.CompletedTask;
             });
 
+            otpStorage.Setup(s => s.IncrementVerifyAttemptsAsync(It.IsAny<Guid>())).ReturnsAsync(1);
             otpStorage.Setup(s => s.GetAsync(It.IsAny<Guid>())).Returns<Guid>(id => Task.FromResult(new OtpDto
             {
                 Pin = storage[id],
