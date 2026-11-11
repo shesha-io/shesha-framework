@@ -1,4 +1,5 @@
-﻿using Shesha.Domain.Attributes;
+﻿using Shesha.Authorization;
+using Shesha.Domain.Attributes;
 using Shesha.Domain.Constants;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
@@ -15,8 +16,10 @@ namespace Shesha.Domain
     [Entity(
         FriendlyName = "Entity",
         TypeShortAlias = "Shesha.Framework.EntityConfig",
-        CrudActions = Enums.CrudActions.None,
-        IsConfigurable = false
+        CrudActions = CrudActions.Read,
+        IsConfigurable = false,
+        CrudActionsAccess = CrudActionsAccess.RequiresPermissions,
+        CrudActionsPermissions = [PermissionNames.Application_Configure]
     )]
     [JoinedProperty("entity_configs", Schema = "frwk")]
     [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-entity-create")]

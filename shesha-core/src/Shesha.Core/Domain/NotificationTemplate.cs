@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Repositories;
 using FluentValidation;
+using Shesha.Authorization;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
@@ -13,7 +14,11 @@ using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Core.NotificationTemplate")]
+    [Entity(TypeShortAlias = "Shesha.Core.NotificationTemplate",
+        CrudActions = CrudActions.All,
+        IsConfigurable = false,
+        CrudActionsAccess = CrudActionsAccess.RequiresPermissions,
+        CrudActionsPermissions = [PermissionNames.Application_Configure])]
     [SnakeCaseNaming]
     [Table("notification_templates", Schema = "frwk")]
     public class NotificationTemplate : FullAuditedEntity<Guid>, INotificationTemplateProps

@@ -47,15 +47,12 @@ namespace Shesha.Bootstrappers
 
             using (var unitOfWork = UnitOfWorkManager.Begin())
             {
-                var forced = await BootstrapperStartupService.IsForcedAsync(bootstrapperType);
-                /*if (skipBootstrappers && !forced)
-                {
-                    await BootstrapperStartupService.SkipBootstrapperAsync(bootstrapperType, $"Bootstrapper skipped due to configuration (`{SkipBootstrappersSetting}` is {skipBootstrappers})");
-                    continue;
-                }*/
-                if (StartupSession.AllAssembliesStayUnchanged && !forced)
+                var forcedByConfig = await BootstrapperStartupService.IsForcedAsync(bootstrapperType);
+                
+                if (StartupSession.AllAssembliesStayUnchanged && !forcedByConfig && !force)
                 {
                     await BootstrapperStartupService.SkipBootstrapperAsync(bootstrapperType, $"Bootstrapper skipped. Previous startup was full, successful and all assemblies stay unchanged");
+                    await unitOfWork.CompleteAsync();
                     return false;
                 }
 

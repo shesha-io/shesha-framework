@@ -251,17 +251,17 @@ namespace Shesha.Validations
                         return true;
                     if (propConfig.DataFormat == NumberFormats.Int64 && !long.TryParse(stringValue, out _))
                     {
-                        validationResult.Add(new ValidationResult($"Property '{friendlyName}' = {stringValue} should be in an Integer format"));
+                        validationResult.Add(new ValidationResult($"Property '{friendlyName}' = '{stringValue}' should be in an Integer format"));
                         return false;
                     }
                     else if (propConfig.DataFormat == NumberFormats.Decimal && !decimal.TryParse(stringValue, out decimal _))
                     {
-                        validationResult.Add(new ValidationResult($"Property '{friendlyName}' = {stringValue} should be in a Decimal format"));
+                        validationResult.Add(new ValidationResult($"Property '{friendlyName}' = '{stringValue}' should be in a Decimal format"));
                         return false;
                     }
                     else if ((propConfig.DataFormat == NumberFormats.Float || propConfig.DataFormat == NumberFormats.Double) && !double.TryParse(stringValue, out double _))
                     {
-                        validationResult.Add(new ValidationResult($"Property '{friendlyName}' = {stringValue} should be in a Float format"));
+                        validationResult.Add(new ValidationResult($"Property '{friendlyName}' = '{stringValue}' should be in a Float format"));
                         return false;
                     }
 

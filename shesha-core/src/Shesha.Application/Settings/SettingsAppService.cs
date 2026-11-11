@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
+using Shesha.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Settings.Dto;
 using System.Collections.Generic;
@@ -17,11 +18,13 @@ namespace Shesha.Settings
     {
         private readonly IShaSettingManager _settingProvider;
         private readonly ISettingDefinitionManager _settingDefinitionManager;
+        private readonly IConfigurationFrameworkRuntime _cfRuntime;
 
-        public SettingsAppService(IShaSettingManager settingProvider, ISettingDefinitionManager settingDefinitionManager)
+        public SettingsAppService(IShaSettingManager settingProvider, ISettingDefinitionManager settingDefinitionManager, IConfigurationFrameworkRuntime cfRuntime)
         {
             _settingProvider = settingProvider;
             _settingDefinitionManager = settingDefinitionManager;
+            _cfRuntime = cfRuntime;
         }
 
         /// <summary>
@@ -44,11 +47,13 @@ namespace Shesha.Settings
         private SettingManagementContext? GetContext(string? appKey, bool isUserSpecific)
         {
             return new SettingManagementContext
-                {
-                    AppKey = !string.IsNullOrWhiteSpace(appKey) ? appKey : null,
-                    UserId = isUserSpecific ? AbpSession.UserId : null,
-                    TenantId = AbpSession.TenantId,
-                };
+            {
+                AppKey = !string.IsNullOrWhiteSpace(appKey) 
+                    ? appKey 
+                    : _cfRuntime.FrontEndApplication,
+                UserId = isUserSpecific ? AbpSession.UserId : null,
+                TenantId = AbpSession.TenantId,
+            };
         }
 
         private SettingIdentifier ResolveSettingId(SettingIdentifierDto input) 
