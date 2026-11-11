@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 namespace Shesha.Otp
 {
     /// <summary>
-    /// Cache storage for one-time-pins
+    /// Cache storage for one-time-pins.
+    /// Its operations are only atomic within a single application instance, so it's meant for a local (in-memory)
+    /// cache. When the application runs on several instances, use <see cref="DbOtpStorage"/> (the default), which
+    /// makes the attempt counter and single use atomic in the database.
     /// </summary>
     public class CacheOtpStorage: IOtpStorage
     {
