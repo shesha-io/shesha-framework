@@ -392,6 +392,13 @@ namespace Shesha.Metadata
 
             var dataTypeAtt = propInfo?.GetAttributeOrNull<DataTypeAttribute>();
 
+            // must run before the enum-underlying-type unwrap below, or enum-backed reference lists get misclassified as DataTypes.Number
+            if (propInfo != null && propInfo.IsMultiValueReferenceListProperty())
+                return new DataTypeInfo(DataTypes.Array, ArrayFormats.MultivalueReferenceList);
+
+            if (propInfo != null && propInfo.IsReferenceListProperty())
+                return new DataTypeInfo(DataTypes.ReferenceListItem);
+
             // for enums - use underlaying type
             if (propType.IsEnum)
                 propType = propType.GetEnumUnderlyingType();
@@ -413,12 +420,6 @@ namespace Shesha.Metadata
 
             if (propType == typeof(bool))
                 return new DataTypeInfo(DataTypes.Boolean);
-
-            if (propInfo != null && propInfo.IsMultiValueReferenceListProperty())
-                return new DataTypeInfo(DataTypes.Array, ArrayFormats.MultivalueReferenceList);
-
-            if (propInfo != null && propInfo.IsReferenceListProperty())
-                return new DataTypeInfo(DataTypes.ReferenceListItem);
 
             if (propType == typeof(StoredFile))
                 return new DataTypeInfo(DataTypes.File);
