@@ -8,6 +8,7 @@ import { EntityPickerRef, IEntityPickerProps } from './models';
 import { useDeepCompareMemo } from '@/hooks';
 import { useStyles } from './styles/styles';
 import { EntityPickerModal } from './modal';
+import { isValueLoaded } from './utils';
 import { getValueByPropertyName } from '@/utils/object';
 import { ValidationErrors } from '@/components/validationErrors';
 import { IEntityReferenceDto } from '@/interfaces';
@@ -16,20 +17,12 @@ import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nu
 type SelectRef = GetRef<typeof Select>; // Resolves to BaseSelectRef
 type OnSelectChange<TValue> = SelectProps<TValue>["onChange"];
 
-const isPropertyLoaded = (value: string | IEntityReferenceDto, displayEntityKey: string): boolean => {
-  return typeof (value) === "object" && typeof (getValueByPropertyName(value, displayEntityKey as keyof IEntityReferenceDto)) !== 'undefined';
-};
-
 const EntityPickerReadOnly = (props: IEntityPickerProps): React.JSX.Element => {
   const { entityType, displayEntityKey, value, readOnlyPlaceholder, events } = props;
 
   // Check if all data for displaying is loaded
   // TODO: review this logic. It works with complex objects only
-  const isLoaded = value
-    ? Array.isArray(value)
-      ? !value.find((x) => isPropertyLoaded(x, displayEntityKey))
-      : isPropertyLoaded(value, displayEntityKey)
-    : false;
+  const isLoaded = isValueLoaded(value, displayEntityKey);
 
   const { incomeValueFunc } = props;
   const valueId = useMemo(() => {
@@ -108,11 +101,7 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
 
   // Check if all data for displaying is loaded
   // TODO: review this logic. It works with complex objects only
-  const isLoaded = value
-    ? Array.isArray(value)
-      ? !value.find((x) => isPropertyLoaded(x, displayEntityKey))
-      : isPropertyLoaded(value, displayEntityKey)
-    : false;
+  const isLoaded = isValueLoaded(value, displayEntityKey);
 
   const valueId = useMemo(() => {
     if (Array.isArray(value)) return value.map((x) => incomeValueFunc(x, {}) ?? "");
