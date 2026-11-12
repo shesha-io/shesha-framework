@@ -101,6 +101,16 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
 
   const mustFetch = selectionIds.length > 0 && isDefined(entityType) && !itemsAlreadyLoaded;
 
+  // A new request attempt starts whenever the url changes or a fetch becomes required again (the effect below re-runs).
+  // Clear the failure of the previous attempt so a retry of the same url is shown as loading again.
+  // Adjusted during render (not in the effect) to avoid an extra render: https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const attemptKey = mustFetch ? url : undefined;
+  const [lastAttemptKey, setLastAttemptKey] = useState<string | undefined>(attemptKey);
+  if (lastAttemptKey !== attemptKey) {
+    setLastAttemptKey(attemptKey);
+    setFailedUrl(undefined);
+  }
+
   useEffect(() => {
     if (!mustFetch || !isDefined(entityType)) return undefined;
 
