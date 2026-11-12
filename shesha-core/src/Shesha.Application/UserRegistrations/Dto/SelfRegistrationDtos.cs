@@ -1,5 +1,6 @@
 using Shesha.Domain.Enums;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.UserRegistrations.Dto
@@ -60,6 +61,18 @@ namespace Shesha.UserRegistrations.Dto
         /// The one-time pin the registrant received
         /// </summary>
         public string OtpPin { get; set; }
+
+        /// <summary>
+        /// Operation id of a second verified one-time pin, sent to <see cref="EmailAddress"/>. Used when the registrant
+        /// verifies their mobile number with <see cref="OtpOperationId"/> but the email address must be kept too (it's the
+        /// username, or email domains are restricted), so it must be proven separately.
+        /// </summary>
+        public Guid? EmailOtpOperationId { get; set; }
+
+        /// <summary>
+        /// The one-time pin the registrant received at <see cref="EmailAddress"/>
+        /// </summary>
+        public string EmailOtpPin { get; set; }
     }
 
     /// <summary>
@@ -150,6 +163,11 @@ namespace Shesha.UserRegistrations.Dto
         /// True when the email address is used as the username
         /// </summary>
         public bool UserEmailAsUsername { get; set; }
+
+        /// <summary>
+        /// Email domains allowed to register, normalised (e.g. "gov.za"). Empty when any domain is allowed.
+        /// </summary>
+        public List<string> AllowedEmailDomains { get; set; } = new List<string>();
 
         /// <summary>
         /// Whether registration creates a new Person, links to a pre-registered one, or either

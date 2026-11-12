@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Domain.Enums;
 using Shesha.UserManagements.Configurations;
 using Shesha.UserRegistrations.Dto;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Shesha.UserRegistrations
@@ -45,6 +46,7 @@ namespace Shesha.UserRegistrations
                 SupportedRegistrationMethods = isEnabled ? s.SupportedRegistrationMethods : SupportedRegistrationMethods.None,
                 RequireEmailVerification = s.RequireEmailVerification,
                 UserEmailAsUsername = s.UserEmailAsUsername,
+                AllowedEmailDomains = new List<string>(EmailDomainPolicy.ParseDomains(s.AllowedEmailDomains)),
                 CreationMode = s.CreationMode ?? RefListSelfRegistrationCreationMode.AlwaysCreateNew,
                 AdditionalRegistrationInfo = s.AdditionalRegistrationInfo,
                 AdditionalRegistrationInfoFormModule = s.AdditionalRegistrationInfoFormModule,
