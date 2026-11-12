@@ -208,7 +208,8 @@ namespace Shesha.Tests.Users
                 var verifyResponse = await userAppService.ValidateResetCodeAsync(new ResetPasswordValidateCodeInput()
                 {
                     Code = currentPin,
-                    Username = userName,
+                    // the email link carries the username base64-encoded (see SendEmailLinkAsync)
+                    Username = Convert.ToBase64String(Encoding.UTF8.GetBytes(userName)),
                     Method = (long)RefListPasswordResetMethods.EmailLink
                 });
 
@@ -242,6 +243,152 @@ namespace Shesha.Tests.Users
 
         }
 
+        /// <summary>
+        /// Only the OTP issued for the user's password reset may be used to obtain a password reset token
+        /// </summary>
+        [Fact]
+        public async Task ResetPasswordVerifyOtp_should_reject_otp_not_issued_to_user_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var storage = new Dictionary<Guid, string>();
+            var otpStorage = new Mock<IOtpStorage>();
+            otpStorage.Setup(s => s.SaveAsync(It.IsAny<OtpDto>())).Returns<OtpDto>(dto =>
+            {
+                currentPin = dto.Pin;
+                storage.Add(dto.OperationId, dto.Pin);
+                return Task.CompletedTask;
+            });
+            otpStorage.Setup(s => s.GetAsync(It.IsAny<Guid>())).Returns<Guid>(id => Task.FromResult(storage.ContainsKey(id)
+                ? new OtpDto { Pin = storage[id], OperationId = id, ExpiresOn = DateTime.MaxValue }
+                : null));
+
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+            var otpManager = LocalIocManager.Resolve<IOtpManager>();
+
+            var userDto = await userAppService.CreateAsync(
+                new CreateUserDto
+                {
+                    EmailAddress = $"{userName}@domain.com",
+                    IsActive = true,
+                    Name = "Test",
+                    Surname = "User",
+                    Password = "123qwe",
+                    UserName = userName,
+                    SupportedPasswordResetMethods = [(long)RefListPasswordResetMethods.SmsOtp]
+                });
+
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                var user = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.UserName == userName);
+                user.PhoneNumber = mobileNo;
+                await _userRepository.UpdateAsync(user);
+                await uow.CompleteAsync();
+            }
+
+            // a valid OTP that was not issued for this user's password reset
+            var otherOtp = await otpManager.SendPinAsync(new SendPinInput
+            {
+                SendTo = await GetUniqueMobileNoAsync(),
+                SendType = OtpSendType.Sms,
+            });
+
+            var verifyResponse = await userAppService.ResetPasswordVerifyOtpAsync(new ResetPasswordVerifyOtpInput()
+            {
+                MobileNo = mobileNo,
+                OperationId = otherOtp.OperationId,
+                Pin = currentPin
+            });
+
+            await _userRepository.DeleteAsync(userDto.Id);
+
+            verifyResponse.IsSuccess.ShouldBeFalse("only the OTP issued for this user's password reset may be accepted");
+            verifyResponse.Token.ShouldBeNullOrEmpty();
+        }
+
+        /// <summary>
+        /// ValidateResetCode accepts at most 5 checks per OTP. After that, even the correct code is rejected and the
+        /// user has to request a new one (issue #4772)
+        /// </summary>
+        [Fact]
+        public async Task ValidateResetCode_should_reject_code_after_max_failed_attempts_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var storage = new Dictionary<Guid, OtpDto>();
+            var otpStorage = new Mock<IOtpStorage>();
+            otpStorage.Setup(s => s.SaveAsync(It.IsAny<OtpDto>())).Returns<OtpDto>(dto =>
+            {
+                currentPin = dto.Pin;
+                dto.ExpiresOn = DateTime.MaxValue;
+                storage[dto.OperationId] = dto;
+                return Task.CompletedTask;
+            });
+            otpStorage.Setup(s => s.GetAsync(It.IsAny<Guid>()))
+                .Returns<Guid>(id => Task.FromResult(storage.TryGetValue(id, out var dto) ? dto : null));
+            otpStorage.Setup(s => s.IncrementVerifyAttemptsAsync(It.IsAny<Guid>()))
+                .Returns<Guid>(id => Task.FromResult(storage.TryGetValue(id, out var dto) ? ++dto.VerifyAttempts : 0));
+
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+
+            var userDto = await userAppService.CreateAsync(
+                new CreateUserDto
+                {
+                    EmailAddress = $"{userName}@domain.com",
+                    IsActive = true,
+                    Name = "Test",
+                    Surname = "User",
+                    Password = "123qwe",
+                    UserName = userName,
+                    SupportedPasswordResetMethods = [(long)RefListPasswordResetMethods.SmsOtp]
+                });
+
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                var user = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.UserName == userName);
+                user.PhoneNumber = mobileNo;
+                await _userRepository.UpdateAsync(user);
+                await uow.CompleteAsync();
+            }
+
+            (await userAppService.SendSmsOtpAsync(userName)).ShouldBeTrue();
+
+            var wrongPin = currentPin == "000000" ? "111111" : "000000";
+            var input = new ResetPasswordValidateCodeInput
+            {
+                Username = userName,
+                Method = (long)RefListPasswordResetMethods.SmsOtp,
+                Code = wrongPin,
+            };
+
+            var failedResponses = new List<ResetPasswordVerifyOtpResponse>();
+            for (var i = 0; i < 5; i++)
+                failedResponses.Add(await userAppService.ValidateResetCodeAsync(input));
+
+            // the 6th check uses the correct code and must still be rejected
+            input.Code = currentPin;
+            var lockedResponse = await userAppService.ValidateResetCodeAsync(input);
+
+            await _userRepository.DeleteAsync(userDto.Id);
+
+            failedResponses.ShouldAllBe(r => !r.IsSuccess && r.ErrorMessage == "Wrong one time pin");
+            lockedResponse.IsSuccess.ShouldBeFalse("the code must be rejected once the attempt limit is reached");
+            lockedResponse.ErrorMessage.ShouldBe("Too many failed verification attempts. Please request a new code.");
+            lockedResponse.Token.ShouldBeNullOrEmpty();
+        }
+
         private async Task<string> GetUniqueMobileNoAsync()
         {
             var rnd = new Random();
@@ -249,7 +396,8 @@ namespace Shesha.Tests.Users
             {
                 do
                 {
-                    var mobileNo = rnd.NextDouble().ToString("0000000000");
+                    // note: NextDouble() is in [0, 1), formatting it as "0000000000" only ever produced 0000000000 or 0000000001
+                    var mobileNo = "0" + rnd.Next(100000000, 999999999).ToString();
                     var alreadyExists = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.PhoneNumber == mobileNo) != null;
                     if (!alreadyExists)
                         return mobileNo;
@@ -314,7 +462,7 @@ namespace Shesha.Tests.Users
             LocalIocManager.Register<TokenAuthConfiguration>();
             var tokenAuthConfig = LocalIocManager.Resolve<TokenAuthConfiguration>();
             
-            tokenAuthConfig.SecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("SheshaTest_C421AAEE0D114E9C"));
+            tokenAuthConfig.SecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("SheshaTest_C421AAEE0D114E9C_8F2B6D19A4E7"));
             tokenAuthConfig.Issuer = "SheshaTest";
             tokenAuthConfig.Audience = "SheshaTest";
             tokenAuthConfig.SigningCredentials = new SigningCredentials(tokenAuthConfig.SecurityKey, SecurityAlgorithms.HmacSha256);

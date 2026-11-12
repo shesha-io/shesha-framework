@@ -47,5 +47,19 @@ namespace Shesha.Domain
         
         [StringLength(int.MaxValue)]
         public virtual string ErrorMessage { get; set; }
+
+        /// <summary>
+        /// Number of verification attempts made against this OTP. Only changed by an atomic increment
+        /// (see IOtpStorage.IncrementVerifyAttemptsAsync), so entity updates never overwrite it
+        /// </summary>
+        [ReadonlyProperty(Insert = true)]
+        public virtual int VerifyAttempts { get; set; }
+
+        /// <summary>
+        /// When the OTP was used. A used OTP can't be accepted again. Only set by an atomic update
+        /// (see IOtpStorage.TryConsumeAsync), so entity updates (e.g. a resend extending the expiry) never clear it
+        /// </summary>
+        [ReadonlyProperty(Insert = true)]
+        public virtual DateTime? ConsumedOn { get; set; }
     }
 }

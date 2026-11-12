@@ -27,5 +27,13 @@ namespace Shesha.Otp
         /// <param name="operationId"></param>
         /// <returns></returns>
         Task<IOtpDto> GetAsync(Guid operationId);
+
+        /// <summary>
+        /// Marks the OTP as used so that it can't be accepted again. Call it after a successful verification to make the
+        /// OTP single-use; when called concurrently for the same OTP, only one call returns true.
+        /// </summary>
+        /// <param name="operationId"></param>
+        /// <returns>True if the OTP was valid (not expired) and is now used, otherwise false</returns>
+        Task<bool> TryConsumeAsync(Guid operationId);
     }
 }

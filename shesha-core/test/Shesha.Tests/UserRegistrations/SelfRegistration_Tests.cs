@@ -66,6 +66,8 @@ namespace Shesha.Tests.UserRegistrations
                     _otps.TryGetValue(input.OperationId, out var otp) && otp.Pin == input.Pin && otp.ExpiresOn > DateTime.Now
                         ? VerifyPinResponse.Success()
                         : VerifyPinResponse.Failed("Wrong one time pin")));
+            otpManager.Setup(m => m.TryConsumeAsync(It.IsAny<Guid>()))
+                .Returns<Guid>(id => Task.FromResult(_otps.Remove(id)));
             LocalIocManager.IocContainer.Register(Component.For<IOtpManager>().Instance(otpManager.Object).IsDefault().Named("test-otp-manager"));
         }
 

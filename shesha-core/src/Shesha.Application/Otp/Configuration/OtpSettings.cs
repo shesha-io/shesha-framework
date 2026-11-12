@@ -32,6 +32,18 @@ namespace Shesha.Otp.Configuration
         public bool IgnoreOtpValidation { get; set; }
 
         /// <summary>
+        /// Maximum number of verification attempts allowed per one-time pin. Once reached, the pin is invalidated
+        /// and a new one must be requested. Does not apply to email links. Zero or less means use the default
+        /// </summary>
+        public int MaxVerifyAttempts { get; set; }
+
+        /// <summary>
+        /// Maximum number of one-time pins (including resends) that may be sent to the same mobile number or email
+        /// address within one hour. Zero or less means use the default
+        /// </summary>
+        public int MaxSendsPerDestinationPerHour { get; set; }
+
+        /// <summary>
         /// Subject template
         /// </summary>
         public string DefaultSubjectTemplate { get; set; }
