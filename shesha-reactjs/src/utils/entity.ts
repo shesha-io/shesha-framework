@@ -112,7 +112,7 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
   }
 
   useEffect(() => {
-    if (!mustFetch || !isDefined(entityType)) return undefined;
+    if (!mustFetch) return undefined;
 
     // the payload changes when the display property or selection changes: drop responses of superseded requests
     let isCurrent = true;
