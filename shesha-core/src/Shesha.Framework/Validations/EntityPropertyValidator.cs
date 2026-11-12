@@ -266,7 +266,9 @@ namespace Shesha.Validations
                     }
 
                     // Get value to validate min & max
-                    double val = double.Parse(stringValue.NotNull());
+                    double val = value is string
+                        ? double.Parse(stringValue.NotNull())
+                        : System.Convert.ToDouble(value);
 
                     if (propConfig.Min.HasValue && val < propConfig.Min)
                     {
