@@ -125,7 +125,7 @@ namespace Shesha.UserRegistrations
             if (plan.Action == SelfRegistrationAction.LinkToExisting)
                 EnsureOwnershipVerified(verifiedContacts, existingPerson);
             else
-                EnsureRegistrationMethodVerified(input, verifiedContact, settings.SupportedRegistrationMethods);
+                EnsureRegistrationMethodVerified(input, verifiedContacts, settings.SupportedRegistrationMethods);
 
             var userName = settings.UserEmailAsUsername ? input.EmailAddress : input.UserName;
             var user = await _userManager.CreateUserAsync(
@@ -354,14 +354,16 @@ namespace Shesha.UserRegistrations
         }
 
         /// <summary>
-        /// A new account must be registered with the configured registration method: the verified contact must be the email
+        /// A new account must be registered with the configured registration method: a verified contact must be the email
         /// address for <see cref="SupportedRegistrationMethods.EmailAddress"/>, the mobile number for
-        /// <see cref="SupportedRegistrationMethods.MobileNumber"/>, otherwise either.
+        /// <see cref="SupportedRegistrationMethods.MobileNumber"/>, otherwise either. Either one-time pin can satisfy it.
         /// </summary>
-        protected virtual void EnsureRegistrationMethodVerified(SelfRegistrationInput input, string verifiedContact, SupportedRegistrationMethods method)
+        protected virtual void EnsureRegistrationMethodVerified(SelfRegistrationInput input, IReadOnlyCollection<string> verifiedContacts, SupportedRegistrationMethods method)
         {
-            var provedEmail = verifiedContact == NormalizeContact(input.EmailAddress);
-            var provedMobile = verifiedContact == NormalizeContact(input.MobileNumber);
+            var email = NormalizeContact(input.EmailAddress);
+            var mobile = NormalizeContact(input.MobileNumber);
+            var provedEmail = email != null && verifiedContacts.Contains(email);
+            var provedMobile = mobile != null && verifiedContacts.Contains(mobile);
             var proved = method switch
             {
                 SupportedRegistrationMethods.EmailAddress => provedEmail,

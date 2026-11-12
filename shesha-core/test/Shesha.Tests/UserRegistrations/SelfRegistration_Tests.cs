@@ -455,6 +455,24 @@ namespace Shesha.Tests.UserRegistrations
         }
 
         [Fact]
+        public async Task Email_registration_accepts_the_email_pin_as_the_second_pinAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s => s.SupportedRegistrationMethods = SupportedRegistrationMethods.EmailAddress));
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+            ProvideEmailOtp(input, sentTo: input.EmailAddress);
+
+            var result = await RegisterAsync(app, input);
+
+            await WithUowAsync(async () =>
+            {
+                var person = await _personRepository.GetAll().SingleAsync(p => p.Id == result.PersonId);
+                person.EmailAddress1.ShouldBe(input.EmailAddress);
+                person.MobileNumber1.ShouldBe(input.MobileNumber, "both contacts were verified");
+            });
+        }
+
+        [Fact]
         public async Task Linking_accepts_a_person_matched_on_the_verified_email_addressAsync()
         {
             var app = await CreateAppAsync(EnabledSettings(s =>
