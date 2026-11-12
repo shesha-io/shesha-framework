@@ -232,7 +232,7 @@ namespace Shesha.Otp
             return VerifyPinResponse.Success();
         }
 
-        private const string TooManyAttemptsMessage = "Too many incorrect attempts, request a new one-time pin";
+        private const string TooManyAttemptsMessage = "Too many failed verification attempts. Please request a new code.";
 
         /// <summary>
         /// Maximum number of verification attempts per OTP, falling back to the default when not configured

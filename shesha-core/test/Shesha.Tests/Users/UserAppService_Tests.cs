@@ -312,6 +312,83 @@ namespace Shesha.Tests.Users
             verifyResponse.Token.ShouldBeNullOrEmpty();
         }
 
+        /// <summary>
+        /// ValidateResetCode accepts at most 5 checks per OTP. After that, even the correct code is rejected and the
+        /// user has to request a new one (issue #4772)
+        /// </summary>
+        [Fact]
+        public async Task ValidateResetCode_should_reject_code_after_max_failed_attempts_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var storage = new Dictionary<Guid, OtpDto>();
+            var otpStorage = new Mock<IOtpStorage>();
+            otpStorage.Setup(s => s.SaveAsync(It.IsAny<OtpDto>())).Returns<OtpDto>(dto =>
+            {
+                currentPin = dto.Pin;
+                dto.ExpiresOn = DateTime.MaxValue;
+                storage[dto.OperationId] = dto;
+                return Task.CompletedTask;
+            });
+            otpStorage.Setup(s => s.GetAsync(It.IsAny<Guid>()))
+                .Returns<Guid>(id => Task.FromResult(storage.TryGetValue(id, out var dto) ? dto : null));
+            otpStorage.Setup(s => s.IncrementVerifyAttemptsAsync(It.IsAny<Guid>()))
+                .Returns<Guid>(id => Task.FromResult(storage.TryGetValue(id, out var dto) ? ++dto.VerifyAttempts : 0));
+
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+
+            var userDto = await userAppService.CreateAsync(
+                new CreateUserDto
+                {
+                    EmailAddress = $"{userName}@domain.com",
+                    IsActive = true,
+                    Name = "Test",
+                    Surname = "User",
+                    Password = "123qwe",
+                    UserName = userName,
+                    SupportedPasswordResetMethods = [(long)RefListPasswordResetMethods.SmsOtp]
+                });
+
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                var user = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.UserName == userName);
+                user.PhoneNumber = mobileNo;
+                await _userRepository.UpdateAsync(user);
+                await uow.CompleteAsync();
+            }
+
+            (await userAppService.SendSmsOtpAsync(userName)).ShouldBeTrue();
+
+            var wrongPin = currentPin == "000000" ? "111111" : "000000";
+            var input = new ResetPasswordValidateCodeInput
+            {
+                Username = userName,
+                Method = (long)RefListPasswordResetMethods.SmsOtp,
+                Code = wrongPin,
+            };
+
+            var failedResponses = new List<ResetPasswordVerifyOtpResponse>();
+            for (var i = 0; i < 5; i++)
+                failedResponses.Add(await userAppService.ValidateResetCodeAsync(input));
+
+            // the 6th check uses the correct code and must still be rejected
+            input.Code = currentPin;
+            var lockedResponse = await userAppService.ValidateResetCodeAsync(input);
+
+            await _userRepository.DeleteAsync(userDto.Id);
+
+            failedResponses.ShouldAllBe(r => !r.IsSuccess && r.ErrorMessage == "Wrong one time pin");
+            lockedResponse.IsSuccess.ShouldBeFalse("the code must be rejected once the attempt limit is reached");
+            lockedResponse.ErrorMessage.ShouldBe("Too many failed verification attempts. Please request a new code.");
+            lockedResponse.Token.ShouldBeNullOrEmpty();
+        }
+
         private async Task<string> GetUniqueMobileNoAsync()
         {
             var rnd = new Random();
