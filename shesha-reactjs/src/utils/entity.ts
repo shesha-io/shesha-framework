@@ -31,7 +31,7 @@ interface IGetEntityPayload extends IGetAllPayload, IEntityTypeIdentifierQueryPa
 }
 
 const buildFilterById = (value: string | string[] | undefined): string | undefined => {
-  if (!value) return undefined;
+  if (!isDefined(value) || value.length === 0) return undefined;
 
   const ids = Array.isArray(value) ? value : [value];
   const expression = { in: [{ var: 'Id' }, ids] };
@@ -65,6 +65,9 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
   const selection = useDeepCompareMemoKeepReference(() => props.selection, [props.selection]);
   const entityType = useDeepCompareMemoKeepReference(() => props.entityType, [props.entityType]);
   const [loaded, setLoaded] = useState<ILoadedSelection | undefined>(undefined);
+  // url of the last request that failed: ends the loading state without marking the ids as loaded,
+  // so the selection is fetched again when the request changes or the component remounts
+  const [failedUrl, setFailedUrl] = useState<string | undefined>(undefined);
 
   const httpClient = useHttpClient();
 
@@ -74,7 +77,7 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
   const gqlFields = fields.join('{') + '}'.repeat(fields.length - 1);
 
   const selectionIds = useMemo<string[]>(() => {
-    if (!selection) return [];
+    if (!isDefined(selection) || selection.length === 0) return [];
     return (Array.isArray(selection) ? selection : [selection]).map(toIdKey);
   }, [selection]);
 
@@ -90,10 +93,11 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
   const getValuePayload = useMemo<IGetEntityPayload>(() => ({
     skipCount: 0,
     maxResultCount: 1000,
-    ...(entityType ? getEntityTypeIdentifierQueryParams(entityType) : {}),
+    ...(isDefined(entityType) ? getEntityTypeIdentifierQueryParams(entityType) : {}),
     properties: `id ${gqlFields}`,
     filter: buildFilterById(selection),
   }), [entityType, selection, gqlFields]);
+  const url = useMemo(() => buildUrl(`${GENERIC_ENTITIES_ENDPOINT}/GetAll`, getValuePayload), [getValuePayload]);
 
   const mustFetch = selectionIds.length > 0 && isDefined(entityType) && !itemsAlreadyLoaded;
 
@@ -102,28 +106,25 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
 
     // the payload changes when the display property or selection changes: drop responses of superseded requests
     let isCurrent = true;
-    const complete = (rows: EntityData[]): void => {
-      if (isCurrent)
-        setLoaded({ entityType, gqlFields, requestedIds: selectionIds, rows });
-    };
-
-    const url = buildUrl(`${GENERIC_ENTITIES_ENDPOINT}/GetAll`, getValuePayload);
     httpClient.get<IAjaxResponse<GetAllResponse<EntityData>>>(url)
       .then((response) => {
-        complete(extractAjaxResponse(response.data).items);
+        const rows = extractAjaxResponse(response.data).items;
+        if (isCurrent)
+          setLoaded({ entityType, gqlFields, requestedIds: selectionIds, rows });
       })
       .catch((error) => {
         console.error('Failed to fetch entities', error);
-        complete([]);
+        if (isCurrent)
+          setFailedUrl(url);
       });
 
     return () => {
       isCurrent = false;
     };
-  }, [httpClient, getValuePayload, mustFetch, entityType, gqlFields, selectionIds]);
+  }, [httpClient, url, mustFetch, entityType, gqlFields, selectionIds]);
 
   const result = useMemo<EntityData[] | null>(() => {
-    if (!entityType || !propertyName || !selection) return null;
+    if (!isDefined(entityType) || isNullOrWhiteSpace(propertyName) || selectionIds.length === 0) return null;
     if (!itemsAlreadyLoaded || loaded.rows.length === 0) return null;
 
     return loaded.rows
@@ -131,11 +132,11 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
       .map<EntityData>((ent) => {
         return setValueByPropertyName({ id: ent.id }, displayProperty, getValueByPropertyName(ent, displayProperty));
       });
-  }, [displayProperty, entityType, itemsAlreadyLoaded, loaded, propertyName, selection, selectionIds]);
+  }, [displayProperty, entityType, itemsAlreadyLoaded, loaded, propertyName, selectionIds]);
 
   return {
     rows: result,
-    loading: mustFetch,
+    loading: mustFetch && failedUrl !== url,
   };
 };
 

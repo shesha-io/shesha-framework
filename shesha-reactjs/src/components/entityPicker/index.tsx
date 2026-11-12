@@ -106,7 +106,7 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
   const valueId = useMemo(() => {
     if (Array.isArray(value)) return value.map((x) => incomeValueFunc(x, {}) ?? "");
     const id = incomeValueFunc(value, {});
-    return id || undefined;
+    return isNullOrWhiteSpace(id) ? undefined : id;
   }, [value, incomeValueFunc]);
 
   const selection = useEntitySelectionData({
@@ -144,7 +144,7 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
 
   const options = useDeepCompareMemo<DefaultOptionType[]>(() => {
     if (selection.loading) {
-      const items = valueId
+      const items = isDefined(valueId)
         ? (Array.isArray(valueId)
           ? valueId
           : [valueId])
@@ -196,7 +196,7 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
     return <ValidationErrors error="Please select `Entity Type` on the settings panel" />;
   }
 
-  if (useButtonPicker) {
+  if (useButtonPicker === true) {
     const buttonClassName = [pickerButtonProps?.className, className]
       .filter(isNotNullOrWhiteSpace)
       .join(' ');
