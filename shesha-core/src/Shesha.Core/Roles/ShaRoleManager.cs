@@ -42,6 +42,7 @@ namespace Shesha.Roles
 
         protected override async Task CopyItemPropertiesAsync(ShaRole source, ShaRole destination)
         {
+            await base.CopyItemPropertiesAsync(source, destination);
             destination.NameSpace = source.NameSpace;
             destination.SetHardLinkToApplication(source.HardLinkToApplication);
 
