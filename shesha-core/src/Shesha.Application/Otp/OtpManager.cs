@@ -234,6 +234,9 @@ namespace Shesha.Otp
                                 : OtpDefaults.DefaultEmailBodyTemplate;
                         }
 
+                        if (otp.ActionType == OtpActionTypes.Registration)
+                            bodyTemplate = AddRegistrationLinkParameters(bodyTemplate);
+
                         var body = bodyTemplate.Replace("{{token}}", otp.Pin);
                         body = body.Replace("{{userid}}", otp.RecipientId);
                         // lets the link be verified in any browser, not only the one that requested it
@@ -244,6 +247,18 @@ namespace Shesha.Otp
                 default:
                     throw new NotSupportedException($"unsupported {nameof(otp.SendType)}: {otp.SendType}");
             }
+        }
+
+        /// <summary>
+        /// Registration links need the operation id and the registration flag to work in a browser other than the one that requested
+        /// them. Templates saved before the <c>{{operationId}}</c> placeholder existed don't have it, so it's added after the token.
+        /// </summary>
+        public static string AddRegistrationLinkParameters(string bodyTemplate)
+        {
+            if (string.IsNullOrEmpty(bodyTemplate) || bodyTemplate.Contains("{{operationId}}") || !bodyTemplate.Contains("{{token}}"))
+                return bodyTemplate;
+
+            return bodyTemplate.Replace("{{token}}", "{{token}}&operationId={{operationId}}&registration=1");
         }
 
     }
