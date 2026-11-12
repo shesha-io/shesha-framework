@@ -115,4 +115,45 @@ describe('useEntitySelectionData', () => {
     expect(get).toHaveBeenCalledTimes(1);
     expect(result.current.loading).toBe(false);
   });
+  it('shows loading again when a previously failed request is retried', async () => {
+    get.mockReset();
+    let resolveRetry: (v: unknown) => void = () => undefined;
+    let nameCalls = 0;
+    get.mockImplementation((url: string) => {
+      if (url.includes('contactEmail'))
+        return Promise.resolve({ data: { success: true, result: { items: [{ id: 'a', contactEmail: 'e' }], totalCount: 1 } } });
+      nameCalls++;
+      return nameCalls === 1
+        ? Promise.reject(new Error('network'))
+        : new Promise((resolve) => {
+          resolveRetry = resolve;
+        });
+    });
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const { result, rerender } = renderHook(
+      ({ propertyName }) => useEntitySelectionData({
+        entityType: { name: 'Organisation', module: 'Shesha' },
+        propertyName,
+        selection: ['a'],
+      }),
+      { initialProps: { propertyName: 'name' } },
+    );
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.rows).toBeNull();
+
+    rerender({ propertyName: 'contactEmail' });
+    await waitFor(() => expect(result.current.rows).toEqual([{ id: 'a', contactEmail: 'e' }]));
+
+    // back to the property whose request failed: the retry must be reported as loading until it completes
+    rerender({ propertyName: 'name' });
+    expect(result.current.loading).toBe(true);
+    await waitFor(() => expect(nameCalls).toBe(2));
+    expect(result.current.loading).toBe(true);
+
+    resolveRetry({ data: { success: true, result: { items: [{ id: 'a', name: 'A' }], totalCount: 1 } } });
+    await waitFor(() => expect(result.current.rows).toEqual([{ id: 'a', name: 'A' }]));
+    expect(result.current.loading).toBe(false);
+    consoleError.mockRestore();
+  });
 });
