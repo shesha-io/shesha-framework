@@ -94,6 +94,8 @@ namespace Shesha.DynamicEntities
                     _dbAllConfigs = await _entityConfigRepository.GetAllListAsync();
                     _dbAllProperties = await _entityPropertyRepository.GetAllListAsync();
 
+                    await DeleteRestoreAsync(assemblies);
+
                     // If need to update inheritance then process all assemblies
                     var forceUpdate = ForceUpdate || _dbAllConfigs.Where(x => !x.IsDeleted && x.Source == MetadataSourceType.ApplicationCode).All(x => x.InheritedFrom == null)
                         // If need to update column names for hardcoded properties
@@ -112,6 +114,48 @@ namespace Shesha.DynamicEntities
             }
 
             LogInfo("Bootstrap entity configs finished successfully");
+        }
+
+        private async Task DeleteRestoreAsync(List<Assembly> assemblies)
+        {
+            var codeBased = _dbAllConfigs.Where(e => e.Source == MetadataSourceType.ApplicationCode).ToList();
+
+            var entityTypes = assemblies.SelectMany(x => x.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t))).ToList();
+
+            var codeBasedWithEntityType = codeBased.Select(ec => {
+                var entityType = FindConfig(entityTypes, ec, e => e);
+                return new { EntityConfig = ec, EntityType = entityType };
+            }).ToList();
+
+            var toDelete = codeBasedWithEntityType.Where(e => e.EntityType == null && !e.EntityConfig.IsDeleted).ToList();
+            LogInfo(toDelete.Any() ? $"Found {toDelete.Count()} hardcoded entities to delete" : $"Hardcoded entities to delete not found");
+            foreach (var config in toDelete)
+            {
+                await _entityConfigRepository.DeleteAsync(config.EntityConfig);
+            }
+
+            var toRestore = codeBasedWithEntityType.Where(e => e.EntityType != null && e.EntityConfig.IsDeleted).ToList();
+            LogInfo(toRestore.Any() ? $"Found {toRestore.Count()} hardcoded entities to restore" : $"Hardcoded entities to restore not found");
+            foreach (var config in toRestore)
+            {
+                config.EntityConfig.IsDeleted = false;
+                config.EntityConfig.DeletionTime = null;
+                config.EntityConfig.DeleterUserId = null;
+
+                await _entityConfigRepository.UpdateAsync(config.EntityConfig);
+            }
+        }
+
+        private T? FindConfig<T>(List<T> configs, EntityConfig ec, Func<T, Type> typeGetter)
+        {
+            return configs.FirstOrDefault(c => {
+                var type = typeGetter.Invoke(c);
+                var moduleName = type.GetConfigurableModuleName();
+
+                return type.Name.Equals(ec.ClassName, StringComparison.InvariantCultureIgnoreCase)
+                    && string.Equals(type.Namespace, ec.Namespace, StringComparison.InvariantCultureIgnoreCase)
+                    && moduleName == ec.Module?.Name;
+            });
         }
 
         private async Task ProcessAsync(List<Assembly> assemblies)
@@ -140,14 +184,9 @@ namespace Shesha.DynamicEntities
             LogInfo($"Found {_dbAllConfigs.Count()} entity in the DB");
 
             var configEntities = new List<ProcessingItem>();
-            var toDelete = new List<EntityConfig>();
             foreach (var ec in _dbAllConfigs)
             {
-                var code = entitiesConfigs.FirstOrDefault(c =>
-                        c.Config.EntityType.Name.Equals(ec.ClassName, StringComparison.InvariantCultureIgnoreCase)
-                        && string.Equals(c.Config.EntityType.Namespace, ec.Namespace, StringComparison.InvariantCultureIgnoreCase)
-                        && c.ModuleName == ec.Module?.Name
-                    );
+                var code = FindConfig(entitiesConfigs, ec, e => e.Config.EntityType);
                 if (code != null)
                 {
                     configEntities.Add(new ProcessingItem
@@ -157,11 +196,6 @@ namespace Shesha.DynamicEntities
                         Code = code,
                         CrudConfig = EntityCrudHelper.GetHardcodedEntityCrudConfig(code.Config.EntityType),
                     });
-                }
-                else
-                {
-                    if (ec.Source == MetadataSourceType.ApplicationCode && !ec.IsDeleted)
-                        toDelete.Add(ec);
                 }
             }
 
@@ -333,13 +367,6 @@ namespace Shesha.DynamicEntities
             }
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
-
-            // delete removed configs
-            LogInfo(toAdd.Any() ? $"Found {toDelete.Count()} entities to delete" : $"Entities to delete not found");
-            foreach (var ec in toDelete)
-            {
-                await _entityConfigRepository.DeleteAsync(ec.Id);
-            }
         }
 
         private void ConfigureArrayListConfiguration(EntityProperty dst, EntityPropertyListConfiguration? srcListConfiguration)
