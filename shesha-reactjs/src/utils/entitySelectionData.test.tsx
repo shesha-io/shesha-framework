@@ -72,4 +72,47 @@ describe('useEntitySelectionData', () => {
     expect(result.current.rows).toEqual([{ id: 'a', contactEmail: 'new@x' }]);
     expect(result.current.loading).toBe(false);
   });
+  it('ends loading on a failed request without marking the selection as loaded, and retries when the request changes', async () => {
+    get.mockReset();
+    get
+      .mockImplementationOnce(() => Promise.reject(new Error('network')))
+      .mockImplementation(() => Promise.resolve({ data: { success: true, result: { items: [{ id: 'a', name: 'A' }], totalCount: 1 } } }));
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const { result, rerender } = renderHook(
+      ({ selection }) => useEntitySelectionData({
+        entityType: { name: 'Organisation', module: 'Shesha' },
+        propertyName: 'name',
+        selection,
+      }),
+      { initialProps: { selection: ['a', 'b'] } },
+    );
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(get).toHaveBeenCalledTimes(1);
+    expect(result.current.rows).toBeNull();
+
+    // a subset of the failed selection must be fetched, not treated as loaded
+    rerender({ selection: ['a'] });
+    await waitFor(() => expect(result.current.rows).toEqual([{ id: 'a', name: 'A' }]));
+    expect(get).toHaveBeenCalledTimes(2);
+    consoleError.mockRestore();
+  });
+
+  it('treats a successful empty result as loaded', async () => {
+    respondWith([]);
+    const { result, rerender } = renderHook(
+      ({ selection }) => useEntitySelectionData({
+        entityType: { name: 'Organisation', module: 'Shesha' },
+        propertyName: 'name',
+        selection,
+      }),
+      { initialProps: { selection: ['a', 'b'] } },
+    );
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    rerender({ selection: ['a'] });
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(get).toHaveBeenCalledTimes(1);
+    expect(result.current.loading).toBe(false);
+  });
 });
