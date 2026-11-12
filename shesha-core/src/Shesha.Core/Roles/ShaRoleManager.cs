@@ -21,20 +21,40 @@ namespace Shesha.Roles
     {
         private readonly IRepository<ShaRole, Guid> _roleRepo;
         private readonly IRepository<ShaRoleAppointedPerson, Guid> _roleAppointedPersonRepo;
+        private readonly IRepository<ShaRolePermission, Guid> _rolePermissionRepo;
         private readonly IShaPermissionChecker _shaPermissionChecker;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
         public ShaRoleManager(
             IRepository<ShaRole, Guid> roleRepo,
             IRepository<ShaRoleAppointedPerson, Guid> roleAppointedPersonRepo,
+            IRepository<ShaRolePermission, Guid> rolePermissionRepo,
             IShaPermissionChecker shaPermissionChecker,
             IUnitOfWorkManager unitOfWorkManager
         )
         {
             _roleRepo = roleRepo;
             _roleAppointedPersonRepo = roleAppointedPersonRepo;
+            _rolePermissionRepo = rolePermissionRepo;
             _shaPermissionChecker = shaPermissionChecker;
             _unitOfWorkManager = unitOfWorkManager;
+        }
+
+        protected override async Task CopyItemPropertiesAsync(ShaRole source, ShaRole destination)
+        {
+            destination.NameSpace = source.NameSpace;
+            destination.SetHardLinkToApplication(source.HardLinkToApplication);
+
+            var permissions = await (await _rolePermissionRepo.GetAllAsync()).Where(p => p.Role == source).ToListAsync();
+            foreach (var permission in permissions)
+            {
+                await _rolePermissionRepo.InsertAsync(new ShaRolePermission
+                {
+                    Role = destination,
+                    Permission = permission.Permission,
+                    IsGranted = permission.IsGranted,
+                });
+            }
         }
 
         private async Task<ShaRoleResult<ShaRoleAppointedPerson>> InternalAddToRoleAsync(Person person, ShaRole role, ShaRoleAppointmentData? appointmentData = null)
