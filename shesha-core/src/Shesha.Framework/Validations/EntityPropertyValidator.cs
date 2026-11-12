@@ -274,8 +274,10 @@ namespace Shesha.Validations
                     }
                     else
                     {
-                        // value already arrived as a numeric type (int/double/float/decimal/...), skip the string format checks and use it as-is
-                        val = System.Convert.ToDouble(value);
+                        // float must round-trip through its decimal text, or widening straight to double keeps the float32 bit pattern (0.1f -> 0.10000000149...)
+                        val = value is float f
+                            ? double.Parse(f.ToString())
+                            : System.Convert.ToDouble(value);
                     }
 
                     if (propConfig.Min.HasValue && val < propConfig.Min)
