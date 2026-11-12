@@ -249,26 +249,34 @@ namespace Shesha.Validations
                     var stringValue = value?.ToString();
                     if (string.IsNullOrWhiteSpace(stringValue) && isNullable)
                         return true;
-                    if (propConfig.DataFormat == NumberFormats.Int64 && !long.TryParse(stringValue, out _))
-                    {
-                        validationResult.Add(new ValidationResult($"Property '{friendlyName}' = '{stringValue}' should be in an Integer format"));
-                        return false;
-                    }
-                    else if(propConfig.DataFormat == NumberFormats.Decimal && !decimal.TryParse(stringValue, out decimal _))
-                    {
-                        validationResult.Add(new ValidationResult($"Property '{friendlyName}' = '{stringValue}' should be in a Decimal format"));
-                        return false;
-                    }
-                    else if ((propConfig.DataFormat == NumberFormats.Float || propConfig.DataFormat == NumberFormats.Double) && !double.TryParse(stringValue, out double _))
-                    {
-                        validationResult.Add(new ValidationResult($"Property '{friendlyName}' = '{stringValue}' should be in a Float format"));
-                        return false;
-                    }
 
-                    // Get value to validate min & max
-                    double val = value is string
-                        ? double.Parse(stringValue.NotNull())
-                        : System.Convert.ToDouble(value);
+                    double val;
+                    if (value is string)
+                    {
+                        if (propConfig.DataFormat == NumberFormats.Int64 && !long.TryParse(stringValue, out _))
+                        {
+                            validationResult.Add(new ValidationResult($"Property '{friendlyName}' = '{stringValue}' should be in an Integer format"));
+                            return false;
+                        }
+                        else if (propConfig.DataFormat == NumberFormats.Decimal && !decimal.TryParse(stringValue, out decimal _))
+                        {
+                            validationResult.Add(new ValidationResult($"Property '{friendlyName}' = '{stringValue}' should be in a Decimal format"));
+                            return false;
+                        }
+                        else if ((propConfig.DataFormat == NumberFormats.Float || propConfig.DataFormat == NumberFormats.Double) && !double.TryParse(stringValue, out double _))
+                        {
+                            validationResult.Add(new ValidationResult($"Property '{friendlyName}' = '{stringValue}' should be in a Float format"));
+                            return false;
+                        }
+
+                        // Get value to validate min & max
+                        val = double.Parse(stringValue.NotNull());
+                    }
+                    else
+                    {
+                        // value already arrived as a numeric type (int/double/float/decimal/...), skip the string format checks and use it as-is
+                        val = System.Convert.ToDouble(value);
+                    }
 
                     if (propConfig.Min.HasValue && val < propConfig.Min)
                     {
