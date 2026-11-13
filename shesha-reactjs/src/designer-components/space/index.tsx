@@ -24,6 +24,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 const SpaceComponent: IToolboxComponent<ISpaceProps> = {
   type: 'space',
   isInput: false,
+  acceptsChildren: true,
   name: 'Space',
   icon: <ArrowsAltOutlined />,
   isHidden: true,

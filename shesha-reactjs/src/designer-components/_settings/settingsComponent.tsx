@@ -62,6 +62,8 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
   type: 'setting',
   isInput: true,
   isOutput: true,
+  acceptsChildren: true,
+  itemsLimit: 1,
   name: 'Setting',
   icon: <SettingOutlined />,
   Factory: ({ model }) => {

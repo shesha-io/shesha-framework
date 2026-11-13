@@ -1,6 +1,8 @@
 import { memo, FC, useCallback } from 'react';
-import { Empty } from 'antd';
-import { useFormDesigner, useFormDesignerReadOnly, useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
+import { Alert, Empty } from 'antd';
+import { useFormDesigner, useFormDesignerIsSelectedMounted, useFormDesignerReadOnly, useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
+import { getNotOnCanvasMessage } from '@/providers/formDesigner/structure/messages';
+import { isDefined } from '@/utils/nullables';
 import { useStyles } from './styles';
 
 const ComponentPropertiesPanelInner: FC = () => {
@@ -8,6 +10,7 @@ const ComponentPropertiesPanelInner: FC = () => {
   const formDesigner = useFormDesigner();
   const readOnly = useFormDesignerReadOnly();
   const selectedComponentId = useFormDesignerSelectedComponentId();
+  const isSelectedMounted = useFormDesignerIsSelectedMounted();
 
   const panelRef = useCallback((node: HTMLDivElement | null) => {
     formDesigner.setSettingsPanelElement(node);
@@ -20,6 +23,15 @@ const ComponentPropertiesPanelInner: FC = () => {
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'}
+          />
+        </div>
+      )}
+      {isDefined(selectedComponentId) && !isSelectedMounted && (
+        <div className={styles.notOnCanvas}>
+          <Alert
+            type="info"
+            showIcon
+            title={getNotOnCanvasMessage(formDesigner.state.formFlatMarkup, formDesigner.getContainerOwnership(), selectedComponentId)}
           />
         </div>
       )}

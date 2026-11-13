@@ -31,14 +31,22 @@ import {
   IComponentAddPayload,
   IComponentDeletePayload,
   IComponentDuplicatePayload,
+  IComponentMovePayload,
   IComponentUpdatePayload,
+  IRevealRequest,
   IValidationResultsPayload,
   IFormDesignerInstance,
   IUpdateChildComponentsPayload,
+  ChangeResult,
   VALIDATABLE_ITEM_TYPES,
 } from "./contexts";
 import { BaseHistoryItem, FormDesignerSubscription, FormDesignerSubscriptionType, IComponentSettingsEditorsCache } from "./models";
 import { IUndoRedoManager, UndoRedoManager } from "./undoRedoManager";
+import { havePanesChanged, haveRelationsChanged } from "./structure/relations";
+import { buildContainerOwnership, IContainerOwnership } from "./structure/containers";
+import { getComponentDisplayText } from "./structure/displayText";
+import { computeMove } from "./structure/moveComponent";
+import { getRevealPath } from "./structure/revealPath";
 import { IFormPersisterContext } from "../formPersisterProvider/contexts";
 import { ValidationCollector } from "../validator";
 import { IValidationCollector } from "../validator/interfaces";
@@ -185,6 +193,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   isDataModified: boolean;
 
+  structureVersion: number = 0;
+
   loadAsync = async (): Promise<void> => {
     await this.formPersister.loadForm({ skipCache: true });
     this.isDataModified = false;
@@ -215,7 +225,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     });
     this.selectedComponentId = undefined;
     this.isDataModified = false;
-    this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
+    this.structureVersion++;
+    this.notifySubscribers(['markup', 'selection', 'history', 'data-modified', 'structure']);
     void this.validateFormAsync();
   };
 
@@ -764,6 +775,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
       // 2. update parentId in new components list
       const updatedComponents: IComponentsDictionary = {};
+      const updatedParents: Record<string, string> = {};
       const updatedRelations: IComponentRelations = {
         [payload.containerId]: payload.componentIds,
       };
@@ -778,6 +790,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
           // update parent in the current component
           const newComponent: IConfigurableFormComponent = { ...component, parentId: payload.containerId };
           updatedComponents[id] = newComponent;
+          updatedParents[id] = payload.containerId;
         }
       });
       const allComponents = { ...formFlatMarkup.allComponents, ...updatedComponents };
@@ -788,11 +801,67 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         formFlatMarkup: {
           componentRelations,
           allComponents,
-          parents: formFlatMarkup.parents,
+          parents: { ...formFlatMarkup.parents, ...updatedParents },
         },
       };
     }, `Updated child components ${payload.containerId}`);
   };
+
+  moveComponent = (payload: IComponentMovePayload): ChangeResult => {
+    const { formFlatMarkup } = this.state;
+    const computed = computeMove(formFlatMarkup, this.getContainerOwnership(), payload, this.getComponentDefinition);
+    if (!computed.ok)
+      return { ok: false, reason: computed.reason };
+    if (computed.markup === formFlatMarkup)
+      return { ok: true };
+
+    const component = formFlatMarkup.allComponents[payload.componentId];
+    const name = isConfigurableFormComponent(component) ? getComponentDisplayText(component) : payload.componentId;
+    this.updateState((state) => ({ ...state, formFlatMarkup: computed.markup }), `Moved ${name}`);
+    return { ok: true };
+  };
+
+  private ownershipCache: { structureVersion: number; ownership: IContainerOwnership } | undefined = undefined;
+
+  getContainerOwnership = (): IContainerOwnership => {
+    if (this.ownershipCache?.structureVersion !== this.structureVersion) {
+      this.ownershipCache = {
+        structureVersion: this.structureVersion,
+        ownership: buildContainerOwnership(this.state.formFlatMarkup, this.getComponentDefinition),
+      };
+    }
+    return this.ownershipCache.ownership;
+  };
+
+  revealRequest: IRevealRequest = { containerIds: [], opened: new Set<string>() };
+
+  reveal = (id: string): void => {
+    const containerIds = getRevealPath(this.state.formFlatMarkup, this.getContainerOwnership(), id);
+    this.revealRequest = { containerIds, opened: new Set<string>() };
+    this.notifySubscribers(['reveal']);
+  };
+
+  private mountedComponents = new Map<string, number>();
+
+  registerMountedComponent = (id: string): (() => void) => {
+    const count = this.mountedComponents.get(id) ?? 0;
+    this.mountedComponents.set(id, count + 1);
+    if (count === 0 && id === this.selectedComponentId)
+      this.notifySubscribers(['mounted']);
+
+    return () => {
+      const current = this.mountedComponents.get(id) ?? 0;
+      if (current > 1) {
+        this.mountedComponents.set(id, current - 1);
+        return;
+      }
+      this.mountedComponents.delete(id);
+      if (id === this.selectedComponentId)
+        this.notifySubscribers(['mounted']);
+    };
+  };
+
+  isComponentMounted = (id: string): boolean => this.mountedComponents.has(id);
 
   startDraggingNewItem = (): void => {
     this.hasDragged = true;
@@ -898,27 +967,39 @@ export class FormDesignerInstance implements IFormDesignerInstance {
   };
 
   private updateState = (updater: (state: FormDesignerFormState) => FormDesignerFormState, description: string): void => {
+    const markupBefore = this.state.formFlatMarkup;
     if (this.undoableState.executeChange(updater, description)) {
       this.isDataModified = true;
-      this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
+      this.notifySubscribers(this.withStructureChange(markupBefore, ['markup', 'selection', 'history', 'data-modified']));
 
       void this.validateFormAsync();
     }
   };
 
+  /** Bumps structureVersion when the parent/child lists or a component's panes changed, and adds 'structure' to the notification */
+  private withStructureChange = (markupBefore: IFlatComponentsStructure, types: FormDesignerSubscriptionType[]): FormDesignerSubscriptionType[] => {
+    const markup = this.state.formFlatMarkup;
+    if (!haveRelationsChanged(markupBefore.componentRelations, markup.componentRelations) && !havePanesChanged(markupBefore, markup, this.getComponentDefinition))
+      return types;
+    this.structureVersion++;
+    return [...types, 'structure'];
+  };
+
   undo = (): void => {
     this.log('FD: ◀ undo');
+    const markupBefore = this.state.formFlatMarkup;
     this.undoableState.undo();
     this.isDataModified = this.undoableState.index > 0;
-    this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
+    this.notifySubscribers(this.withStructureChange(markupBefore, ['markup', 'selection', 'history', 'data-modified']));
     void this.validateFormAsync();
   };
 
   redo = (): void => {
     this.log('FD: ▶ redo');
+    const markupBefore = this.state.formFlatMarkup;
     this.undoableState.redo();
     this.isDataModified = true;
-    this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
+    this.notifySubscribers(this.withStructureChange(markupBefore, ['markup', 'selection', 'history', 'data-modified']));
     void this.validateFormAsync();
   };
 

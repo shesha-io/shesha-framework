@@ -19,6 +19,7 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   themeGroup: 'layout',
   type: 'drawer',
   isInput: false,
+  acceptsChildren: true,
   name: 'Drawer',
   icon: <SwapOutlined />,
   Factory: ({ model }) => {

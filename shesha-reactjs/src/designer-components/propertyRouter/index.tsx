@@ -9,6 +9,7 @@ import { getSettings } from './settingsForm';
 const PropertyRouterComponent: PropertyRouterComponentDefinition = {
   type: 'propertyRouter',
   isInput: false,
+  acceptsChildren: true,
   name: 'Property router',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
