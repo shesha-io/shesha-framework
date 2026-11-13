@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.Domain.Entities;
 using Abp.Events.Bus;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.ConfigurationItems.Cache;
@@ -32,7 +33,7 @@ namespace Shesha.ConfigurationItems
             _cfRuntime = cfRuntime;
         }
 
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         public async Task<GetCurrentResponse> GetCurrentAsync(GetCurrentRequest input)
         {
             var manager = _ciHelper.GetManagerByDiscriminator(input.ItemType);
@@ -71,7 +72,7 @@ namespace Shesha.ConfigurationItems
             };
         }
 
-        [AbpAllowAnonymous]
+        [AllowAnonymous]
         public async Task<GetCurrentResponse> GetAsync(GetConfigurationRequest input) 
         {
             if (!string.IsNullOrWhiteSpace(input.Md5))
