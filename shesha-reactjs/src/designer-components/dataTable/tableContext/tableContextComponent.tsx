@@ -19,6 +19,7 @@ const TableContextComponent: TableContextComponentDefinition = {
   type: 'dataContext',
   isInput: true,
   isOutput: true,
+  acceptsChildren: true,
   name: 'Data Context',
   icon: <DatabaseOutlined />,
   Factory: ({ model, form }) => {

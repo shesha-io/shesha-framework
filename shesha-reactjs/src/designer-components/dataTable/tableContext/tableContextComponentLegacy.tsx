@@ -17,6 +17,7 @@ const TableContextComponentLegacy: TableContextComponentLegacyDefinition = {
   type: 'datatableContext',
   isInput: true,
   isOutput: true,
+  acceptsChildren: true,
   isHidden: true,
   name: 'Data Context (Legacy)',
   icon: <DatabaseOutlined />,

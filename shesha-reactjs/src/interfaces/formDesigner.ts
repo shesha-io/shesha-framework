@@ -195,6 +195,15 @@ export type IToolboxComponentBase = {
    */
   customContainerNames?: string[] | undefined;
   /**
+   * If true, the component draws its own container for child components (`componentRelations[component.id]`),
+   * even while it's empty. The designer's Layers panel uses it to know where components can be dropped.
+   */
+  acceptsChildren?: boolean | undefined;
+  /**
+   * Maximum number of child components the component's own container can hold. Unlimited when not set.
+   */
+  itemsLimit?: number | undefined;
+  /**
    * Markup of the settings form. Applied when the @settingsFormFactory is not specified, in this case you can render settings for in the designer itself
    */
   settingsFormMarkup?: FormMarkup | SettingsFormMarkupFactory | undefined;

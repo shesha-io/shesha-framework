@@ -9,7 +9,18 @@ export const useStyles = createStyles(({ css }) => {
     justify-content: center;
   `;
 
+  const notOnCanvas = css`
+    padding: 12px;
+    opacity: 0;
+    animation: sha-not-on-canvas-in 0s linear 300ms forwards;
+
+    @keyframes sha-not-on-canvas-in {
+      to { opacity: 1; }
+    }
+  `;
+
   return {
     emptyState,
+    notOnCanvas,
   };
 });
