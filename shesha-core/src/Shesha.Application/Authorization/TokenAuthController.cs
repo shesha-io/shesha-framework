@@ -170,6 +170,7 @@ namespace Shesha.Authorization
         /// </summary>
         /// <returns>New JWT token with fresh expiration</returns>
         [HttpPost]
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated, IsConfigurable = false)]
         public async Task<RefreshTokenResultModel> RefreshTokenAsync()
         {
             // 1. Get current user from JWT claims
