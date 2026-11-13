@@ -1,5 +1,4 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Authorization;
 using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
@@ -167,7 +166,6 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
 
     [HttpPost]
     [AllowAnonymous]
-    [AbpAllowAnonymous]
     public async Task<SyncAllResponse> SyncClientApiAsync(SyncAllRequest input)
     {
         var metadataService = IocManager.Resolve<IMetadataProvider>();
