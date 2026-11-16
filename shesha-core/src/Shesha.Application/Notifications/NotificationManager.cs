@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using Abp.UI;
 using Shesha.ConfigurationItems;
+using Shesha.ConfigurationItems.Exceptions;
 using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -17,21 +18,43 @@ namespace Shesha.Notifications
 {
     public class NotificationManager : ConfigurationItemManager<NotificationTypeConfig>, INotificationManager, ITransientDependency
     {
+        private readonly INotificationChannelManager _notificationChannelManager;
         private readonly IRepository<NotificationChannelConfig, Guid> _notificationChannelRepository;
         private readonly IRepository<UserNotificationPreference, Guid> _userNotificationPreference;
         private readonly IRepository<NotificationTemplate, Guid> _templateRepository;
         private readonly INotificationSettings _notificationSettings;
 
         public NotificationManager(
+            INotificationChannelManager notificationChannelManager,
             IRepository<NotificationChannelConfig, Guid> notificationChannelRepository,
             IRepository<UserNotificationPreference, Guid> userNotificationPreference,
             IRepository<NotificationTemplate, Guid> templateRepository,
             INotificationSettings notificationSettings) : base()
         {
+            _notificationChannelManager = notificationChannelManager;
             _notificationChannelRepository = notificationChannelRepository;
             _userNotificationPreference = userNotificationPreference;
             _templateRepository = templateRepository;
-            _notificationSettings = notificationSettings;            
+            _notificationSettings = notificationSettings;
+        }
+
+        /// <summary>
+        /// Resolves the top-most module override of a notification channel by module+name, respecting module hierarchy
+        /// precedence. Falls back to an exact name+module match for module-less channels, which the hierarchy view does not cover.
+        /// </summary>
+        private async Task<NotificationChannelConfig?> ResolveChannelOrNullAsync(string? module, string name)
+        {
+            if (string.IsNullOrWhiteSpace(module))
+                return await _notificationChannelRepository.FirstOrDefaultAsync(new ByNameAndModuleSpecification<NotificationChannelConfig>(name, module).ToExpression());
+
+            try
+            {
+                return (NotificationChannelConfig)await _notificationChannelManager.ResolveItemAsync(module, name, null);
+            }
+            catch (ConfigurationItemNotFoundException)
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -60,10 +83,9 @@ namespace Shesha.Notifications
             if (type.OverrideChannels != null && type.OverrideChannels.Any())
             {
                 var overrideChannels = new List<NotificationChannelConfig>();
-                foreach (var channel in type.OverrideChannels) 
+                foreach (var channel in type.OverrideChannels)
                 {
-                    // TODO: check versioned query
-                    var dbChannel = await _notificationChannelRepository.FirstOrDefaultAsync(new ByNameAndModuleSpecification<NotificationChannelConfig>(channel.Name, channel.Module).ToExpression());
+                    var dbChannel = await ResolveChannelOrNullAsync(channel.Module, channel.Name);
                     if (dbChannel != null)
                         overrideChannels.Add(dbChannel);
                 }
@@ -84,12 +106,13 @@ namespace Shesha.Notifications
             if (selectedNotifications == null)
                 return new();
 
-            var liveChannels = await _notificationChannelRepository.GetAllAsync();
-
-            var result = selectedNotifications
-                .SelectMany(identifier => liveChannels
-                    .Where(new ByNameAndModuleSpecification<NotificationChannelConfig>(identifier.Name, identifier.Module).ToExpression()))
-                .ToList();
+            var result = new List<NotificationChannelConfig>();
+            foreach (var identifier in selectedNotifications)
+            {
+                var channel = await ResolveChannelOrNullAsync(identifier.Module, identifier.Name);
+                if (channel != null)
+                    result.Add(channel);
+            }
 
             return result;
         }

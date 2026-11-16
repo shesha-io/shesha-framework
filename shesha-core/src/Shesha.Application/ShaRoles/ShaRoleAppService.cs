@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using NHibernate.Linq;
 using Shesha.Application.Services.Dto;
 using Shesha.Authorization;
+using Shesha.ConfigurationItems.Exceptions;
 using Shesha.Domain;
 using Shesha.Extensions;
+using Shesha.Roles;
 using Shesha.ShaRoles.Dto;
 using System;
 using System.Threading.Tasks;
@@ -18,15 +20,18 @@ namespace Shesha.ShaRoles
     {
         private readonly IShaPermissionChecker _shaPermissionChecker;
         private readonly IRepository<ShaRoleAppointedPerson, Guid> _roleAppointmentRepository;
+        private readonly IShaRoleManager _roleManager;
 
         public ShaRoleAppService(
             IRepository<ShaRole, Guid> repository,
             IShaPermissionChecker shaPermissionChecker,
-            IRepository<ShaRoleAppointedPerson, Guid> roleAppointmentRepository
+            IRepository<ShaRoleAppointedPerson, Guid> roleAppointmentRepository,
+            IShaRoleManager roleManager
             ) : base(repository)
         {
             _shaPermissionChecker = shaPermissionChecker;
             _roleAppointmentRepository = roleAppointmentRepository;
+            _roleManager = roleManager;
 
             GetPermissionName = GetAllPermissionName = CreatePermissionName = UpdatePermissionName = DeletePermissionName = PermissionNames.Role_Manage;
         }
@@ -78,6 +83,24 @@ namespace Shesha.ShaRoles
         public async Task<bool> IsRoleGrantedAsync(IsRoleGrantedInput input)
         {
             var userId = AbpSession.GetUserId();
+
+            // When a module is supplied, resolve the role respecting module hierarchy (top-most module wins)
+            // so the appointment check matches the same role definition the rest of the app resolves to.
+            if (!string.IsNullOrWhiteSpace(input.Module))
+            {
+                ShaRole role;
+                try
+                {
+                    role = (ShaRole)await _roleManager.ResolveItemAsync(input.Module, input.RoleName, null);
+                }
+                catch (ConfigurationItemNotFoundException)
+                {
+                    return false;
+                }
+
+                return await _roleAppointmentRepository.AnyAsync(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Id == role.Id);
+            }
+
             var isGranted = await _roleAppointmentRepository.AnyAsync(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Name == input.RoleName);
             return isGranted;
         }
