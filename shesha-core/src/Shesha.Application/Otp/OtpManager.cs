@@ -304,9 +304,14 @@ namespace Shesha.Otp
                 PublicUrl = (await _frontendSettings.PublicUrl.GetValueOrNullAsync())?.TrimEnd('/'),
             };
 
-            var deliveries = await GetDeliveriesAsync(otp, type);
+            var recipientPerson = await GetRecipientPersonOrNullAsync(otp.RecipientType, otp.RecipientId);
+            var deliveries = await GetDeliveriesAsync(otp, type, recipientPerson);
             if (!deliveries.Any())
                 throw new OtpException($"Notification type '{type.Name}' has no channel that can deliver the OTP to the recipient");
+
+            // The opt-out preference belongs to the recipient person and applies to every channel,
+            // also to the one addressed by the raw address (a raw address has no preferences)
+            IMessageReceiver? personReceiver = recipientPerson != null ? new PersonMessageParticipant(recipientPerson) : null;
 
             var errors = new List<string>();
             foreach (var (channel, receiver) in deliveries)
@@ -314,7 +319,7 @@ namespace Shesha.Otp
                 try
                 {
                     // note: opted-out receivers are skipped silently by the notification sender, the OTP would be reported as sent
-                    if (type.CanOptOut && await IsOptedOutAsync(receiver, type))
+                    if (type.CanOptOut && await IsOptedOutAsync(personReceiver ?? receiver, type))
                         throw new OtpException($"The recipient has opted out of the notification type '{type.Name}'");
 
                     await _notificationSender.SendNotificationAsync(type, null, receiver, data, triggeringEntity: otp.Owner, channel: channel);
@@ -335,9 +340,8 @@ namespace Shesha.Otp
         /// Channels to send the OTP to and the receiver for each of them.
         /// `SendTo` is a raw address that is valid only for the channel matching `SendType`, other channels are addressed to the recipient person (if any)
         /// </summary>
-        private async Task<List<(NotificationChannelConfig Channel, IMessageReceiver Receiver)>> GetDeliveriesAsync(IOtpDto otp, NotificationTypeConfig type)
+        private async Task<List<(NotificationChannelConfig Channel, IMessageReceiver Receiver)>> GetDeliveriesAsync(IOtpDto otp, NotificationTypeConfig type, Person? person)
         {
-            var person = await GetRecipientPersonOrNullAsync(otp.RecipientType, otp.RecipientId);
             IMessageReceiver? personReceiver = person != null ? new PersonMessageParticipant(person) : null;
             IMessageReceiver? addressReceiver = !string.IsNullOrWhiteSpace(otp.SendTo) ? new RawAddressMessageParticipant(otp.SendTo) : null;
 

@@ -23,8 +23,8 @@ namespace Shesha.Tests.Otp
         private const string SeededTitle = "One-Time-Pin";
         private const string SeededPinBody = "Your One-Time-Pin is {{password}}";
         private const string SeededLinkBody = "<p>seeded link email {{token}}</p>";
-        private const string PinConfig = "PinAction";
-        private const string LinkConfig = "LinkAction";
+        private const string PinConfig = OtpConfigNames.OtpSms;
+        private const string LinkConfig = OtpConfigNames.OtpEmailLink;
 
         [Fact]
         public async Task CustomisedPinTemplate_IsMovedToPinNotifications_TestAsync()
@@ -143,6 +143,40 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
+        public async Task Destinations_AreSelectedByConfigurationNotByPinType_TestAsync()
+        {
+            const string linkBody = "<a href=https://my.site/verify?token={{token}}>verify</a>";
+            var env = new Environment(settings =>
+            {
+                settings.DefaultBodyTemplate = "Code: {{password}}";
+                settings.DefaultEmailBodyTemplate = linkBody;
+            });
+            // an administrator switched the pin types in the editor: the messages sent by the configurations stay the same
+            env.Config(PinConfig).PinType = RefListOtpPinType.Token;
+            env.Config(LinkConfig).PinType = RefListOtpPinType.Numeric;
+
+            await env.Migrator.MigrateAsync();
+
+            env.Template(PinConfig, RefListNotificationMessageFormat.PlainText).BodyTemplate.ShouldBe("Code: {{password}}");
+            env.Template(LinkConfig, RefListNotificationMessageFormat.RichText).BodyTemplate.ShouldBe(linkBody);
+        }
+
+        [Fact]
+        public async Task ConfigurationsOfOtherActions_AreNotTouched_TestAsync()
+        {
+            var env = new Environment(settings => settings.DefaultBodyTemplate = "Code: {{password}}");
+            // same name in another module and a custom configuration of the framework module
+            env.AddConfig(PinConfig, RefListOtpPinType.Numeric, SeededPinBody, module: "MyModule");
+            env.AddConfig("MyAction", RefListOtpPinType.Numeric, SeededPinBody);
+
+            await env.Migrator.MigrateAsync();
+
+            env.Template(PinConfig, RefListNotificationMessageFormat.PlainText).BodyTemplate.ShouldBe("Code: {{password}}");
+            env.Template(PinConfig, RefListNotificationMessageFormat.PlainText, module: "MyModule").BodyTemplate.ShouldBe(SeededPinBody);
+            env.Template("MyAction", RefListNotificationMessageFormat.PlainText).BodyTemplate.ShouldBe(SeededPinBody);
+        }
+
+        [Fact]
         public async Task TemplateWithoutDestination_IsKeptInSettings_TestAsync()
         {
             // html can't be written into a plain text template: the link body has nowhere to go
@@ -216,7 +250,7 @@ namespace Shesha.Tests.Otp
                 AddConfig(PinConfig, RefListOtpPinType.Numeric, SeededPinBody);
                 AddConfig(LinkConfig, RefListOtpPinType.Token, SeededLinkBody);
                 // configuration without a notification type must not break the migration
-                _configs.Add(new OtpConfig { Id = Guid.NewGuid(), Name = "Incomplete", PinType = RefListOtpPinType.Numeric });
+                _configs.Add(new OtpConfig { Id = Guid.NewGuid(), Name = OtpConfigNames.OtpLogin, Module = new Module { Name = OtpConfigNames.Module }, PinType = RefListOtpPinType.Numeric });
 
                 var accessor = new Mock<ISettingAccessor<OtpSettings>>();
                 accessor.Setup(a => a.GetValueOrNullAsync(It.IsAny<SettingManagementContext?>())).ReturnsAsync(settings);
@@ -257,15 +291,20 @@ namespace Shesha.Tests.Otp
                 Migrator = new OtpLegacyTemplatesMigrator(otpSettings.Object, configRepo.Object, templateRepo.Object, appRepo.Object, frontendSettings.Object, uowManager.Object);
             }
 
-            public NotificationTemplate Template(string configName, RefListNotificationMessageFormat format)
+            public OtpConfig Config(string configName, string module = OtpConfigNames.Module)
             {
-                var type = _configs.Single(c => c.Name == configName).NotificationType;
+                return _configs.Single(c => c.Name == configName && c.Module?.Name == module);
+            }
+
+            public NotificationTemplate Template(string configName, RefListNotificationMessageFormat format, string module = OtpConfigNames.Module)
+            {
+                var type = Config(configName, module).NotificationType;
                 return _templates.Single(t => t.PartOf == type && t.MessageFormat == format);
             }
 
             public void RemoveTemplates(string configName, RefListNotificationMessageFormat format)
             {
-                var type = _configs.Single(c => c.Name == configName).NotificationType;
+                var type = Config(configName).NotificationType;
                 _templates.RemoveAll(t => t.PartOf == type && t.MessageFormat == format);
             }
 
@@ -274,10 +313,10 @@ namespace Shesha.Tests.Otp
                 _configs.Clear();
             }
 
-            private void AddConfig(string name, RefListOtpPinType pinType, string body)
+            public void AddConfig(string name, RefListOtpPinType pinType, string body, string module = OtpConfigNames.Module)
             {
                 var type = new NotificationTypeConfig { Id = Guid.NewGuid(), Name = name };
-                _configs.Add(new OtpConfig { Id = Guid.NewGuid(), Name = name, PinType = pinType, NotificationType = type });
+                _configs.Add(new OtpConfig { Id = Guid.NewGuid(), Name = name, Module = new Module { Name = module }, PinType = pinType, NotificationType = type });
                 foreach (var format in new[] { RefListNotificationMessageFormat.PlainText, RefListNotificationMessageFormat.RichText })
                     _templates.Add(new NotificationTemplate { PartOf = type, MessageFormat = format, TitleTemplate = SeededTitle, BodyTemplate = body });
             }

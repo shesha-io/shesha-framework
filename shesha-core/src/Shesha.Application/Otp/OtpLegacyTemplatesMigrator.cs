@@ -28,6 +28,16 @@ namespace Shesha.Otp
         private readonly IFrontendSettings _frontendSettings;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
+        /// <summary>
+        /// Framework configurations that sent the legacy pin template (sms and email pins)
+        /// </summary>
+        private static readonly string[] PinConfigs = [OtpConfigNames.OtpLogin, OtpConfigNames.OtpPasswordResetSms, OtpConfigNames.OtpSms, OtpConfigNames.OtpEmail];
+
+        /// <summary>
+        /// Framework configurations that sent the legacy email link template
+        /// </summary>
+        private static readonly string[] LinkConfigs = [OtpConfigNames.OtpPasswordResetEmailLink, OtpConfigNames.OtpEmailRegistrationLink, OtpConfigNames.OtpEmailLink];
+
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
         public OtpLegacyTemplatesMigrator(
@@ -82,11 +92,13 @@ namespace Shesha.Otp
             if (linkBody != null)
                 linkBody = await UsePublicUrlPlaceholderAsync(linkBody);
 
-            var configs = await _otpConfigRepository.GetAllListAsync(c => c.NotificationType != null);
+            // The legacy templates were used by the framework flows only. Their configurations are selected by name:
+            // the pin type can be changed by an administrator and doesn't tell which message a configuration sends
+            var configs = await _otpConfigRepository.GetAllListAsync(c => c.NotificationType != null && c.Module != null && c.Module.Name == OtpConfigNames.Module);
 
             // the pin templates were plain text (sms and email), the link templates were html
-            var pin = await UpdateTemplatesAsync(configs, RefListOtpPinType.Numeric, pinSubject, pinBody, bodyIsHtml: false);
-            var link = await UpdateTemplatesAsync(configs, RefListOtpPinType.Token, linkSubject, linkBody, bodyIsHtml: true);
+            var pin = await UpdateTemplatesAsync(configs, PinConfigs, pinSubject, pinBody, bodyIsHtml: false);
+            var link = await UpdateTemplatesAsync(configs, LinkConfigs, linkSubject, linkBody, bodyIsHtml: true);
 
             // Clear the moved templates so the ones edited in the notification editor are not overwritten on the next start-up.
             // A customised template that found no destination (e.g. the seed package was not imported) stays in the settings:
@@ -125,7 +137,7 @@ namespace Shesha.Otp
         /// </summary>
         private sealed record TemplatesUpdate(bool TitleWritten, bool BodyWritten, List<string> NotificationTypes);
 
-        private async Task<TemplatesUpdate> UpdateTemplatesAsync(List<OtpConfig> configs, RefListOtpPinType pinType, string? title, string? body, bool bodyIsHtml)
+        private async Task<TemplatesUpdate> UpdateTemplatesAsync(List<OtpConfig> configs, string[] configNames, string? title, string? body, bool bodyIsHtml)
         {
             var updated = new List<string>();
             var titleWritten = false;
@@ -134,7 +146,7 @@ namespace Shesha.Otp
                 return new TemplatesUpdate(titleWritten, bodyWritten, updated);
 
             var notificationTypes = configs
-                .Where(c => c.PinType == pinType)
+                .Where(c => configNames.Contains(c.Name))
                 .Select(c => c.NotificationType)
                 .OfType<NotificationTypeConfig>()
                 .Distinct();
