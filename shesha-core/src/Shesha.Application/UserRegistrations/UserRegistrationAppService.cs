@@ -46,6 +46,7 @@ namespace Shesha.UserRegistrations
                 SupportedRegistrationMethods = isEnabled ? s.SupportedRegistrationMethods : SupportedRegistrationMethods.None,
                 RequireEmailVerification = s.RequireEmailVerification,
                 UserEmailAsUsername = s.UserEmailAsUsername,
+                RequireEmailAddress = SelfRegistrationManager.IsEmailAddressRequired(s),
                 AllowedEmailDomains = new List<string>(EmailDomainPolicy.ParseDomains(s.AllowedEmailDomains)),
                 CreationMode = s.CreationMode ?? RefListSelfRegistrationCreationMode.AlwaysCreateNew,
                 AdditionalRegistrationInfo = s.AdditionalRegistrationInfo,

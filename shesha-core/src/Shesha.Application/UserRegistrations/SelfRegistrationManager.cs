@@ -92,6 +92,15 @@ namespace Shesha.UserRegistrations
                 && (settings.AllowSelfRegistration ?? true);
         }
 
+        /// <summary>
+        /// True when registrants must provide a verified email address: <see cref="UserManagementSettings.RequireEmailAddress"/> is set,
+        /// or the email address is the username
+        /// </summary>
+        public static bool IsEmailAddressRequired(UserManagementSettings settings)
+        {
+            return settings.RequireEmailAddress || settings.UserEmailAsUsername;
+        }
+
         /// <inheritdoc />
         public virtual async Task<SelfRegistrationResult> RegisterAsync(SelfRegistrationInput input)
         {
@@ -109,7 +118,7 @@ namespace Shesha.UserRegistrations
             // so the response can't be used to find out whether an email address or mobile number is registered
             var verifiedContact = await EnsureContactVerifiedAsync(input);
             var verifiedEmail = await EnsureEmailVerifiedAsync(input);
-            var verifiedContacts = new[] { verifiedContact, verifiedEmail }.Where(c => c != null).Distinct().ToList();
+            var verifiedContacts = new[] { verifiedContact, verifiedEmail }.Where(c => !string.IsNullOrWhiteSpace(c)).Distinct().ToList();
             KeepOnlyVerifiedContacts(input, verifiedContacts, settings);
 
             var personType = ResolvePersonType(settings.PersonEntityType);
@@ -210,7 +219,7 @@ namespace Shesha.UserRegistrations
 
             var isValid = registration != null
                 && !registration.IsComplete
-                && registration.CompletionTokenHash != null
+                && !string.IsNullOrWhiteSpace(registration.CompletionTokenHash)
                 && registration.CompletionTokenExpiresOn > Clock.Now
                 && CryptographicOperations.FixedTimeEquals(
                     Encoding.ASCII.GetBytes(registration.CompletionTokenHash),
@@ -252,21 +261,18 @@ namespace Shesha.UserRegistrations
             if (string.IsNullOrWhiteSpace(input.LastName))
                 errors.Add(new ValidationResult("Last Name is mandatory"));
 
-            if (settings.UserEmailAsUsername && string.IsNullOrWhiteSpace(input.EmailAddress))
-                errors.Add(new ValidationResult("Email Address is mandatory"));
             if (!settings.UserEmailAsUsername && string.IsNullOrWhiteSpace(input.UserName))
                 errors.Add(new ValidationResult("Username is mandatory"));
 
-            if (!string.IsNullOrWhiteSpace(input.EmailAddress) && EmailDomainPolicy.GetDomain(input.EmailAddress) == null)
-                errors.Add(new ValidationResult("Email Address is not valid"));
-
-            if (EmailDomainPolicy.ParseDomains(settings.AllowedEmailDomains).Count > 0)
+            if (string.IsNullOrWhiteSpace(input.EmailAddress))
             {
-                if (string.IsNullOrWhiteSpace(input.EmailAddress))
+                if (IsEmailAddressRequired(settings))
                     errors.Add(new ValidationResult("Email Address is mandatory"));
-                else if (!EmailDomainPolicy.IsAllowed(input.EmailAddress, settings.AllowedEmailDomains))
-                    errors.Add(new ValidationResult("Registration is not allowed for this email domain"));
             }
+            else if (string.IsNullOrWhiteSpace(EmailDomainPolicy.GetDomain(input.EmailAddress)))
+                errors.Add(new ValidationResult("Email Address is not valid"));
+            else if (!EmailDomainPolicy.IsAllowed(input.EmailAddress, settings.AllowedEmailDomains))
+                errors.Add(new ValidationResult("Registration is not allowed for this email domain"));
 
             if (errors.Any())
                 throw new AbpValidationException("Please correct the errors and try again", errors);
@@ -362,8 +368,8 @@ namespace Shesha.UserRegistrations
         {
             var email = NormalizeContact(input.EmailAddress);
             var mobile = NormalizeContact(input.MobileNumber);
-            var provedEmail = email != null && verifiedContacts.Contains(email);
-            var provedMobile = mobile != null && verifiedContacts.Contains(mobile);
+            var provedEmail = !string.IsNullOrWhiteSpace(email) && verifiedContacts.Contains(email);
+            var provedMobile = !string.IsNullOrWhiteSpace(mobile) && verifiedContacts.Contains(mobile);
             var proved = method switch
             {
                 SupportedRegistrationMethods.EmailAddress => provedEmail,
@@ -389,22 +395,21 @@ namespace Shesha.UserRegistrations
         /// email address confirmed, both contacts can be used to reset the password, and registration refuses a contact that already
         /// belongs to a Person. Saving an unverified contact would let a registrant claim someone else's email address or mobile number
         /// and stop its owner from registering.
-        /// The registrant can add the other contact after registering. When the email address can't be left out (it's the username,
-        /// or email domains are restricted), registration is refused instead, unless the email address was verified with its own
+        /// The registrant can add the other contact after registering. When the email address can't be left out
+        /// (<see cref="IsEmailAddressRequired"/>), registration is refused instead, unless the email address was verified with its own
         /// one-time pin (<see cref="SelfRegistrationInput.EmailOtpOperationId"/>).
         /// </summary>
         protected virtual void KeepOnlyVerifiedContacts(SelfRegistrationInput input, IReadOnlyCollection<string> verifiedContacts, UserManagementSettings settings)
         {
-            if (input.EmailAddress != null && !verifiedContacts.Contains(NormalizeContact(input.EmailAddress)))
+            if (!string.IsNullOrWhiteSpace(input.EmailAddress) && !verifiedContacts.Contains(NormalizeContact(input.EmailAddress)))
             {
-                var emailRequired = settings.UserEmailAsUsername || EmailDomainPolicy.ParseDomains(settings.AllowedEmailDomains).Count > 0;
-                if (emailRequired)
+                if (IsEmailAddressRequired(settings))
                     throw new UserFriendlyException(EmailNotVerifiedMessage);
 
                 input.EmailAddress = null;
             }
 
-            if (input.MobileNumber != null && !verifiedContacts.Contains(NormalizeContact(input.MobileNumber)))
+            if (!string.IsNullOrWhiteSpace(input.MobileNumber) && !verifiedContacts.Contains(NormalizeContact(input.MobileNumber)))
                 input.MobileNumber = null;
         }
 

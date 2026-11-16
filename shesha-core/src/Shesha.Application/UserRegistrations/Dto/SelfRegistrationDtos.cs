@@ -165,6 +165,11 @@ namespace Shesha.UserRegistrations.Dto
         public bool UserEmailAsUsername { get; set; }
 
         /// <summary>
+        /// True when the registrant must provide a verified email address (set explicitly, or because it's the username)
+        /// </summary>
+        public bool RequireEmailAddress { get; set; }
+
+        /// <summary>
         /// Email domains allowed to register, normalised (e.g. "gov.za"). Empty when any domain is allowed.
         /// </summary>
         public List<string> AllowedEmailDomains { get; set; } = new List<string>();
