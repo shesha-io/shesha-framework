@@ -20,6 +20,7 @@ namespace Shesha.Sms
 
         [HttpGet]
         [Route("api/Sms/Gateways")]
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, PermissionNames.Application_Administer, IsConfigurable = false)]
         public List<SmsGatewayDto> GetAll()
         {
             return _smsGatewayFactory.GetSmsGatewayTypes()
@@ -33,7 +34,7 @@ namespace Shesha.Sms
                 .ToList();
         }
 
-        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Configure, PermissionNames.Application_Administer, IsConfigurable = false)]
         [HttpPost]
         [Route("api/Sms/Test")]
         public async Task<SendStatus> TestSmsAsync(string mobileNumber, string body)
