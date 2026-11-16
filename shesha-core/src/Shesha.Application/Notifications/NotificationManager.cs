@@ -86,7 +86,7 @@ namespace Shesha.Notifications
                 foreach (var channel in type.OverrideChannels)
                 {
                     var dbChannel = await ResolveChannelOrNullAsync(channel.Module, channel.Name);
-                    if (dbChannel != null)
+                    if (dbChannel != null && overrideChannels.All(c => c.Id != dbChannel.Id))
                         overrideChannels.Add(dbChannel);
                 }
 
@@ -110,7 +110,7 @@ namespace Shesha.Notifications
             foreach (var identifier in selectedNotifications)
             {
                 var channel = await ResolveChannelOrNullAsync(identifier.Module, identifier.Name);
-                if (channel != null)
+                if (channel != null && result.All(c => c.Id != channel.Id))
                     result.Add(channel);
             }
 
