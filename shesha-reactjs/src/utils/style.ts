@@ -5,6 +5,7 @@ import { IPropertySetting } from '..';
 import { getStyleBoxValue } from "@/designer-components/styleBox/utils";
 import { IConfigurableFormComponent, IStyleValue, IToolboxComponent } from "@/interfaces";
 import { IConfigurableTheme } from "@/providers";
+import { GROUP_HEADER_STYLES_KEY, IThemeGroupStyle } from "@/providers/theme/contexts";
 import { DeviceTypes } from "@/providers/canvas/contexts";
 import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from "@/utils/object";
 
@@ -12,10 +13,14 @@ import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from "@/
  * A component's theme group style, extended with the parts its nested style values inherit (see
  * `nestedGroupStyles`), so a merge applies the group style to them as well as to the component.
  */
-export const getGroupStyleForComponent = (groupStyle: IStyleValue | undefined, toolboxComponent: Pick<IToolboxComponent, 'nestedGroupStyles'> | undefined): IStyleValue | undefined => {
+export const getGroupStyleForComponent = (groupStyle: IThemeGroupStyle | undefined, toolboxComponent: Pick<IToolboxComponent, 'nestedGroupStyles'> | undefined): IStyleValue | undefined => {
+  if (!isDefined(groupStyle)) return undefined;
+  // The group's header defaults are not a style of the component itself: they reach a header only
+  // through the component's `nestedGroupStyles` (see getHeaderGroupStyle).
+  const { [GROUP_HEADER_STYLES_KEY]: _headerStyles, ...ownGroupStyle } = groupStyle;
   const nested = toolboxComponent?.nestedGroupStyles;
-  if (!isDefined(groupStyle) || !isDefined(nested)) return groupStyle;
-  const result: IStyleValue & Record<string, unknown> = { ...groupStyle };
+  if (!isDefined(nested)) return ownGroupStyle;
+  const result: IStyleValue & Record<string, unknown> = { ...ownGroupStyle };
   Object.entries(nested).forEach(([propertyName, pick]) => {
     result[propertyName] = pick(groupStyle);
   });

@@ -13,6 +13,7 @@ import classNames from 'classnames';
 import { useStyles } from './styles';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { defaultStyles } from './utils';
+import { getHeaderGroupStyle } from '../_common/styles/headerStyles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { isDefined } from '@/utils';
 import { EMPTY_STYLE } from '@/styles/variables';
@@ -25,6 +26,8 @@ import { useMemo } from 'react';
 
 const CardComponent: IToolboxComponent<ICardComponentProps> = {
   themeGroup: 'layout',
+  // The heading bar follows the Layout Components theme: the body's style, unless the theme's Header Defaults override it.
+  nestedGroupStyles: { headerStyles: getHeaderGroupStyle },
   allowInherit: true,
   type: 'card',
   isInput: false,

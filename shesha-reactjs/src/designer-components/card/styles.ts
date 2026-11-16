@@ -1,9 +1,14 @@
 import { createStyles } from '@/styles';
 import { ICardComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, dimensionsStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderCss, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { isDefined } from '@/utils/nullables';
 import { getFullSizeComponentDimensions } from '@/components/formDesigner/utils/stylingUtils';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICardComponentProps) => {
+  const header = model.headerStyles;
+  // The heading bar sits inside the card's own border, so its border is drawn as the line under it.
+  const headerBorder = header?.border?.borderType === 'custom' ? header.border.border?.bottom : header?.border?.border?.all;
+
   const shaCardComponent = cx("sha-card-component", css`
       ${dimensionsStyles(getFullSizeComponentDimensions(model.dimensions))}
       ${borderStyles(model.border)}
@@ -13,6 +18,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICardCompo
       
       > .${prefixCls}-card-body {
         ${paddingStyles(model.stylingBoxJson)}
+      }
+
+      > .${prefixCls}-card-head {
+        /* Follow the card's own corners, so a heading background never pokes out of them. */
+        border-top-left-radius: inherit;
+        border-top-right-radius: inherit;
+        ${backgroundStyles(header?.background)}
+        ${paddingStyles(header?.stylingBoxJson)}
+        ${isDefined(headerBorder) ? `border-bottom: ${borderCss(headerBorder)};` : ''}
+
+        .${prefixCls}-card-head-title {
+          ${fontStyles(header?.font)}
+        }
       }
   `);
 

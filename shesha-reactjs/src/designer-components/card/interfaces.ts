@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IStyleValue } from '@/providers/form/models';
 import { IBorderValue } from '../_settings/utils/border/interfaces';
 import { IShadowValue } from '../_settings/utils/shadow/interfaces';
 import { IBackgroundValue } from '../_settings/utils/background/interfaces';
@@ -17,4 +17,6 @@ export interface ICardComponentProps extends IConfigurableFormComponent {
   border?: IBorderValue | undefined;
   shadow?: IShadowValue | undefined;
   background?: IBackgroundValue | undefined;
+  /** Style of the card's heading bar, from the Layout Components theme (see `getHeaderGroupStyle`). */
+  headerStyles?: IStyleValue | undefined;
 }

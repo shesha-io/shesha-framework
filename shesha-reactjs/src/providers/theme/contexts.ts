@@ -64,8 +64,17 @@ export interface IConfigurableTheme {
    * component whose explicit `themeGroup` is one of these tiers inherits from it, between the
    * component's hardcoded defaults and its own per-type override in `components`.
    */
-  componentGroups?: Partial<Record<ThemeComponentGroup, IStyleValue>>;
+  componentGroups?: Partial<Record<ThemeComponentGroup, IThemeGroupStyle>>;
 }
+
+/**
+ * Key of a theme group style's header defaults (Layout Components tab > Header Defaults). Only the
+ * overrides are stored there: a header otherwise follows the body's style (see `getHeaderGroupStyle`).
+ */
+export const GROUP_HEADER_STYLES_KEY = 'headerStyles';
+
+/** A theme group style, with the header defaults of components that have a header (card, panel, tabs). */
+export type IThemeGroupStyle = IStyleValue & { [GROUP_HEADER_STYLES_KEY]?: IStyleValue | undefined };
 
 export interface IThemeStateContext {
   readonly theme: IConfigurableTheme;

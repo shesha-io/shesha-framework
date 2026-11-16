@@ -21,7 +21,7 @@ const GROUP_PREVIEW_TYPES: Record<ThemeComponentGroup, string[]> = {
   input: ['textField', 'textArea', 'numberField'],
   inline: ['button', 'statusTag'],
   standard: ['datatable'],
-  layout: ['card', 'collapsiblePanel'],
+  layout: ['card', 'collapsiblePanel', 'tabs'],
 };
 
 /** Type of the Data Table, which previews with sample rows (see `getDataTablePreviewModel`). */

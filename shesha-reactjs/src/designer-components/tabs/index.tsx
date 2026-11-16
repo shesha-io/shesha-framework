@@ -14,6 +14,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getSettings } from './settingsForm';
 import { defaultCardStyles, defaultStyles, tabPosition2TabPlacement } from './utils';
+import { pickHeaderGroupStyle } from '../_common/styles/headerStyles';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { isNonEmptyArray } from '@/utils/array';
@@ -35,6 +36,9 @@ type TabItem = Required<TabsProps>['items'][number];
 
 const TabsComponent: TabsComponentDefinition = {
   themeGroup: 'layout',
+  // The tab strip (`card`) follows the Layout Components theme's header: the body's font and background,
+  // unless the theme's Header Defaults override them. Its borders already come from the body's border.
+  nestedGroupStyles: { card: pickHeaderGroupStyle('font', 'background') },
   allowInherit: true,
   type: 'tabs',
   isInput: false,
@@ -215,6 +219,22 @@ const TabsComponent: TabsComponentDefinition = {
       return migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(newModel)));
     }),
   settingsFormMarkup: getSettings,
+  // Tabs render nothing without a tab, so the theme preview gets two sample tabs: one active and one not,
+  // so the tab strip's header styling shows in both states.
+  previewConfiguration: {
+    type: 'tabs',
+    id: 'tabs-preview',
+    componentName: 'tabsPreview',
+    propertyName: 'tabsPreview',
+    version: 'latest',
+    tabType: 'card',
+    tabPosition: 'top',
+    defaultActiveKey: 'tabs-preview-1',
+    tabs: [
+      { id: 'tabs-preview-1', key: 'tabs-preview-1', name: 'tab1', title: 'Tab 1', visible: true, editMode: 'inherited', components: [] },
+      { id: 'tabs-preview-2', key: 'tabs-preview-2', name: 'tab2', title: 'Tab 2', visible: true, editMode: 'inherited', components: [] },
+    ],
+  } as ITabsComponentProps,
   customContainerNames: ['tabs'],
   getContainers: (model) => {
     return model.tabs.map<IFormComponentContainer>((t) => ({ id: t.id }));

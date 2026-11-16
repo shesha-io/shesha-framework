@@ -16,6 +16,7 @@ import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/e
 import { IHasVersion, Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
 import { FormMarkupFactory, FormMarkupFactoryArgs, IAjaxResponseBase, IApplicationContext, IErrorInfo, IFormValidationRulesOptions, IObjectMetadata, IShaFormInstance, IStyleValue, UnwrapCodeEvaluators } from '..';
+import type { IThemeGroupStyle } from '@/providers/theme/contexts';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { UnwrapFunc } from '@/providers/form/utils/js-settings';
@@ -150,7 +151,7 @@ export type IToolboxComponentBase = {
    * border and background as well as its body does. Without an entry a nested style value only gets
    * the component's own defaults and overrides.
    */
-  nestedGroupStyles?: Record<string, (groupStyle: IStyleValue) => IStyleValue> | undefined;
+  nestedGroupStyles?: Record<string, (groupStyle: IThemeGroupStyle) => IStyleValue> | undefined;
 
   // ToDo: AS - remove after all components are migrated to inheritance
   /**

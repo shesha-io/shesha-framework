@@ -7,6 +7,7 @@ import { GroupSettingsPanel } from './groupSettingsPanel';
 import { GroupDefaultsPreview } from './componentSettings/groupPreview';
 import { CardTitle } from './cardTitle';
 import { FormLayoutSettingsPanel } from './formLayoutSettingsPanel';
+import { GroupHeaderSettingsPanel } from './groupHeaderSettingsPanel';
 import { useStyles } from './styles/styles';
 import AlertsExample from './alertsPreview';
 import InputStatesPreview from './inputStatePreview';
@@ -237,6 +238,8 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
       {(section === 'inline' || section === 'standard' || section === 'layout') && (
         <>
           <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
+          {/* Cards, panels and tabs have a header, which follows the body unless overridden here. */}
+          {section === 'layout' && <GroupHeaderSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />}
           <GroupDefaultsPreview group={section} theme={theme} />
         </>
       )}
