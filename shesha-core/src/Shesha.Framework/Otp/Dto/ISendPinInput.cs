@@ -13,7 +13,7 @@ namespace Shesha.Otp.Dto
         /// <summary>
         /// Mobile number/email address (depending on the `send type`) to which the OTP should be sent
         /// </summary>
-        string SendTo { get; }
+        string? SendTo { get; }
 
         /// <summary>
         /// Type of sender (Sms = 1, Email = 2)

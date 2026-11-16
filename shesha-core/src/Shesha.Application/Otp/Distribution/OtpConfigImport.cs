@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
+using Castle.Core.Logging;
 using Shesha.Domain;
 using Shesha.Otp.Distribution.Dto;
 using Shesha.Services.ConfigurationItems;
@@ -14,6 +15,8 @@ namespace Shesha.Otp.Distribution
     public class OtpConfigImport : ConfigurationItemImportBase<OtpConfig, DistributedOtpConfig>, IOtpConfigImport, ITransientDependency
     {
         private readonly IRepository<NotificationTypeConfig, Guid> _notificationTypeRepo;
+
+        public ILogger Logger { get; set; } = NullLogger.Instance;
 
         public OtpConfigImport(
             IRepository<Module, Guid> moduleRepo,
@@ -53,13 +56,19 @@ namespace Shesha.Otp.Distribution
             if (string.IsNullOrWhiteSpace(name))
                 return null;
 
-            // note: the notification type must be imported before the OTP configuration that references it.
             // Flush pending changes, the session doesn't flush automatically before queries (FlushMode.Commit),
             // so notification types imported earlier in the same package would not be found otherwise
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             var notificationType = await _notificationTypeRepo.FirstOrDefaultAsync(e => e.Name == name && (e.Module == null && module == null || e.Module != null && e.Module.Name == module));
-            return notificationType ?? throw new InvalidOperationException($"Notification type '{module}/{name}' referenced by the OTP configuration was not found");
+
+            // The package importer processes item types in the order of their first appearance, a package may list the OTP configuration
+            // before its notification type. Don't fail the whole package: the configuration is imported without the reference and is
+            // linked by the next import of the package (the items are then not equal), until then the OTP manager reports a clear error
+            if (notificationType == null)
+                Logger.Warn($"Notification type '{module}/{name}' referenced by an OTP configuration was not found. The configuration is imported without it, import the notification type and then the OTP configuration again");
+
+            return notificationType;
         }
     }
 }

@@ -85,25 +85,53 @@ namespace Shesha.Otp
             var configs = await _otpConfigRepository.GetAllListAsync(c => c.NotificationType != null);
 
             // the pin templates were plain text (sms and email), the link templates were html
-            var updated = new List<string>();
-            updated.AddRange(await UpdateTemplatesAsync(configs, RefListOtpPinType.Numeric, pinSubject, pinBody, bodyIsHtml: false));
-            updated.AddRange(await UpdateTemplatesAsync(configs, RefListOtpPinType.Token, linkSubject, linkBody, bodyIsHtml: true));
+            var pin = await UpdateTemplatesAsync(configs, RefListOtpPinType.Numeric, pinSubject, pinBody, bodyIsHtml: false);
+            var link = await UpdateTemplatesAsync(configs, RefListOtpPinType.Token, linkSubject, linkBody, bodyIsHtml: true);
 
-            // clear the settings so the templates edited in the notification editor are not overwritten on the next start-up
-            settings.DefaultSubjectTemplate = null;
-            settings.DefaultBodyTemplate = null;
-            settings.DefaultEmailSubjectTemplate = null;
-            settings.DefaultEmailBodyTemplate = null;
-            await _otpSettings.OneTimePins.SetValueAsync(settings);
+            // Clear the moved templates so the ones edited in the notification editor are not overwritten on the next start-up.
+            // A customised template that found no destination (e.g. the seed package was not imported) stays in the settings:
+            // they are the only copy of it, the move is retried on the next start-up
+            var notMoved = new List<string>();
+            settings.DefaultSubjectTemplate = ClearIfMoved(settings.DefaultSubjectTemplate, pinSubject, pin.TitleWritten, nameof(settings.DefaultSubjectTemplate), notMoved);
+            settings.DefaultBodyTemplate = ClearIfMoved(settings.DefaultBodyTemplate, pinBody, pin.BodyWritten, nameof(settings.DefaultBodyTemplate), notMoved);
+            settings.DefaultEmailSubjectTemplate = ClearIfMoved(settings.DefaultEmailSubjectTemplate, linkSubject, link.TitleWritten, nameof(settings.DefaultEmailSubjectTemplate), notMoved);
+            settings.DefaultEmailBodyTemplate = ClearIfMoved(settings.DefaultEmailBodyTemplate, linkBody, link.BodyWritten, nameof(settings.DefaultEmailBodyTemplate), notMoved);
 
-            Logger.Warn($"Customised OTP templates were moved from the OTP settings into the notification templates of: {string.Join(", ", updated)}");
+            var updated = pin.NotificationTypes.Concat(link.NotificationTypes).ToList();
+            if (updated.Any())
+            {
+                await _otpSettings.OneTimePins.SetValueAsync(settings);
+                Logger.Warn($"Customised OTP templates were moved from the OTP settings into the notification templates of: {string.Join(", ", updated)}");
+            }
+
+            if (notMoved.Any())
+                Logger.Warn($"Customised OTP templates were kept in the OTP settings, no notification template can take them: {string.Join(", ", notMoved)}");
         }
 
-        private async Task<List<string>> UpdateTemplatesAsync(List<OtpConfig> configs, RefListOtpPinType pinType, string? title, string? body, bool bodyIsHtml)
+        /// <summary>
+        /// Value of a legacy template setting after the move: cleared when it was moved or was never customised, kept otherwise
+        /// </summary>
+        private static string? ClearIfMoved(string? currentValue, string? customisedValue, bool written, string settingName, List<string> notMoved)
+        {
+            if (customisedValue == null || written)
+                return null;
+
+            notMoved.Add(settingName);
+            return currentValue;
+        }
+
+        /// <summary>
+        /// Result of the move of a legacy title/body pair
+        /// </summary>
+        private sealed record TemplatesUpdate(bool TitleWritten, bool BodyWritten, List<string> NotificationTypes);
+
+        private async Task<TemplatesUpdate> UpdateTemplatesAsync(List<OtpConfig> configs, RefListOtpPinType pinType, string? title, string? body, bool bodyIsHtml)
         {
             var updated = new List<string>();
+            var titleWritten = false;
+            var bodyWritten = false;
             if (title == null && body == null)
-                return updated;
+                return new TemplatesUpdate(titleWritten, bodyWritten, updated);
 
             var notificationTypes = configs
                 .Where(c => c.PinType == pinType)
@@ -114,20 +142,33 @@ namespace Shesha.Otp
             foreach (var notificationType in notificationTypes)
             {
                 var templates = await _templateRepository.GetAllListAsync(t => t.PartOf == notificationType);
+                var typeUpdated = false;
                 foreach (var template in templates)
                 {
-                    if (title != null)
-                        template.TitleTemplate = title;
-
                     var templateBody = body != null ? ConvertBody(body, bodyIsHtml, template.MessageFormat) : null;
+                    if (title == null && templateBody == null)
+                        continue;
+
+                    if (title != null)
+                    {
+                        template.TitleTemplate = title;
+                        titleWritten = true;
+                    }
+
                     if (templateBody != null)
+                    {
                         template.BodyTemplate = templateBody;
+                        bodyWritten = true;
+                    }
 
                     await _templateRepository.UpdateAsync(template);
+                    typeUpdated = true;
                 }
-                updated.Add(notificationType.Name);
+
+                if (typeUpdated)
+                    updated.Add(notificationType.Name);
             }
-            return updated;
+            return new TemplatesUpdate(titleWritten, bodyWritten, updated);
         }
 
         /// <summary>

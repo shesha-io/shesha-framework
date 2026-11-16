@@ -45,7 +45,8 @@ namespace Shesha.Domain
         public virtual NotificationTypeConfig? NotificationType { get; set; }
 
         /// <summary>
-        /// Lifetime of the pin in seconds. Falls back to the default lifetime from the OTP settings when empty
+        /// Lifetime of the pin in seconds. When empty, the lifetime requested by the caller is used
+        /// (the login and password reset flows request the ones from the security settings), else the default lifetime from the OTP settings
         /// </summary>
         public virtual int? Lifetime { get; set; }
 

@@ -10,15 +10,16 @@ namespace Shesha.Otp
     /// </summary>
     public class OtpConfigManager : ConfigurationItemManager<OtpConfig>, IOtpConfigManager, ITransientDependency
     {
-        protected override Task CopyItemPropertiesAsync(OtpConfig source, OtpConfig destination)
+        protected override async Task CopyItemPropertiesAsync(OtpConfig source, OtpConfig destination)
         {
+            // label and description
+            await base.CopyItemPropertiesAsync(source, destination);
+
             destination.NotificationType = source.NotificationType;
             destination.Lifetime = source.Lifetime;
             destination.PinType = source.PinType;
             destination.PinLength = source.PinLength;
             destination.Alphabet = source.Alphabet;
-
-            return Task.CompletedTask;
         }
     }
 }

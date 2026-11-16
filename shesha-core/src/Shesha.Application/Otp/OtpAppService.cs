@@ -1,10 +1,16 @@
 ﻿using Abp.Dependency;
+using Abp.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Shesha.Authorization;
+using Shesha.Authorization.Users;
+using Shesha.Configuration.Runtime;
+using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
+using Shesha.RateLimiting;
 using System.Threading.Tasks;
 
 namespace Shesha.Otp
@@ -13,27 +19,52 @@ namespace Shesha.Otp
     {
         private readonly IOtpSettings _otpSettings;
         private readonly IOtpManager _otpManager;
+        private readonly IEntityTypeConfigurationStore _entityTypeConfigurationStore;
 
 
-        public OtpAppService(IOtpManager otpManager, IOtpSettings otpSettings)
+        public OtpAppService(IOtpManager otpManager, IOtpSettings otpSettings, IEntityTypeConfigurationStore entityTypeConfigurationStore)
         {
             _otpManager = otpManager;
             _otpSettings = otpSettings;
+            _entityTypeConfigurationStore = entityTypeConfigurationStore;
         }
 
         /// <summary>
         /// Send one-time-pin
         /// </summary>
         [AllowAnonymous]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ISendPinResponse> SendPinAsync(SendPinInput input)
         {
+            if (!AbpSession.UserId.HasValue)
+                RestrictAnonymousRecipient(input);
+
             return await _otpManager.SendPinAsync(input);
+        }
+
+        /// <summary>
+        /// Anonymous callers must address the OTP themselves. They can't make the OTP manager deliver it to the stored addresses
+        /// of a person selected by id: that would allow to message any user and to check which ids exist
+        /// </summary>
+        private void RestrictAnonymousRecipient(SendPinInput input)
+        {
+            if (string.IsNullOrWhiteSpace(input.SendTo))
+                throw new UserFriendlyException($"{nameof(input.SendTo)} must be specified");
+
+            if (string.IsNullOrWhiteSpace(input.RecipientType))
+                return;
+
+            // the OTP manager takes addresses from persons and users only, other recipient types are kept as is for the audit
+            var entityType = _entityTypeConfigurationStore.GetOrNull(input.RecipientType)?.EntityType;
+            if (entityType != null && (typeof(Person).IsAssignableFrom(entityType) || typeof(User).IsAssignableFrom(entityType)))
+                input.RecipientType = null;
         }
 
         /// <summary>
         /// Resend one-time-pin
         /// </summary>
         [AllowAnonymous]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ISendPinResponse> ResendPinAsync(ResendPinInput input)
         {
             return await _otpManager.ResendPinAsync(input);

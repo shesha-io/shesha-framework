@@ -130,16 +130,58 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
-        public async Task RequestedLifetime_OverridesConfigLifetime_TestAsync()
+        public async Task ConfigLifetime_OverridesRequestedLifetime_TestAsync()
         {
             var env = new OtpTestEnvironment();
             env.Configs[OtpConfigNames.OtpSms].Lifetime = 90;
+            var otp = env.CreateManager();
+
+            // the framework flows always request the lifetime of the security settings: the one set on the configuration must win
+            await otp.SendPinAsync(new SendPinInput { SendTo = MobileNo, SendType = OtpSendType.Sms, Lifetime = 30 });
+
+            env.SavedOtp.ShouldNotBeNull();
+            (env.SavedOtp.ExpiresOn!.Value - DateTime.Now).TotalSeconds.ShouldBeInRange(80, 91);
+        }
+
+        [Fact]
+        public async Task RequestedLifetime_IsUsedWhenConfigHasNone_TestAsync()
+        {
+            var env = new OtpTestEnvironment();
             var otp = env.CreateManager();
 
             await otp.SendPinAsync(new SendPinInput { SendTo = MobileNo, SendType = OtpSendType.Sms, Lifetime = 30 });
 
             env.SavedOtp.ShouldNotBeNull();
             (env.SavedOtp.ExpiresOn!.Value - DateTime.Now).TotalSeconds.ShouldBeInRange(20, 31);
+        }
+
+        [Fact]
+        public async Task OptedOutRecipient_IsReportedAsFailed_TestAsync()
+        {
+            var env = new OtpTestEnvironment();
+            env.Configs[OtpConfigNames.OtpSms].NotificationType!.CanOptOut = true;
+            env.OptedOutAddresses.Add(MobileNo);
+            var otp = env.CreateManager();
+
+            await otp.SendPinAsync(new SendPinInput { SendTo = MobileNo, SendType = OtpSendType.Sms });
+
+            env.SavedOtp.ShouldNotBeNull();
+            env.SavedOtp.SendStatus.ShouldBe(OtpSendStatus.Failed);
+            env.SavedOtp.ErrorMessage.ShouldNotBeNull().ShouldContain("opted out");
+            env.Sent.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public async Task OptOut_IsIgnoredWhenNotificationDoesNotAllowIt_TestAsync()
+        {
+            var env = new OtpTestEnvironment();
+            env.OptedOutAddresses.Add(MobileNo);
+            var otp = env.CreateManager();
+
+            await otp.SendPinAsync(new SendPinInput { SendTo = MobileNo, SendType = OtpSendType.Sms });
+
+            env.SavedOtp.ShouldNotBeNull().SendStatus.ShouldBe(OtpSendStatus.Sent);
+            env.Sent.Count.ShouldBe(1);
         }
 
         [Fact]
@@ -386,12 +428,18 @@ namespace Shesha.Tests.Otp
             INotificationSender notificationSender,
             INotificationManager notificationManager,
             IEntityTypeConfigurationStore entityTypeConfigurationStore,
-            IFrontendSettings frontendSettings)
+            IFrontendSettings frontendSettings,
+            HashSet<string> optedOutAddresses)
             : OtpManager(otpStorage, otpGenerator, otpSettings, otpConfigRepository, personRepository, notificationMessageRepository, notificationSender, notificationManager, entityTypeConfigurationStore, frontendSettings)
         {
             private static readonly Type[] EntityTypes = [typeof(Person), typeof(User)];
 
             protected override Type? GetEntityTypeOrNull(string nameOrAlias) => EntityTypes.FirstOrDefault(t => t.FullName == nameOrAlias);
+
+            protected override Task<bool> IsOptedOutAsync(IMessageReceiver receiver, NotificationTypeConfig type)
+            {
+                return Task.FromResult(optedOutAddresses.Any(address => receiver.Equals(new RawAddressMessageParticipant(address))));
+            }
         }
 
         /// <summary>
@@ -422,6 +470,10 @@ namespace Shesha.Tests.Otp
             public List<string> SentPins => Sent.Select(s => s.Data.Password!).ToList();
             public OtpDto? SavedOtp => _storage.Values.LastOrDefault();
             public string? PublicUrl { get; set; } = "https://my.site/";
+            /// <summary>
+            /// Addresses of the receivers that have opted out of notifications
+            /// </summary>
+            public HashSet<string> OptedOutAddresses { get; } = new();
             public Person Person { get; } = new() { Id = Guid.NewGuid(), User = new User { Id = 42 } };
 
             public OtpTestEnvironment()
@@ -514,7 +566,8 @@ namespace Shesha.Tests.Otp
                     notificationSender.Object,
                     notificationManager.Object,
                     new Mock<IEntityTypeConfigurationStore>().Object,
-                    frontendSettings.Object
+                    frontendSettings.Object,
+                    OptedOutAddresses
                 );
             }
         }

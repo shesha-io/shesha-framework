@@ -143,6 +143,41 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
+        public async Task TemplateWithoutDestination_IsKeptInSettings_TestAsync()
+        {
+            // html can't be written into a plain text template: the link body has nowhere to go
+            const string body = "<a href=https://my.site/verify?token={{token}}>verify</a>";
+            var env = new Environment(settings =>
+            {
+                settings.DefaultBodyTemplate = "Code: {{password}}";
+                settings.DefaultEmailBodyTemplate = body;
+            });
+            env.RemoveTemplates(LinkConfig, RefListNotificationMessageFormat.RichText);
+
+            await env.Migrator.MigrateAsync();
+
+            // the pin template is moved and cleared, the link template stays: the settings are its only copy
+            var saved = env.SavedSettings.ShouldNotBeNull();
+            saved.DefaultBodyTemplate.ShouldBeNull();
+            saved.DefaultEmailBodyTemplate.ShouldBe(body);
+            env.Template(PinConfig, RefListNotificationMessageFormat.PlainText).BodyTemplate.ShouldBe("Code: {{password}}");
+            env.Template(LinkConfig, RefListNotificationMessageFormat.PlainText).BodyTemplate.ShouldBe(SeededLinkBody);
+        }
+
+        [Fact]
+        public async Task MissingConfigurations_KeepSettings_TestAsync()
+        {
+            // e.g. the seed package failed to import
+            var env = new Environment(settings => settings.DefaultBodyTemplate = "Code: {{password}}");
+            env.RemoveConfigs();
+
+            await env.Migrator.MigrateAsync();
+
+            env.SavedSettings.ShouldBeNull();
+            env.UpdatedTemplates.ShouldBeEmpty();
+        }
+
+        [Fact]
         public async Task Failure_DoesNotBlockStartupAndKeepsSettings_TestAsync()
         {
             var env = new Environment(settings => settings.DefaultBodyTemplate = "Code: {{password}}", failOnUpdate: true);
@@ -226,6 +261,17 @@ namespace Shesha.Tests.Otp
             {
                 var type = _configs.Single(c => c.Name == configName).NotificationType;
                 return _templates.Single(t => t.PartOf == type && t.MessageFormat == format);
+            }
+
+            public void RemoveTemplates(string configName, RefListNotificationMessageFormat format)
+            {
+                var type = _configs.Single(c => c.Name == configName).NotificationType;
+                _templates.RemoveAll(t => t.PartOf == type && t.MessageFormat == format);
+            }
+
+            public void RemoveConfigs()
+            {
+                _configs.Clear();
             }
 
             private void AddConfig(string name, RefListOtpPinType pinType, string body)

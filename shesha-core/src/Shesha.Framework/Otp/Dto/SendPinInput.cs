@@ -9,9 +9,10 @@ namespace Shesha.Otp.Dto
     {
         /// <summary>
         /// Mobile number/email address (depending on the `send type`) to which the OTP should be sent.
-        /// Optional when the recipient is a person or user (see <see cref="RecipientType"/>): addresses are then taken from the person
+        /// Optional when the recipient is a person or user (see <see cref="RecipientType"/>): addresses are then taken from the person.
+        /// Anonymous callers of the API must always specify it
         /// </summary>
-        public string SendTo { get; set; }
+        public string? SendTo { get; set; }
 
         /// <summary>
         /// Kind of address passed in <see cref="SendTo"/> (Sms = 1, Email = 2, EmailLink = 4).
@@ -22,7 +23,8 @@ namespace Shesha.Otp.Dto
 
         /// <summary>
         /// Type of the recipient. When it is a person or a user (entity class name or type short alias) and <see cref="RecipientId"/> is its id,
-        /// the OTP can be delivered over every channel of the notification type using the addresses of that person
+        /// the OTP can be delivered over every channel of the notification type using the addresses of that person.
+        /// Anonymous callers of the API can't select a person this way: the recipient is then used for audit only
         /// </summary>
         public string? RecipientType { get; set; }
 
@@ -32,7 +34,7 @@ namespace Shesha.Otp.Dto
         public string? RecipientId { get; set; }
 
         /// <summary>
-        /// Lifetime of the one time password in seconds. Overrides the lifetime of the OTP configuration
+        /// Lifetime of the one time password in seconds. Is used when the OTP configuration doesn't define a lifetime
         /// </summary>
         public Int64? Lifetime { get; set; }
 

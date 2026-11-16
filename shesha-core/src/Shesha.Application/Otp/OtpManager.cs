@@ -222,15 +222,17 @@ namespace Shesha.Otp
         }
 
         /// <summary>
-        /// Lifetime of the pin in seconds: requested by the caller, else defined by the OTP configuration, else the default one from the OTP settings
+        /// Lifetime of the pin in seconds: defined by the OTP configuration, else requested by the caller, else the default one from the OTP settings.
+        /// The configuration goes first: it is what an administrator sets for the action, the framework flows (login, password reset)
+        /// always request the lifetime of the security settings and would make it ineffective otherwise
         /// </summary>
         private static long GetLifetime(long? requestedLifetime, OtpConfig config, OtpSettings settings)
         {
-            if (requestedLifetime.HasValue && requestedLifetime.Value > 0)
-                return requestedLifetime.Value;
+            if (config.Lifetime.HasValue && config.Lifetime.Value > 0)
+                return config.Lifetime.Value;
 
-            return config.Lifetime.HasValue && config.Lifetime.Value > 0
-                ? config.Lifetime.Value
+            return requestedLifetime.HasValue && requestedLifetime.Value > 0
+                ? requestedLifetime.Value
                 : settings.DefaultLifetime;
         }
 
@@ -311,6 +313,10 @@ namespace Shesha.Otp
             {
                 try
                 {
+                    // note: opted-out receivers are skipped silently by the notification sender, the OTP would be reported as sent
+                    if (type.CanOptOut && await IsOptedOutAsync(receiver, type))
+                        throw new OtpException($"The recipient has opted out of the notification type '{type.Name}'");
+
                     await _notificationSender.SendNotificationAsync(type, null, receiver, data, triggeringEntity: otp.Owner, channel: channel);
                 }
                 catch (Exception e)
@@ -391,6 +397,14 @@ namespace Shesha.Otp
                 return await _personRepository.FirstOrDefaultAsync(p => p.User != null && p.User.Id == userId);
 
             return null;
+        }
+
+        /// <summary>
+        /// Whether the receiver has opted out of the notification type
+        /// </summary>
+        protected virtual Task<bool> IsOptedOutAsync(IMessageReceiver receiver, NotificationTypeConfig type)
+        {
+            return receiver.IsNotificationOptedOutAsync(type);
         }
 
         /// <summary>
