@@ -169,6 +169,44 @@ namespace Shesha.Tests.UserRegistrations
             await Should.ThrowAsync<AbpValidationException>(() => RegisterAsync(app, input));
         }
 
+        [Theory]
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        [InlineData(true, true)]
+        public async Task Email_address_is_mandatory_when_required_and_reported_onceAsync(bool requireEmailAddress, bool userEmailAsUsername)
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.RequireEmailAddress = requireEmailAddress;
+                s.UserEmailAsUsername = userEmailAsUsername;
+                s.AllowedEmailDomains = "selfreg.test";
+            }));
+            var input = NewInput();
+            input.EmailAddress = null;
+            ProvideOtp(input, sentTo: input.MobileNumber);
+
+            var ex = await Should.ThrowAsync<AbpValidationException>(() => RegisterAsync(app, input));
+
+            ex.ValidationErrors.Count(e => e.ErrorMessage == "Email Address is mandatory").ShouldBe(1);
+        }
+
+        [Theory]
+        [InlineData(false, false, false)]
+        [InlineData(true, false, true)]
+        [InlineData(false, true, true)]
+        public async Task Public_settings_say_whether_the_email_address_is_requiredAsync(bool requireEmailAddress, bool userEmailAsUsername, bool expected)
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.RequireEmailAddress = requireEmailAddress;
+                s.UserEmailAsUsername = userEmailAsUsername;
+                s.AllowedEmailDomains = "gov.za";
+            }));
+
+            (await GetPublicSettingsAsync(app)).RequireEmailAddress.ShouldBe(expected);
+        }
+
         [Fact]
         public async Task Default_roles_are_appointed_to_the_new_personAsync()
         {
@@ -354,18 +392,194 @@ namespace Shesha.Tests.UserRegistrations
         }
 
         [Fact]
-        public async Task Mobile_registration_is_refused_when_email_domains_are_restricted_and_the_email_is_unverifiedAsync()
+        public async Task Mobile_registration_is_refused_when_the_email_is_required_and_unverifiedAsync()
         {
             var app = await CreateAppAsync(EnabledSettings(s =>
             {
                 s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
-                s.AllowedEmailDomains = "selfreg.test";
+                s.RequireEmailAddress = true;
             }));
             var input = NewInput();
             ProvideOtp(input, sentTo: input.MobileNumber);
 
             var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, input));
             ex.Message.ShouldBe(SelfRegistrationManager.EmailNotVerifiedMessage);
+        }
+
+        [Fact]
+        public async Task Restricted_email_domains_alone_do_not_require_an_email_addressAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.AllowedEmailDomains = "selfreg.test";
+            }));
+
+            var withoutEmail = NewInput();
+            withoutEmail.EmailAddress = null;
+            ProvideOtp(withoutEmail, sentTo: withoutEmail.MobileNumber);
+            (await RegisterAsync(app, withoutEmail)).UserId.ShouldBeGreaterThan(0);
+
+            // an unverified email address is left out rather than refused, as when domains aren't restricted
+            var unverifiedEmail = NewInput();
+            ProvideOtp(unverifiedEmail, sentTo: unverifiedEmail.MobileNumber);
+            var result = await RegisterAsync(app, unverifiedEmail);
+            await WithUowAsync(async () =>
+            {
+                var person = await _personRepository.GetAsync(result.PersonId);
+                person.EmailAddress1.ShouldBeNull();
+            });
+        }
+
+        [Fact]
+        public async Task Restricted_email_domains_still_refuse_an_email_address_from_another_domainAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.AllowedEmailDomains = "other.test";
+            }));
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+
+            await Should.ThrowAsync<AbpValidationException>(() => RegisterAsync(app, input));
+        }
+
+        [Fact]
+        public async Task Mobile_registration_with_a_verified_email_as_the_username_succeedsAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.UserEmailAsUsername = true;
+            }));
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+            ProvideEmailOtp(input, sentTo: input.EmailAddress);
+
+            var result = await RegisterAsync(app, input);
+
+            await WithUowAsync(async () =>
+            {
+                var person = await _personRepository.GetAsync(result.PersonId);
+                person.EmailAddress1.ShouldBe(input.EmailAddress, "the email address was verified with its own pin");
+                person.MobileNumber1.ShouldBe(input.MobileNumber);
+                person.User.UserName.ShouldBe(input.EmailAddress);
+            });
+        }
+
+        [Fact]
+        public async Task Mobile_registration_with_a_required_email_accepts_a_verified_emailAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.RequireEmailAddress = true;
+                s.AllowedEmailDomains = "selfreg.test";
+            }));
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+            ProvideEmailOtp(input, sentTo: input.EmailAddress);
+
+            (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task An_email_pin_sent_to_a_different_address_is_refusedAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.UserEmailAsUsername = true;
+            }));
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+            ProvideEmailOtp(input, sentTo: "someone-else@selfreg.test");
+
+            var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, input));
+            ex.Message.ShouldBe(SelfRegistrationManager.EmailNotVerifiedMessage);
+            (await UserExistsAsync(input.EmailAddress)).ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task A_wrong_email_pin_is_refusedAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.UserEmailAsUsername = true;
+            }));
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+            ProvideEmailOtp(input, sentTo: input.EmailAddress);
+            input.EmailOtpPin = "000000";
+
+            var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, input));
+            ex.Message.ShouldBe(SelfRegistrationManager.EmailNotVerifiedMessage);
+        }
+
+        [Fact]
+        public async Task An_email_pin_does_not_replace_the_registration_method_pinAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.UserEmailAsUsername = true;
+            }));
+            var input = NewInput();
+            RemoveOtp(input);
+            ProvideEmailOtp(input, sentTo: input.EmailAddress);
+
+            var ex = await Should.ThrowAsync<UserFriendlyException>(() => RegisterAsync(app, input));
+            ex.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
+        }
+
+        [Fact]
+        public async Task Email_registration_accepts_the_email_pin_as_the_second_pinAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s => s.SupportedRegistrationMethods = SupportedRegistrationMethods.EmailAddress));
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+            ProvideEmailOtp(input, sentTo: input.EmailAddress);
+
+            var result = await RegisterAsync(app, input);
+
+            await WithUowAsync(async () =>
+            {
+                var person = await _personRepository.GetAll().SingleAsync(p => p.Id == result.PersonId);
+                person.EmailAddress1.ShouldBe(input.EmailAddress);
+                person.MobileNumber1.ShouldBe(input.MobileNumber, "both contacts were verified");
+            });
+        }
+
+        [Fact]
+        public async Task Linking_accepts_a_person_matched_on_the_verified_email_addressAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.UserEmailAsUsername = true;
+                s.CreationMode = RefListSelfRegistrationCreationMode.MustAlreadyExist;
+            }));
+            var input = NewInput();
+            var personId = await CreatePreRegisteredPersonAsync(input.EmailAddress, null);
+            ProvideOtp(input, sentTo: input.MobileNumber);
+            ProvideEmailOtp(input, sentTo: input.EmailAddress);
+
+            var result = await RegisterAsync(app, input);
+
+            result.LinkedToExistingPerson.ShouldBeTrue();
+            result.PersonId.ShouldBe(personId);
+        }
+
+        [Fact]
+        public async Task Public_settings_include_the_allowed_email_domainsAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s => s.AllowedEmailDomains = "gov.za; @Example.com"));
+
+            var settings = await GetPublicSettingsAsync(app);
+
+            settings.AllowedEmailDomains.ShouldBe(new List<string> { "gov.za", "example.com" });
         }
 
         #endregion
@@ -900,6 +1114,14 @@ namespace Shesha.Tests.UserRegistrations
             _otps[otp.OperationId] = otp;
             input.OtpOperationId = otp.OperationId;
             input.OtpPin = otp.Pin;
+        }
+
+        private void ProvideEmailOtp(SelfRegistrationInput input, string sentTo)
+        {
+            var otp = new OtpDto { OperationId = Guid.NewGuid(), Pin = "654321", SendTo = sentTo, ExpiresOn = DateTime.Now.AddMinutes(5) };
+            _otps[otp.OperationId] = otp;
+            input.EmailOtpOperationId = otp.OperationId;
+            input.EmailOtpPin = otp.Pin;
         }
 
         /// <summary>

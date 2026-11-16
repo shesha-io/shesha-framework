@@ -139,6 +139,7 @@ namespace Shesha
                    RequireEmailVerification = false,
                    GoToUrlAfterRegistration = "/",
                    UserEmailAsUsername = false,
+                   RequireEmailAddress = false,
                    AdditionalRegistrationInfo = false,
                    AdditionalRegistrationInfoFormModule = null,
                    AdditionalRegistrationInfoFormName = null

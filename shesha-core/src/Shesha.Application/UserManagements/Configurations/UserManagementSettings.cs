@@ -59,6 +59,13 @@ namespace Shesha.UserManagements.Configurations
         public string AllowedEmailDomains { get; set; }
 
         /// <summary>
+        /// Registrants must provide a verified email address. It's always required when <see cref="UserEmailAsUsername"/> is set,
+        /// since the email address is then the username. <see cref="AllowedEmailDomains"/> only restricts registration by mobile
+        /// number when this is set, because otherwise the email address can be left out.
+        /// </summary>
+        public bool RequireEmailAddress { get; set; }
+
+        /// <summary>
         /// Names of Shesha roles (ShaRole) appointed to the new Person on registration.
         /// </summary>
         public List<string> DefaultRoles { get; set; }
