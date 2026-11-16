@@ -54,15 +54,14 @@ namespace Shesha.Otp
         [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Application_Maintenance, PermissionNames.Application_Settings, IsConfigurable = false)]
         public async Task<bool> UpdateSettingsAsync(OtpSettingsDto input)
         {
-            await _otpSettings.OneTimePins.SetValueAsync(new OtpSettings
-            {
-                PasswordLength = input.PasswordLength,
-                Alphabet = input.Alphabet,
-                DefaultLifetime = input.DefaultLifetime,
-                IgnoreOtpValidation = input.IgnoreOtpValidation,
-                DefaultEmailBodyTemplate = input.EmailBodyTemplate,
-                DefaultEmailSubjectTemplate = input.EmailSubject,
-            });
+            // note: message templates are not part of the settings anymore, they are defined by the notification templates of the OTP configurations
+            var settings = await _otpSettings.OneTimePins.GetValueOrNullAsync() ?? new OtpSettings();
+            settings.PasswordLength = input.PasswordLength;
+            settings.Alphabet = input.Alphabet;
+            settings.DefaultLifetime = input.DefaultLifetime;
+            settings.IgnoreOtpValidation = input.IgnoreOtpValidation;
+
+            await _otpSettings.OneTimePins.SetValueAsync(settings);
 
             return true;
         }
@@ -80,8 +79,6 @@ namespace Shesha.Otp
                 Alphabet = emailSettings.Alphabet,
                 DefaultLifetime = emailSettings.DefaultLifetime,
                 IgnoreOtpValidation = emailSettings.IgnoreOtpValidation,
-                EmailSubject = emailSettings.DefaultEmailSubjectTemplate,
-                EmailBodyTemplate = emailSettings.DefaultEmailBodyTemplate,
             };
 
             return settings;

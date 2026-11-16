@@ -1,7 +1,14 @@
-﻿namespace Shesha.Otp.Configuration
+﻿using System;
+
+namespace Shesha.Otp.Configuration
 {
     public class OtpSettings
     {
+        /// <summary>
+        /// Message of the <see cref="ObsoleteAttribute"/> applied to the template settings
+        /// </summary>
+        private const string TemplatesObsoleteMessage = "No longer used: OTP messages are sent using the notification templates of the OTP configuration (OtpConfig). Customised values are moved into those templates on start-up.";
+
         /// <summary>
         /// Length of the OTP
         /// </summary>
@@ -26,21 +33,25 @@
         /// <summary>
         /// Subject template
         /// </summary>
-        public string DefaultSubjectTemplate { get; set; }
+        [Obsolete(TemplatesObsoleteMessage)]
+        public string? DefaultSubjectTemplate { get; set; }
 
         /// <summary>
         /// Body template
         /// </summary>
-        public string DefaultBodyTemplate { get; set; }
+        [Obsolete(TemplatesObsoleteMessage)]
+        public string? DefaultBodyTemplate { get; set; }
 
         /// <summary>
         /// Email link subject template
         /// </summary>
-        public string DefaultEmailSubjectTemplate { get; set; }
+        [Obsolete(TemplatesObsoleteMessage)]
+        public string? DefaultEmailSubjectTemplate { get; set; }
 
         /// <summary>
         /// Email link body template
         /// </summary>
-        public string DefaultEmailBodyTemplate { get; set; }
+        [Obsolete(TemplatesObsoleteMessage)]
+        public string? DefaultEmailBodyTemplate { get; set; }
     }
 }

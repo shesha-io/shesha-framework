@@ -8,6 +8,9 @@
         public const int DefaultPasswordLength = 6;
         public const string DefaultAlphabet = "0123456789";
         public const int DefaultLifetime = 3 * 60;
+
+        // Defaults of the obsolete template settings. OTP messages are defined by notification templates now,
+        // the values are kept to detect templates that were customised before the move (see OtpLegacyTemplatesMigrator)
         public const string DefaultSubjectTemplate = "One-Time-Pin";
         public const string DefaultBodyTemplate = "Your One-Time-Pin is {{password}}";
         public const string DefaultEmailSubjectTemplate = "One-Time-Pin";

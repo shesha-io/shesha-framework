@@ -17,6 +17,8 @@ const CS_ICON_COLORS = {
   referenceList: '#D47100',
   notification: '#A800E5',
   notificationChannel: '#279E45',
+  // not part of the design-supplied set: picked to stay apart from the other item colours
+  otpConfig: '#C0392B',
   role: '#9D0064',
   settings: '#2B78E4',
 } as const;
@@ -151,6 +153,22 @@ export const CsNotificationChannelIcon = makeCsIcon({
       d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958
       C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333
       C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V6.66667H4.16667V15.8333Z"
+    />
+  ),
+});
+
+/**
+ * One-time-pin configuration: a pin entry field with masked digits. Drawn on the same 20x20 grid and
+ * stroke weight as the Material Symbols icons of the set.
+ */
+export const CsOtpConfigIcon = makeCsIcon({
+  defaultColor: CS_ICON_COLORS.otpConfig,
+  path: (
+    <path
+      d="M3.33333 5H16.6667C17.5871 5 18.3333 5.74619 18.3333 6.66667V13.3333C18.3333 14.2538 17.5871 15 16.6667 15H3.33333
+      C2.41286 15 1.66667 14.2538 1.66667 13.3333V6.66667C1.66667 5.74619 2.41286 5 3.33333 5ZM3.33333 6.66667V13.3333H16.6667V6.66667H3.33333Z
+      M5.3125 10A0.9375 0.9375 0 1 0 7.1875 10A0.9375 0.9375 0 1 0 5.3125 10ZM9.0625 10A0.9375 0.9375 0 1 0 10.9375 10
+      A0.9375 0.9375 0 1 0 9.0625 10ZM12.8125 10A0.9375 0.9375 0 1 0 14.6875 10A0.9375 0.9375 0 1 0 12.8125 10Z"
     />
   ),
 });

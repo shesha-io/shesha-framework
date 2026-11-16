@@ -24,7 +24,9 @@ using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Distribution.NotificationChannels;
 using Shesha.Notifications.Distribution.NotificationTypes;
 using Shesha.Notifications.SMS;
+using Shesha.Otp;
 using Shesha.Otp.Configuration;
+using Shesha.Otp.Distribution;
 using Shesha.Session;
 using Shesha.Settings.Ioc;
 using Shesha.Sms;
@@ -44,7 +46,12 @@ namespace Shesha
     {
         public override async Task<bool> InitializeConfigurationAsync()
         {
-            return await ImportConfigurationAsync();
+            var imported = await ImportConfigurationAsync();
+
+            // runs after the seed packages are imported: the OTP configurations and their notification templates must exist
+            await IocManager.Resolve<IOtpLegacyTemplatesMigrator>().MigrateAsync();
+
+            return imported;
         }
 
         public override void PreInitialize()
@@ -118,10 +125,6 @@ namespace Shesha
                     Alphabet = OtpDefaults.DefaultAlphabet,
                     PasswordLength = OtpDefaults.DefaultPasswordLength,
                     DefaultLifetime = OtpDefaults.DefaultLifetime,
-                    DefaultSubjectTemplate = OtpDefaults.DefaultSubjectTemplate,
-                    DefaultBodyTemplate = OtpDefaults.DefaultBodyTemplate,
-                    DefaultEmailSubjectTemplate = OtpDefaults.DefaultEmailSubjectTemplate,
-                    DefaultEmailBodyTemplate = OtpDefaults.DefaultEmailBodyTemplate
                 });
             });
 
@@ -148,7 +151,11 @@ namespace Shesha
 
                 .RegisterConfigurableItemManager<NotificationChannelConfig, INotificationChannelManager, NotificationChannelManager>()
                 .RegisterConfigurableItemExport<NotificationChannelConfig, INotificationChannelExport, NotificationChannelExport>()
-                .RegisterConfigurableItemImport<NotificationChannelConfig, INotificationChannelImport, NotificationChannelImport>();
+                .RegisterConfigurableItemImport<NotificationChannelConfig, INotificationChannelImport, NotificationChannelImport>()
+
+                .RegisterConfigurableItemManager<OtpConfig, IOtpConfigManager, OtpConfigManager>()
+                .RegisterConfigurableItemExport<OtpConfig, IOtpConfigExport, OtpConfigExport>()
+                .RegisterConfigurableItemImport<OtpConfig, IOtpConfigImport, OtpConfigImport>();
 
 
             IocManager.RegisterIfNot<INotificationChannelSender, EmailChannelSender>(DependencyLifeStyle.Transient);

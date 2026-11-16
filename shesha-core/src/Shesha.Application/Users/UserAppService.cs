@@ -16,6 +16,7 @@ using Shesha.Authorization.Users;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.NHibernate.EntityHistory;
 using Shesha.Otp;
@@ -249,6 +250,10 @@ namespace Shesha.Users
                 SendTo = mobileNo,
                 SendType = OtpSendType.Sms,
                 Lifetime = securitySettings.ResetPasswordSmsOtpLifetime,
+                RecipientType = typeof(User).FullName,
+                RecipientId = user.Id.ToString(),
+                OtpConfig = new OtpConfigIdentifierDto(OtpConfigNames.Module, OtpConfigNames.OtpPasswordResetSms),
+                Owner = new GenericEntityReference(user),
             });
 
             user.PasswordResetCode = otpResponse.OperationId.ToString();
@@ -349,7 +354,16 @@ namespace Shesha.Users
 
             var lifetime = securitySettings.ResetPasswordSmsOtpLifetime;
 
-            var response = await _otpManager.SendPinAsync(new SendPinInput() { SendTo = user.PhoneNumber, SendType = OtpSendType.Sms, Lifetime = lifetime });
+            var response = await _otpManager.SendPinAsync(new SendPinInput()
+            {
+                SendTo = user.PhoneNumber,
+                SendType = OtpSendType.Sms,
+                Lifetime = lifetime,
+                RecipientType = typeof(User).FullName,
+                RecipientId = user.Id.ToString(),
+                OtpConfig = new OtpConfigIdentifierDto(OtpConfigNames.Module, OtpConfigNames.OtpPasswordResetSms),
+                Owner = new GenericEntityReference(user),
+            });
 
             user.PasswordResetCode = response.OperationId.ToString();
 
@@ -569,7 +583,15 @@ namespace Shesha.Users
 
             var encodedUserName = Convert.ToBase64String(Encoding.UTF8.GetBytes(username));
 
-            var response = await _otpManager.SendPinAsync(new SendPinInput() { SendTo = user.EmailAddress, SendType = OtpSendType.EmailLink, Lifetime = lifetime, RecipientId = encodedUserName });
+            var response = await _otpManager.SendPinAsync(new SendPinInput()
+            {
+                SendTo = user.EmailAddress,
+                SendType = OtpSendType.EmailLink,
+                Lifetime = lifetime,
+                RecipientId = encodedUserName,
+                OtpConfig = new OtpConfigIdentifierDto(OtpConfigNames.Module, OtpConfigNames.OtpPasswordResetEmailLink),
+                Owner = new GenericEntityReference(user),
+            });
 
             user.PasswordResetCode = response.OperationId.ToString();
 
