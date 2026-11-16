@@ -38,7 +38,7 @@ namespace Shesha.UserRegistrations
                 return true;
 
             var domain = GetDomain(email);
-            return domain != null && domains.Contains(domain);
+            return !string.IsNullOrWhiteSpace(domain) && domains.Contains(domain);
         }
 
         /// <summary>
