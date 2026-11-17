@@ -4,8 +4,9 @@ import { executeScriptSync } from '@/providers/form/utils';
 import { IPropertySetting } from '..';
 import { getStyleBoxValue } from "@/designer-components/styleBox/utils";
 import { IConfigurableFormComponent, IStyleValue, IToolboxComponent } from "@/interfaces";
+import { IBackgroundValue } from "@/designer-components/_settings/utils/background/interfaces";
 import { IConfigurableTheme } from "@/providers";
-import { GROUP_HEADER_STYLES_KEY, IThemeGroupStyle } from "@/providers/theme/contexts";
+import { GROUP_NON_COMPONENT_STYLE_KEYS, IThemeGroupStyle } from "@/providers/theme/contexts";
 import { DeviceTypes } from "@/providers/canvas/contexts";
 import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from "@/utils/object";
 
@@ -15,16 +16,93 @@ import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from "@/
  */
 export const getGroupStyleForComponent = (groupStyle: IThemeGroupStyle | undefined, toolboxComponent: Pick<IToolboxComponent, 'nestedGroupStyles'> | undefined): IStyleValue | undefined => {
   if (!isDefined(groupStyle)) return undefined;
-  // The group's header defaults are not a style of the component itself: they reach a header only
-  // through the component's `nestedGroupStyles` (see getHeaderGroupStyle).
-  const { [GROUP_HEADER_STYLES_KEY]: _headerStyles, ...ownGroupStyle } = groupStyle;
+  // Parts of the group style that are not a style of the component itself never reach it: the label
+  // font, and the header defaults, which reach a header only through the component's
+  // `nestedGroupStyles` (see getHeaderGroupStyle).
+  const ownGroupStyle: IStyleValue & Record<string, unknown> = { ...groupStyle };
+  GROUP_NON_COMPONENT_STYLE_KEYS.forEach((key) => delete ownGroupStyle[key]);
   const nested = toolboxComponent?.nestedGroupStyles;
   if (!isDefined(nested)) return ownGroupStyle;
-  const result: IStyleValue & Record<string, unknown> = { ...ownGroupStyle };
+  const result: IStyleValue & Record<string, unknown> = ownGroupStyle;
   Object.entries(nested).forEach(([propertyName, pick]) => {
     result[propertyName] = pick(groupStyle);
   });
   return result;
+};
+
+/**
+ * The theme's base style: the lowest style layer, below every component's own defaults, so whatever a
+ * component, group or instance leaves unset is inherited from it. A component's nested style values that
+ * inherit the group style (`nestedGroupStyles`, e.g. a panel's header) inherit the base style as well.
+ * Undefined when the theme sets none.
+ */
+export const getThemeBaseStyle = (
+  theme: IConfigurableTheme | undefined,
+  toolboxComponent?: Pick<IToolboxComponent, 'nestedGroupStyles'> | undefined,
+): IStyleValue | undefined => {
+  const font = theme?.font;
+  if (!isDefined(font)) return undefined;
+  const definedFont = Object.fromEntries(Object.entries(font).filter(([, value]) => isDefined(value) && value !== ''));
+  if (Object.keys(definedFont).length === 0) return undefined;
+  const result: IStyleValue & Record<string, unknown> = { font: definedFont };
+  Object.keys(toolboxComponent?.nestedGroupStyles ?? {}).forEach((propertyName) => {
+    result[propertyName] = { font: { ...definedFont } };
+  });
+  return result;
+};
+
+const hasValue = (value: unknown): boolean => {
+  if (!isDefined(value)) return false;
+  if (typeof value === 'string') return isNotNullOrWhiteSpace(value);
+  if (Array.isArray(value)) return value.some(hasValue);
+  if (typeof value === 'object') return Object.values(value).some(hasValue);
+  return true;
+};
+
+/**
+ * Whether a background value draws nothing: a type is chosen but the value that type needs (colour,
+ * gradient colours, image) is not set. The Background editor stores such values as soon as a type button
+ * is clicked, e.g. `{ type: 'color' }`.
+ */
+export const isEmptyBackground = (background: IBackgroundValue | undefined): boolean => {
+  if (!isDefined(background)) return true;
+  switch (background.type) {
+    case 'color': return !hasValue(background.color);
+    case 'gradient': return !hasValue(background.gradient?.colors);
+    case 'image': return !hasValue(background.uploadFile);
+    case 'url': return !hasValue(background.url);
+    case 'storedFile': return !hasValue(background.storedFile?.id);
+    default: return true;
+  }
+};
+
+/**
+ * A theme style layer without the backgrounds that draw nothing (see {@link isEmptyBackground}) - its own
+ * and those of its nested style values (e.g. a panel's `headerStyles`) - so an empty background stored on
+ * a theme layer does not replace the background inherited from the layers below it: a Panel's Component
+ * Defaults holding `{ type: 'color' }` would otherwise reset the Layout Components gradient to the default white.
+ */
+export const withoutEmptyBackgrounds = <T extends object | undefined>(style: T): T => {
+  if (!isDefined(style)) return style;
+  let result: Record<string, unknown> | undefined;
+  const source = style as Record<string, unknown>;
+  Object.entries(source).forEach(([key, value]) => {
+    if (key === 'background') {
+      if (isEmptyBackground(value as IBackgroundValue | undefined)) {
+        result ??= { ...source };
+        delete result[key];
+      }
+      return;
+    }
+    if (isDefined(value) && typeof value === 'object' && !Array.isArray(value) && 'background' in value) {
+      const cleaned = withoutEmptyBackgrounds(value);
+      if (cleaned !== value) {
+        result ??= { ...source };
+        result[key] = cleaned;
+      }
+    }
+  });
+  return (result ?? style) as T;
 };
 
 export const getEffectiveStyle = (model: IConfigurableFormComponent, effectiveDevice: DeviceTypes, theme?: IConfigurableTheme | undefined, toolboxComponent?: IToolboxComponent | undefined, isSettingsForm: boolean = false): IStyleValue => {
@@ -32,13 +110,17 @@ export const getEffectiveStyle = (model: IConfigurableFormComponent, effectiveDe
   if (isSettingsForm === true)
     return model;
 
-  // Default styles + Group theme styles (Input/Inline/Standard/Layout Components tabs).
+  // Theme base style (application font) + Default styles + Group theme styles (Input/Inline/Standard/Layout Components tabs).
   // deepMergeValues only shallow-copies its target, so merge into a deep copy: some components
   // (e.g. tabs) return nested objects shared with module-level constants from getDefaultStyles.
-  const defStyle = deepCopyViaJson(toolboxComponent?.getDefaultStyles?.() ?? { styleCss: {} }) as IStyleValue;
+  const componentDefStyle = deepCopyViaJson(toolboxComponent?.getDefaultStyles?.() ?? { styleCss: {} }) as IStyleValue;
+  const baseStyle = getThemeBaseStyle(theme, toolboxComponent);
+  const defStyle: IStyleValue = isDefined(baseStyle)
+    ? deepMergeValues(deepCopyViaJson(baseStyle), componentDefStyle, deepMergeSkipUndefinedFunc)
+    : componentDefStyle;
   // Only apply theme group styles if the component has an explicit themeGroup property
   const groupStyle = toolboxComponent?.themeGroup !== undefined
-    ? getGroupStyleForComponent(theme?.componentGroups?.[toolboxComponent.themeGroup], toolboxComponent)
+    ? withoutEmptyBackgrounds(getGroupStyleForComponent(theme?.componentGroups?.[toolboxComponent.themeGroup], toolboxComponent))
     : undefined;
   const groupDefStyle: IStyleValue = isDefined(groupStyle)
     ? deepMergeValues(defStyle, groupStyle, deepMergeSkipUndefinedFunc)
@@ -46,7 +128,7 @@ export const getEffectiveStyle = (model: IConfigurableFormComponent, effectiveDe
 
   // + Theme component styles (per-type override wins over the group default)
   const themeDefStyle: IStyleValue = isDefined(theme?.components)
-    ? deepMergeValues(groupDefStyle, theme.components[model.type] as IStyleValue, deepMergeSkipUndefinedFunc)
+    ? deepMergeValues(groupDefStyle, withoutEmptyBackgrounds(theme.components[model.type] as IStyleValue | undefined), deepMergeSkipUndefinedFunc)
     : groupDefStyle;
 
   // Default styles + Theme component styles + Desktop component styles

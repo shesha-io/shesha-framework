@@ -36,7 +36,7 @@ export const PreviewThemeProvider: FC<PropsWithChildren<IPreviewThemeProviderPro
 
   // Font token scoped to the preview: the variable on a wrapper (components on the default font reference it)
   // and Ant Design's own font token.
-  const fontFamily = useMemo(() => getThemeFontStack(theme.fontFamily), [theme.fontFamily]);
+  const fontFamily = useMemo(() => getThemeFontStack(theme.font?.type), [theme.font?.type]);
   useEffect(() => {
     ensureWebFontLoaded(fontFamily);
   }, [fontFamily]);

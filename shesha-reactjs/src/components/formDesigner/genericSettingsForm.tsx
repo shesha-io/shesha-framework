@@ -14,10 +14,10 @@ import { useDefaultModelActionsOrUndefined } from '@/designer-components/_settin
 import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { useDataContextManager } from '@/providers/dataContextManager/hooks';
 import { OnFormFinishFailedHandler, OnFormValuesChangeHandler } from '../configurableForm/models';
-import { IStyleValue, useThemeActions } from '@/providers';
+import { IStyleValue, useThemeActions, useThemeState } from '@/providers';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { getStyleBoxValue } from '@/designer-components/styleBox/utils';
-import { getGroupStyleForComponent } from '@/utils/style';
+import { getGroupStyleForComponent, getThemeBaseStyle } from '@/utils/style';
 
 interface IProps<TModel extends IConfigurableFormComponent> {
   readOnly: boolean;
@@ -47,6 +47,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
 }: IProps<TModel>): React.JSX.Element {
   const [form] = Form.useForm();
   const { getComponentStyle, getComponentGroupStyle } = useThemeActions();
+  const { theme } = useThemeState();
 
   const defaultModel = useDefaultModelActionsOrUndefined<TModel>();
   const dcm = useDataContextManager();
@@ -55,6 +56,10 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
 
   useDeepCompareEffect(() => {
     if (Boolean(toolboxComponent.allowInherit)) {
+      // Theme base style (application font) is the lowest layer: registered first, so the component's
+      // own defaults and everything after them override it (default models merge in insertion order).
+      const baseStyle = getThemeBaseStyle(theme, toolboxComponent) ?? {};
+      defaultModel?.setDefaultModel('Theme base Style', { ['desktop']: baseStyle } as TModel);
       const defaultComponentStyle = toolboxComponent.getDefaultStyles?.() ?? {};
       defaultModel?.setDefaultModel('Default component Style', { ['desktop']: defaultComponentStyle } as TModel);
       // Group tier (Input/Inline/Standard/Layout Components) sits between the hardcoded default and
@@ -70,6 +75,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
 
       if (designerDevice !== 'desktop' && designerDevice !== currentDevice.current) {
         // inherit mobile and tablet styles from desktop styles
+        defaultModel?.setDefaultModel('Theme base Style', { [designerDevice]: baseStyle } as unknown as TModel);
         defaultModel?.setDefaultModel('Default component Style', { [designerDevice]: defaultComponentStyle } as unknown as TModel);
         defaultModel?.setDefaultModel('Theme group Style', { [designerDevice]: groupStyle } as unknown as TModel);
         defaultModel?.setDefaultModel('Theme component Style', { [designerDevice]: themeStyle } as unknown as TModel);
@@ -79,7 +85,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       }
     }
     currentDevice.current = designerDevice;
-  }, [toolboxComponent.allowInherit, designerDevice, defaultModel, toolboxComponent, getComponentStyle, getComponentGroupStyle]);
+  }, [toolboxComponent.allowInherit, designerDevice, defaultModel, toolboxComponent, getComponentStyle, getComponentGroupStyle, theme]);
 
   // Keep the Ant Design form store in sync when the component model changes externally.
   // initialValues is applied once on mount, so without this sync any field managed outside

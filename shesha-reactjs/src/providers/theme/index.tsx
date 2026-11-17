@@ -34,7 +34,8 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     // load theme settings
     const loaded = await settings.getSetting<IConfigurableTheme>({ module: 'Shesha', name: 'Shesha.ThemeSettings' });
     // Persisted settings predate the 'system' option, so the stored scheme may be empty or stale.
-    // Fills in the label and input font defaults a theme is initialised with, where it saved none.
+    // Moves fonts saved by earlier versions into their layers, and fills in the label and input font
+    // defaults a theme is initialised with, where it saved none.
     const theme: IConfigurableTheme = applyThemeDefaults({ ...loaded, sidebar: normalizeColorScheme(loaded.sidebar) });
     setState((prev) => ({ ...prev, theme: theme, initialTheme: theme }));
   });
@@ -73,7 +74,8 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     document.documentElement.style.colorScheme = resolvedTheme;
   }, [resolvedTheme]);
 
-  const fontFamily = useMemo(() => getThemeFontStack(state.theme.fontFamily), [state.theme.fontFamily]);
+  // The base font (lowest style layer) also drives Ant Design's token and the inherited page font.
+  const fontFamily = useMemo(() => getThemeFontStack(state.theme.font?.type), [state.theme.font?.type]);
 
   // Components on the default font reference this variable (see `withFontFallback`), so a theme font
   // change restyles them without re-rendering. Set on the root element so popups rendered into body get it too.

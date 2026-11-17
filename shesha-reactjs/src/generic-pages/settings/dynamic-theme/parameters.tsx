@@ -170,8 +170,8 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                   Font used across the application. Components with a font of their own keep it.
                 </Typography.Text>
                 <Select
-                  value={theme.fontFamily ?? DEFAULT_FONT_TYPE}
-                  onChange={(fontFamily: string | undefined) => changeThemeInternal({ ...theme, fontFamily })}
+                  value={theme.font?.type ?? DEFAULT_FONT_TYPE}
+                  onChange={(type: string | undefined) => changeThemeInternal({ ...theme, font: { ...theme.font, type } })}
                   options={FONT_OPTIONS}
                   disabled={readOnly}
                   allowClear

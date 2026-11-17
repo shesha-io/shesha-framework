@@ -24,8 +24,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICardCompo
         /* Follow the card's own corners, so a heading background never pokes out of them. */
         border-top-left-radius: inherit;
         border-top-right-radius: inherit;
-        ${backgroundStyles(header?.background)}
-        ${paddingStyles(header?.stylingBoxJson)}
         ${isDefined(headerBorder) ? `border-bottom: ${borderCss(headerBorder)};` : ''}
 
         .${prefixCls}-card-head-title {

@@ -46,11 +46,19 @@ export interface IConfigurableTheme {
   layoutBackground?: string | undefined;
   text?: ITextTheme | undefined;
   /**
-   * Application-wide font, as a font type name (see `fontTypes`). Every component still on the default
-   * font follows it; unset means the default font (Inter).
+   * Application-wide base font: the lowest style layer (see `getEffectiveStyle`). Every component, group
+   * and label inherits the parts it does not set itself. Unset `type` means the default font (Inter).
+   */
+  font?: IFontValue | undefined;
+  /**
+   * @deprecated Saved by earlier versions as the application font type name; read into `font.type`
+   * when a theme is loaded (see `upgradeLegacyThemeFonts`). Do not use.
    */
   fontFamily?: string | undefined;
-  /** Font of form item labels, so labels can be matched to the input components' font. Unset parts inherit the application font. */
+  /**
+   * @deprecated Saved by earlier versions as the label font; read into `componentGroups.input.labelFont`
+   * when a theme is loaded (see `upgradeLegacyThemeFonts`). Do not use.
+   */
   labelFont?: IFontValue | undefined;
   labelSpan?: number | undefined;
   componentSpan?: number | undefined;
@@ -68,13 +76,26 @@ export interface IConfigurableTheme {
 }
 
 /**
+/**
  * Key of a theme group style's header defaults (Layout Components tab > Header Defaults). Only the
  * overrides are stored there: a header otherwise follows the body's style (see `getHeaderGroupStyle`).
  */
 export const GROUP_HEADER_STYLES_KEY = 'headerStyles';
 
-/** A theme group style, with the header defaults of components that have a header (card, panel, tabs). */
-export type IThemeGroupStyle = IStyleValue & { [GROUP_HEADER_STYLES_KEY]?: IStyleValue | undefined };
+/**
+ * Style of a theme component group. Besides the style its components inherit, a group carries styles
+ * for parts that are not components themselves - header defaults, the label font - which are kept out
+ * of the components' own style (see `getGroupStyleForComponent`).
+ */
+export type IThemeGroupStyle = IStyleValue & {
+  /** Header defaults of components that have a header (card, panel, tabs). */
+  [GROUP_HEADER_STYLES_KEY]?: IStyleValue | undefined;
+  /** Font of form item labels (Input Components group); unset parts inherit the base `font`. */
+  labelFont?: IFontValue | undefined;
+};
+
+/** Keys of {@link IThemeGroupStyle} that style something other than the group's components. */
+export const GROUP_NON_COMPONENT_STYLE_KEYS = [GROUP_HEADER_STYLES_KEY, 'labelFont'] as const;
 
 export interface IThemeStateContext {
   readonly theme: IConfigurableTheme;

@@ -3,6 +3,7 @@ import { FC, useMemo } from 'react';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { DEFAULT_FORM_SETTINGS, FormMarkupWithSettings } from '@/providers/form/models';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
+import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
 import { useStyles } from './styles/styles';
 
@@ -11,7 +12,8 @@ const GRID_COLUMNS = 24;
 
 const hiddenUnlessHorizontal = { _code: 'return getSettingValue(data?.layout) !== "horizontal";', _mode: 'code' as const, _value: false };
 
-type FormLayoutModel = Pick<IConfigurableTheme, 'layout' | 'labelSpan' | 'labelAlign' | 'colon' | 'labelFont'>;
+/** The panel's values; `labelFont` is the Input Components group's label font (`componentGroups.input.labelFont`). */
+type FormLayoutModel = Pick<IConfigurableTheme, 'layout' | 'labelSpan' | 'labelAlign' | 'colon'> & { labelFont?: IFontValue | undefined };
 
 /**
  * The theme with the Form Span settings form's values applied. The form reports all of its current values
@@ -22,9 +24,11 @@ type FormLayoutModel = Pick<IConfigurableTheme, 'layout' | 'labelSpan' | 'labelA
 export const applyFormLayoutChange = (theme: IConfigurableTheme, values: Partial<FormLayoutModel>): IConfigurableTheme => {
   const { labelFont, labelSpan, ...rest } = values;
   const next: IConfigurableTheme = { ...theme, ...rest };
-  if ('labelFont' in values)
-    // Merge so a change to one font part never drops the others.
-    next.labelFont = { ...theme.labelFont, ...labelFont };
+  if ('labelFont' in values) {
+    // The label font belongs to the Input Components group. Merge so a change to one font part never drops the others.
+    const inputGroup = theme.componentGroups?.input ?? {};
+    next.componentGroups = { ...theme.componentGroups, input: { ...inputGroup, labelFont: { ...inputGroup.labelFont, ...labelFont } } };
+  }
   if ('labelSpan' in values) {
     // Keep the control's span in step with the label's so the two always fill the grid.
     const span = typeof labelSpan === 'number' ? labelSpan : undefined;
@@ -111,8 +115,8 @@ export const FormLayoutSettingsPanel: FC<IFormLayoutSettingsPanelProps> = ({ val
     labelSpan: theme.labelSpan ?? DEFAULT_LABEL_SPAN,
     labelAlign: theme.labelAlign,
     colon: theme.colon ?? true,
-    labelFont: theme.labelFont,
-  }), [theme.layout, theme.labelSpan, theme.labelAlign, theme.colon, theme.labelFont]);
+    labelFont: theme.componentGroups?.input?.labelFont,
+  }), [theme.layout, theme.labelSpan, theme.labelAlign, theme.colon, theme.componentGroups?.input?.labelFont]);
 
   const handleChange = (changedValues: Partial<FormLayoutModel>): void => {
     onChange(applyFormLayoutChange(theme, changedValues));

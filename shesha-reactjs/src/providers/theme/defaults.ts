@@ -1,5 +1,7 @@
 import type { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
 import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { deepMergeSkipUndefinedFunc, deepMergeValues } from '@/utils/object';
 import type { IConfigurableTheme } from './contexts';
 
 /** Label font a theme starts with; parts the theme saved win over these. */
@@ -17,17 +19,56 @@ const withFontDefaults = (defaults: IFontValue, font: IFontValue | undefined): I
 };
 
 /**
- * Fills in the font defaults a theme is initialised with (label font and Input Components font), so they
- * show in the theme settings and apply to forms. Only parts the saved theme left unset are filled in.
+ * Moves fonts saved by earlier versions into their layers: the application font type (`fontFamily`)
+ * into the base `font.type`, and the top-level `labelFont` into the Input Components group. A value
+ * already in the new place wins. The legacy keys are dropped, so the theme is saved in the new shape.
+ */
+export const upgradeLegacyThemeFonts = (theme: IConfigurableTheme): IConfigurableTheme => {
+  const { fontFamily, labelFont, ...rest } = theme;
+  if (isNullOrWhiteSpace(fontFamily) && !isDefined(labelFont)) return rest;
+
+  const result: IConfigurableTheme = { ...rest };
+  if (!isNullOrWhiteSpace(fontFamily) && isNullOrWhiteSpace(theme.font?.type))
+    result.font = { ...theme.font, type: fontFamily };
+
+  if (isDefined(labelFont)) {
+    const inputGroup = theme.componentGroups?.input ?? {};
+    result.componentGroups = {
+      ...theme.componentGroups,
+      input: { ...inputGroup, labelFont: deepMergeValues({ ...labelFont }, inputGroup.labelFont ?? {}, deepMergeSkipUndefinedFunc) },
+    };
+  }
+  return result;
+};
+
+/**
+ * Upgrades fonts saved by earlier versions (see {@link upgradeLegacyThemeFonts}) and fills in the font
+ * defaults a theme is initialised with (label font and Input Components font), so they show in the theme
+ * settings and apply to forms. Only parts the saved theme left unset are filled in.
  */
 export const applyThemeDefaults = (theme: IConfigurableTheme): IConfigurableTheme => {
-  const inputGroup = theme.componentGroups?.input ?? {};
+  const upgraded = upgradeLegacyThemeFonts(theme);
+  const inputGroup = upgraded.componentGroups?.input ?? {};
   return {
-    ...theme,
-    labelFont: withFontDefaults(DEFAULT_LABEL_FONT, theme.labelFont),
+    ...upgraded,
     componentGroups: {
-      ...theme.componentGroups,
-      input: { ...inputGroup, font: withFontDefaults(DEFAULT_INPUT_FONT, inputGroup.font) },
+      ...upgraded.componentGroups,
+      input: {
+        ...inputGroup,
+        font: withFontDefaults(DEFAULT_INPUT_FONT, inputGroup.font),
+        labelFont: withFontDefaults(DEFAULT_LABEL_FONT, inputGroup.labelFont),
+      },
     },
   };
+};
+
+/**
+ * Font of form item labels: the theme's base font, overridden by the Input Components group's label font.
+ * Unset parts of the label font inherit the base font.
+ */
+export const getEffectiveLabelFont = (theme: IConfigurableTheme | undefined): IFontValue | undefined => {
+  const base = theme?.font;
+  const label = theme?.componentGroups?.input?.labelFont;
+  if (base === undefined && label === undefined) return undefined;
+  return deepMergeValues({ ...base }, label ?? {}, deepMergeSkipUndefinedFunc);
 };
