@@ -56,7 +56,13 @@ interface ILoadedSelection {
   rows: EntityData[];
 }
 
-const toIdKey = (id: unknown): string => String(id).toLowerCase();
+const GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Comparison key for an id: GUIDs are case-insensitive (the server may return a different case), other ids keep their case */
+const toIdKey = (id: unknown): string => {
+  const key = String(id);
+  return GUID_REGEX.test(key) ? key.toLowerCase() : key;
+};
 
 export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEntitySelectionResult => {
   const { propertyName } = props;
