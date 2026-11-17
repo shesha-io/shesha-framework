@@ -9,6 +9,8 @@ using Shesha.Sms;
 using Shouldly;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -82,8 +84,10 @@ namespace Shesha.Tests.Otp
 
             sentBody.ShouldNotBeNull();
             sentBody.ShouldContain($"operationId={response.OperationId}", Case.Sensitive, "the link must work in a browser that didn't request it");
-            sentBody.ShouldContain("registration=1");
+            sentBody.ShouldContain("&amp;registration=1", Case.Sensitive, "a raw &reg is read as the ® entity by mail clients");
             sentBody.ShouldNotContain("{{");
+            Regex.IsMatch(sentBody, "&(?!amp;)").ShouldBeFalse("every & in the HTML body must be escaped");
+            WebUtility.HtmlDecode(sentBody).ShouldContain($"&operationId={response.OperationId}&registration=1");
         }
 
         private async Task<IVerifyPinResponse> CheckOtpCommonAsync(Action<VerifyPinInput> transformAction)

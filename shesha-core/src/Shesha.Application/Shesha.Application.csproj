@@ -108,6 +108,7 @@
     <None Remove="ConfigMigrations\package20261023_0111.shaconfig" />
     <None Remove="ConfigMigrations\package20261106_1500.shaconfig" />
     <None Remove="ConfigMigrations\package20261112_0700.shaconfig" />
+    <None Remove="ConfigMigrations\package20261117_1200.shaconfig" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="ConfigMigrations\package20261016_1026.shaconfig" />
@@ -180,6 +181,7 @@
     <EmbeddedResource Include="ConfigMigrations\package20261023_0111.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20261106_1500.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20261112_0700.shaconfig" />
+    <EmbeddedResource Include="ConfigMigrations\package20261117_1200.shaconfig" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AsyncFixer" Version="1.6.0">
