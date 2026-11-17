@@ -120,7 +120,7 @@ namespace Shesha
         public virtual async Task<PagedResultDto<TEntityDto>> GetAllAsync(TGetAllInput input)
         {
             CheckGetAllPermission();
-            
+
             var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var query = CreateFilteredQuery(input);
 
