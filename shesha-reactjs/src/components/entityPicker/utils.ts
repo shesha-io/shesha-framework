@@ -4,7 +4,7 @@ import { isDefined } from '@/utils/nullables';
 
 type EntityPickerItem = string | IEntityReferenceDto | null | undefined;
 
-export const isPropertyLoaded = (value: EntityPickerItem, displayEntityKey: string): boolean => {
+const isPropertyLoaded = (value: EntityPickerItem, displayEntityKey: string): boolean => {
   return typeof (value) === "object" && value !== null && typeof (getValueByPropertyName(value, displayEntityKey as keyof IEntityReferenceDto)) !== 'undefined';
 };
 
