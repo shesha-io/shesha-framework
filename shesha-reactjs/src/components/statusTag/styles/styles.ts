@@ -1,14 +1,17 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }) => {
+export interface StatusTagStyleProps {
+  readOnly?: boolean;
+}
+
+export const useStyles = createStyles(({ css, cx }, props: StatusTagStyleProps) => {
+  const { readOnly } = props;
    const shaStatusTag = cx("sha-status-tag", css`
     text-transform: uppercase;
     text-align: center;
-    margin: 3px 0;
     align-self: center;
-    margin: 0 ${sheshaStyles.paddingMD}px !important;   
-  `); 
+    margin: ${readOnly ? `0 ${sheshaStyles.paddingLG}px` : '0'} !important;
+  `);
   return {
     shaStatusTag,
   };

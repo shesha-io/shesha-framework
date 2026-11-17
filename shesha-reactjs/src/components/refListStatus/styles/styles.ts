@@ -1,6 +1,25 @@
-import { createStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx }, { dimensionsStyles, fontStyles }) => {
+export interface RefListStatusStyleProps {
+  dimensionsStyles?: {
+    width?: CSSProperties['width'];
+    height?: CSSProperties['height'];
+    minHeight?: CSSProperties['minHeight'];
+    minWidth?: CSSProperties['minWidth'];
+    maxHeight?: CSSProperties['maxHeight'];
+    maxWidth?: CSSProperties['maxWidth'];
+  };
+  fontStyles?: {
+    fontSize?: CSSProperties['fontSize'];
+    fontWeight?: CSSProperties['fontWeight'];
+    textAlign?: CSSProperties['textAlign'];
+  };
+  readOnly?: boolean;
+}
+
+export const useStyles = createStyles(({ css, cx }, props: RefListStatusStyleProps) => {
+  const { dimensionsStyles, fontStyles, readOnly } = props;
 
   const shaStatusTag = 'sha-status-tag';
   const shaStatusTagContainer = cx(
@@ -16,6 +35,7 @@ export const useStyles = createStyles(({ css, cx }, { dimensionsStyles, fontStyl
       }
 
       .${shaStatusTag} {
+        margin: ${readOnly ? `0 ${sheshaStyles.paddingLG}px` : '0'} !important;
         text-transform: uppercase;
         display: flex;
         width: 100%;

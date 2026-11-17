@@ -77,8 +77,9 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
     return (
       <ConfigurableFormItem model={model}>
         {(value) =>
-          <StatusTag {...props} style={getStyle(model?.style, data, globalState)} 
+          <StatusTag {...props} style={getStyle(model?.style, data, globalState)}
             value={model?.valueSource !== 'form' ? props.value : value}
+            readOnly={formMode === 'readonly'}
           />
         }
       </ConfigurableFormItem>
