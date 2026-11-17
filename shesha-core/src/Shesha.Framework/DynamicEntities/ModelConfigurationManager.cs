@@ -85,6 +85,7 @@ namespace Shesha.DynamicEntities
         public ModelConfigurationManager(
             IRepository<EntityProperty, Guid> entityPropertyRepository,
             IPermissionedObjectManager permissionedObjectManager,
+            IRepository<PermissionedObject, Guid> permissionedObjectRepository,
             IShaTypeFinder typeFinder,
             IHardcodeMetadataProvider metadataProvider,
             IRepository<Domain.Module, Guid> moduleRepository,
@@ -95,7 +96,7 @@ namespace Shesha.DynamicEntities
             IModuleManager moduleManager,
             IDynamicEntitiesDbGenerator dbGenerator,
             IConfigurationFrameworkRuntime cfr
-            ) : base(entityPropertyRepository)
+            ) : base(permissionedObjectManager, permissionedObjectRepository, entityPropertyRepository)
         {
             _permissionedObjectManager = permissionedObjectManager;
             _typeFinder = typeFinder;
