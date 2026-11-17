@@ -1,7 +1,8 @@
 import { IConfigurableFormComponent, IStyleValue, IToolboxComponent } from '@/interfaces';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
+import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
 // The style utilities load the toolbox (and with it the header helpers) first, as the app does.
-import { getEffectiveStyle, getGroupStyleForComponent, getThemeBaseStyle } from './style';
+import { getEffectiveStyle, getGroupStyleForComponent, getThemeBaseStyle, isEmptyBackground } from './style';
 import { getHeaderGroupStyle } from '@/designer-components/_common/styles/headerStyles';
 
 const component = (getDefaultStyles: () => IStyleValue): IToolboxComponent =>
@@ -81,5 +82,41 @@ describe('getEffectiveStyle theme layers for headers', () => {
 describe('getGroupStyleForComponent', () => {
   it('drops the parts of the group style that are not a component style', () => {
     expect(getGroupStyleForComponent({ font: { size: 13 }, labelFont: { size: 20 }, headerStyles: { font: { size: 18 } } }, undefined)).toEqual({ font: { size: 13 } });
+  });
+});
+
+describe('empty theme backgrounds', () => {
+  const gradient: IBackgroundValue = { type: 'gradient', gradient: { colors: ['#bcc41a', '#f1f5a4'] } };
+  const panel = {
+    type: 'testComponent',
+    themeGroup: 'layout',
+    nestedGroupStyles: { headerStyles: getHeaderGroupStyle },
+    getDefaultStyles: () => ({ background: { type: 'color', color: '#fff' }, headerStyles: { background: { type: 'color', color: '#fff' } } }),
+  } as unknown as IToolboxComponent;
+
+  it('isEmptyBackground is true when the chosen type has no value', () => {
+    expect(isEmptyBackground({ type: 'color' })).toBe(true);
+    expect(isEmptyBackground({ type: 'color', gradient: { colors: ['#000'] } })).toBe(true);
+    expect(isEmptyBackground({ type: 'gradient', gradient: { colors: [] } })).toBe(true);
+    expect(isEmptyBackground({ type: 'color', color: '#fff' })).toBe(false);
+    expect(isEmptyBackground(gradient)).toBe(false);
+  });
+
+  it('a component default holding only a background type does not replace the group background', () => {
+    const theme: IConfigurableTheme = {
+      componentGroups: { layout: { background: gradient } },
+      components: { testComponent: { background: { type: 'color' }, headerStyles: { background: { type: 'color', gradient: { colors: ['#1a61c4', '#fff'] } } } } as IStyleValue },
+    };
+    const style = getEffectiveStyle(model(), 'desktop', theme, panel) as IStyleValue & { headerStyles?: IStyleValue };
+    expect(style.background).toMatchObject(gradient);
+    expect(style.headerStyles?.background).toMatchObject(gradient);
+  });
+
+  it('a component default with a real background still wins over the group', () => {
+    const theme: IConfigurableTheme = {
+      componentGroups: { layout: { background: gradient } },
+      components: { testComponent: { background: { type: 'color', color: '#f00' } } },
+    };
+    expect(getEffectiveStyle(model(), 'desktop', theme, panel).background).toMatchObject({ type: 'color', color: '#f00' });
   });
 });
