@@ -1,13 +1,18 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
+using PluralizationService.Core.Builder.Base;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
+using Shesha.Permissions;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.AccessControl;
 using System.Threading.Tasks;
 
 namespace Shesha.Configuration.Runtime
@@ -15,10 +20,14 @@ namespace Shesha.Configuration.Runtime
     /// inheritedDoc
     public class EntityConfigManager : ConfigurationItemManager<EntityConfig>, IEntityConfigManager, ITransientDependency
     {
+        private readonly IPermissionedObjectManager _permissionedObjectManager;
+        private readonly IRepository<PermissionedObject, Guid> _permissionedObjectRepository;
         public readonly IRepository<EntityProperty, Guid> PropertyConfigRepo;
 
-        public EntityConfigManager(IRepository<EntityProperty, Guid> propertyConfigRepo) : base()
+        public EntityConfigManager(IPermissionedObjectManager permissionedObjectManager, IRepository<PermissionedObject, Guid> permissionedObjectRepository, IRepository<EntityProperty, Guid> propertyConfigRepo) : base()
         {
+            _permissionedObjectManager = permissionedObjectManager;
+            _permissionedObjectRepository = permissionedObjectRepository;
             PropertyConfigRepo = propertyConfigRepo;
         }
 
@@ -156,6 +165,34 @@ namespace Shesha.Configuration.Runtime
 
             var properties = await PropertyConfigRepo.GetAllListAsync(x => x.EntityConfig == source && x.ParentProperty == null);
             await CopyPropertiesAsync(properties, destination);
+        }
+
+        protected override async Task AfterItemExposedAsync(EntityConfig exposedItem)
+        {
+            var sourceItem = exposedItem.ExposedFrom.NotNull().ForceCastAs<EntityConfig>();
+            var dstModule = exposedItem.Module.NotNull();
+
+            var sourceName = sourceItem.FullClassName;
+
+            // TODO: review after IPermissionedObjectManager refactoring, currently it doesn't take modules into account
+            var srcPos = await (await _permissionedObjectRepository.GetAllAsync())
+                .Where(x => x.Module == sourceItem.Module && 
+                    (x.Type == ShaPermissionedObjectsTypes.Entity && x.Object == sourceName || x.Parent == sourceName)
+                ).ToListAsync();
+
+            foreach (var srcPo in srcPos) 
+            {
+                var dstPo = await GetExistingPermissionedObjectAsync(dstModule, srcPo.Type, srcPo.Object) ?? new PermissionedObject();
+                srcPo.CopyPropsTo(dstPo);
+                dstPo.Module = dstModule;
+
+                await _permissionedObjectRepository.InsertOrUpdateAsync(dstPo);                
+            }            
+        }
+
+        private async Task<PermissionedObject?> GetExistingPermissionedObjectAsync(Module module, string? type, string @object) 
+        {
+            return await _permissionedObjectRepository.FirstOrDefaultAsync(x => x.Module == module && x.Type == type && x.Object == @object);
         }
     }
 }
