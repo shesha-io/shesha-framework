@@ -11,6 +11,7 @@ using Shesha.Extensions;
 using Shesha.Roles;
 using Shesha.ShaRoles.Dto;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.ShaRoles
@@ -84,21 +85,48 @@ namespace Shesha.ShaRoles
         {
             var userId = AbpSession.GetUserId();
 
-            // When a module is supplied, resolve the role respecting module hierarchy (top-most module wins)
-            // so the appointment check matches the same role definition the rest of the app resolves to.
+            // When a module is supplied, respect module hierarchy: resolve each of the user's appointed roles
+            // through the hierarchy (not just the target role) and compare the resolved ids. This way a person
+            // appointed to a base role is still recognized once a dependent module exposes/overrides that role,
+            // without requiring appointments to be re-pointed at the override.
             if (!string.IsNullOrWhiteSpace(input.Module))
             {
-                ShaRole role;
+                ShaRole? targetRole;
                 try
                 {
-                    role = (ShaRole)await _roleManager.ResolveItemAsync(input.Module, input.RoleName, null);
+                    targetRole = (ShaRole)await _roleManager.ResolveItemAsync(input.Module, input.RoleName, null);
                 }
                 catch (ConfigurationItemNotFoundException)
                 {
                     return false;
                 }
 
-                return await _roleAppointmentRepository.AnyAsync(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Id == role.Id);
+                var appointedRoles = await (await _roleAppointmentRepository.GetAllAsync())
+                    .Where(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Name == input.RoleName)
+                    .Select(a => a.Role)
+                    .ToListAsync();
+
+                foreach (var appointedRole in appointedRoles)
+                {
+                    if (appointedRole.Id == targetRole.Id)
+                        return true;
+
+                    if (appointedRole.Module == null)
+                        continue;
+
+                    try
+                    {
+                        var resolvedAppointedRole = await _roleManager.ResolveItemAsync(appointedRole.Module.Name, appointedRole.Name, null);
+                        if (resolvedAppointedRole.Id == targetRole.Id)
+                            return true;
+                    }
+                    catch (ConfigurationItemNotFoundException)
+                    {
+                        // appointed role no longer resolvable; not a match
+                    }
+                }
+
+                return false;
             }
 
             var isGranted = await _roleAppointmentRepository.AnyAsync(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Name == input.RoleName);
