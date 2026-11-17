@@ -135,6 +135,10 @@ namespace Shesha
                 .RegisterConfigurableItemExport<EntityConfig, IEntityConfigExport, EntityConfigExport>()
                 .RegisterConfigurableItemImport<EntityConfig, IEntityConfigImport, EntityConfigImport>();
 
+            IocManager.IocContainer.Register(
+                Component.For<IDependenciesProvider<EntityConfig>>().Forward<IDependenciesProvider>().ImplementedBy<EntityConfigDependenciesProvider>().LifestyleTransient()
+            );
+
             IocManager
                 .RegisterConfigurableItemExport<PermissionDefinition, IPermissionDefinitionExport, PermissionDefinitionExport>()
                 .RegisterConfigurableItemImport<PermissionDefinition, PermissionDefinitionImport, PermissionDefinitionImport>();
