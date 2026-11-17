@@ -27,33 +27,45 @@ namespace Shesha.DynamicEntities.Distribution
         {
             var fullClassName = $"{item.Namespace}.{item.ClassName}";
 
-            var objectNames = new[]
+            var objectsAndTypes = new[]
             {
-                fullClassName,
-                $"{fullClassName}@Get",
-                $"{fullClassName}@Create",
-                $"{fullClassName}@Update",
-                $"{fullClassName}@Delete",
+                (Object: fullClassName, Type: ShaPermissionedObjectsTypes.Entity),
+                (Object: $"{fullClassName}@Get", Type: ShaPermissionedObjectsTypes.EntityAction),
+                (Object: $"{fullClassName}@Create", Type: ShaPermissionedObjectsTypes.EntityAction),
+                (Object: $"{fullClassName}@Update", Type: ShaPermissionedObjectsTypes.EntityAction),
+                (Object: $"{fullClassName}@Delete", Type: ShaPermissionedObjectsTypes.EntityAction),
             };
 
             var permissionNames = new HashSet<string>();
-            foreach (var objectName in objectNames)
+            foreach (var (objectName, objectType) in objectsAndTypes)
             {
-                var permissionedObject = await _permissionedObjectManager.GetOrNullAsync(objectName, null);
+                var permissionedObject = await _permissionedObjectManager.GetOrNullAsync(objectName, objectType);
                 if (permissionedObject?.Permissions != null)
                     foreach (var permissionName in permissionedObject.Permissions)
                         permissionNames.Add(permissionName);
             }
 
+            var visited = new HashSet<string>();
             var result = new List<ConfigurationItemIdentifier>();
             foreach (var permissionName in permissionNames)
-            {
-                var definition = await _permissionDefinitionRepo.FirstOrDefaultAsync(p => p.Name == permissionName);
-                if (definition != null)
-                    result.Add(new PermissionDefinitionIdentifier(definition.Module?.Name, definition.Name));
-            }
+                await AddWithAncestorsAsync(permissionName, visited, result);
 
             return result;
+        }
+
+        private async Task AddWithAncestorsAsync(string permissionName, HashSet<string> visited, List<ConfigurationItemIdentifier> result)
+        {
+            if (!visited.Add(permissionName))
+                return;
+
+            var definition = await _permissionDefinitionRepo.FirstOrDefaultAsync(p => p.Name == permissionName);
+            if (definition == null)
+                return;
+
+            result.Add(new PermissionDefinitionIdentifier(definition.Module?.Name, definition.Name));
+
+            if (!string.IsNullOrWhiteSpace(definition.Parent))
+                await AddWithAncestorsAsync(definition.Parent, visited, result);
         }
     }
 }
