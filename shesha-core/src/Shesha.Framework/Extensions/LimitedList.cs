@@ -15,10 +15,10 @@ namespace Shesha.Extensions
             _maxCapacity = maxCapacity;
         }
 
-        public LimitedList(int maxCapacity, IList<T> items): base(items)
+        public LimitedList(int maxCapacity, IList<T> items) : base(items)
         {
             if (maxCapacity < 0) throw new ArgumentOutOfRangeException(nameof(maxCapacity));
-            
+
             _maxCapacity = maxCapacity;
 
             if (Count > _maxCapacity)

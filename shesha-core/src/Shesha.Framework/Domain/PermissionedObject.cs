@@ -84,7 +84,7 @@ namespace Shesha.Domain
         [MaxLength(40)]
         public virtual string Md5 { get; set; } = string.Empty;
 
-        public virtual PermissionedObject Clone() 
+        public virtual PermissionedObject Clone()
         {
             var result = new PermissionedObject();
             CopyPropsTo(result);

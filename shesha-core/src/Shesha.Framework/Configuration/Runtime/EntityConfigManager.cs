@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
-using PluralizationService.Core.Builder.Base;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
@@ -11,8 +10,6 @@ using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.AccessControl;
 using System.Threading.Tasks;
 
 namespace Shesha.Configuration.Runtime
@@ -176,21 +173,21 @@ namespace Shesha.Configuration.Runtime
 
             // TODO: review after IPermissionedObjectManager refactoring, currently it doesn't take modules into account
             var srcPos = await (await _permissionedObjectRepository.GetAllAsync())
-                .Where(x => x.Module == sourceItem.Module && 
+                .Where(x => x.Module == sourceItem.Module &&
                     (x.Type == ShaPermissionedObjectsTypes.Entity && x.Object == sourceName || x.Parent == sourceName)
                 ).ToListAsync();
 
-            foreach (var srcPo in srcPos) 
+            foreach (var srcPo in srcPos)
             {
                 var dstPo = await GetExistingPermissionedObjectAsync(dstModule, srcPo.Type, srcPo.Object) ?? new PermissionedObject();
                 srcPo.CopyPropsTo(dstPo);
                 dstPo.Module = dstModule;
 
-                await _permissionedObjectRepository.InsertOrUpdateAsync(dstPo);                
-            }            
+                await _permissionedObjectRepository.InsertOrUpdateAsync(dstPo);
+            }
         }
 
-        private async Task<PermissionedObject?> GetExistingPermissionedObjectAsync(Module module, string? type, string @object) 
+        private async Task<PermissionedObject?> GetExistingPermissionedObjectAsync(Module module, string? type, string @object)
         {
             return await _permissionedObjectRepository.FirstOrDefaultAsync(x => x.Module == module && x.Type == type && x.Object == @object);
         }

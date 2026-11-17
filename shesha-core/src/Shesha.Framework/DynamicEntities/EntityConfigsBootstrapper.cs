@@ -122,7 +122,8 @@ namespace Shesha.DynamicEntities
 
             var entityTypes = assemblies.SelectMany(x => x.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t))).ToList();
 
-            var codeBasedWithEntityType = codeBased.Select(ec => {
+            var codeBasedWithEntityType = codeBased.Select(ec =>
+            {
                 var entityType = FindConfig(entityTypes, ec, e => e);
                 return new { EntityConfig = ec, EntityType = entityType };
             }).ToList();
@@ -148,7 +149,8 @@ namespace Shesha.DynamicEntities
 
         private T? FindConfig<T>(List<T> configs, EntityConfig ec, Func<T, Type> typeGetter)
         {
-            return configs.FirstOrDefault(c => {
+            return configs.FirstOrDefault(c =>
+            {
                 var type = typeGetter.Invoke(c);
                 var moduleName = type.GetConfigurableModuleName();
 
