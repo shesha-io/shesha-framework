@@ -58,13 +58,35 @@ namespace Shesha.Notifications
         }
 
         /// <summary>
-        /// 
+        /// Gets the channels to use for the given notification, respecting module hierarchy precedence: every
+        /// channel returned by <see cref="SelectChannelsAsync"/> (including ones linked directly via a user's
+        /// <see cref="UserNotificationPreference.DefaultChannel"/>) is resolved to its canonical top-module form.
         /// </summary>
         /// <param name="type"></param>
         /// <param name="receiver"></param>
         /// <param name="priority"></param>
         /// <returns></returns>
         public async Task<List<NotificationChannelConfig>> GetChannelsAsync(NotificationTypeConfig type, IMessageReceiver receiver, RefListNotificationPriority priority)
+        {
+            var selectedChannels = await SelectChannelsAsync(type, receiver, priority);
+
+            var result = new List<NotificationChannelConfig>();
+            foreach (var channel in selectedChannels)
+            {
+                var resolved = await ResolveChannelOrNullAsync(channel.Module?.Name, channel.Name) ?? channel;
+                if (result.All(c => c.Id != resolved.Id))
+                    result.Add(resolved);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Selects the candidate channels for the given notification, in priority order: user's notification
+        /// preference, then the notification type's override channels, then the priority-based default channels.
+        /// Candidates are plain name+module matches; module hierarchy resolution happens once, in <see cref="GetChannelsAsync"/>.
+        /// </summary>
+        private async Task<List<NotificationChannelConfig>> SelectChannelsAsync(NotificationTypeConfig type, IMessageReceiver receiver, RefListNotificationPriority priority)
         {
             // Step 1: Check User Notification Preference
             var recipientPerson = receiver?.GetPerson();
@@ -73,7 +95,7 @@ namespace Shesha.Notifications
                 var defaultChannels = await (await _userNotificationPreference.GetAllAsync()).Where(x => x.User.Id == recipientPerson.Id && x.NotificationType.Id == type.Id && x.DefaultChannel != null)
                     .Select(e => e.DefaultChannel)
                     .ToListAsync();
-                
+
                 // Return DefaultChannel from user preferences if available
                 if (defaultChannels.Any())
                     return defaultChannels;
@@ -85,8 +107,8 @@ namespace Shesha.Notifications
                 var overrideChannels = new List<NotificationChannelConfig>();
                 foreach (var channel in type.OverrideChannels)
                 {
-                    var dbChannel = await ResolveChannelOrNullAsync(channel.Module, channel.Name);
-                    if (dbChannel != null && overrideChannels.All(c => c.Id != dbChannel.Id))
+                    var dbChannel = await _notificationChannelRepository.FirstOrDefaultAsync(new ByNameAndModuleSpecification<NotificationChannelConfig>(channel.Name, channel.Module).ToExpression());
+                    if (dbChannel != null)
                         overrideChannels.Add(dbChannel);
                 }
 
@@ -106,13 +128,12 @@ namespace Shesha.Notifications
             if (selectedNotifications == null)
                 return new();
 
-            var result = new List<NotificationChannelConfig>();
-            foreach (var identifier in selectedNotifications)
-            {
-                var channel = await ResolveChannelOrNullAsync(identifier.Module, identifier.Name);
-                if (channel != null && result.All(c => c.Id != channel.Id))
-                    result.Add(channel);
-            }
+            var liveChannels = await _notificationChannelRepository.GetAllAsync();
+
+            var result = selectedNotifications
+                .SelectMany(identifier => liveChannels
+                    .Where(new ByNameAndModuleSpecification<NotificationChannelConfig>(identifier.Name, identifier.Module).ToExpression()))
+                .ToList();
 
             return result;
         }
