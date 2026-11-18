@@ -17,6 +17,7 @@ using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
+using Shesha.EntityReferences;
 using Shesha.Otp;
 using Shesha.Otp.Dto;
 using Shesha.Reflection;
@@ -164,7 +165,10 @@ namespace Shesha.Authorization
                 SendType = OtpSendType.Sms,
                 Lifetime = securitySettings.MobileLoginPinLifetime,
                 ActionType = "OTP login",
+                RecipientType = typeof(TUser).FullName,
                 RecipientId = user.Id.ToString(),
+                OtpConfig = new OtpConfigIdentifierDto(OtpConfigNames.Module, OtpConfigNames.OtpLogin),
+                Owner = new GenericEntityReference(user),
             });
 
             // save operation Id to

@@ -2,6 +2,7 @@ import { EntityDocumentDefinition } from './entity';
 import { FormDocumentDefinition } from './form';
 import { NotificationDocumentDefinition } from './notification';
 import { NotificationChannelDocumentDefinition } from './notification-channel';
+import { OtpConfigDocumentDefinition } from './otp-config';
 import { PermissionDocumentDefinition } from './permission-definition';
 import { ReferenceListDocumentDefinition } from './reference-list';
 import { RoleDocumentDefinition } from './role';
@@ -19,6 +20,7 @@ export const SheshaDocumentDefinitions = [
   FormDocumentDefinition,
   NotificationDocumentDefinition,
   NotificationChannelDocumentDefinition,
+  OtpConfigDocumentDefinition,
   PermissionDocumentDefinition,
   ReferenceListDocumentDefinition,
   RoleDocumentDefinition,

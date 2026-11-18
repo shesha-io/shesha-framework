@@ -1,4 +1,5 @@
 ﻿using Shesha.Domain.Enums;
+using Shesha.EntityReferences;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -12,7 +13,7 @@ namespace Shesha.Otp.Dto
         /// <summary>
         /// Mobile number/email address (depending on the `send type`) to which the OTP should be sent
         /// </summary>
-        string SendTo { get; }
+        string? SendTo { get; }
 
         /// <summary>
         /// Type of sender (Sms = 1, Email = 2)
@@ -32,5 +33,15 @@ namespace Shesha.Otp.Dto
         /// Type of action (e.g. 'password restore'). May be used for audit purposes and template selection
         /// </summary>
         string? ActionType { get; }
+
+        /// <summary>
+        /// OTP configuration of the action protected by the OTP. When empty, the default configuration of the <see cref="SendType"/> is used
+        /// </summary>
+        OtpConfigIdentifierDto? OtpConfig { get; }
+
+        /// <summary>
+        /// Entity that originated the OTP request
+        /// </summary>
+        GenericEntityReference? Owner { get; }
     }
 }

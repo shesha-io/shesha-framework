@@ -1,4 +1,6 @@
-﻿namespace Shesha.Otp.Configuration
+﻿using System;
+
+namespace Shesha.Otp.Configuration
 {
     /// <summary>
     /// Represents settings of the OTP service
@@ -28,13 +30,14 @@
 
         /// <summary>
         /// Subject for the email when the email link is sent to the recipient.
-        /// TODO: Find a better place to place these
         /// </summary>
-        public string EmailSubject { get; set; }
+        [Obsolete("No longer used: the email is defined by the notification templates of the OTP configuration (OtpConfig)")]
+        public string? EmailSubject { get; set; }
 
         /// <summary>
         /// Email template body
         /// </summary>
-        public string EmailBodyTemplate { get; set; }
+        [Obsolete("No longer used: the email is defined by the notification templates of the OTP configuration (OtpConfig)")]
+        public string? EmailBodyTemplate { get; set; }
     }
 }
