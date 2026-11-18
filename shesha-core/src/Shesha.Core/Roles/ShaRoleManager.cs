@@ -95,6 +95,26 @@ namespace Shesha.Roles
             }
         }
 
+        /// <summary>
+        /// Ids of a role's full hierarchy: the role itself, its resolved top-most override, and every
+        /// ExposedFrom ancestor between them. Two roles are "the same effective role" if these sets
+        /// intersect - this is more reliable than comparing single resolved ids, which can disagree
+        /// when module relation levels tie (see GetActualInheritanceOrNullAsync).
+        /// </summary>
+        private async Task<HashSet<Guid>> GetHierarchyIdsAsync(ShaRole role)
+        {
+            var topMost = await ResolveToTopMostAsync(role);
+
+            var ids = new HashSet<Guid> { role.Id };
+            for (ConfigurationItem? ancestor = topMost; ancestor != null; ancestor = ancestor.ExposedFrom)
+            {
+                if (!ids.Add(ancestor.Id))
+                    break; // guard against a cyclic ExposedFrom chain
+            }
+
+            return ids;
+        }
+
         private async Task<ShaRoleResult<ShaRoleAppointedPerson>> InternalAddToRoleAsync(Person person, ShaRole role, ShaRoleAppointmentData? appointmentData = null)
         {
             var result = new ShaRoleResult<ShaRoleAppointedPerson>();
@@ -224,15 +244,7 @@ namespace Shesha.Roles
 
         public async Task<bool> IsInRoleAsync(Person person, ShaRole role, ShaRoleAppointmentData? appointmentData = null)
         {
-            var topMostRole = await ResolveToTopMostAsync(role);
-
-            var chainIds = new HashSet<Guid>();
-            for (ConfigurationItem? ancestor = topMostRole; ancestor != null; ancestor = ancestor.ExposedFrom)
-            {
-                if (!chainIds.Add(ancestor.Id))
-                    break; // guard against a cyclic ExposedFrom chain
-            }
-            chainIds.Add(role.Id);
+            var chainIds = await GetHierarchyIdsAsync(role);
 
             var appointments = await GetAppointmentsAsync(person, appointmentData);
             return appointments.Any(a => chainIds.Contains(a.Role.Id));
@@ -245,17 +257,9 @@ namespace Shesha.Roles
             if (role == null) return result.AddError("Roles are mandatory");
             if (result.Succeeded == false) return result;
 
-            var topMostRole = await ResolveToTopMostAsync(role);
-
             // remove appointments on the requested role itself and on its ExposedFrom chain up to the
             // top-most override, so removal takes effect regardless of which specific row the appointment is on
-            var chainIds = new HashSet<Guid>();
-            for (ConfigurationItem? ancestor = topMostRole; ancestor != null; ancestor = ancestor.ExposedFrom)
-            {
-                if (!chainIds.Add(ancestor.Id))
-                    break; // guard against a cyclic ExposedFrom chain
-            }
-            chainIds.Add(role.Id);
+            var chainIds = await GetHierarchyIdsAsync(role);
 
             var appointments = (await GetAppointmentsAsync(person, appointmentData)).Where(a => chainIds.Contains(a.Role.Id)).ToList();
             foreach (var appointment in appointments)
@@ -324,30 +328,38 @@ namespace Shesha.Roles
 
             var rolesInDb = await GetRolesForPersonAsync(person, appointmentData);
 
-            // compare by resolved top-most role, so requesting a base role whose override the person
-            // already holds is recognized as "already has it", not as add-this-remove-that. Note:
-            // AddToRoleAsync/RemoveFromRoleAsync re-resolve internally for the actual write, so there's
-            // a narrow window where a role gets exposed between this decision and that write.
-            var requestedPairs = new List<(ShaRole Role, ShaRole TopMost)>();
+            // compare by full hierarchy (role + its ExposedFrom chain), not by a single resolved id -
+            // two related roles can resolve to different top-most ids when module relation levels tie
+            // (see GetActualInheritanceOrNullAsync), so a plain id comparison is not reliable here.
+            // Note: AddToRoleAsync/RemoveFromRoleAsync re-resolve internally for the actual write, so
+            // there's a narrow window where a role gets exposed between this decision and that write.
+            var requestedPairs = new List<(ShaRole Role, HashSet<Guid> ChainIds)>();
             foreach (var role in requestedRoles)
-                requestedPairs.Add((role, await ResolveToTopMostAsync(role)));
-
-            var inDbPairs = new List<(ShaRole Role, ShaRole TopMost)>();
-            foreach (var roleInDb in rolesInDb)
-                inDbPairs.Add((roleInDb, await ResolveToTopMostAsync(roleInDb)));
-
-            foreach (var (role, topMost) in requestedPairs)
             {
-                if (!inDbPairs.Any(p => p.TopMost.Id == topMost.Id))
+                var chainIds = await GetHierarchyIdsAsync(role);
+                // dedup: skip a requested role whose hierarchy is already covered by an earlier one,
+                // so two roles that resolve to the same effective role aren't both added
+                if (requestedPairs.Any(p => p.ChainIds.Overlaps(chainIds)))
+                    continue;
+                requestedPairs.Add((role, chainIds));
+            }
+
+            var inDbPairs = new List<(ShaRole Role, HashSet<Guid> ChainIds)>();
+            foreach (var roleInDb in rolesInDb)
+                inDbPairs.Add((roleInDb, await GetHierarchyIdsAsync(roleInDb)));
+
+            foreach (var (role, chainIds) in requestedPairs)
+            {
+                if (!inDbPairs.Any(p => p.ChainIds.Overlaps(chainIds)))
                 {
                     var res = await AddToRoleAsync(person, role, appointmentData);
                     if (res.Succeeded == false) result.AddErrors(res.Errors);
                 }
             }
 
-            foreach (var (roleInDb, topMost) in inDbPairs)
+            foreach (var (roleInDb, chainIds) in inDbPairs)
             {
-                if (!requestedPairs.Any(p => p.TopMost.Id == topMost.Id))
+                if (!requestedPairs.Any(p => p.ChainIds.Overlaps(chainIds)))
                 {
                     var res = await RemoveFromRoleAsync(person, roleInDb, appointmentData);
                     if (res.Succeeded == false) result.AddErrors(res.Errors);
