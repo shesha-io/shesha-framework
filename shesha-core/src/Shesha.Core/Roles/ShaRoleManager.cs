@@ -3,6 +3,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Shesha.Authorization;
 using Shesha.ConfigurationItems;
+using Shesha.ConfigurationItems.Exceptions;
 using Shesha.Domain;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
@@ -58,12 +59,50 @@ namespace Shesha.Roles
             }
         }
 
+        protected override async Task AfterItemExposedAsync(ShaRole exposedItem)
+        {
+            var sourceItem = exposedItem.ExposedFrom.NotNull().ForceCastAs<ShaRole>();
+
+            var appointments = await (await _roleAppointedPersonRepo.GetAllAsync()).Where(a => a.Role == sourceItem).ToListAsync();
+            foreach (var appointment in appointments)
+            {
+                await _roleAppointedPersonRepo.InsertAsync(new ShaRoleAppointedPerson
+                {
+                    Role = exposedItem,
+                    Person = appointment.Person,
+                    PermissionedEntity1 = appointment.PermissionedEntity1,
+                    PermissionedEntity2 = appointment.PermissionedEntity2,
+                    PermissionedEntity3 = appointment.PermissionedEntity3,
+                });
+            }
+        }
+
+        /// <summary>
+        /// Resolves a role to its top-most module override, if any. Module-less roles are used as-is.
+        /// </summary>
+        private async Task<ShaRole> ResolveToTopMostAsync(ShaRole role)
+        {
+            if (role.Module == null)
+                return role;
+
+            try
+            {
+                return (ShaRole)await ResolveItemAsync(role.Module.Name, role.Name, null);
+            }
+            catch (ConfigurationItemNotFoundException)
+            {
+                return role;
+            }
+        }
+
         private async Task<ShaRoleResult<ShaRoleAppointedPerson>> InternalAddToRoleAsync(Person person, ShaRole role, ShaRoleAppointmentData? appointmentData = null)
         {
             var result = new ShaRoleResult<ShaRoleAppointedPerson>();
             if (role == null) result.AddError("Role is mandatory");
             if (person == null) result.AddError("Person is mandatory");
             if (result.Succeeded == false) return result;
+
+            role = await ResolveToTopMostAsync(role!);
 
             // Check existing appointments
             var existAppointments = await (await _roleAppointedPersonRepo.GetAllAsync()).Where(a => a.Role == role && a.Person == person).ToListAsync();
@@ -195,6 +234,8 @@ namespace Shesha.Roles
             if (person == null) return result.AddError("Person is mandatory");
             if (role == null) return result.AddError("Roles are mandatory");
             if (result.Succeeded == false) return result;
+
+            role = await ResolveToTopMostAsync(role);
 
             var appointments = (await GetAppointmentsAsync(person, appointmentData)).Where(a => a.Role == role).ToList();
             foreach (var appointment in appointments)

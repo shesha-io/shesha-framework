@@ -11,7 +11,6 @@ using Shesha.Extensions;
 using Shesha.Roles;
 using Shesha.ShaRoles.Dto;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.ShaRoles
@@ -72,8 +71,11 @@ namespace Shesha.ShaRoles
             CheckDeletePermission();
 
             var role = await Repository.GetAsync(input.Id);
-            
+
             await Repository.DeleteAsync(role);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            await _shaPermissionChecker.ClearPermissionsCacheAsync();
         }
 
         /// <summary>
@@ -85,8 +87,8 @@ namespace Shesha.ShaRoles
         {
             var userId = AbpSession.GetUserId();
 
-            // Resolve the target (top-most module wins), then check if any appointed role is the target
-            // or one of its ExposedFrom ancestors - avoids re-resolving by name, which isn't order-safe.
+            // Appointments always point at the top-most module's role (ShaRoleManager keeps them in
+            // sync on expose and on new appointments), so a direct id comparison is enough here.
             if (!string.IsNullOrWhiteSpace(input.Module))
             {
                 ShaRole? targetRole;
@@ -99,19 +101,7 @@ namespace Shesha.ShaRoles
                     return false;
                 }
 
-                var targetAncestorIds = new System.Collections.Generic.HashSet<Guid>();
-                for (ConfigurationItem? ancestor = targetRole; ancestor != null; ancestor = ancestor.ExposedFrom)
-                {
-                    if (!targetAncestorIds.Add(ancestor.Id))
-                        break; // guard against a cyclic ExposedFrom chain
-                }
-
-                var appointedRoleIds = await (await _roleAppointmentRepository.GetAllAsync())
-                    .Where(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Name == input.RoleName)
-                    .Select(a => a.Role.Id)
-                    .ToListAsync();
-
-                return appointedRoleIds.Any(targetAncestorIds.Contains);
+                return await _roleAppointmentRepository.AnyAsync(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Id == targetRole.Id);
             }
 
             var isGranted = await _roleAppointmentRepository.AnyAsync(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Name == input.RoleName);
