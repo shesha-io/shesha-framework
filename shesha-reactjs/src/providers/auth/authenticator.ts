@@ -184,8 +184,10 @@ class Authenticator implements IAuthenticator {
         throw new Error('Redirecting to another page.');
       }
       if (!isNullOrWhiteSpace(result.redirectModule) && !isNullOrWhiteSpace(result.redirectForm)) {
+        const completionToken = result.registrationCompletionToken;
+        const tokenParam = completionToken ? `&token=${encodeURIComponent(completionToken)}` : '';
         this.#redirect(
-          `/no-auth/${result.redirectModule}/${result.redirectForm}?user=${result.userId}`,
+          `/no-auth/${result.redirectModule}/${result.redirectForm}?user=${result.userId}${tokenParam}`,
         );
         throw new Error('Redirecting to another form.');
       }

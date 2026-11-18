@@ -27,7 +27,7 @@ namespace Shesha.Domain
         [MaxLength(100)]
         public virtual string? RecipientType { get; set; }
 
-        [MaxLength(100)]
+        [MaxLength(500)]
         public virtual string? RecipientId { get; set; }
 
         /// <summary>
