@@ -1,6 +1,8 @@
 using Abp.Domain.Repositories;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
+using Shesha.Domain.ConfigurationItems;
+using Shesha.Extensions;
 using Shesha.Permissions;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,7 +60,9 @@ namespace Shesha.DynamicEntities.Distribution
             if (!visited.Add(permissionName))
                 return;
 
-            var definition = await _permissionDefinitionRepo.FirstOrDefaultAsync(p => p.Name == permissionName);
+            var definition = await _permissionDefinitionRepo.GetAll()
+                .Where(p => p.Name == permissionName && p.VersionStatus == ConfigurationItemVersionStatus.Live)
+                .FirstOrDefaultAsync();
             if (definition == null)
                 return;
 
