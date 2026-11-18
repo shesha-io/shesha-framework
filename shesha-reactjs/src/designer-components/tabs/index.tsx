@@ -14,7 +14,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getSettings } from './settingsForm';
 import { defaultCardStyles, defaultStyles, tabPosition2TabPlacement } from './utils';
-import { pickHeaderGroupStyle } from '../_common/styles/headerStyles';
+import { getHeaderGroupStyle } from '../_common/styles/headerStyles';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { isNonEmptyArray } from '@/utils/array';
@@ -36,9 +36,10 @@ type TabItem = Required<TabsProps>['items'][number];
 
 const TabsComponent: TabsComponentDefinition = {
   themeGroup: 'layout',
-  // The tab strip (`card`) follows the Layout Components theme's header: the body's font and background,
-  // unless the theme's Header Defaults override them. Its borders already come from the body's border.
-  nestedGroupStyles: { card: pickHeaderGroupStyle('font', 'background') },
+  // The tab cards (`card`, selected and not) follow the Layout Components theme's header, like a panel's
+  // header: the body's border, background and padding, unless the theme's Header Defaults override them.
+  // The component's own Card Styles override both.
+  nestedGroupStyles: { card: getHeaderGroupStyle },
   allowInherit: true,
   type: 'tabs',
   isInput: false,

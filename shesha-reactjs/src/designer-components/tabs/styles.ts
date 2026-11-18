@@ -24,15 +24,26 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
     },
   };
 
-  const borderLines: IBorderValue = {
+  const toBorderLines = (border: IBorderValue | undefined): IBorderValue => ({
     borderType: 'custom',
     border: {
-      top: model.border?.borderType === 'custom' ? model.border.border?.top : model.border?.border?.all,
-      right: model.border?.borderType === 'custom' ? model.border.border?.right : model.border?.border?.all,
-      bottom: model.border?.borderType === 'custom' ? model.border.border?.bottom : model.border?.border?.all,
-      left: model.border?.borderType === 'custom' ? model.border.border?.left : model.border?.border?.all,
+      top: border?.borderType === 'custom' ? border.border?.top : border?.border?.all,
+      right: border?.borderType === 'custom' ? border.border?.right : border?.border?.all,
+      bottom: border?.borderType === 'custom' ? border.border?.bottom : border?.border?.all,
+      left: border?.borderType === 'custom' ? border.border?.left : border?.border?.all,
     },
-  };
+  });
+  const borderLines = toBorderLines(model.border);
+  // Tab cards use their own border (theme Header Defaults / Card Styles), falling back to the body's.
+  // antd draws a tab card's border from one line, so take the side that faces the content.
+  const cardBorderLines = isDefined(model.card?.border) ? toBorderLines(model.card.border) : borderLines;
+  const cardEdge = isLeft ? cardBorderLines.border?.left : isRight ? cardBorderLines.border?.right
+    : isTop ? cardBorderLines.border?.top : cardBorderLines.border?.bottom;
+  const cardBorderVars = `
+    --ant-line-width: ${addPx(cardEdge?.width ?? 0)};
+    --ant-color-border-secondary: ${cardEdge?.color ?? 'none'};
+    --ant-line-type: ${cardEdge?.style ?? 'none'};
+  `;
 
   const borderLinesContent: IBorderValue = {
     borderType: 'custom',
@@ -44,7 +55,6 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
     },
   };
 
-  const background = backgroundCss(model.background);
   const cardBackground = backgroundCss(model.card?.background);
 
   const shaTabContent = cx('sha-tab-content', css`
@@ -53,6 +63,13 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
         height: 100%;
         ${marginStyles(model.stylingBoxJson)}
         ${dimensionsStyles(model.dimensions)}
+
+        ${/* Card margin & padding apply to every tab card (selected and not). The extra specificity beats antd's
+             gutter rules (e.g. '.ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab'). */ ''}
+        .ant-tabs-nav .ant-tabs-tab {
+          ${paddingStyles(model.card?.stylingBoxJson)}
+          ${marginStyles(model.card?.stylingBoxJson)}
+        }
       }
 
       .ant-tabs-body-holder {
@@ -92,22 +109,19 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
           .ant-tabs-nav-wrap {
               overflow: visible; /* to make shadow visible */
 
+              ${/* Every tab card, selected or not, takes the card styles (which inherit the theme's Header Defaults). */ ''}
               .ant-tabs-tab {
                   --ant-tabs-card-bg: ${cardBackground};
-                  ${isDefined(model.font?.color) ? `--ant-tabs-item-hover-color: ${model.font.color} !important;` : ''}
-                  ${isDefined(model.font?.color) ? `--ant-tabs-item-active-color: ${model.font.color} !important;` : ''}
-                  --ant-line-width: ${addPx(isLeft ? borderLines.border?.left?.width ?? 0 : isRight ? borderLines.border?.right?.width ?? 0
-                    : isTop ? borderLines.border?.top?.width ?? 0 : borderLines.border?.bottom?.width ?? 0)};
-                  --ant-color-border-secondary: ${isLeft ? borderLines.border?.left?.color ?? 'none' : isRight ? borderLines.border?.right?.color ?? 'none'
-                    : isTop ? borderLines.border?.top?.color ?? 'none' : borderLines.border?.bottom?.color ?? 'none'};
-                  --ant-line-type:  ${isLeft ? borderLines.border?.left?.style ?? 'none' : isRight ? borderLines.border?.right?.style ?? 'none'
-                    : isTop ? borderLines.border?.top?.style ?? 'none' : borderLines.border?.bottom?.style ?? 'none'};          
+                  ${isDefined(model.card?.font?.color) ? `--ant-tabs-item-hover-color: ${model.card.font.color} !important;` : ''}
+                  ${isDefined(model.card?.font?.color) ? `--ant-tabs-item-active-color: ${model.card.font.color} !important;` : ''}
+                  ${isDefined(model.card?.font?.color) ? `--ant-tabs-item-selected-color: ${model.card.font.color} !important;` : ''}
+                  ${cardBorderVars}
 
                   ${fontStyles(model.card?.font)}
                   ${dimensionsStyles(model.card?.dimensions)}
                   ${tabType === 'card' ? backgroundStyles(model.card?.background) : ''}
                   ${tabType === 'card' ? shadowStyles(model.shadow) : ''}
-                  
+
                   ${cssPropertiesToString(cardStyleCss)}
 
                   .ant-tabs-tab-btn {
@@ -121,25 +135,12 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
                   ${isTop ? 'border-bottom-width: 0px;' : ''}
                   ${isBottom ? 'border-top-width: 0px;' : ''}
 
-                  ${fontStyles(model.font)}
-                  ${isDefined(model.font?.color) ? `--ant-tabs-item-selected-color: ${model.font.color} !important;` : ''}
                   --primary-color: ${token.colorPrimary} !important;
-                  --ant-tabs-card-bg: ${background};
-                  --ant-color-bg-container: ${background};
-                  --ant-line-width: ${addPx(isLeft ? borderLines.border?.left?.width ?? 0 : isRight ? borderLines.border?.right?.width ?? 0
-                    : isTop ? borderLines.border?.top?.width ?? 0 : borderLines.border?.bottom?.width ?? 0)};
-                  --ant-color-border-secondary: ${isLeft ? borderLines.border?.left?.color ?? 'none' : isRight ? borderLines.border?.right?.color ?? 'none'
-                    : isTop ? borderLines.border?.top?.color ?? 'none' : borderLines.border?.bottom?.color ?? 'none'};
-                  --ant-line-type:  ${isLeft ? borderLines.border?.left?.style ?? 'none' : isRight ? borderLines.border?.right?.style ?? 'none'
-                    : isTop ? borderLines.border?.top?.style ?? 'none' : borderLines.border?.bottom?.style ?? 'none'};          
-                  --ant-color-bg-container: ${background};
-
-                  ${tabType === 'card' ? backgroundStyles(model.background) : ''}
-                  ${dimensionsStyles(model.card?.dimensions)}
+                  --ant-color-bg-container: ${cardBackground};
                   z-index: 2;
                   ${cssPropertiesToString(activeCardStyleCss)}
               }
-              
+
               .ant-tabs-tab.ant-tabs-tab-disabled {
                 color: ${token.colorTextDisabled};
                 cursor: not-allowed;

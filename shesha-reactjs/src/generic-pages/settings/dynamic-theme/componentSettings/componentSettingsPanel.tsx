@@ -5,6 +5,7 @@ import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { useStyles } from '../styles/styles';
 import { findComponentNode, getMenuItems, IMenuItem } from '../toolboxComponents';
 import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from '@/utils/object';
+import { getGroupStyleForComponent } from '@/utils/style';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
 import {
   DEFAULT_FORM_SETTINGS,
@@ -114,7 +115,8 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
     const hardcodedDefaults = typeof componentDef?.getDefaultStyles === 'function' ? componentDef.getDefaultStyles() : {};
     // Only apply theme group styles if the component has an explicit themeGroup property
     const groupStyle = componentDef?.themeGroup !== undefined
-      ? theme?.componentGroups?.[componentDef.themeGroup] ?? {}
+      // Shaped for the component (as at runtime): nested values such as a tab card's style get the header defaults.
+      ? getGroupStyleForComponent(theme?.componentGroups?.[componentDef.themeGroup], componentDef) ?? {}
       : {};
     return deepMergeValues(deepCopyViaJson(hardcodedDefaults) as object, groupStyle, deepMergeSkipUndefinedFunc);
   }, [componentDef, theme?.componentGroups]);

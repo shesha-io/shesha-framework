@@ -12,7 +12,9 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import classNames from 'classnames';
 import { useStyles } from './styles';
 import { removeComponents } from '../_common-migrations/removeComponents';
-import { defaultStyles } from './utils';
+import { defaultHeaderStyles, defaultStyles, legacyHeaderStyles } from './utils';
+import { migrateCardHeaderLayout } from './migrations/migrateHeaderLayout';
+import { shaHeaderComponentsContainer } from '@/components/panel/styles/styles';
 import { getHeaderGroupStyle } from '../_common/styles/headerStyles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { isDefined } from '@/utils';
@@ -24,9 +26,12 @@ import { useEvents } from '@/components/formDesigner/components/eventsAndApiValu
 import { getComponentEvents } from '../_common/events';
 import { useMemo } from 'react';
 
+const CARD_EVENTS = ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'] as const;
+
 const CardComponent: IToolboxComponent<ICardComponentProps> = {
   themeGroup: 'layout',
-  // The heading bar follows the Layout Components theme: the body's style, unless the theme's Header Defaults override it.
+  // The header follows the Layout Components theme: the body's style, unless the theme's Header Defaults
+  // override it. The component's Header Style overrides both.
   nestedGroupStyles: { headerStyles: getHeaderGroupStyle },
   allowInherit: true,
   type: 'card',
@@ -39,28 +44,32 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
     const { formMode } = useForm();
     const { styles } = useStyles(model);
     const handleEvent = useEvents<void>(model.componentName);
-    const events = useMemo(() => getComponentEvents<void>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent }), [handleEvent, model]);
+    const events = useMemo(() => getComponentEvents<void>(model, CARD_EVENTS, { handleEvent }), [handleEvent, model]);
+    const headerEvents = useMemo(() => getComponentEvents<void>(model, CARD_EVENTS, { handleEvent }, undefined, undefined, 'headerEvents'), [handleEvent, model]);
     if (model.hidden === true) return null;
 
-    const title = model.hideHeading === true ? null : model.label;
-    const headerComponents = model.header?.components ?? [];
-
-    const extra = (headerComponents.length > 0 || formMode === 'designer') && model.hideHeading !== true && isDefined(model.header)
-      ? (
-        <ComponentsContainer
-          containerId={model.header.id}
-          direction="horizontal"
-          dynamicComponents={model.isDynamic === true ? headerComponents : []}
-        />
-      )
-      : null;
+    // The header is a configurable container (heading text + extra area, see migrateCardHeaderLayout), as a
+    // panel's. A card whose header holds nothing falls back to its label.
+    const { header } = model;
+    const headerComponents = header?.components ?? [];
+    const title = model.hideHeading === true
+      ? null
+      : isDefined(header) && (headerComponents.length > 0 || formMode === 'designer')
+        ? (
+          <ComponentsContainer
+            containerId={header.id}
+            dynamicComponents={model.isDynamic === true ? headerComponents : []}
+            className={shaHeaderComponentsContainer}
+            additionalDomProperties={headerEvents}
+          />
+        )
+        : model.label;
 
     return (
       <ParentProvider model={model} name={`Card-${model.id}`}>
         <Card
           className={classNames(model.className, styles.shaCardComponent, { [styles.hideWhenEmpty]: model.hideWhenEmpty })}
           title={title}
-          extra={extra}
           style={model.styleCss ?? EMPTY_STYLE}
           {...events}
         >
@@ -79,7 +88,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
     header: { id: nanoid(), components: [] },
     content: { id: nanoid(), components: [] },
   }),
-  getDefaultStyles: defaultStyles,
+  getDefaultStyles: () => ({ ...defaultStyles(), headerStyles: defaultHeaderStyles() }),
   settingsFormMarkup: getSettings,
   // antd only renders a card's body when it has content, so an empty card has nowhere to show its
   // padding. The theme preview gives it sample content so the configured padding (and the margins
@@ -122,7 +131,18 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
         tablet: { ...prev.tablet, dimensions: { ...prev.tablet?.dimensions, width: 'auto', height: 'fit-content' } },
         mobile: { ...prev.mobile, dimensions: { ...prev.mobile?.dimensions, width: 'auto', height: 'fit-content' } },
       })
-    .add<ICardComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
+    .add<ICardComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
+    // Configurable header, as a panel's: the heading becomes a Text component in the header container.
+    .add<ICardComponentProps>(6, migrateCardHeaderLayout)
+    // Existing cards keep antd's header look, whatever the theme's Header Defaults say; it can be changed in Header Style.
+    .add<ICardComponentProps>(7, (prev, ctx) => ctx.isNew === true
+      ? prev
+      : {
+        ...prev,
+        desktop: { ...prev.desktop, headerStyles: { ...legacyHeaderStyles(), ...prev.desktop?.headerStyles } },
+        tablet: { ...prev.tablet, headerStyles: { ...legacyHeaderStyles(), ...prev.tablet?.headerStyles } },
+        mobile: { ...prev.mobile, headerStyles: { ...legacyHeaderStyles(), ...prev.mobile?.headerStyles } },
+      }),
 };
 
 export default CardComponent;
