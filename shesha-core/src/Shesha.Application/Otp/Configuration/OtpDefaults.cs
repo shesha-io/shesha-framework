@@ -11,8 +11,8 @@
         public const string DefaultSubjectTemplate = "One-Time-Pin";
         public const string DefaultBodyTemplate = "Your One-Time-Pin is {{password}}";
         public const string DefaultEmailSubjectTemplate = "One-Time-Pin";
-        public const string DefaultEmailBodyTemplate = @"Click the following link to verify your email address: <a href='http://localhost:3000/no-auth/shesha/email-link-verification/?token={{token}}&identifier={{userid}}'>link</a>";
+        public const string DefaultEmailBodyTemplate = @"Click the following link to verify your email address: <a href='http://localhost:3000/no-auth/shesha/email-link-verification/?token={{token}}&amp;identifier={{userid}}'>link</a>";
         public const string DefaultRegistrationEmailSubjectTemplate = "Complete Your Registration";
-        public const string DefaultRegistrationEmailBodyTemplate = @"Click the following link to complete your registration: <a href='http://localhost:3000/no-auth/shesha/email-link-verification/?token={{token}}&identifier={{userid}}&operationId={{operationId}}&registration=1'>link</a>";
+        public const string DefaultRegistrationEmailBodyTemplate = @"Click the following link to complete your registration: <a href='http://localhost:3000/no-auth/shesha/email-link-verification/?token={{token}}&amp;identifier={{userid}}&amp;operationId={{operationId}}&amp;registration=1'>link</a>";
     }
 }
