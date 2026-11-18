@@ -185,7 +185,7 @@ class Authenticator implements IAuthenticator {
       }
       if (!isNullOrWhiteSpace(result.redirectModule) && !isNullOrWhiteSpace(result.redirectForm)) {
         const completionToken = result.registrationCompletionToken;
-        const tokenParam = completionToken ? `&token=${encodeURIComponent(completionToken)}` : '';
+        const tokenParam = !isNullOrWhiteSpace(completionToken) ? `&token=${encodeURIComponent(completionToken)}` : '';
         this.#redirect(
           `/no-auth/${result.redirectModule}/${result.redirectForm}?user=${result.userId}${tokenParam}`,
         );

@@ -905,9 +905,13 @@ namespace Shesha.Tests.UserRegistrations
             ConfigureTokenAuth();
             var app = await CreateAppAsync(AdditionalInfoSettings());
             var input = NewInput();
+            // OTP login is by mobile number, so the registrant verifies it as well as the email address
+            var mobile = input.MobileNumber;
+            ProvideOtp(input, sentTo: mobile);
+            ProvideEmailOtp(input, sentTo: input.EmailAddress);
             var registered = await RegisterAsync(app, input);
 
-            var login = await OtpAuthenticateAsync(registered.UserId, input.MobileNumber);
+            var login = await OtpAuthenticateAsync(registered.UserId, mobile);
 
             login.ResultType.ShouldBe(AuthenticateResultType.RedirectNoAuth);
             login.AccessToken.ShouldBeNull();
@@ -917,7 +921,7 @@ namespace Shesha.Tests.UserRegistrations
 
             // and once the registration is complete, OTP login works normally
             await CompleteAsync(registered.UserId, login.RegistrationCompletionToken);
-            var afterCompletion = await OtpAuthenticateAsync(registered.UserId, input.MobileNumber);
+            var afterCompletion = await OtpAuthenticateAsync(registered.UserId, mobile);
             afterCompletion.ResultType.ShouldBe(AuthenticateResultType.Success);
             afterCompletion.AccessToken.ShouldNotBeNullOrWhiteSpace();
         }
