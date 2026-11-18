@@ -105,12 +105,13 @@ namespace Shesha.Roles
         {
             var topMost = await ResolveToTopMostAsync(role);
 
-            var ids = new HashSet<Guid> { role.Id };
+            var ids = new HashSet<Guid>();
             for (ConfigurationItem? ancestor = topMost; ancestor != null; ancestor = ancestor.ExposedFrom)
             {
                 if (!ids.Add(ancestor.Id))
                     break; // guard against a cyclic ExposedFrom chain
             }
+            ids.Add(role.Id);
 
             return ids;
         }
