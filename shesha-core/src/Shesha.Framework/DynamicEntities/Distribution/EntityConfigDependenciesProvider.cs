@@ -55,21 +55,39 @@ namespace Shesha.DynamicEntities.Distribution
             return result;
         }
 
+        // Adds a permission and its full ancestor chain, or nothing if any ancestor has no live version.
         private async Task AddWithAncestorsAsync(string permissionName, HashSet<string> visited, List<ConfigurationItemIdentifier> result)
         {
-            if (!visited.Add(permissionName))
+            if (visited.Contains(permissionName))
                 return;
 
-            var definition = await _permissionDefinitionRepo.GetAll()
-                .Where(p => p.Name == permissionName && p.VersionStatus == ConfigurationItemVersionStatus.Live)
-                .FirstOrDefaultAsync();
-            if (definition == null)
-                return;
+            var chain = new List<PermissionDefinition>();
+            var chainNames = new HashSet<string>();
+            var name = permissionName;
+            while (!string.IsNullOrWhiteSpace(name))
+            {
+                if (!chainNames.Add(name))
+                    break; // cyclic Parent chain
 
-            result.Add(new PermissionDefinitionIdentifier(definition.Module?.Name, definition.Name));
+                var definition = await _permissionDefinitionRepo.GetAll()
+                    .Where(p => p.Name == name && p.VersionStatus == ConfigurationItemVersionStatus.Live)
+                    .FirstOrDefaultAsync();
+                if (definition == null)
+                {
+                    foreach (var droppedName in chainNames)
+                        visited.Add(droppedName);
+                    return;
+                }
 
-            if (!string.IsNullOrWhiteSpace(definition.Parent))
-                await AddWithAncestorsAsync(definition.Parent, visited, result);
+                chain.Add(definition);
+                name = definition.Parent;
+            }
+
+            foreach (var definition in chain)
+            {
+                if (visited.Add(definition.Name))
+                    result.Add(new PermissionDefinitionIdentifier(definition.Module?.Name, definition.Name));
+            }
         }
     }
 }
