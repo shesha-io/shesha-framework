@@ -66,20 +66,34 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
     }
   };
 
+  /**
+   * Registers a data context during render. Contexts can share an `id` (every dynamic page registers `pageContext`),
+   * so ownership is tracked by `uid`: during in-app navigation the new page renders before the old page's effect
+   * cleanups run, and the new instance must replace the old one rather than be skipped, otherwise the new page's
+   * scripts read and write the previous page's state.
+   */
   registerDataContextOnce = (payload: IRegisterDataContextPayload): void => {
-    if (!this.contexts[payload.id]) {
-      const ctx = { ...payload };
-      delete ctx.initialData;
-      this.contexts[payload.id] = { ...ctx };
-      // this.forceUpdate?.();
+    const existing = this.contexts[payload.id];
+    // the same provider instance re-rendering: nothing to do
+    if (isDefined(existing) && existing.uid === payload.uid)
+      return;
 
-      if (payload.type === DataContextTopLevels.Root)
-        RootContexts.push(payload.id);
-    }
+    const ctx = { ...payload };
+    delete ctx.initialData;
+    this.contexts[payload.id] = { ...ctx };
+    // this.forceUpdate?.();
+
+    if (payload.type === DataContextTopLevels.Root && !RootContexts.includes(payload.id))
+      RootContexts.push(payload.id);
   };
 
   unregisterDataContext = (payload: IRegisterDataContextPayload): void => {
-    if (!!this.contexts[payload.id])
+    const existing = this.contexts[payload.id];
+    // another instance has taken over this id (e.g. the next page registered before this cleanup ran): leave it alone
+    if (isDefined(existing) && existing.uid !== payload.uid)
+      return;
+
+    if (isDefined(existing))
       delete this.contexts[payload.id];
 
     this.forceUpdate?.(`Unregister DataContext ${payload.id}: ${payload.name}`);
@@ -195,7 +209,8 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
 
   onChangeContext = (payload: IDataContextDescriptor): void => {
     const existingContext = this.contexts[payload.id];
-    if (isDefined(existingContext)) {
+    // ignore updates from an instance that no longer owns this id (e.g. the previous page while it unmounts)
+    if (isDefined(existingContext) && existingContext.uid === payload.uid) {
       const newCtx: IDataContextDescriptor = {
         ...payload,
         metadata: payload.metadata ?? existingContext.metadata,
