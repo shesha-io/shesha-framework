@@ -39,6 +39,7 @@ const ColumnsComponent: ColumnsComponentDefinition = {
   type: 'columns',
   isInput: false,
   name: 'Columns',
+  isHidden: true,
   icon: <SplitCellsOutlined />,
   getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
   Factory: ({ model, form }) => {

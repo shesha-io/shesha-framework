@@ -20,6 +20,7 @@ import { isDefined } from '@/utils/nullables';
 const BarChartComponent: IToolboxComponent<IChartProps> = {
   type: 'barChart',
   name: 'Bar Chart',
+  isHidden: true,
   isInput: false,
   isOutput: true,
   preserveDimensionsInDesigner: ["height"],

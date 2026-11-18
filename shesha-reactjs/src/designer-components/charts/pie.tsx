@@ -20,6 +20,7 @@ import { isDefined } from '@/utils/nullables';
 const PieChartComponent: IToolboxComponent<IChartProps> = {
   type: 'pieChart',
   name: 'Pie Chart',
+  isHidden: true,
   isInput: false,
   isOutput: true,
   preserveDimensionsInDesigner: ["height"],

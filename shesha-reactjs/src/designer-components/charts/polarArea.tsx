@@ -20,6 +20,7 @@ import { isDefined } from '@/utils/nullables';
 const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
   type: 'polarAreaChart',
   name: 'Polar Area Chart',
+  isHidden: true,
   isInput: false,
   isOutput: true,
   icon: <RadarChartOutlined />,

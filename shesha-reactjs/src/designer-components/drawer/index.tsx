@@ -20,6 +20,7 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   type: 'drawer',
   isInput: false,
   name: 'Drawer',
+  isHidden: true,
   icon: <SwapOutlined />,
   Factory: ({ model }) => {
     const { allStyles, style, headerStyles, footerStyles, ...props } = model;

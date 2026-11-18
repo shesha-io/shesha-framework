@@ -20,6 +20,7 @@ import { isDefined } from '@/utils/nullables';
 const LineChartComponent: IToolboxComponent<IChartProps> = {
   type: 'lineChart',
   name: 'Line Chart',
+  isHidden: true,
   isInput: false,
   isOutput: true,
   preserveDimensionsInDesigner: ["height"],
