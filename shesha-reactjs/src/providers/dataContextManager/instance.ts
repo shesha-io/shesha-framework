@@ -67,27 +67,32 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
   };
 
   registerDataContextOnce = (payload: IRegisterDataContextPayload): void => {
+    const existing = this.contexts[payload.id];
+    if (isDefined(existing) && existing.uid !== payload.uid)
+      this.unregisterDataContext(existing);
     if (!this.contexts[payload.id]) {
       const ctx = { ...payload };
       delete ctx.initialData;
       this.contexts[payload.id] = { ...ctx };
       // this.forceUpdate?.();
 
-      if (payload.type === DataContextTopLevels.Root)
+      if (payload.type === DataContextTopLevels.Root && !RootContexts.includes(payload.id))
         RootContexts.push(payload.id);
     }
   };
 
   unregisterDataContext = (payload: IRegisterDataContextPayload): void => {
-    if (!!this.contexts[payload.id])
+    const existing = this.contexts[payload.id];
+    if (isDefined(existing) && existing.uid === payload.uid) {
       delete this.contexts[payload.id];
 
-    this.forceUpdate?.(`Unregister DataContext ${payload.id}: ${payload.name}`);
+      this.forceUpdate?.(`Unregister DataContext ${payload.id}: ${payload.name}`);
 
-    if (payload.type === DataContextTopLevels.Root) {
-      const idx = RootContexts.indexOf(payload.id);
-      if (idx !== -1)
-        RootContexts.splice(idx, 1);
+      if (payload.type === DataContextTopLevels.Root) {
+        const idx = RootContexts.indexOf(payload.id);
+        if (idx !== -1)
+          RootContexts.splice(idx, 1);
+      }
     }
   };
 
@@ -195,7 +200,7 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
 
   onChangeContext = (payload: IDataContextDescriptor): void => {
     const existingContext = this.contexts[payload.id];
-    if (isDefined(existingContext)) {
+    if (isDefined(existingContext) && existingContext.uid === payload.uid) {
       const newCtx: IDataContextDescriptor = {
         ...payload,
         metadata: payload.metadata ?? existingContext.metadata,
