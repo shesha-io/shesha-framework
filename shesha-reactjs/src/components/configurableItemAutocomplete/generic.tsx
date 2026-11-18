@@ -184,6 +184,7 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
         onChange,
         filter,
         preferGenericEndpoint = true,
+        readOnly = false,
     } = props;
 
     const { metadata } = useMetadata(true);
@@ -340,6 +341,7 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
     return (
         <Select<string | string[]>
             allowClear
+            {...(readOnly ? { variant: 'borderless' } : {})}
             notFoundContent={loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No matches" />}
             style={{ width: '100%' }}
             options={options}
@@ -348,11 +350,10 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
             onSearch={onSearch}
             onChange={onSelect}
             onClear={onClear}
-            placeholder={valueFetcher.loading ? 'Loading...' : 'Type to search'}
+            placeholder={valueFetcher.loading ? 'Loading...' : readOnly ? '' : 'Type to search'}
             disabled={valueFetcher.loading || props.readOnly}
             value={selectValue}
             mode={mode === 'multiple' ? 'multiple' : undefined}
-
             optionRender={(option) => {
                 const { data, value } = option;
                 const optionData = (data as IOption)?.optionData;
