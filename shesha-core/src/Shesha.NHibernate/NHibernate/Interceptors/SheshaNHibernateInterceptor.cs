@@ -14,6 +14,7 @@ using NHibernate.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Transaction;
 using NHibernate.Type;
+using Shesha.Domain;
 using Shesha.NHibernate.UoW;
 using Shesha.Reflection;
 using System;
@@ -68,8 +69,44 @@ namespace Shesha.NHibernate.Interceptors
                 );
         }
 
+        /// <summary>
+        /// Recalculates derived fields of <see cref="IHasCalculatedFields"/> entities and copies changed values into the
+        /// NHibernate state, because NHibernate builds the SQL from the state snapshot, not from the entity itself.
+        /// Only plain (non-association, non-collection, non-component) properties are synced.
+        /// </summary>
+        /// <returns>true if any state value was changed</returns>
+        private static bool ApplyCalculatedFields(object entity, object[] state, string[] propertyNames, IType[] types)
+        {
+            if (entity is not IHasCalculatedFields hasCalculatedFields)
+                return false;
+
+            hasCalculatedFields.CalculateFields();
+
+            var updated = false;
+            var entityType = entity.GetType();
+            for (var i = 0; i < propertyNames.Length; i++)
+            {
+                if (types[i].IsAssociationType || types[i].IsCollectionType || types[i].IsComponentType)
+                    continue;
+
+                var prop = entityType.GetClosestPropertyOrNull(propertyNames[i]);
+                if (prop == null || !prop.CanRead)
+                    continue;
+
+                var value = prop.GetValue(entity);
+                if (!Equals(state[i], value))
+                {
+                    state[i] = value!; // NHibernate state arrays hold nulls for null columns
+                    updated = true;
+                }
+            }
+            return updated;
+        }
+
         public override bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types)
         {
+            var calculatedFieldsUpdated = ApplyCalculatedFields(entity, state, propertyNames, types);
+
             //Set Id for Guids
             if (entity is IEntity<Guid> guidEntity)
             {
@@ -109,12 +146,12 @@ namespace Shesha.NHibernate.Interceptors
             TriggerDomainEvents(entity);
             EntityHistoryHelper?.AddEntityChange(entity);
 
-            return base.OnSave(entity, id, state, propertyNames, types);
+            return base.OnSave(entity, id, state, propertyNames, types) || calculatedFieldsUpdated;
         }
 
         public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
         {
-            var updated = false;
+            var updated = ApplyCalculatedFields(entity, currentState, propertyNames, types);
 
             //Set modification audits
             if (entity is IHasModificationTime hasModificationTime)

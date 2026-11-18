@@ -451,6 +451,11 @@ namespace Shesha.DynamicEntities.Binder
                 }
             }
 
+            // derived fields must be recalculated after binding and before validation,
+            // otherwise they are validated (and later persisted) with stale values
+            if (entity is IHasCalculatedFields hasCalculatedFields)
+                hasCalculatedFields.CalculateFields();
+
             foreach (var skippedProperty in properties)
             {
                 var name = skippedProperty.Name.ToCamelCase();

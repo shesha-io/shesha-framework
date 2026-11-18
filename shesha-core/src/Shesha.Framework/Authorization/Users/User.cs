@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization.Users;
 using Abp.Extensions;
 using Newtonsoft.Json;
+using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.EntityHistory;
@@ -13,7 +14,7 @@ namespace Shesha.Authorization.Users
 {
     [Table("AbpUsers")]
     [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
-    public class User : AbpUser<User>
+    public class User : AbpUser<User>, IHasCalculatedFields
     {
         public const string DefaultPassword = "123qwe";
         public const string EmailAlreadyInUse = "Specified email already used by another person";
@@ -75,6 +76,18 @@ namespace Shesha.Authorization.Users
         public override void SetNormalizedNames()
         {
             NormalizedUserName = UserName.ToUpperInvariant();
+            NormalizedEmailAddress = EmailAddress?.ToUpperInvariant();
+        }
+
+        /// <summary>
+        /// Keeps normalized names in sync when the user is saved outside of the <see cref="UserManager"/>
+        /// (e.g. as a nested entity via dynamic CRUD). UserName is guarded because a partially bound entity
+        /// may not have it yet - the required-field validation reports that case instead of a NullReferenceException.
+        /// </summary>
+        public virtual void CalculateFields()
+        {
+            if (UserName != null)
+                NormalizedUserName = UserName.ToUpperInvariant();
             NormalizedEmailAddress = EmailAddress?.ToUpperInvariant();
         }
 
