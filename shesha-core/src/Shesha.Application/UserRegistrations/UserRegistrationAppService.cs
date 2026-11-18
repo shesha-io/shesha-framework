@@ -49,7 +49,7 @@ namespace Shesha.UserRegistrations
                 RequireEmailAddress = SelfRegistrationManager.IsEmailAddressRequired(s),
                 AllowedEmailDomains = new List<string>(EmailDomainPolicy.ParseDomains(s.AllowedEmailDomains)),
                 CreationMode = s.CreationMode ?? RefListSelfRegistrationCreationMode.AlwaysCreateNew,
-                AdditionalRegistrationInfo = s.AdditionalRegistrationInfo,
+                AdditionalRegistrationInfo = SelfRegistrationManager.HasAdditionalRegistrationForm(s),
                 AdditionalRegistrationInfoFormModule = s.AdditionalRegistrationInfoFormModule,
                 AdditionalRegistrationInfoFormName = s.AdditionalRegistrationInfoFormName,
                 GoToUrlAfterRegistration = s.GoToUrlAfterRegistration,

@@ -30,12 +30,16 @@ namespace Shesha.UserRegistrations
         /// <summary>
         /// True when no domains are configured, or the email's domain exactly matches one of them (case-insensitive).
         /// Sub-domains must be listed explicitly so that e.g. "evil-gov.za" or "gov.za.evil.com" never match "gov.za".
+        /// A list that isn't blank but has no valid domain (e.g. "@") allows none, rather than every domain.
         /// </summary>
         public static bool IsAllowed(string? email, string? allowedDomains)
         {
+            if (string.IsNullOrWhiteSpace(allowedDomains))
+                return true;
+
             var domains = ParseDomains(allowedDomains);
             if (domains.Count == 0)
-                return true;
+                return false;
 
             var domain = GetDomain(email);
             return !string.IsNullOrWhiteSpace(domain) && domains.Contains(domain);

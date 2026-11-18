@@ -101,12 +101,30 @@ namespace Shesha.UserRegistrations
             return settings.RequireEmailAddress || settings.UserEmailAsUsername;
         }
 
+        /// <summary>
+        /// True when registrants must fill in the additional registration information form: it's switched on and the form is specified.
+        /// Registration is refused while it's switched on without a form (see <see cref="RegisterAsync"/>).
+        /// </summary>
+        public static bool HasAdditionalRegistrationForm(UserManagementSettings settings)
+        {
+            return settings.AdditionalRegistrationInfo
+                && !string.IsNullOrWhiteSpace(settings.AdditionalRegistrationInfoFormModule)
+                && !string.IsNullOrWhiteSpace(settings.AdditionalRegistrationInfoFormName);
+        }
+
         /// <inheritdoc />
         public virtual async Task<SelfRegistrationResult> RegisterAsync(SelfRegistrationInput input)
         {
             var settings = await _userManagementSettings.UserManagementSettings.GetValueAsync();
             if (settings == null || !IsSelfRegistrationEnabled(settings))
                 throw new UserFriendlyException(RegistrationDisabledMessage);
+
+            if (settings.AdditionalRegistrationInfo && !HasAdditionalRegistrationForm(settings))
+            {
+                // completing the registration without the form would skip a step the settings require
+                Logger.Error("Self-registration requires additional registration information, but the form module or name isn't set");
+                throw new UserFriendlyException(MisconfiguredMessage);
+            }
 
             input.EmailAddress = input.EmailAddress?.Trim();
             input.MobileNumber = input.MobileNumber?.Trim();
@@ -271,7 +289,8 @@ namespace Shesha.UserRegistrations
                 if (IsEmailAddressRequired(settings))
                     errors.Add(new ValidationResult("Email Address is mandatory"));
             }
-            else if (string.IsNullOrWhiteSpace(EmailDomainPolicy.GetDomain(input.EmailAddress)))
+            else if (string.IsNullOrWhiteSpace(EmailDomainPolicy.GetDomain(input.EmailAddress)) || input.EmailAddress.Any(char.IsWhiteSpace))
+                // whitespace is refused rather than removed, so the address saved as confirmed is exactly the one that was verified
                 errors.Add(new ValidationResult("Email Address is not valid"));
             else if (!EmailDomainPolicy.IsAllowed(input.EmailAddress, settings.AllowedEmailDomains))
                 errors.Add(new ValidationResult("Registration is not allowed for this email domain"));
@@ -431,6 +450,12 @@ namespace Shesha.UserRegistrations
             if (!verification.IsSuccess)
                 throw new UserFriendlyException(failureMessage);
 
+            // The pin proves the registrant owns the email address or mobile number, so it's checked here as well:
+            // VerifyPinAsync accepts any pin when the IgnoreOtpValidation setting is on
+            // (same comparison and clock as OtpManager.VerifyPinAsync)
+            if (otp.ExpiresOn == null || otp.ExpiresOn < DateTime.Now || !CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(otp.Pin), Encoding.UTF8.GetBytes(pin)))
+                throw new UserFriendlyException(failureMessage);
+
             return NormalizeContact(otp.SendTo) ?? throw new UserFriendlyException(failureMessage);
         }
 
@@ -469,9 +494,7 @@ namespace Shesha.UserRegistrations
         /// </summary>
         protected virtual async Task<ShaUserRegistration> SaveRegistrationAsync(User user, UserManagementSettings settings)
         {
-            var hasAdditionalForm = settings.AdditionalRegistrationInfo
-                && !string.IsNullOrWhiteSpace(settings.AdditionalRegistrationInfoFormModule)
-                && !string.IsNullOrWhiteSpace(settings.AdditionalRegistrationInfoFormName);
+            var hasAdditionalForm = HasAdditionalRegistrationForm(settings);
 
             var registration = new ShaUserRegistration
             {

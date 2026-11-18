@@ -51,6 +51,10 @@ namespace Shesha.Tests.UserRegistrations
         private readonly Dictionary<string, UserManagementSettings?> _settingsByApp = new();
         private string? _originalSettingsJson;
         private readonly Dictionary<Guid, OtpDto> _otps = new();
+        /// <summary>
+        /// Makes the in-memory OTP manager accept any pin, like the IgnoreOtpValidation setting
+        /// </summary>
+        private bool _ignoreOtpValidation;
 
         public SelfRegistration_Tests(SqlServerFixture fixture) : base(fixture)
         {
@@ -64,7 +68,7 @@ namespace Shesha.Tests.UserRegistrations
                 .Returns<Guid>(id => Task.FromResult<IOtpDto?>(_otps.TryGetValue(id, out var otp) ? otp : null));
             otpManager.Setup(m => m.VerifyPinAsync(It.IsAny<VerifyPinInput>()))
                 .Returns<VerifyPinInput>(input => Task.FromResult<IVerifyPinResponse>(
-                    _otps.TryGetValue(input.OperationId, out var otp) && otp.Pin == input.Pin && otp.ExpiresOn > DateTime.Now
+                    _ignoreOtpValidation || _otps.TryGetValue(input.OperationId, out var otp) && otp.Pin == input.Pin && otp.ExpiresOn > DateTime.Now
                         ? VerifyPinResponse.Success()
                         : VerifyPinResponse.Failed("Wrong one time pin")));
             LocalIocManager.IocContainer.Register(Component.For<IOtpManager>().Instance(otpManager.Object).IsDefault().Named("test-otp-manager"));
@@ -498,6 +502,68 @@ namespace Shesha.Tests.UserRegistrations
             var ex = await Should.ThrowAsync<UserFriendlyException>(async () => { await RegisterAsync(app, input); });
             ex.Message.ShouldBe(SelfRegistrationManager.EmailNotVerifiedMessage);
             (await UserExistsAsync(input.EmailAddress)).ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task A_wrong_pin_is_refused_even_when_pin_validation_is_ignoredAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            input.OtpPin = "000000";
+            _ignoreOtpValidation = true;
+
+            var ex = await Should.ThrowAsync<UserFriendlyException>(async () => { await RegisterAsync(app, input); });
+
+            ex.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
+            (await UserExistsAsync(input.UserName)).ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task An_expired_pin_is_refused_even_when_pin_validation_is_ignoredAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            _otps[input.OtpOperationId!.Value].ExpiresOn = DateTime.Now.AddMinutes(-1);
+            _ignoreOtpValidation = true;
+
+            var ex = await Should.ThrowAsync<UserFriendlyException>(async () => { await RegisterAsync(app, input); });
+
+            ex.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
+        }
+
+        [Fact]
+        public async Task An_email_address_with_whitespace_inside_is_refusedAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            input.EmailAddress = input.EmailAddress!.Replace("@", " @");
+            // the pin was sent to the address without the space, which is what the contact comparison would match
+            ProvideOtp(input, sentTo: input.EmailAddress.Replace(" ", ""));
+
+            await Should.ThrowAsync<AbpValidationException>(async () => { await RegisterAsync(app, input); });
+
+            (await UserExistsAsync(input.UserName)).ShouldBeFalse();
+        }
+
+        [Theory]
+        [InlineData(null, "extra-info")]
+        [InlineData("Shesha", null)]
+        [InlineData("Shesha", " ")]
+        public async Task Additional_info_without_a_form_is_a_configuration_errorAsync(string? module, string? form)
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.AdditionalRegistrationInfo = true;
+                s.AdditionalRegistrationInfoFormModule = module;
+                s.AdditionalRegistrationInfoFormName = form;
+            }));
+            var input = NewInput();
+
+            (await GetPublicSettingsAsync(app)).AdditionalRegistrationInfo.ShouldBeFalse("there's no form to fill in");
+            var ex = await Should.ThrowAsync<UserFriendlyException>(async () => { await RegisterAsync(app, input); });
+
+            ex.Message.ShouldBe(SelfRegistrationManager.MisconfiguredMessage);
+            (await UserExistsAsync(input.UserName)).ShouldBeFalse();
         }
 
         [Fact]

@@ -47,6 +47,14 @@ namespace Shesha.Tests.UserRegistrations
             EmailDomainPolicy.IsAllowed(email, "gov.za").ShouldBeFalse();
         }
 
+        [Theory]
+        [InlineData("@")]
+        [InlineData("@ ; ,")]
+        public void A_list_without_a_valid_domain_allows_none(string allowed)
+        {
+            EmailDomainPolicy.IsAllowed("jane@gov.za", allowed).ShouldBeFalse();
+        }
+
         [Fact]
         public void Domains_can_be_separated_by_commas_semicolons_and_whitespace()
         {
