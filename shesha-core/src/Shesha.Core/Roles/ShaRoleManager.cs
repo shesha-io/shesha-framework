@@ -224,8 +224,18 @@ namespace Shesha.Roles
 
         public async Task<bool> IsInRoleAsync(Person person, ShaRole role, ShaRoleAppointmentData? appointmentData = null)
         {
+            var topMostRole = await ResolveToTopMostAsync(role);
+
+            var chainIds = new HashSet<Guid>();
+            for (ConfigurationItem? ancestor = topMostRole; ancestor != null; ancestor = ancestor.ExposedFrom)
+            {
+                if (!chainIds.Add(ancestor.Id))
+                    break; // guard against a cyclic ExposedFrom chain
+            }
+            chainIds.Add(role.Id);
+
             var appointments = await GetAppointmentsAsync(person, appointmentData);
-            return appointments.Any(a => a.Role == role);
+            return appointments.Any(a => chainIds.Contains(a.Role.Id));
         }
 
         private async Task<ShaRoleResult<ShaRoleAppointedPerson>> InternalRemoveFromRoleAsync(Person person, ShaRole role, ShaRoleAppointmentData? appointmentData = null)
@@ -235,9 +245,19 @@ namespace Shesha.Roles
             if (role == null) return result.AddError("Roles are mandatory");
             if (result.Succeeded == false) return result;
 
-            role = await ResolveToTopMostAsync(role);
+            var topMostRole = await ResolveToTopMostAsync(role);
 
-            var appointments = (await GetAppointmentsAsync(person, appointmentData)).Where(a => a.Role == role).ToList();
+            // remove appointments on the requested role itself and on its ExposedFrom chain up to the
+            // top-most override, so removal takes effect regardless of which specific row the appointment is on
+            var chainIds = new HashSet<Guid>();
+            for (ConfigurationItem? ancestor = topMostRole; ancestor != null; ancestor = ancestor.ExposedFrom)
+            {
+                if (!chainIds.Add(ancestor.Id))
+                    break; // guard against a cyclic ExposedFrom chain
+            }
+            chainIds.Add(role.Id);
+
+            var appointments = (await GetAppointmentsAsync(person, appointmentData)).Where(a => chainIds.Contains(a.Role.Id)).ToList();
             foreach (var appointment in appointments)
             {
                 await _roleAppointedPersonRepo.DeleteAsync(appointment.Id);
@@ -299,20 +319,34 @@ namespace Shesha.Roles
             if (roles == null || !roles.Any()) return result.AddError("Roles are mandatory");
             if (result.Succeeded == false) return result;
 
-            var rolesInDb = (await GetRolesForPersonAsync(person, appointmentData));
+            var rolesInDb = await GetRolesForPersonAsync(person, appointmentData);
 
+            // compare by resolved top-most role, so requesting a base role whose override the person
+            // already holds is recognized as "already has it", not as add-this-remove-that
+            var requestedTopMost = new List<ShaRole>();
             foreach (var role in roles)
+                requestedTopMost.Add(await ResolveToTopMostAsync(role));
+
+            var rolesInDbTopMost = new List<ShaRole>();
+            foreach (var roleInDb in rolesInDb)
+                rolesInDbTopMost.Add(await ResolveToTopMostAsync(roleInDb));
+
+            for (var i = 0; i < roles.Count(); i++)
             {
-                if (!rolesInDb.Contains(role))
+                var role = roles.ElementAt(i);
+                var resolvedRole = requestedTopMost[i];
+                if (!rolesInDbTopMost.Any(r => r.Id == resolvedRole.Id))
                 {
                     var res = await AddToRoleAsync(person, role, appointmentData);
                     if (res.Succeeded == false) result.AddErrors(res.Errors);
                 }
             }
 
-            foreach (var roleInDb in rolesInDb)
+            for (var i = 0; i < rolesInDb.Count; i++)
             {
-                if (!roles.Contains(roleInDb))
+                var roleInDb = rolesInDb[i];
+                var resolvedRoleInDb = rolesInDbTopMost[i];
+                if (!requestedTopMost.Any(r => r.Id == resolvedRoleInDb.Id))
                 {
                     var res = await RemoveFromRoleAsync(person, roleInDb, appointmentData);
                     if (res.Succeeded == false) result.AddErrors(res.Errors);
