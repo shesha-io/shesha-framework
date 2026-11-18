@@ -358,7 +358,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   type: 'customDropdown',
                                   id: nanoid(),
                                   label: "Object Position",
-                                  tooltip: 'Which part of the image stays visible when Object Fit crops it. Pick a preset or enter two space-separated values with units, e.g. "5em 100px" (horizontal then vertical).',
+                                  tooltip: 'Sets the alignment of the image content (e.g. top left, center center). Pick a preset or enter two space-separated values with units, e.g. "5em 100px" (horizontal then vertical).',
                                   customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                   propertyName: "objectPosition",
                                   dropdownOptions: positionOptions,
