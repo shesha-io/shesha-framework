@@ -316,37 +316,38 @@ namespace Shesha.Roles
         {
             var result = new ShaRoleResult<ShaRoleAppointedPerson>();
             if (person == null) return result.AddError("Person is mandatory");
-            if (roles == null || !roles.Any()) return result.AddError("Roles are mandatory");
+
+            // snapshot once: roles may be a deferred sequence, and this method enumerates it more than once
+            var requestedRoles = roles?.ToList() ?? new List<ShaRole>();
+            if (requestedRoles.Count == 0) return result.AddError("Roles are mandatory");
             if (result.Succeeded == false) return result;
 
             var rolesInDb = await GetRolesForPersonAsync(person, appointmentData);
 
             // compare by resolved top-most role, so requesting a base role whose override the person
-            // already holds is recognized as "already has it", not as add-this-remove-that
-            var requestedTopMost = new List<ShaRole>();
-            foreach (var role in roles)
-                requestedTopMost.Add(await ResolveToTopMostAsync(role));
+            // already holds is recognized as "already has it", not as add-this-remove-that. Note:
+            // AddToRoleAsync/RemoveFromRoleAsync re-resolve internally for the actual write, so there's
+            // a narrow window where a role gets exposed between this decision and that write.
+            var requestedPairs = new List<(ShaRole Role, ShaRole TopMost)>();
+            foreach (var role in requestedRoles)
+                requestedPairs.Add((role, await ResolveToTopMostAsync(role)));
 
-            var rolesInDbTopMost = new List<ShaRole>();
+            var inDbPairs = new List<(ShaRole Role, ShaRole TopMost)>();
             foreach (var roleInDb in rolesInDb)
-                rolesInDbTopMost.Add(await ResolveToTopMostAsync(roleInDb));
+                inDbPairs.Add((roleInDb, await ResolveToTopMostAsync(roleInDb)));
 
-            for (var i = 0; i < roles.Count(); i++)
+            foreach (var (role, topMost) in requestedPairs)
             {
-                var role = roles.ElementAt(i);
-                var resolvedRole = requestedTopMost[i];
-                if (!rolesInDbTopMost.Any(r => r.Id == resolvedRole.Id))
+                if (!inDbPairs.Any(p => p.TopMost.Id == topMost.Id))
                 {
                     var res = await AddToRoleAsync(person, role, appointmentData);
                     if (res.Succeeded == false) result.AddErrors(res.Errors);
                 }
             }
 
-            for (var i = 0; i < rolesInDb.Count; i++)
+            foreach (var (roleInDb, topMost) in inDbPairs)
             {
-                var roleInDb = rolesInDb[i];
-                var resolvedRoleInDb = rolesInDbTopMost[i];
-                if (!requestedTopMost.Any(r => r.Id == resolvedRoleInDb.Id))
+                if (!requestedPairs.Any(p => p.TopMost.Id == topMost.Id))
                 {
                     var res = await RemoveFromRoleAsync(person, roleInDb, appointmentData);
                     if (res.Succeeded == false) result.AddErrors(res.Errors);

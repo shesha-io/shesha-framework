@@ -61,9 +61,7 @@ namespace Shesha.ShaRoles
             await Repository.UpdateAsync(role);
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            // clear only once the transaction actually commits, so a concurrent permission check can't
-            // cache a stale result in the window between the in-method save and the real commit
-            CurrentUnitOfWork.Completed += (sender, args) => ClearPermissionsCacheOnCompleted();
+            await _shaPermissionChecker.ClearPermissionsCacheAsync();
 
             return MapToEntityDto(role);
         }
@@ -77,22 +75,7 @@ namespace Shesha.ShaRoles
             await Repository.DeleteAsync(role);
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            CurrentUnitOfWork.Completed += (sender, args) => ClearPermissionsCacheOnCompleted();
-        }
-
-        private void ClearPermissionsCacheOnCompleted()
-        {
-            var task = Task.Run(async () =>
-            {
-                try
-                {
-                    await _shaPermissionChecker.ClearPermissionsCacheAsync();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error("Failed to clear permissions cache after role change", ex);
-                }
-            });
+            await _shaPermissionChecker.ClearPermissionsCacheAsync();
         }
 
         /// <summary>
