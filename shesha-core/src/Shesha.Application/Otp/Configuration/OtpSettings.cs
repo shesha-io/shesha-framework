@@ -70,7 +70,8 @@ namespace Shesha.Otp.Configuration
 
         /// <summary>
         /// Registration email link body template. Placeholders: <c>{{token}}</c>, <c>{{userid}}</c> and <c>{{operationId}}</c>;
-        /// include <c>&amp;operationId={{operationId}}&amp;registration=1</c> in the link so it works in any browser.
+        /// include <c>&amp;amp;operationId={{operationId}}&amp;amp;registration=1</c> in the link so it works in any browser.
+        /// Raw <c>&amp;</c> characters are escaped as <c>&amp;amp;</c> before sending.
         /// </summary>
         public string DefaultRegistrationEmailBodyTemplate { get; set; }
     }

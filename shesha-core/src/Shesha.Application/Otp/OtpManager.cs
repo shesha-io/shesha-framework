@@ -9,6 +9,7 @@ using Shesha.Sms;
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Shesha.Otp
@@ -307,6 +308,7 @@ namespace Shesha.Otp
                                 : OtpDefaults.DefaultEmailBodyTemplate;
                         }
 
+                        bodyTemplate = EscapeAmpersands(bodyTemplate);
                         if (otp.ActionType == OtpActionTypes.Registration)
                             bodyTemplate = AddRegistrationLinkParameters(bodyTemplate);
 
@@ -331,7 +333,24 @@ namespace Shesha.Otp
             if (string.IsNullOrEmpty(bodyTemplate) || bodyTemplate.Contains("{{operationId}}") || !bodyTemplate.Contains("{{token}}"))
                 return bodyTemplate;
 
-            return bodyTemplate.Replace("{{token}}", "{{token}}&operationId={{operationId}}&registration=1");
+            return bodyTemplate.Replace("{{token}}", "{{token}}&amp;operationId={{operationId}}&amp;registration=1");
+        }
+
+        /// <summary>
+        /// Matches an <c>&amp;</c> that doesn't already start an HTML character reference such as <c>&amp;amp;</c> or <c>&amp;#38;</c>.
+        /// </summary>
+        private static readonly Regex RawAmpersand = new Regex("&(?![a-zA-Z][a-zA-Z0-9]*;|#[0-9]+;|#[xX][0-9a-fA-F]+;)", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Escapes the raw <c>&amp;</c> characters in an HTML email body as <c>&amp;amp;</c>, leaving existing character references alone.
+        /// A raw <c>&amp;</c> in a link can be read as an HTML entity even without the closing <c>;</c>: mail clients turn
+        /// <c>&amp;registration=1</c> into <c>®istration=1</c>, which breaks the link.
+        /// </summary>
+        public static string EscapeAmpersands(string html)
+        {
+            return string.IsNullOrEmpty(html)
+                ? html
+                : RawAmpersand.Replace(html, "&amp;");
         }
 
     }
