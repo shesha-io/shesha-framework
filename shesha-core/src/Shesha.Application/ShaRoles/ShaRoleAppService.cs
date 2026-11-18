@@ -85,10 +85,8 @@ namespace Shesha.ShaRoles
         {
             var userId = AbpSession.GetUserId();
 
-            // When a module is supplied, respect module hierarchy: resolve each of the user's appointed roles
-            // through the hierarchy (not just the target role) and compare the resolved ids. This way a person
-            // appointed to a base role is still recognized once a dependent module exposes/overrides that role,
-            // without requiring appointments to be re-pointed at the override.
+            // Resolve the target (top-most module wins), then check if any appointed role is the target
+            // or one of its ExposedFrom ancestors - avoids re-resolving by name, which isn't order-safe.
             if (!string.IsNullOrWhiteSpace(input.Module))
             {
                 ShaRole? targetRole;
@@ -101,32 +99,19 @@ namespace Shesha.ShaRoles
                     return false;
                 }
 
-                var appointedRoles = await (await _roleAppointmentRepository.GetAllAsync())
-                    .Where(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Name == input.RoleName)
-                    .Select(a => a.Role)
-                    .ToListAsync();
-
-                foreach (var appointedRole in appointedRoles)
+                var targetAncestorIds = new System.Collections.Generic.HashSet<Guid>();
+                for (ConfigurationItem? ancestor = targetRole; ancestor != null; ancestor = ancestor.ExposedFrom)
                 {
-                    if (appointedRole.Id == targetRole.Id)
-                        return true;
-
-                    if (appointedRole.Module == null)
-                        continue;
-
-                    try
-                    {
-                        var resolvedAppointedRole = await _roleManager.ResolveItemAsync(appointedRole.Module.Name, appointedRole.Name, null);
-                        if (resolvedAppointedRole.Id == targetRole.Id)
-                            return true;
-                    }
-                    catch (ConfigurationItemNotFoundException)
-                    {
-                        // appointed role no longer resolvable; not a match
-                    }
+                    if (!targetAncestorIds.Add(ancestor.Id))
+                        break; // guard against a cyclic ExposedFrom chain
                 }
 
-                return false;
+                var appointedRoleIds = await (await _roleAppointmentRepository.GetAllAsync())
+                    .Where(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Name == input.RoleName)
+                    .Select(a => a.Role.Id)
+                    .ToListAsync();
+
+                return appointedRoleIds.Any(targetAncestorIds.Contains);
             }
 
             var isGranted = await _roleAppointmentRepository.AnyAsync(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Name == input.RoleName);
