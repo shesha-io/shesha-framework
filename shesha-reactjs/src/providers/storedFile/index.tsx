@@ -72,4 +72,19 @@ const useFileUploadState = (): StoredFileModel | undefined => {
   return fileUpload.fileInfo;
 };
 
-export { FileUploadProvider, useFileUpload, useFileUploadOrUndefined, useFileUploadState };
+/**
+ * Same as useFileUploadOrUndefined, but re-renders the consumer when the file info changes (e.g. when the async fetch completes).
+ * Without it, a consumer that nothing else re-renders (such as a read-only image) never sees the fetched file.
+ */
+const useFileUploadWithStateOrUndefined = (): IFileUpload | undefined => {
+  const fileUpload = useFileUploadOrUndefined();
+
+  const [, forceUpdate] = useState({});
+  useEffect(() => {
+    return fileUpload?.subscribe('file', () => forceUpdate({}));
+  }, [fileUpload]);
+
+  return fileUpload;
+};
+
+export { FileUploadProvider, useFileUpload, useFileUploadOrUndefined, useFileUploadState, useFileUploadWithStateOrUndefined };
