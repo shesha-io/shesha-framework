@@ -56,12 +56,12 @@ namespace Shesha.ShaRoles
 
             role.Label = input.Label;
             role.Description = input.Description;
-            role.MapPermissions(input.Permissions);            
-
-            await _shaPermissionChecker.ClearPermissionsCacheAsync();
+            role.MapPermissions(input.Permissions);
 
             await Repository.UpdateAsync(role);
             await CurrentUnitOfWork.SaveChangesAsync();
+
+            await _shaPermissionChecker.ClearPermissionsCacheAsync();
 
             return MapToEntityDto(role);
         }
@@ -71,8 +71,11 @@ namespace Shesha.ShaRoles
             CheckDeletePermission();
 
             var role = await Repository.GetAsync(input.Id);
-            
+
             await Repository.DeleteAsync(role);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            await _shaPermissionChecker.ClearPermissionsCacheAsync();
         }
 
         /// <summary>
@@ -84,21 +87,21 @@ namespace Shesha.ShaRoles
         {
             var userId = AbpSession.GetUserId();
 
-            // When a module is supplied, resolve the role respecting module hierarchy (top-most module wins)
-            // so the appointment check matches the same role definition the rest of the app resolves to.
+            // Appointments always point at the top-most module's role (ShaRoleManager keeps them in
+            // sync on expose and on new appointments), so a direct id comparison is enough here.
             if (!string.IsNullOrWhiteSpace(input.Module))
             {
-                ShaRole role;
+                ShaRole? targetRole;
                 try
                 {
-                    role = (ShaRole)await _roleManager.ResolveItemAsync(input.Module, input.RoleName, null);
+                    targetRole = (ShaRole)await _roleManager.ResolveItemAsync(input.Module, input.RoleName, null);
                 }
                 catch (ConfigurationItemNotFoundException)
                 {
                     return false;
                 }
 
-                return await _roleAppointmentRepository.AnyAsync(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Id == role.Id);
+                return await _roleAppointmentRepository.AnyAsync(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Id == targetRole.Id);
             }
 
             var isGranted = await _roleAppointmentRepository.AnyAsync(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Name == input.RoleName);
