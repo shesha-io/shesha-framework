@@ -122,9 +122,15 @@ namespace Shesha.Otp
             if (string.IsNullOrWhiteSpace(input.SendTo))
                 throw new Exception($"{input.SendTo} must be specified");
 
+            // reduce an email recipient to its plain address, so that variations of the same mailbox share one throttle
+            // budget and resends go to that address
+            var sendTo = input.SendType == OtpSendType.Sms
+                ? input.SendTo
+                : NormalizeEmailRecipient(input.SendTo);
+
             // nothing is sent when validation is ignored (dev/QA), so there is nothing to throttle
             if (!settings.IgnoreOtpValidation)
-                await _sendThrottle.CheckAndRegisterSendAsync(input.SendTo, input.SendType);
+                await _sendThrottle.CheckAndRegisterSendAsync(sendTo, input.SendType);
 
             string pinCode = "";
 
@@ -145,7 +151,7 @@ namespace Shesha.Otp
                 OperationId = Guid.NewGuid(),
                 Pin = pinCode,
 
-                SendTo = input.SendTo,
+                SendTo = sendTo,
                 SendType = input.SendType,
                 RecipientId = input.RecipientId,
                 RecipientType = input.RecipientType,
@@ -238,6 +244,30 @@ namespace Shesha.Otp
         /// <summary>
         /// Maximum number of verification attempts per OTP, falling back to the default when not configured
         /// </summary>
+        /// <summary>
+        /// Returns the plain address of an email recipient. Input such as "Name &lt;a@b.com&gt;" would otherwise get its own
+        /// throttle key while delivering to the same mailbox, so anything that isn't exactly one mailbox is rejected
+        /// </summary>
+        private static string NormalizeEmailRecipient(string sendTo)
+        {
+            // MailAddressCollection splits a list of recipients; a single MailAddress would read "a@x.com, b@x.com" as
+            // display name "a@x.com," and address "b@x.com"
+            var addresses = new System.Net.Mail.MailAddressCollection();
+            try
+            {
+                addresses.Add(sendTo.Trim());
+            }
+            catch (FormatException)
+            {
+                throw new UserFriendlyException("Please enter a valid email address");
+            }
+
+            if (addresses.Count != 1)
+                throw new UserFriendlyException("Please enter a single email address");
+
+            return addresses[0].Address;
+        }
+
         private static int GetMaxVerifyAttempts(OtpSettings settings)
         {
             return settings.MaxVerifyAttempts > 0

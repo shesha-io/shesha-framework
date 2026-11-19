@@ -249,6 +249,37 @@ namespace Shesha.Tests.Otp
             throttle.Verify(t => t.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms), Times.Exactly(2));
         }
 
+        [Fact]
+        public async Task SendPin_should_throttle_and_store_email_by_plain_addressAsync()
+        {
+            var storage = new Dictionary<Guid, OtpDto>();
+            var throttle = new Mock<IOtpSendThrottle>();
+            var manager = CreateManager(storage, maxVerifyAttempts: 5, throttle.Object);
+
+            // display names would otherwise give the same mailbox separate throttle keys
+            var first = await manager.SendPinAsync(new SendPinInput { SendTo = "N1 <victim@example.com>", SendType = OtpSendType.Email });
+            await manager.SendPinAsync(new SendPinInput { SendTo = " N2 <victim@example.com>", SendType = OtpSendType.EmailLink });
+
+            throttle.Verify(t => t.CheckAndRegisterSendAsync("victim@example.com", OtpSendType.Email), Times.Once);
+            throttle.Verify(t => t.CheckAndRegisterSendAsync("victim@example.com", OtpSendType.EmailLink), Times.Once);
+            storage[first.OperationId].SendTo.ShouldBe("victim@example.com");
+        }
+
+        [Theory]
+        [InlineData("a@example.com, b@example.com")]
+        [InlineData("not an email")]
+        public async Task SendPin_should_reject_email_recipient_that_is_not_one_mailboxAsync(string sendTo)
+        {
+            var storage = new Dictionary<Guid, OtpDto>();
+            var throttle = new Mock<IOtpSendThrottle>();
+            var manager = CreateManager(storage, maxVerifyAttempts: 5, throttle.Object);
+
+            await Should.ThrowAsync<UserFriendlyException>(() => manager.SendPinAsync(new SendPinInput { SendTo = sendTo, SendType = OtpSendType.Email }));
+
+            throttle.Verify(t => t.CheckAndRegisterSendAsync(It.IsAny<string>(), It.IsAny<OtpSendType>()), Times.Never);
+            storage.ShouldBeEmpty();
+        }
+
         #endregion
 
         #region Endpoint rate limiting

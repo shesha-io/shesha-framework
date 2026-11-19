@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.UI;
 using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -51,20 +52,7 @@ namespace Shesha.Tests.Users
 
             #region OTP hack 
 
-            var storage = new Dictionary<Guid, string>();
-            var otpStorage = new Mock<IOtpStorage>();
-            otpStorage.Setup(s => s.SaveAsync(It.IsAny<OtpDto>())).Returns<OtpDto>(dto =>
-            {
-                currentPin = dto.Pin;
-                storage.Add(dto.OperationId, dto.Pin);
-                return Task.CompletedTask;
-            });
-            otpStorage.Setup(s => s.GetAsync(It.IsAny<Guid>())).Returns<Guid>(id => Task.FromResult(new OtpDto
-            {
-                Pin = storage[id],
-                OperationId = id,
-                ExpiresOn = DateTime.MaxValue
-            }));
+            var otpStorage = MockOtpStorage(new Dictionary<Guid, OtpDto>(), dto => currentPin = dto.Pin);
 
             LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
 
@@ -152,20 +140,7 @@ namespace Shesha.Tests.Users
 
             #region OTP hack 
 
-            var storage = new Dictionary<Guid, string>();
-            var otpStorage = new Mock<IOtpStorage>();
-            otpStorage.Setup(s => s.SaveAsync(It.IsAny<OtpDto>())).Returns<OtpDto>(dto =>
-            {
-                currentPin = dto.Pin;
-                storage.Add(dto.OperationId, dto.Pin);
-                return Task.CompletedTask;
-            });
-            otpStorage.Setup(s => s.GetAsync(It.IsAny<Guid>())).Returns<Guid>(id => Task.FromResult(new OtpDto
-            {
-                Pin = storage[id],
-                OperationId = id,
-                ExpiresOn = DateTime.MaxValue
-            }));
+            var otpStorage = MockOtpStorage(new Dictionary<Guid, OtpDto>(), dto => currentPin = dto.Pin);
 
             LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
 
@@ -325,19 +300,7 @@ namespace Shesha.Tests.Users
 
             LoginAsHostAdmin();
 
-            var storage = new Dictionary<Guid, OtpDto>();
-            var otpStorage = new Mock<IOtpStorage>();
-            otpStorage.Setup(s => s.SaveAsync(It.IsAny<OtpDto>())).Returns<OtpDto>(dto =>
-            {
-                currentPin = dto.Pin;
-                dto.ExpiresOn = DateTime.MaxValue;
-                storage[dto.OperationId] = dto;
-                return Task.CompletedTask;
-            });
-            otpStorage.Setup(s => s.GetAsync(It.IsAny<Guid>()))
-                .Returns<Guid>(id => Task.FromResult(storage.TryGetValue(id, out var dto) ? dto : null));
-            otpStorage.Setup(s => s.IncrementVerifyAttemptsAsync(It.IsAny<Guid>()))
-                .Returns<Guid>(id => Task.FromResult(storage.TryGetValue(id, out var dto) ? ++dto.VerifyAttempts : 0));
+            var otpStorage = MockOtpStorage(new Dictionary<Guid, OtpDto>(), dto => currentPin = dto.Pin);
 
             LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
 
@@ -387,6 +350,157 @@ namespace Shesha.Tests.Users
             lockedResponse.IsSuccess.ShouldBeFalse("the code must be rejected once the attempt limit is reached");
             lockedResponse.ErrorMessage.ShouldBe("Too many failed verification attempts. Please request a new code.");
             lockedResponse.Token.ShouldBeNullOrEmpty();
+        }
+
+        /// <summary>
+        /// PasswordResetCode also holds the operation id of an OTP login. A login OTP must not be accepted by either
+        /// password reset endpoint, even with the correct pin
+        /// </summary>
+        [Fact]
+        public async Task Reset_endpoints_should_reject_login_otp_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var otpStorage = MockOtpStorage(new Dictionary<Guid, OtpDto>(), dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+            var otpManager = LocalIocManager.Resolve<IOtpManager>();
+
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+
+            // the same as ShaLoginManager.SendLoginOtpAsync: an OTP login stores its operation id in PasswordResetCode
+            var loginOtp = await otpManager.SendPinAsync(new SendPinInput
+            {
+                SendTo = mobileNo,
+                SendType = OtpSendType.Sms,
+                ActionType = "OTP login",
+            });
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                var user = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.UserName == userName);
+                user.PasswordResetCode = loginOtp.OperationId.ToString();
+                await _userRepository.UpdateAsync(user);
+                await uow.CompleteAsync();
+            }
+
+            var verifyResponse = await userAppService.ResetPasswordVerifyOtpAsync(new ResetPasswordVerifyOtpInput()
+            {
+                MobileNo = mobileNo,
+                OperationId = loginOtp.OperationId,
+                Pin = currentPin
+            });
+            var validateException = await Should.ThrowAsync<UserFriendlyException>(() => userAppService.ValidateResetCodeAsync(new ResetPasswordValidateCodeInput
+            {
+                Username = userName,
+                Code = currentPin,
+                Method = (long)RefListPasswordResetMethods.SmsOtp,
+            }));
+
+            await _userRepository.DeleteAsync(userDto.Id);
+
+            verifyResponse.IsSuccess.ShouldBeFalse("a login OTP must not be accepted for password reset");
+            verifyResponse.Token.ShouldBeNullOrEmpty();
+            validateException.ShouldNotBeNull();
+        }
+
+        /// <summary>
+        /// A password reset OTP is single use: it's consumed when it's exchanged for a reset token
+        /// </summary>
+        [Fact]
+        public async Task ResetPasswordVerifyOtp_should_consume_otp_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var storage = new Dictionary<Guid, OtpDto>();
+            var otpStorage = MockOtpStorage(storage, dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+            var otpManager = LocalIocManager.Resolve<IOtpManager>();
+
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+
+            var sendOtpResponse = await userAppService.ResetPasswordSendOtpAsync(mobileNo);
+            var verifyResponse = await userAppService.ResetPasswordVerifyOtpAsync(new ResetPasswordVerifyOtpInput()
+            {
+                MobileNo = mobileNo,
+                OperationId = sendOtpResponse.OperationId,
+                Pin = currentPin
+            });
+            var reuse = await otpManager.VerifyPinAsync(new VerifyPinInput { OperationId = sendOtpResponse.OperationId, Pin = currentPin });
+
+            await _userRepository.DeleteAsync(userDto.Id);
+
+            verifyResponse.IsSuccess.ShouldBeTrue();
+            verifyResponse.Token.ShouldNotBeNullOrEmpty();
+            storage[sendOtpResponse.OperationId].ConsumedOn.ShouldNotBeNull("the OTP must be consumed when the reset token is issued");
+            reuse.IsSuccess.ShouldBeFalse("a consumed OTP must not verify again");
+        }
+
+        private async Task<UserDto> CreateUserWithMobileNoAsync(IUserAppService userAppService, string userName, string mobileNo)
+        {
+            var userDto = await userAppService.CreateAsync(
+                new CreateUserDto
+                {
+                    EmailAddress = $"{userName}@domain.com",
+                    IsActive = true,
+                    Name = "Test",
+                    Surname = "User",
+                    Password = "123qwe",
+                    UserName = userName,
+                    SupportedPasswordResetMethods = [(long)RefListPasswordResetMethods.SmsOtp]
+                });
+
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                var user = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.UserName == userName);
+                user.PhoneNumber = mobileNo;
+                await _userRepository.UpdateAsync(user);
+                await uow.CompleteAsync();
+            }
+
+            return userDto;
+        }
+
+        /// <summary>
+        /// In-memory OTP storage: keeps the saved OTPs (never expiring), counts verification attempts and lets each OTP
+        /// be consumed once
+        /// </summary>
+        private static Mock<IOtpStorage> MockOtpStorage(Dictionary<Guid, OtpDto> storage, Action<OtpDto> onSave = null)
+        {
+            var otpStorage = new Mock<IOtpStorage>();
+            otpStorage.Setup(s => s.SaveAsync(It.IsAny<OtpDto>())).Returns<OtpDto>(dto =>
+            {
+                dto.ExpiresOn = DateTime.MaxValue;
+                storage[dto.OperationId] = dto;
+                onSave?.Invoke(dto);
+                return Task.CompletedTask;
+            });
+            otpStorage.Setup(s => s.GetAsync(It.IsAny<Guid>()))
+                .Returns<Guid>(id => Task.FromResult(storage.TryGetValue(id, out var dto) ? dto : null));
+            otpStorage.Setup(s => s.IncrementVerifyAttemptsAsync(It.IsAny<Guid>()))
+                .Returns<Guid>(id => Task.FromResult(storage.TryGetValue(id, out var dto) ? ++dto.VerifyAttempts : 0));
+            otpStorage.Setup(s => s.TryConsumeAsync(It.IsAny<Guid>())).Returns<Guid>(id =>
+            {
+                lock (storage)
+                {
+                    if (!storage.TryGetValue(id, out var dto) || dto.ConsumedOn.HasValue)
+                        return Task.FromResult(false);
+
+                    dto.ConsumedOn = DateTime.Now;
+                    return Task.FromResult(true);
+                }
+            });
+            return otpStorage;
         }
 
         private async Task<string> GetUniqueMobileNoAsync()
