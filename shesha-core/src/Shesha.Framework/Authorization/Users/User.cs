@@ -91,6 +91,10 @@ namespace Shesha.Authorization.Users
             NormalizedEmailAddress = EmailAddress?.ToUpperInvariant();
         }
 
+        private static readonly string[] CalculatedFieldNames = [nameof(NormalizedUserName), nameof(NormalizedEmailAddress)];
+
+        public virtual IReadOnlyCollection<string> GetCalculatedFieldNames() => CalculatedFieldNames;
+
         [Display(Name = "Authentication Guid")]
         [MaxLength(36)]
         public virtual string? AuthenticationGuid { get; set; }

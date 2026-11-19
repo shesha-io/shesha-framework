@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Shesha.Domain
 {
     /// <summary>
@@ -8,6 +10,13 @@ namespace Shesha.Domain
     /// </summary>
     public interface IHasCalculatedFields
     {
+        /// <summary>
+        /// Names of the properties that <see cref="CalculateFields"/> writes. Incoming values for these properties are
+        /// ignored by the model binder (they would be overwritten anyway), and only these properties are synced
+        /// into the NHibernate state, so unrelated (e.g. lazy) properties are never touched during a flush.
+        /// </summary>
+        IReadOnlyCollection<string> GetCalculatedFieldNames();
+
         /// <summary>
         /// Recalculates derived fields from the current state of the entity. Must be idempotent.
         /// </summary>

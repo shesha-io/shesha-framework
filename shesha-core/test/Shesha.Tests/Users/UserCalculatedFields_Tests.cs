@@ -144,6 +144,39 @@ namespace Shesha.Tests.Users
         }
 
         [Fact]
+        public async Task NestedUserUpdate_IgnoresIncomingCalculatedFieldValues_TestAsync()
+        {
+            // a client that sends calculated fields (null or arbitrary) must not fail the required check before
+            // CalculateFields() runs, and must not be able to override the calculated values
+            LoginAsHostAdmin();
+            var suffix = Guid.NewGuid().ToString("N").Substring(0, 8);
+            var (personId, userId) = await CreatePersonWithUserAsync($"inc{suffix}", $"inc{suffix}@test.local");
+            try
+            {
+                using (var uow = NewNhUnitOfWork())
+                {
+                    var person = await _personRepo.GetAsync(personId);
+                    var json = $@"{{ 'id': '{personId}', 'user': {{ 'id': '{userId}', 'userName': 'Inc2{suffix}', 'normalizedUserName': null, 'normalizedEmailAddress': 'SPOOFED' }} }}";
+                    var context = new EntityModelBindingContext();
+
+                    var result = await _entityModelBinder.BindPropertiesAsync(JObject.Parse(json), person, context);
+
+                    result.ShouldBeTrue(string.Join("; ", context.ValidationResult.Select(e => e.ErrorMessage)));
+                    await _personRepo.UpdateAsync(person);
+                    await uow.CompleteAsync();
+                }
+
+                var saved = await ReloadUserAsync(userId);
+                saved.NormalizedUserName.ShouldBe($"INC2{suffix}".ToUpperInvariant());
+                saved.NormalizedEmailAddress.ShouldBe($"INC{suffix}@TEST.LOCAL".ToUpperInvariant());
+            }
+            finally
+            {
+                await DeleteAsync(personId, userId);
+            }
+        }
+
+        [Fact]
         public async Task DirectRepositoryUpdate_RecalculatesNormalizedNames_TestAsync()
         {
             // no model binder involved - covered by the NHibernate interceptor

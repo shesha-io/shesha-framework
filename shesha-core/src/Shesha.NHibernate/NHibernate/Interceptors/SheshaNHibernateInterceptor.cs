@@ -72,7 +72,8 @@ namespace Shesha.NHibernate.Interceptors
         /// <summary>
         /// Recalculates derived fields of <see cref="IHasCalculatedFields"/> entities and copies changed values into the
         /// NHibernate state, because NHibernate builds the SQL from the state snapshot, not from the entity itself.
-        /// Only plain (non-association, non-collection, non-component) properties are synced.
+        /// Only the properties listed by <see cref="IHasCalculatedFields.GetCalculatedFieldNames"/> are read and synced,
+        /// so other (e.g. lazy-loaded) properties are never touched during a flush.
         /// </summary>
         /// <returns>true if any state value was changed</returns>
         private static bool ApplyCalculatedFields(object entity, object[] state, string[] propertyNames, IType[] types)
@@ -84,12 +85,13 @@ namespace Shesha.NHibernate.Interceptors
 
             var updated = false;
             var entityType = entity.GetType();
-            for (var i = 0; i < propertyNames.Length; i++)
+            foreach (var fieldName in hasCalculatedFields.GetCalculatedFieldNames())
             {
-                if (types[i].IsAssociationType || types[i].IsCollectionType || types[i].IsComponentType)
+                var i = Array.IndexOf(propertyNames, fieldName);
+                if (i < 0 || types[i].IsAssociationType || types[i].IsCollectionType || types[i].IsComponentType)
                     continue;
 
-                var prop = entityType.GetClosestPropertyOrNull(propertyNames[i]);
+                var prop = entityType.GetClosestPropertyOrNull(fieldName);
                 if (prop == null || !prop.CanRead)
                     continue;
 

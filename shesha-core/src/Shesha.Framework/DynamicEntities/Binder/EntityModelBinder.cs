@@ -108,6 +108,12 @@ namespace Shesha.DynamicEntities.Binder
             if (!string.IsNullOrWhiteSpace(entityIdValue) && entityIdValue != Guid.Empty.ToString())
                 properties = properties.Where(p => p.Name != "Id").ToList();
 
+            // calculated fields are always overwritten by CalculateFields() below, so incoming values for them are ignored
+            // and they stay in `properties` to be validated once with their final calculated value
+            var calculatedFields = entity is IHasCalculatedFields hasCalculatedFieldsEntity
+                ? hasCalculatedFieldsEntity.GetCalculatedFieldNames()
+                : Array.Empty<string>();
+
             var prevLocalValidationResult = context.LocalValidationResult;
             context.LocalValidationResult = new List<ValidationResult>();
             context.ModelConfiguration ??= await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(null, entityType.Namespace.NotNull(), entityType.Name, true);
@@ -123,7 +129,7 @@ namespace Shesha.DynamicEntities.Binder
             foreach (var mprop in missedFormFields)
             {
                 var property = properties.FirstOrDefault(x => !x.IsReadOnly() && x.Name.ToCamelCase() == mprop);
-                if (property != null)
+                if (property != null && !calculatedFields.Contains(property.Name))
                 {
                     if (!_permissionedEntityProvider.IsPropertyGranted(property))
                     {
@@ -180,6 +186,9 @@ namespace Shesha.DynamicEntities.Binder
                         var idName = StringHelper.Left(jName, jName.Length - 2);
                         property = properties.FirstOrDefault(x => x.Name.ToCamelCase() == idName.ToCamelCase());
                     }
+                    if (property != null && calculatedFields.Contains(property.Name))
+                        continue;
+
                     if (property != null)
                     {
                         properties.Remove(property);
