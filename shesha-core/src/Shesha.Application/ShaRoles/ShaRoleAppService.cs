@@ -18,18 +18,15 @@ namespace Shesha.ShaRoles
     [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
     public class ShaRoleAppService : SheshaCrudServiceBase<ShaRole, ShaRoleDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateShaRoleDto, ShaRoleDto>, IShaRoleAppService
     {
-        private readonly IShaPermissionChecker _shaPermissionChecker;
         private readonly IRepository<ShaRoleAppointedPerson, Guid> _roleAppointmentRepository;
         private readonly IShaRoleManager _roleManager;
 
         public ShaRoleAppService(
             IRepository<ShaRole, Guid> repository,
-            IShaPermissionChecker shaPermissionChecker,
             IRepository<ShaRoleAppointedPerson, Guid> roleAppointmentRepository,
             IShaRoleManager roleManager
             ) : base(repository)
         {
-            _shaPermissionChecker = shaPermissionChecker;
             _roleAppointmentRepository = roleAppointmentRepository;
             _roleManager = roleManager;
 
@@ -61,8 +58,6 @@ namespace Shesha.ShaRoles
             await Repository.UpdateAsync(role);
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            await _shaPermissionChecker.ClearPermissionsCacheAsync();
-
             return MapToEntityDto(role);
         }
 
@@ -74,8 +69,6 @@ namespace Shesha.ShaRoles
 
             await Repository.DeleteAsync(role);
             await CurrentUnitOfWork.SaveChangesAsync();
-
-            await _shaPermissionChecker.ClearPermissionsCacheAsync();
         }
 
         /// <summary>

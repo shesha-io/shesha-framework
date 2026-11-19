@@ -7,7 +7,6 @@ using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Roles;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -48,18 +47,6 @@ namespace Shesha.Authorization
             }
         }
 
-        private async Task<List<ShaRole>> ResolveRolesAsync(IEnumerable<ShaRole> roles)
-        {
-            var resolved = new List<ShaRole>();
-            foreach (var role in roles.Distinct())
-            {
-                var resolvedRole = await ResolveRoleAsync(role);
-                if (resolved.All(r => r.Id != resolvedRole.Id))
-                    resolved.Add(resolvedRole);
-            }
-            return resolved;
-        }
-
         public async Task<bool> IsGrantedAsync(long userId, string permissionName)
         {
             var person = await GetPersonAsync(userId);
@@ -67,9 +54,23 @@ namespace Shesha.Authorization
                 return false;
 
             // TODO: add caching
-            var roles = await (await _rolePersonRepository.GetAllAsync()).Where(x => x.Person == person).Select(e => e.Role).ToListAsync();
-            var resolvedRoles = await ResolveRolesAsync(roles);
-            return resolvedRoles.Any(r => r.Permissions.Any(x => x.Permission == permissionName && x.IsGranted));
+            var roles = await (await GetPersonGrantsAsync(person, permissionName))
+                .Select(e => e.Role)
+                .Distinct()
+                .ToListAsync();
+
+            foreach (var role in roles) 
+            {
+                var resolvedRole = await ResolveRoleAsync(role);
+                if (resolvedRole == role)
+                    return true;
+            }
+            return false;
+        }
+
+        private async Task<IQueryable<ShaRoleAppointedPerson>> GetPersonGrantsAsync(Person person, string permissionName) 
+        {
+            return (await _rolePersonRepository.GetAllAsync()).Where(x => x.Person == person && x.Role.Permissions.Any(rp => rp.Permission == permissionName && rp.IsGranted));
         }
 
         public async Task<bool> IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
@@ -78,15 +79,17 @@ namespace Shesha.Authorization
             if (person == null)
                 return false;
 
-            var appointments = (await _rolePersonRepository.GetAllListAsync(x => x.Person == person))
-                .Where(x =>
-                    !x.PermissionedEntities.Any()
-                    || x.PermissionedEntities.Any(pe => pe.Id == permissionedEntity.Id && pe._className == permissionedEntity._className));
-
-            var resolvedRoles = await ResolveRolesAsync(appointments.Select(e => e.Role));
-            var permissions = resolvedRoles.SelectMany(e => e.Permissions).ToList();
-
-            return permissions.Any(x => x.Permission == permissionName && x.IsGranted);
+            var grants = await (await GetPersonGrantsAsync(person, permissionName)).ToListAsync();
+            foreach (var grant in grants) 
+            {
+                if (!grant.PermissionedEntities.Any() || grant.PermissionedEntities.Any(pe => pe.Id == permissionedEntity.Id && pe._className == permissionedEntity._className)) 
+                {
+                    var resolvedRole = await ResolveRoleAsync(grant.Role);
+                    if (resolvedRole == grant.Role)
+                        return true;
+                }
+            }
+            return false;
         }
 
         public bool IsGranted(long userId, string permissionName)
