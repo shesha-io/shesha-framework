@@ -2,7 +2,7 @@ import { FontSizeOutlined } from '@ant-design/icons';
 import { CSSProperties } from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { HEADER_TITLE_TYPE, IHeaderTitleComponentProps } from './models';
-import { getSettings } from './settingsForm';
+import { getSettings } from './settingsForm'
 
 /** Everything typographic comes from the header the title sits in. */
 const TITLE_STYLE: CSSProperties = {
