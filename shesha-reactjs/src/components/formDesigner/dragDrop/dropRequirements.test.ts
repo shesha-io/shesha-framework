@@ -66,6 +66,28 @@ describe('getRequirementViolations', () => {
   });
 });
 
+describe('getRequirementViolations of components that are no longer on the form', () => {
+  it('ignores the children left behind by a deleted Data Context', () => {
+    // deleting a component removes its container, its children stay in allComponents but in no container
+    const result = getRequirementViolations(markup(
+      [component('table1', 'datatable')],
+      { root: [] },
+    ), getRequiredParent);
+    expect(result.size).toBe(0);
+  });
+
+  it('ignores, with a warning, a component that ends up inside itself', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const result = getRequirementViolations(markup(
+      [component('panel1', 'panel'), component('table1', 'datatable')],
+      { panel1: ['table1', 'panel1'] },
+    ), getRequiredParent);
+    expect(result.size).toBe(0);
+    expect(warn).toHaveBeenCalledTimes(1);
+    warn.mockRestore();
+  });
+});
+
 describe('findNewRequirementViolation', () => {
   const ctx = component('ctx', 'dataContext');
   const table = component('table1', 'datatable');

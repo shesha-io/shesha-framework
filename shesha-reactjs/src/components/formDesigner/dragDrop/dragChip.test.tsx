@@ -1,3 +1,4 @@
+import { DRAG_CHIP_INVALID_ATTR } from './models';
 import { DRAG_CHIP_ERROR_ATTR, removeDragChip, setComponentDragImage, setDragChipError, setItemDragImage } from './dragChip';
 
 interface IFakeDataTransfer {
@@ -15,6 +16,7 @@ const fakeDataTransfer = (): IFakeDataTransfer => {
 const getHost = (): HTMLElement | null => document.querySelector('[data-sha-drag-chip]');
 const getChip = (): HTMLElement => getHost()?.firstElementChild as HTMLElement;
 const getError = (): HTMLElement | null => document.querySelector(`[${DRAG_CHIP_ERROR_ATTR}]`);
+const flushFrame = (): Promise<void> => new Promise((resolve) => requestAnimationFrame(() => resolve()));
 const dragOver = (clientX: number, clientY: number): void => {
   const event = new Event('dragover') as DragEvent;
   Object.assign(event, { clientX, clientY });
@@ -99,13 +101,17 @@ describe('dragChip', () => {
     expect(document.body.childElementCount).toBe(0);
   });
 
-  it('follows the cursor once the drag moves', () => {
+  it('follows the cursor once the drag moves, once per frame', async () => {
     setComponentDragImage(fakeDataTransfer().dataTransfer, null, 'Text');
-    expect(getHost()?.style.display).toBe('none');
+    expect(getHost()?.hidden).toBe(true);
 
+    dragOver(150, 50);
     dragOver(200, 100);
+    expect(getHost()?.hidden).toBe(true);
+    await flushFrame();
 
-    expect(getHost()?.style.display).toBe('block');
+    // the cursor sits 14px into the chip from its top-left corner, where the browser's own drag image put it
+    expect(getHost()?.hidden).toBe(false);
     expect(getHost()?.style.transform).toBe('translate(186px, 86px)');
   });
 
@@ -114,19 +120,34 @@ describe('dragChip', () => {
 
     setDragChipError('A Data Table must be placed inside a Data Context.');
     expect(getError()?.textContent).toBe('A Data Table must be placed inside a Data Context.');
-    expect(getError()?.style.display).toBe('block');
+    expect(getError()?.hidden).toBe(false);
+    expect(getError()?.getAttribute('role')).toBe('status');
     expect(getChip().lastElementChild).toBe(getError());
+    expect(getChip().hasAttribute(DRAG_CHIP_INVALID_ATTR)).toBe(true);
 
     setDragChipError(undefined);
     expect(getError()?.textContent).toBe('');
-    expect(getError()?.style.display).toBe('none');
+    expect(getError()?.hidden).toBe(true);
+    expect(getChip().hasAttribute(DRAG_CHIP_INVALID_ATTR)).toBe(false);
   });
 
-  it('removes the chip when the drag ends', () => {
+  it('removes the chip and stops following the cursor when the drag ends', async () => {
     setComponentDragImage(fakeDataTransfer().dataTransfer, null, 'Text');
+    const host = getHost();
 
     document.dispatchEvent(new Event('dragend'));
+    dragOver(200, 100);
+    await flushFrame();
 
     expect(getHost()).toBeNull();
+    expect(host?.style.transform).toBe('');
+  });
+
+  it('replaces the chip of a drag that never ended', () => {
+    setComponentDragImage(fakeDataTransfer().dataTransfer, null, 'First');
+    setComponentDragImage(fakeDataTransfer().dataTransfer, null, 'Second');
+
+    expect(document.querySelectorAll('[data-sha-drag-chip]')).toHaveLength(1);
+    expect(getChip().textContent).toBe('Second');
   });
 });

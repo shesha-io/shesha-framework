@@ -8,6 +8,7 @@ import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
 import { ShaForm } from '@/providers/form';
 import { useFormDesigner, useFormDesignerReadOnly } from '@/providers/formDesigner';
+import { DropRejection } from '@/providers/formDesigner/contexts';
 import { useStyles } from '../styles/styles';
 import { useParent } from '@/providers/parentProvider';
 import _ from 'lodash';
@@ -52,10 +53,13 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
 
   const readOnly = useFormDesignerReadOnly();
   const formDesigner = useFormDesigner();
-  const {
-    updateChildComponents, addComponent, addDataProperty, startDragging, endDragging, getAddComponentViolation, getUpdateChildComponentsViolation,
-  } = useFormDesigner();
+  const { updateChildComponents, addComponent, addDataProperty, startDragging, endDragging } = useFormDesigner();
   const { message } = App.useApp();
+
+  /** Tells the user why the designer refused a drop, e.g. a Data Table dropped outside a Data Context. */
+  const reportRejection = (rejection: DropRejection): void => {
+    if (isDefined(rejection)) void message.error(rejection);
+  };
 
   const dropTarget = useDropContainerElementState(containerId, direction);
 
@@ -82,11 +86,11 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
       // dropped data item
       const draggedItem = newState[newDataItemIndex];
       if (isToolboxDroppableDataItem(draggedItem)) {
-        addDataProperty({
+        reportRejection(addDataProperty({
           propertyMetadata: draggedItem.metadata,
           containerId,
           index: newDataItemIndex,
-        });
+        }));
       }
     } else {
       const newComponentIndex = newState.findIndex((item) => item['type'] === TOOLBOX_COMPONENT_DROPPABLE_KEY);
@@ -94,13 +98,11 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
         // add new component
         const toolboxComponent = newState[newComponentIndex];
         if (isToolboxDroppableComponent(toolboxComponent)) {
-          const payload = { containerId, componentType: toolboxComponent.id.toString(), index: newComponentIndex };
-          const violation = getAddComponentViolation(payload);
-          if (isDefined(violation)) {
-            void message.error(violation);
-            return;
-          }
-          addComponent(payload);
+          reportRejection(addComponent({
+            containerId,
+            componentType: toolboxComponent.id.toString(),
+            index: newComponentIndex,
+          }));
         }
       } else {
         // reorder existing components
@@ -118,13 +120,8 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
         }
 
         if (isModified) {
-          const payload = { containerId, componentIds: newState.map<string>((item) => item.id.toString()) };
-          const violation = getUpdateChildComponentsViolation(payload);
-          if (isDefined(violation)) {
-            void message.error(violation);
-            return;
-          }
-          updateChildComponents(payload);
+          const newIds = newState.map<string>((item) => item.id.toString());
+          reportRejection(updateChildComponents({ containerId, componentIds: newIds }));
         }
       }
     }

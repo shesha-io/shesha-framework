@@ -15,3 +15,13 @@ export const DROP_TARGET_FRAME_ATTR: string = 'data-sha-drop-frame';
  * Data Context, so the insertion line and the highlight frame are drawn in the error colour.
  */
 export const DROP_TARGET_INVALID_ATTR: string = 'data-sha-drop-invalid';
+
+/** Class names of the drag chip, styled with the theme by `DragChipGlobalStyles`. */
+export const dragChipClassNames = {
+  host: 'sha-drag-chip-host',
+  chip: 'sha-drag-chip',
+  content: 'sha-drag-chip-content',
+  error: 'sha-drag-chip-error',
+};
+/** Attribute set on the drag chip while the dragged item can't be dropped where it is. */
+export const DRAG_CHIP_INVALID_ATTR: string = 'data-sha-drag-chip-invalid';

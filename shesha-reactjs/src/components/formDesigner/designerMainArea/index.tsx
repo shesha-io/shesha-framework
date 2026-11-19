@@ -5,6 +5,7 @@ import { MainArea } from './mainArea';
 import { withToolbox } from './withToolbox';
 import { withPropertiesPanel } from './withPropertiesPanel';
 import { withValidationPanel } from './withValidationPanel';
+import { DragChipGlobalStyles } from '../dragDrop/dragChipStyles';
 
 const CanvasWithPanels = withToolbox(withPropertiesPanel(withValidationPanel(MainArea)));
 
@@ -24,6 +25,7 @@ export const DesignerMainArea: FC = () => {
         }),
       }}
     >
+      <DragChipGlobalStyles />
       <CanvasWithPanels />
     </div>
   );

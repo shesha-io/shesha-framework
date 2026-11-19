@@ -68,7 +68,7 @@ describe('dropTargetIndicator', () => {
     await flushFrame();
     expect(getFrame()?.textContent).toBe('Panel');
     expect(chipError()?.textContent).toBe('Needs a Data Context.');
-    expect(chipError()?.style.display).toBe('block');
+    expect(chipError()?.hidden).toBe(false);
     expect(invalid.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(true);
 
     valid.appendChild(dragged);
@@ -76,7 +76,7 @@ describe('dropTargetIndicator', () => {
     await flushFrame();
     expect(getFrame()?.textContent).toBe('Data context');
     expect(chipError()?.textContent).toBe('');
-    expect(chipError()?.style.display).toBe('none');
+    expect(chipError()?.hidden).toBe(true);
     expect(invalid.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(false);
     expect(valid.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(false);
   });

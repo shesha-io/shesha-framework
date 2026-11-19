@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
+import { DRAG_CHIP_INVALID_ATTR, dragChipClassNames } from './models';
 
 /** Attribute on a designer component's wrapper holding the component type, used to name it while it is dragged. */
 export const COMPONENT_TYPE_ATTR = 'data-sha-component-type';
@@ -8,69 +9,58 @@ export const COMPONENT_TYPE_ATTR = 'data-sha-component-type';
 /** Attribute on the line of the drag chip that says why the item can't be dropped where it is. */
 export const DRAG_CHIP_ERROR_ATTR = 'data-sha-drag-chip-error';
 
-/** Offset of the cursor from the chip's top-left corner. */
+/** Offset of the cursor from the chip's top-left corner, as the browser's own drag image was placed. */
 const CURSOR_OFFSET = { x: 14, y: 14 };
-/** Colour of the chip's border and error line while the item can't be dropped where it is. */
-const ERROR_COLOR = '#ff4d4f';
-const BORDER_COLOR = 'rgba(0, 0, 0, 0.06)';
-
-const CHIP_STYLE: Partial<CSSStyleDeclaration> = {
-  display: 'inline-flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-  gap: '2px',
-  padding: '4px 10px',
-  borderRadius: '6px',
-  border: `1px solid ${BORDER_COLOR}`,
-  background: '#fff',
-  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-  color: 'rgba(0, 0, 0, 0.88)',
-  fontSize: '13px',
-  fontWeight: '500',
-  lineHeight: '20px',
-  whiteSpace: 'nowrap',
-};
-
-const CONTENT_STYLE: Partial<CSSStyleDeclaration> = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: '6px',
-};
-
-const ERROR_STYLE: Partial<CSSStyleDeclaration> = {
-  display: 'none',
-  maxWidth: '280px',
-  color: ERROR_COLOR,
-  fontSize: '12px',
-  fontWeight: '400',
-  lineHeight: '18px',
-  whiteSpace: 'normal',
-};
 
 interface IDragChip {
   host: HTMLDivElement;
   chip: HTMLDivElement;
   error: HTMLDivElement;
   cleanup: (() => void) | void;
+  /** Latest cursor position, applied on the next animation frame. */
+  cursor: { x: number; y: number } | null;
+  frameRequest: number | null;
 }
 
 /** Chip of the drag in progress. */
 let current: IDragChip | null = null;
 
-const followCursor = (event: DragEvent): void => {
-  if (!current) return;
-  current.host.style.display = 'block';
-  current.host.style.transform = `translate(${event.clientX - CURSOR_OFFSET.x}px, ${event.clientY - CURSOR_OFFSET.y}px)`;
+const createElement = (className: string): HTMLDivElement => {
+  const element = document.createElement('div');
+  element.className = className;
+  return element;
 };
 
-/** Removes the chip of the drag in progress. Runs when the drag ends, and when the drop target indicator stops. */
+/** Moves the chip to the latest cursor position. The only place that writes its position. */
+const applyCursor = (): void => {
+  if (!current) return;
+  current.frameRequest = null;
+  if (!current.cursor) return;
+  const { host, cursor } = current;
+  host.hidden = false;
+  host.style.transform = `translate(${cursor.x - CURSOR_OFFSET.x}px, ${cursor.y - CURSOR_OFFSET.y}px)`;
+};
+
+/** `dragover` fires many times per frame, so it only records the position, which is applied once per frame. */
+const followCursor = (event: DragEvent): void => {
+  if (!current) return;
+  current.cursor = { x: event.clientX, y: event.clientY };
+  current.frameRequest ??= requestAnimationFrame(applyCursor);
+};
+
+/**
+ * Removes the chip of the drag in progress, with the listeners it added. Runs when the drag ends (`dragend`, `drop`),
+ * when the drop target indicator stops (every designer drag stops it, even when the dragged element left the page
+ * and its `dragend` doesn't reach the document) and before a new chip is shown.
+ */
 export const removeDragChip = (): void => {
   document.removeEventListener('dragover', followCursor, true);
   document.removeEventListener('dragend', removeDragChip, true);
   document.removeEventListener('drop', removeDragChip, true);
   if (!current) return;
-  const { host, cleanup } = current;
+  const { host, cleanup, frameRequest } = current;
   current = null;
+  if (frameRequest !== null) cancelAnimationFrame(frameRequest);
   host.remove();
   // a React root can't be unmounted while React is rendering, which a drop may be in the middle of
   if (cleanup) setTimeout(cleanup, 0);
@@ -85,8 +75,8 @@ export const setDragChipError = (message: string | undefined): void => {
   const { chip, error } = current;
   const hasError = message !== undefined && message !== '';
   error.textContent = hasError ? message : '';
-  error.style.display = hasError ? 'block' : 'none';
-  chip.style.borderColor = hasError ? ERROR_COLOR : BORDER_COLOR;
+  error.hidden = !hasError;
+  chip.toggleAttribute(DRAG_CHIP_INVALID_ATTR, hasError);
 };
 
 /**
@@ -114,30 +104,22 @@ const showChip = (dataTransfer: DataTransfer | null, text: string, fill: (conten
 
   removeDragChip();
 
-  const host = document.createElement('div');
+  const host = createElement(dragChipClassNames.host);
   host.setAttribute('data-sha-drag-chip', '');
-  Object.assign(host.style, {
-    position: 'fixed',
-    top: '0',
-    left: '0',
-    display: 'none',
-    pointerEvents: 'none',
-    zIndex: '10001',
-    fontFamily: 'inherit',
-    willChange: 'transform',
-  });
-  const chip = document.createElement('div');
-  Object.assign(chip.style, CHIP_STYLE);
-  const content = document.createElement('div');
-  Object.assign(content.style, CONTENT_STYLE);
-  const error = document.createElement('div');
+  // shown at the cursor once the drag first moves
+  host.hidden = true;
+  const chip = createElement(dragChipClassNames.chip);
+  const content = createElement(dragChipClassNames.content);
+  const error = createElement(dragChipClassNames.error);
   error.setAttribute(DRAG_CHIP_ERROR_ATTR, '');
-  Object.assign(error.style, ERROR_STYLE);
+  error.setAttribute('role', 'status');
+  error.setAttribute('aria-live', 'polite');
+  error.hidden = true;
   chip.append(content, error);
   host.appendChild(chip);
   document.body.appendChild(host);
 
-  current = { host, chip, error, cleanup: fill(content) };
+  current = { host, chip, error, cleanup: fill(content), cursor: null, frameRequest: null };
   hideNativeDragImage(dataTransfer);
 
   document.addEventListener('dragover', followCursor, true);

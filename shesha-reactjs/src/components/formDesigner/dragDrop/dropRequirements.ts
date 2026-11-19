@@ -74,8 +74,8 @@ const getContainerOwners = (markup: IFlatComponentsStructure): Map<string, strin
 };
 
 /**
- * Finds the components whose required parent is missing in `markup`, keyed by component id, with the message to
- * show. Parents are worked out from `componentRelations`, which is always kept up to date by the designer.
+ * Finds the components on the form whose required parent is missing in `markup`, keyed by component id, with the
+ * message to show. Parents are worked out from `componentRelations`, which is always kept up to date by the designer.
  */
 export const getRequirementViolations = (markup: IFlatComponentsStructure, getRequiredParent: RequiredParentGetter): Map<string, string> => {
   const result = new Map<string, string>();
@@ -94,13 +94,22 @@ export const getRequirementViolations = (markup: IFlatComponentsStructure, getRe
     return isConfigurableFormComponent(component) ? component.id : containerOwners.get(containerId);
   };
 
-  const getAncestorTypes = (componentId: string): string[] => {
+  /**
+   * Types of the components around `componentId`, innermost first, or `undefined` when the component isn't on the
+   * form any more: deleting a component leaves its children in `allComponents`, but in no container.
+   */
+  const getAncestorTypes = (componentId: string): string[] | undefined => {
     const types: string[] = [];
     const visited = new Set<string>([componentId]);
     let containerId = containerOf.get(componentId);
-    while (containerId !== undefined && containerId !== ROOT_COMPONENT_KEY) {
+    while (containerId !== ROOT_COMPONENT_KEY) {
+      if (containerId === undefined) return undefined;
       const ownerId = getOwner(containerId);
-      if (ownerId === undefined || visited.has(ownerId)) break;
+      if (ownerId === undefined) return undefined;
+      if (visited.has(ownerId)) {
+        console.warn(`Component '${componentId}' is inside itself (via container '${containerId}'), its required parent can't be checked`);
+        return undefined;
+      }
       visited.add(ownerId);
       const owner = markup.allComponents[ownerId];
       if (isConfigurableFormComponent(owner)) types.push(owner.type);
@@ -111,7 +120,9 @@ export const getRequirementViolations = (markup: IFlatComponentsStructure, getRe
 
   constrained.forEach((component) => {
     if (!isConfigurableFormComponent(component)) return;
-    const requirement = getUnmetRequirement(component.type, getAncestorTypes(component.id), getRequiredParent);
+    const ancestorTypes = getAncestorTypes(component.id);
+    if (ancestorTypes === undefined) return;
+    const requirement = getUnmetRequirement(component.type, ancestorTypes, getRequiredParent);
     if (requirement) result.set(component.id, requirement.message);
   });
   return result;

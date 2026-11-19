@@ -36,6 +36,7 @@ import {
   IValidationResultsPayload,
   IFormDesignerInstance,
   IUpdateChildComponentsPayload,
+  DropRejection,
   VALIDATABLE_ITEM_TYPES,
 } from "./contexts";
 import { BaseHistoryItem, FormDesignerSubscription, FormDesignerSubscriptionType, IComponentSettingsEditorsCache } from "./models";
@@ -697,92 +698,87 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   private getRequiredParent = (type: string): IRequiredParent | undefined => this.toolboxComponents[type]?.requiredParent;
 
-  /** Returns the message of a required parent (see `IToolboxComponent.requiredParent`) that changing `before` to `after` breaks. */
-  private findDropViolation = (before: IFlatComponentsStructure, after: IFlatComponentsStructure): string | undefined =>
-    findNewRequirementViolation(before, after, this.getRequiredParent);
+  /**
+   * Applies a change of the markup that places components (adding or moving them), unless it breaks a required parent
+   * (see `IToolboxComponent.requiredParent`). Returns why the change was refused, if it was.
+   */
+  private placeComponents = (
+    description: string,
+    change: (state: FormDesignerFormState) => { markup: IFlatComponentsStructure; selectedComponentId?: string | undefined } | undefined,
+  ): DropRejection => {
+    let rejection: DropRejection = undefined;
+    this.updateState((state): FormDesignerFormState => {
+      const result = change(state);
+      if (!result || result.markup === state.formFlatMarkup) return state;
 
-  /** Says whether `after` may replace `before`, and logs why not. */
-  private canChangeMarkup = (before: IFlatComponentsStructure, after: IFlatComponentsStructure): boolean => {
-    const violation = this.findDropViolation(before, after);
-    if (violation === undefined) return true;
-    console.warn(`FD: change rejected. ${violation}`);
-    return false;
-  };
+      rejection = findNewRequirementViolation(state.formFlatMarkup, result.markup, this.getRequiredParent);
+      if (rejection !== undefined) {
+        this.log(`FD: ${description} refused. ${rejection}`);
+        return state;
+      }
 
-  getAddComponentViolation = (payload: IComponentAddPayload): string | undefined => {
-    const before = this.state.formFlatMarkup;
-    return this.findDropViolation(before, this.buildMarkupWithNewComponent(this.state, payload).markup);
-  };
-
-  getUpdateChildComponentsViolation = (payload: IUpdateChildComponentsPayload): string | undefined => {
-    const before = this.state.formFlatMarkup;
-    return this.findDropViolation(before, this.buildMarkupWithUpdatedChildren(before, payload));
+      if (result.selectedComponentId !== undefined) this.selectedComponentId = result.selectedComponentId;
+      return { ...state, formFlatMarkup: result.markup };
+    }, description);
+    return rejection;
   };
 
   private buildMarkupWithNewComponent = (state: FormDesignerFormState, payload: IComponentAddPayload): { markup: IFlatComponentsStructure; newComponents: IConfigurableFormComponent[] } => {
-      // create component instance
-      const { componentType, index, containerId } = payload;
+    // create component instance
+    const { componentType, index, containerId } = payload;
 
-      // access to the list of toolbox  components
-      const toolboxComponent = this.getToolboxComponent(componentType);
+    // access to the list of toolbox  components
+    const toolboxComponent = this.getToolboxComponent(componentType);
 
-      const { formFlatMarkup } = state;
+    const { formFlatMarkup } = state;
 
-      const newFlatMarkup = {
-        ...formFlatMarkup,
-        allComponents: { ...formFlatMarkup.allComponents },
-        componentRelations: { ...formFlatMarkup.componentRelations },
+    const newFlatMarkup = {
+      ...formFlatMarkup,
+      allComponents: { ...formFlatMarkup.allComponents },
+      componentRelations: { ...formFlatMarkup.componentRelations },
+    };
+    let newComponents: IConfigurableFormComponent[] = [];
+    if (toolboxComponent.isTemplate === true) {
+      const builtResult = toolboxComponent.build(this.toolboxComponents);
+      newComponents = this.cloneComponents(builtResult);
+    } else {
+      // create new component
+      const componentName = this.generateNewComponentName(newFlatMarkup.allComponents, toolboxComponent);
+
+      let formComponent: IConfigurableFormComponent = {
+        id: nanoid(),
+        type: toolboxComponent.type,
+        propertyName: camelcaseDotNotation(componentName),
+        componentName: camelcaseDotNotation(componentName),
+        label: componentName,
+        labelAlign: 'right',
+        parentId: containerId,
+        hidden: false,
+        isDynamic: false,
       };
-      let newComponents: IConfigurableFormComponent[] = [];
-      if (toolboxComponent.isTemplate === true) {
-        const builtResult = toolboxComponent.build(this.toolboxComponents);
-        newComponents = this.cloneComponents(builtResult);
-      } else {
-        // create new component
-        const componentName = this.generateNewComponentName(newFlatMarkup.allComponents, toolboxComponent);
+      this.log(`FD: addComponent ${formComponent.id} (${formComponent.type})`, payload);
+      if (toolboxComponent.initModel) formComponent = toolboxComponent.initModel(formComponent);
 
-        let formComponent: IConfigurableFormComponent = {
-          id: nanoid(),
-          type: toolboxComponent.type,
-          propertyName: camelcaseDotNotation(componentName),
-          componentName: camelcaseDotNotation(componentName),
-          label: componentName,
-          labelAlign: 'right',
-          parentId: containerId,
-          hidden: false,
-          isDynamic: false,
-        };
-        this.log(`FD: addComponent ${formComponent.id} (${formComponent.type})`, payload);
-        if (toolboxComponent.initModel) formComponent = toolboxComponent.initModel(formComponent);
-
-        if (toolboxComponent.migrator) {
-          formComponent = upgradeComponent(formComponent, toolboxComponent, state.formSettings, {
-            allComponents: newFlatMarkup.allComponents,
-            componentRelations: newFlatMarkup.componentRelations,
-            parents: newFlatMarkup.parents,
-          }, true);
-        }
-
-        newComponents.push(formComponent);
+      if (toolboxComponent.migrator) {
+        formComponent = upgradeComponent(formComponent, toolboxComponent, state.formSettings, {
+          allComponents: newFlatMarkup.allComponents,
+          componentRelations: newFlatMarkup.componentRelations,
+          parents: newFlatMarkup.parents,
+        }, true);
       }
 
-      const newStructure = this.addComponentToFlatStructure(newFlatMarkup, newComponents, containerId, index);
-      return { markup: newStructure, newComponents };
+      newComponents.push(formComponent);
+    }
+
+    const newStructure = this.addComponentToFlatStructure(newFlatMarkup, newComponents, containerId, index);
+    return { markup: newStructure, newComponents };
   };
 
-  addComponent = (payload: IComponentAddPayload): void => {
-    this.updateState((state): FormDesignerFormState => {
+  addComponent = (payload: IComponentAddPayload): DropRejection =>
+    this.placeComponents(`Added component ${payload.componentType}`, (state) => {
       const { markup, newComponents } = this.buildMarkupWithNewComponent(state, payload);
-      if (!this.canChangeMarkup(state.formFlatMarkup, markup)) return state;
-
-      this.selectedComponentId = newComponents[0]?.id;
-
-      return {
-        ...state,
-        formFlatMarkup: markup,
-      };
-    }, `Added component ${payload.componentType}`);
-  };
+      return { markup, selectedComponentId: newComponents[0]?.id };
+    });
 
   private buildMarkupWithUpdatedChildren = (formFlatMarkup: IFlatComponentsStructure, payload: IUpdateChildComponentsPayload): IFlatComponentsStructure => {
     const oldChilds = formFlatMarkup.componentRelations[payload.containerId] ?? [];
@@ -791,7 +787,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
     // Moving a component between containers updates the container it was dropped into first, which takes it out of
     // its old container too. A component that is left out here without being in another container had its drop
-    // refused (see `findDropViolation`), so it stays where it was instead of being lost.
+    // refused (see `placeComponents`), so it stays where it was instead of being lost.
     const isInAnotherContainer = (id: string): boolean => Object.entries(formFlatMarkup.componentRelations)
       .some(([key, ids]) => key !== payload.containerId && ids?.includes(id) === true);
     if (oldChilds.some((id) => !payload.componentIds.includes(id) && !isInAnotherContainer(id))) return formFlatMarkup;
@@ -824,19 +820,11 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     };
   };
 
-  updateChildComponents = (payload: IUpdateChildComponentsPayload): void => {
+  updateChildComponents = (payload: IUpdateChildComponentsPayload): DropRejection => {
     this.log('FD: updateChildComponents', payload);
-
-    this.updateState((state): FormDesignerFormState => {
-      const { formFlatMarkup } = state;
-      const markup = this.buildMarkupWithUpdatedChildren(formFlatMarkup, payload);
-      if (markup === formFlatMarkup || !this.canChangeMarkup(formFlatMarkup, markup)) return state;
-
-      return {
-        ...state,
-        formFlatMarkup: markup,
-      };
-    }, `Updated child components ${payload.containerId}`);
+    return this.placeComponents(`Updated child components ${payload.containerId}`, (state) => ({
+      markup: this.buildMarkupWithUpdatedChildren(state.formFlatMarkup, payload),
+    }));
   };
 
   startDraggingNewItem = (): void => {
@@ -875,8 +863,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     }, 'Form settings updated');
   };
 
-  addDataProperty = (payload: IAddDataPropertyPayload): void => {
-    this.updateState((state): FormDesignerFormState => {
+  addDataProperty = (payload: IAddDataPropertyPayload): DropRejection =>
+    this.placeComponents(`Added data property ${payload.propertyMetadata.path}`, (state) => {
       const { propertyMetadata, index, containerId } = payload;
 
       const { formFlatMarkup } = state;
@@ -894,20 +882,12 @@ export class FormDesignerInstance implements IFormDesignerInstance {
           }, true);
         },
       );
-      if (!isDefined(formComponent)) return state;
+      if (!isDefined(formComponent)) return undefined;
 
       formComponent.parentId = containerId; // set parent
-      const newStructure = this.addComponentToFlatStructure(newFlatMarkup, [formComponent], containerId, index);
-      if (!this.canChangeMarkup(formFlatMarkup, newStructure)) return state;
-
-      this.selectedComponentId = formComponent.id;
-
-      return {
-        ...state,
-        formFlatMarkup: newStructure,
-      };
-    }, `Added data property ${payload.propertyMetadata.path}`);
-  };
+      const markup = this.addComponentToFlatStructure(newFlatMarkup, [formComponent], containerId, index);
+      return { markup, selectedComponentId: formComponent.id };
+    });
 
   setReadOnly = (value: boolean): void => {
     if (this.readOnly === value) return;

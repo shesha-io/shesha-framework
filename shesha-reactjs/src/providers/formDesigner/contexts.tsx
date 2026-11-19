@@ -32,6 +32,12 @@ export interface IAddDataPropertyPayload {
   containerId: string;
 }
 
+/**
+ * Why the designer refused to add or move components, or `undefined` when it didn't: the message of the required parent
+ * (see `IToolboxComponent.requiredParent`) the change would break.
+ */
+export type DropRejection = string | undefined;
+
 export interface IUpdateChildComponentsPayload {
   containerId: string;
   componentIds: string[];
@@ -99,17 +105,13 @@ type FormDesignerState = {
 type FormDesignerActions = {
   setMarkupAndSettings: (flatMarkup: IFlatComponentsStructure, settings: IFormSettings) => void;
 
-  addComponent: (payload: IComponentAddPayload) => void;
+  addComponent: (payload: IComponentAddPayload) => DropRejection;
   updateComponent: <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(payload: IComponentUpdatePayload<TModel>) => void;
   deleteComponent: (payload: IComponentDeletePayload) => void;
   deleteSelectedComponent: () => boolean;
   duplicateComponent: (payload: IComponentDuplicatePayload) => void;
-  updateChildComponents: (payload: IUpdateChildComponentsPayload) => void;
-  addDataProperty: (payload: IAddDataPropertyPayload) => void;
-  /** Returns why adding the component would break a required parent (see `IToolboxComponent.requiredParent`), if it would. */
-  getAddComponentViolation: (payload: IComponentAddPayload) => string | undefined;
-  /** Returns why the new children of the container would break a required parent, if they would. */
-  getUpdateChildComponentsViolation: (payload: IUpdateChildComponentsPayload) => string | undefined;
+  updateChildComponents: (payload: IUpdateChildComponentsPayload) => DropRejection;
+  addDataProperty: (payload: IAddDataPropertyPayload) => DropRejection;
 
   startDraggingNewItem: () => void;
   endDraggingNewItem: () => void;
