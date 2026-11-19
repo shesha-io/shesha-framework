@@ -109,7 +109,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
       align-items: center !important;
       ${collapsedBorderRadius} 
 
-      .ant-collapse-header-text {
+      /* The header's font, inherited by the title (a header title component, see designer-components/headerTitle).
+         antd 6 renders the header content in -collapse-title (-collapse-header-text before). */
+      .ant-collapse-header-text, .ant-collapse-title {
         ${fontStyles(model.headerStyles?.font)}
         align-self: center;
       }
@@ -173,7 +175,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
     --primary-color: ${token.colorPrimary};
     ${marginStyles(model.stylingBoxJson ?? defaultMargin)}
 
-    > .ant-collapse-item > .ant-collapse-header-text {
+    > .ant-collapse-item > .ant-collapse-header .ant-collapse-title {
       ${fontStyles(model.headerStyles?.font)}
     }
 

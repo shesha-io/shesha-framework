@@ -12,7 +12,8 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { migrateV9toV10 } from './migrations/migrate-v10';
+import { migrateV9toV10, PANEL_TITLE_NAME } from './migrations/migrate-v10';
+import { replaceTextHeaderTitle } from '../headerTitle/utils';
 import { isDefined } from '@/utils/nullables';
 import { isNonEmptyArray } from '@/utils/array';
 import { defaultHeaderStyles as getDefaultHeaderStyles, defaultStyles as getDefaultStyles } from './utils';
@@ -195,7 +196,9 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
         };
       })
       .add<ICollapsiblePanelComponentProps>(10, migrateV9toV10)
-      .add<ICollapsiblePanelComponentProps>(11, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
+      .add<ICollapsiblePanelComponentProps>(11, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
+      // The title becomes a header title: a Text took the theme's Text defaults, not the header's font.
+      .add<ICollapsiblePanelComponentProps>(12, (prev, ctx) => ({ ...prev, header: replaceTextHeaderTitle(prev.header, ctx.flatStructure, PANEL_TITLE_NAME) })),
   customContainerNames: ['header', 'content'],
   getDefaultStyles: () => {
     const defaultStyles = getDefaultStyles({} as ICollapsiblePanelComponentProps);

@@ -115,10 +115,12 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
         }
       }
 
-      .ant-card {
+      /* The settings' own cards, not a Card component in a preview: these would replace its configured
+         padding and header look (a Card component is .sha-card-component, see designer-components/card). */
+      .ant-card:not(.sha-card-component) {
         padding: 8px;
 
-        .ant-card-head {
+        > .ant-card-head {
           min-height: 40px;
           padding: 8px;
 
@@ -128,7 +130,7 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
           }
         }
 
-        .ant-card-body {
+        > .ant-card-body {
           padding: 8px;
         }
       }

@@ -1,12 +1,15 @@
 import { SettingsMigrationContext } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
-import { IConfigurableFormComponent, IStyleValue } from "@/providers/form/models";
+import { IConfigurableFormComponent } from "@/providers/form/models";
 import { IContainerComponentProps } from "@/designer-components/container/interfaces";
-import { ITextComponentPropsV0 } from "@/designer-components/text/models";
+import { createHeaderTitle } from "@/designer-components/headerTitle/utils";
 import { ICollapsiblePanelComponentProps } from "../interfaces";
 import { defaultStyles as containerDefaultStyles } from "@/designer-components/container/data";
 import { isNonEmptyArray } from "@/utils/array";
 import { isDefined } from "@/utils/nullables";
+
+/** Name of the panel's title in its header layout. */
+export const PANEL_TITLE_NAME = "panelLabel";
 
 export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: SettingsMigrationContext): ICollapsiblePanelComponentProps => {
   const model = { ...prev };
@@ -100,28 +103,8 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
     const extraAreaId = nanoid();
     const clonedComponents = existingComponents.map((c) => ({ ...c, parentId: extraAreaId }));
 
-    const labelText = {
-      id: labelTextId,
-      type: "text",
-      propertyName: "panelLabel",
-      componentName: "panelLabel",
-      labelAlign: "right",
-      parentId: headerLayoutId,
-      hidden: false,
-      isDynamic: false,
-      textType: "span",
-      content: textContent,
-      contentDisplay: "content",
-      code: false,
-      copyable: false,
-      delete: false,
-      ellipsis: false,
-      mark: false,
-      italic: false,
-      underline: false,
-      desktop: { dimensions: { width: 'max-content', height: '100%' }, /* font: { weight: '600', size: 16 },*/ level: 5 } as IStyleValue & { level: number },
-      level: 5,
-    } satisfies ITextComponentPropsV0;
+    // A header title, not a Text: its font is the header's (Header Style over the theme's Header Defaults).
+    const labelText = createHeaderTitle({ id: labelTextId, parentId: headerLayoutId, name: PANEL_TITLE_NAME, content: textContent });
 
     const extraArea = {
       id: extraAreaId,

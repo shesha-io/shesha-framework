@@ -27,7 +27,7 @@ describe('migrateCardHeaderLayout', () => {
     expect(result.header?.components?.[0]?.id).toBe(layoutId);
 
     const [textId, extraId] = flat.componentRelations[layoutId] ?? [];
-    expect(flat.allComponents[textId ?? '']).toMatchObject({ type: 'text', content: 'My card', parentId: layoutId });
+    expect(flat.allComponents[textId ?? '']).toMatchObject({ type: 'headerTitle', content: 'My card', parentId: layoutId });
     expect(flat.allComponents[extraId ?? '']).toMatchObject({ type: 'container', componentName: 'extraArea' });
     expect(flat.componentRelations[extraId ?? '']).toEqual(['btn']);
     expect(flat.allComponents['btn'].parentId).toBe(extraId);

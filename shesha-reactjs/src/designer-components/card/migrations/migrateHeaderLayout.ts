@@ -1,22 +1,20 @@
 import { SettingsMigrationContext } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
-import { IConfigurableFormComponent, isConfigurableFormComponent, IStyleValue } from "@/providers/form/models";
+import { IConfigurableFormComponent, isConfigurableFormComponent } from "@/providers/form/models";
 import { IContainerComponentProps } from "@/designer-components/container/interfaces";
-import { ITextComponentProps } from "@/designer-components/text/models";
+import { createHeaderTitle, HEADER_LAYOUT_NAME } from "@/designer-components/headerTitle/utils";
 import { defaultStyles as containerDefaultStyles } from "@/designer-components/container/data";
 import { isDefined } from "@/utils/nullables";
 import { ICardComponentProps } from "../interfaces";
-import { legacyHeadingFont } from "../utils";
 
-/** Latest versions of the components created here, so they are not migrated again as legacy ones. */
+/** Latest version of the containers created here, so they are not migrated again as legacy ones. */
 const CONTAINER_VERSION = 9;
-const TEXT_VERSION = 8;
 
-export const CARD_HEADER_LAYOUT_NAME = 'headerLayout';
+export const CARD_HEADER_LAYOUT_NAME = HEADER_LAYOUT_NAME;
 
 /**
  * Turns the card's heading into a configurable header, as a panel's (see the panel's `migrateV9toV10`):
- * the header container holds a `headerLayout` row with the heading as a Text component on the left and
+ * the header container holds a `headerLayout` row with the heading as a header title on the left and
  * the components previously in the header (antd's `extra`) in an `extraArea` on the right.
  */
 export const migrateCardHeaderLayout = (prev: ICardComponentProps, context: SettingsMigrationContext): ICardComponentProps => {
@@ -49,27 +47,9 @@ export const migrateCardHeaderLayout = (prev: ICardComponentProps, context: Sett
     .filter(isDefined)
     .map((c) => ({ ...c, parentId: extraAreaId }));
 
-  // The heading keeps its value as-is: a plain string or a JS setting (Text content supports both).
-  const labelText = {
-    id: labelTextId,
-    type: 'text',
-    propertyName: 'cardLabel',
-    componentName: 'cardLabel',
-    labelAlign: 'right',
-    parentId: headerLayoutId,
-    hidden: false,
-    isDynamic: false,
-    content: (prev.label ?? '') as string,
-    contentType: 'default',
-    copyable: false,
-    delete: false,
-    italic: false,
-    underline: false,
-    level: 0,
-    // antd's card title look: the heading font used to come from antd, not from the Text defaults.
-    desktop: { font: legacyHeadingFont(), dimensions: { width: 'max-content' } } as IStyleValue,
-    version: TEXT_VERSION,
-  } as ITextComponentProps;
+  // The heading keeps its value as-is (a plain string or a JS setting). It is a header title, not a Text:
+  // its font is the header's (Header Style over the theme's Header Defaults), not the theme's Text defaults.
+  const labelText = createHeaderTitle({ id: labelTextId, parentId: headerLayoutId, name: 'cardLabel', content: prev.label ?? '' });
 
   const extraArea = {
     id: extraAreaId,

@@ -55,6 +55,7 @@ import Slider from '@/designer-components/slider';
 import Switch from '@/designer-components/switch/switch';
 import Tabs from '@/designer-components/tabs';
 import Text from '@/designer-components/text';
+import HeaderTitleComponent from '@/designer-components/headerTitle';
 import ValidationErrors from '@/designer-components/validationErrors';
 import Wizard from '@/designer-components/wizard';
 import { ComponentSelectorComponent } from '@/designer-components';
@@ -160,7 +161,7 @@ export const getToolboxComponents = (
     {
       name: 'Data display',
       visible: true,
-      components: [Alert, Link, Statistic, Text, ValidationErrors, BarChartComponent, LineChartComponent, PieChartComponent, PolarAreaChartComponent, YoutubeVideoComponent],
+      components: [Alert, Link, Statistic, Text, HeaderTitleComponent, ValidationErrors, BarChartComponent, LineChartComponent, PieChartComponent, PolarAreaChartComponent, YoutubeVideoComponent],
     },
     {
       name: 'Advanced',

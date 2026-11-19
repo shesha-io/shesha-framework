@@ -218,3 +218,35 @@ describe('preview size', () => {
     expect(table?.size).toBe('small');
   });
 });
+
+describe('getPreviewComponentModel - layout components', () => {
+  type Container = { id: string; components?: IConfigurableFormComponent[] };
+  type Layout = IConfigurableFormComponent & { header?: Container; content?: Container; tabs?: Container[] };
+  const definitionOf = (type: string): IToolboxComponent => {
+    const definition = getComponentDefinitions().get(type);
+    if (!definition) throw new Error(`no ${type}`);
+    return definition;
+  };
+
+  it.each(['card', 'collapsiblePanel'])('%s has a header title in its header and sample content in its body', (type) => {
+    const model = getPreviewComponentModel(definitionOf(type)) as Layout;
+    const headerLayout = model.header?.components?.[0] as IConfigurableFormComponent & { components: IConfigurableFormComponent[] };
+    // Not a Text: the title takes the header's font, not the theme's Text defaults.
+    expect(headerLayout.components[0]).toMatchObject({ type: 'headerTitle', content: definitionOf(type).name });
+    expect(model.content?.components).toEqual([expect.objectContaining({ type: 'text', parentId: model.content?.id })]);
+  });
+
+  it.each(['card', 'collapsiblePanel', 'tabs'])('%s sample content is black text', (type) => {
+    const model = getPreviewComponentModel(definitionOf(type)) as Layout;
+    const samples = type === 'tabs' ? (model.tabs ?? []).flatMap((tab) => tab.components ?? []) : model.content?.components ?? [];
+    expect(samples.length).toBeGreaterThan(0);
+    samples.forEach((sample) => expect(sample).toMatchObject({ contentType: 'custom', font: { color: '#000' } }));
+  });
+
+  it('tabs have sample content in every tab', () => {
+    const model = getPreviewComponentModel(definitionOf('tabs')) as Layout;
+    model.tabs?.forEach((tab) => {
+      expect(tab.components).toEqual([expect.objectContaining({ type: 'text', parentId: tab.id })]);
+    });
+  });
+});

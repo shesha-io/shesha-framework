@@ -2,7 +2,7 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import { useState, useEffect } from 'react';
 import { ShaIcon } from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
-import { IFormComponentContainer } from '@/providers/form/models';
+import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
 import { ITabPaneProps, ITabsComponentProps, ITabsComponentPropsV0, TabsComponentDefinition } from './models';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { nanoid } from '@/utils/uuid';
@@ -31,8 +31,12 @@ import { isConfigurableFormComponent } from '@/providers/form/models';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { getPreviewSampleText } from '@/generic-pages/settings/dynamic-theme/componentSettings/previewSampleText';
 
 type TabItem = Required<TabsProps>['items'][number];
+
+/** Sample Text for the theme preview's tabs. */
+const previewText = (tabId: string, content: string): IConfigurableFormComponent => getPreviewSampleText(`${tabId}-text`, tabId, content);
 
 const TabsComponent: TabsComponentDefinition = {
   themeGroup: 'layout',
@@ -232,8 +236,9 @@ const TabsComponent: TabsComponentDefinition = {
     tabPosition: 'top',
     defaultActiveKey: 'tabs-preview-1',
     tabs: [
-      { id: 'tabs-preview-1', key: 'tabs-preview-1', name: 'tab1', title: 'Tab 1', visible: true, editMode: 'inherited', components: [] },
-      { id: 'tabs-preview-2', key: 'tabs-preview-2', name: 'tab2', title: 'Tab 2', visible: true, editMode: 'inherited', components: [] },
+      // Content in the tabs, so the tab body's padding shows.
+      { id: 'tabs-preview-1', key: 'tabs-preview-1', name: 'tab1', title: 'Tab 1', visible: true, editMode: 'inherited', components: [previewText('tabs-preview-1', 'Tab 1 content')] },
+      { id: 'tabs-preview-2', key: 'tabs-preview-2', name: 'tab2', title: 'Tab 2', visible: true, editMode: 'inherited', components: [previewText('tabs-preview-2', 'Tab 2 content')] },
     ],
   } as ITabsComponentProps,
   customContainerNames: ['tabs'],

@@ -1,4 +1,5 @@
 import { IFormValidationErrors, IToolboxComponent } from '@/interfaces/formDesigner';
+import { getPreviewSampleText } from './previewSampleText';
 import { getEmptyFlatMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { upgradeComponent } from '@/providers/form/utils';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
@@ -33,6 +34,27 @@ const createNewComponentModel = (definition: IToolboxComponent, model: IConfigur
   const { version: _version, ...unversioned } = model;
   const initialised = definition.initModel ? definition.initModel(unversioned) : unversioned;
   return upgradeComponent(initialised, definition, undefined, getEmptyFlatMarkup(), true);
+};
+
+/**
+ * Layout components whose body holds other components (`content` container). They preview as when
+ * dropped, so the header holds the title they are created with, and get a sample Text in their body,
+ * so the body's padding can be judged.
+ */
+const PREVIEW_WITH_SAMPLE_BODY: ReadonlySet<string> = new Set(['card', 'collapsiblePanel']);
+
+export { getPreviewSampleText };
+
+type WithContent = IConfigurableFormComponent & { content?: { id: string; components?: IConfigurableFormComponent[] } | undefined };
+
+/** `definition` as when dropped, titled with its name, with a sample Text in its body. */
+const createLayoutPreviewModel = (definition: IToolboxComponent, model: IConfigurableFormComponent): IConfigurableFormComponent => {
+  const created = createNewComponentModel(definition, { ...model, label: definition.name }) as WithContent;
+  const contentId = created.content?.id ?? `${definition.type}-preview-content`;
+  return {
+    ...created,
+    content: { id: contentId, components: [getPreviewSampleText(`${definition.type}PreviewText`, contentId, `${definition.name} content`)] },
+  } as IConfigurableFormComponent;
 };
 
 /**
@@ -185,7 +207,9 @@ export const getPreviewComponentModel = (
     version: 'latest',
   };
   const baseModel: IConfigurableFormComponent = componentDefinition.previewConfiguration ??
-    (PREVIEW_AS_NEW_COMPONENT.has(componentType) ? createNewComponentModel(componentDefinition, genericModel) : genericModel);
+    (PREVIEW_WITH_SAMPLE_BODY.has(componentType)
+      ? createLayoutPreviewModel(componentDefinition, genericModel)
+      : PREVIEW_AS_NEW_COMPONENT.has(componentType) ? createNewComponentModel(componentDefinition, genericModel) : genericModel);
 
   const extras = getPreviewModelExtras(componentType);
   const model = isNullOrWhiteSpace(componentType) || !extras

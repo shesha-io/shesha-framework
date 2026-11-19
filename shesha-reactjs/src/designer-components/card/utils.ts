@@ -15,7 +15,7 @@ export const defaultStyles = (): IStyleValue => {
       gradient: { direction: 'to right', colors: [] },
       url: '',
     },
-    font: { color: '#000', type: DEFAULT_FONT_TYPE, align: 'left', size: 14, weight: '400' },
+    // No font: a card's font applies to its header title only (Header Style).
     shadow: { offsetX: 0, offsetY: 0, color: '#000', blurRadius: 0, spreadRadius: 0 },
     stylingBoxJson: { _type: 'styleBox', paddingLeft: '0', paddingBottom: '0', paddingTop: '0', paddingRight: '0', marginLeft: '0', marginBottom: '5', marginTop: '0', marginRight: '0' },
   };

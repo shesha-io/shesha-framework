@@ -11,7 +11,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICardCompo
   const headerBorder = header?.border?.borderType === 'custom' ? header.border.border?.bottom : header?.border?.border?.all;
   // The header always spans the card, so only its heights apply.
   const headerDimensions = dimensionsStyles({ ...header?.dimensions, width: undefined, minWidth: undefined, maxWidth: undefined });
-
+  const headerBackground = backgroundStyles(header?.background);
   const shaCardComponent = cx("sha-card-component", css`
       ${dimensionsStyles(getFullSizeComponentDimensions(model.dimensions))}
       ${borderStyles(model.border)}
@@ -20,6 +20,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICardCompo
       ${marginStyles(model.stylingBoxJson)}
       
       > .${prefixCls}-card-body {
+        ${backgroundStyles(model.background)}
         ${paddingStyles(model.stylingBoxJson)}
       }
 
@@ -27,8 +28,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICardCompo
         /* Follow the card's own corners, so a header background never pokes out of them. */
         border-top-left-radius: inherit;
         border-top-right-radius: inherit;
-        ${backgroundStyles(header?.background)}
+        ${headerBackground}
         ${headerDimensions}
+        margin-bottom: 0;
         ${paddingStyles(header?.stylingBoxJson)}
         ${isDefined(headerBorder) ? `border-bottom: ${borderCss(headerBorder)};` : ''}
 
