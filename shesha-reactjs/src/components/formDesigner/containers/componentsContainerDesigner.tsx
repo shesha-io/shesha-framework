@@ -1,7 +1,8 @@
 import classNames from 'classnames';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { ConfigurableFormComponent } from '../configurableFormComponent';
-import { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
+import { FC, PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
+import { App } from 'antd';
 import { IComponentsContainerProps } from './componentsContainer';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
@@ -51,7 +52,10 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
 
   const readOnly = useFormDesignerReadOnly();
   const formDesigner = useFormDesigner();
-  const { updateChildComponents, addComponent, addDataProperty, startDragging, endDragging } = useFormDesigner();
+  const {
+    updateChildComponents, addComponent, addDataProperty, startDragging, endDragging, getAddComponentViolation, getUpdateChildComponentsViolation,
+  } = useFormDesigner();
+  const { message } = App.useApp();
 
   const dropTarget = useDropContainerElementState(containerId, direction);
 
@@ -90,11 +94,13 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
         // add new component
         const toolboxComponent = newState[newComponentIndex];
         if (isToolboxDroppableComponent(toolboxComponent)) {
-          addComponent({
-            containerId,
-            componentType: toolboxComponent.id.toString(),
-            index: newComponentIndex,
-          });
+          const payload = { containerId, componentType: toolboxComponent.id.toString(), index: newComponentIndex };
+          const violation = getAddComponentViolation(payload);
+          if (isDefined(violation)) {
+            void message.error(violation);
+            return;
+          }
+          addComponent(payload);
         }
       } else {
         // reorder existing components
@@ -112,19 +118,26 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
         }
 
         if (isModified) {
-          const newIds = newState.map<string>((item) => item.id.toString());
-          updateChildComponents({ containerId, componentIds: newIds });
+          const payload = { containerId, componentIds: newState.map<string>((item) => item.id.toString()) };
+          const violation = getUpdateChildComponentsViolation(payload);
+          if (isDefined(violation)) {
+            void message.error(violation);
+            return;
+          }
+          updateChildComponents(payload);
         }
       }
     }
   };
 
+  const getToolboxComponent = useFormDesignerComponentGetter();
+  const getRequiredParent = useCallback((type: string) => getToolboxComponent(type)?.requiredParent, [getToolboxComponent]);
+
   const onDragStart = (evt: SortableEvent): void => {
     startDragging();
-    startDropTargetIndicator(evt.item);
+    startDropTargetIndicator(evt.item, getRequiredParent);
   };
 
-  const getToolboxComponent = useFormDesignerComponentGetter();
   const setDragImage = (dataTransfer: DataTransfer, dragEl: HTMLElement): void => {
     const type = dragEl.getAttribute(COMPONENT_TYPE_ATTR) ?? '';
     const toolboxComponent = getToolboxComponent(type);

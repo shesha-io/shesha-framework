@@ -91,6 +91,10 @@ const TableComponent: TableComponentDefinition = {
   name: 'Data Table',
   preserveDimensionsInDesigner: true,
   icon: <TableOutlined />,
+  requiredParent: {
+    types: ['dataContext', 'datatableContext'],
+    message: 'A Data Table must be placed inside a Data Context.',
+  },
   getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
   Factory: ({ model }) => {
     const store = useDataTableStoreOrUndefined();

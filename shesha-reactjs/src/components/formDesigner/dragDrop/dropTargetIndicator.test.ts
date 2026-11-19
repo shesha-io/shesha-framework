@@ -1,4 +1,5 @@
-import { DROP_TARGET_FRAME_ATTR, DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from './models';
+import { DROP_TARGET_FRAME_ATTR, DROP_TARGET_INVALID_ATTR, DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from './models';
+import { COMPONENT_TYPE_ATTR, DRAG_CHIP_ERROR_ATTR, setComponentDragImage } from './dragChip';
 import { designerClassNames } from '../styles/styles';
 import { startDropTargetIndicator, stopDropTargetIndicator } from './dropTargetIndicator';
 
@@ -49,6 +50,35 @@ describe('dropTargetIndicator', () => {
 
     expect(getFrame()?.textContent).toBe('Columns');
     expect(getFrame()?.style.transform).toBe('translate(17px, 297px)');
+  });
+
+  it('marks a drop target that does not meet the required parent and says why on the drag chip', async () => {
+    const valid = createContainer('Data context', { left: 20, top: 100, width: 100, height: 100 });
+    valid.setAttribute(COMPONENT_TYPE_ATTR, 'dataContext');
+    const invalid = createContainer('Panel', { left: 20, top: 300, width: 100, height: 100 });
+    const dragged = document.createElement('div');
+    dragged.setAttribute(COMPONENT_TYPE_ATTR, 'datatable');
+    invalid.appendChild(dragged);
+    const getRequiredParent = (type: string) => (type === 'datatable' ? { types: ['dataContext'], message: 'Needs a Data Context.' } : undefined);
+
+    setComponentDragImage({ setData: vi.fn(), setDragImage: vi.fn() } as unknown as DataTransfer, null, 'Data Table');
+    const chipError = (): HTMLElement | null => document.querySelector(`[${DRAG_CHIP_ERROR_ATTR}]`);
+
+    startDropTargetIndicator(dragged, getRequiredParent);
+    await flushFrame();
+    expect(getFrame()?.textContent).toBe('Panel');
+    expect(chipError()?.textContent).toBe('Needs a Data Context.');
+    expect(chipError()?.style.display).toBe('block');
+    expect(invalid.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(true);
+
+    valid.appendChild(dragged);
+    document.dispatchEvent(new Event('dragover'));
+    await flushFrame();
+    expect(getFrame()?.textContent).toBe('Data context');
+    expect(chipError()?.textContent).toBe('');
+    expect(chipError()?.style.display).toBe('none');
+    expect(invalid.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(false);
+    expect(valid.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(false);
   });
 
   it('frames the whole component that owns the container', async () => {

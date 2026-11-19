@@ -106,6 +106,10 @@ type FormDesignerActions = {
   duplicateComponent: (payload: IComponentDuplicatePayload) => void;
   updateChildComponents: (payload: IUpdateChildComponentsPayload) => void;
   addDataProperty: (payload: IAddDataPropertyPayload) => void;
+  /** Returns why adding the component would break a required parent (see `IToolboxComponent.requiredParent`), if it would. */
+  getAddComponentViolation: (payload: IComponentAddPayload) => string | undefined;
+  /** Returns why the new children of the container would break a required parent, if they would. */
+  getUpdateChildComponentsViolation: (payload: IUpdateChildComponentsPayload) => string | undefined;
 
   startDraggingNewItem: () => void;
   endDraggingNewItem: () => void;

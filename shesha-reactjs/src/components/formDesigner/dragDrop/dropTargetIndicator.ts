@@ -1,6 +1,8 @@
 import { designerClassNames } from '../styles/styles';
-import { DROP_TARGET_FRAME_ATTR, DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from './models';
+import { DROP_TARGET_FRAME_ATTR, DROP_TARGET_INVALID_ATTR, DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from './models';
 import { getDropDirection } from './dropDirection';
+import { findDomRequirementViolation, RequiredParentGetter } from './dropRequirements';
+import { removeDragChip, setDragChipError } from './dragChip';
 
 /** Height of the name drawn above the highlighted component. */
 const LABEL_HEIGHT = 18;
@@ -8,6 +10,8 @@ const LABEL_HEIGHT = 18;
 const FRAME_OFFSET = 3;
 /** Used until the insertion line has been rendered and its colour can be read. */
 const FALLBACK_COLOR = '#1677ff';
+/** Used instead while the drop target is invalid, until the (red) insertion line has been rendered. */
+const FALLBACK_ERROR_COLOR = '#ff4d4f';
 /** Small component glyph shown before the name, drawn with the current text colour. */
 const LABEL_ICON = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><rect x="1.5" y="1.5" width="9" height="9" rx="1.5"/><path d="M1.5 5h9"/></svg>';
 
@@ -28,6 +32,8 @@ let clipAncestors: HTMLElement[] | null = null;
 let resizeObserver: ResizeObserver | null = null;
 let frameRequest: number | null = null;
 let colorResolved = false;
+/** Returns the parent a component type needs, used to tell whether the current drop target is valid. */
+let requiredParentGetter: RequiredParentGetter | null = null;
 
 const createElements = (): IIndicatorElements => {
   const frame = document.createElement('div');
@@ -189,24 +195,38 @@ const trackContainer = (): void => {
   container?.setAttribute(DROP_TARGET_LAYOUT_ATTR, getDropDirection(container));
 
   if (currentTarget) resizeObserver?.unobserve(currentTarget);
+  currentContainer?.removeAttribute(DROP_TARGET_INVALID_ATTR);
   currentContainer = container;
   currentTarget = container ? getHighlightTarget(container) : null;
   clipAncestors = null;
 
   if (!container || !currentTarget) {
     elements.frame.style.display = 'none';
+    setDragChipError(undefined);
     return;
   }
 
+  const violation = requiredParentGetter ? findDomRequirementViolation(draggedElement, requiredParentGetter) : undefined;
+  if (violation) container.setAttribute(DROP_TARGET_INVALID_ATTR, '');
+  // the line changes colour with the attribute, so the frame borrows it again once it is rendered
+  colorResolved = false;
+  setColor(violation ? FALLBACK_ERROR_COLOR : FALLBACK_COLOR);
+  // the reason is shown on the chip next to the cursor, where the user is looking
+  setDragChipError(violation);
   elements.labelText.textContent = container.getAttribute(DROP_TARGET_LABEL_ATTR);
   resizeObserver?.observe(currentTarget);
   scheduleMeasure();
 };
 
-/** Starts highlighting the drop target of `dragged` until `stopDropTargetIndicator` is called. */
-export const startDropTargetIndicator = (dragged: HTMLElement): void => {
+/**
+ * Starts highlighting the drop target of `dragged` until `stopDropTargetIndicator` is called. With
+ * `getRequiredParent`, a drop target that doesn't meet the dragged component's required parent (see
+ * `IToolboxComponent.requiredParent`) is drawn in the error colour, and the reason is shown on the drag chip.
+ */
+export const startDropTargetIndicator = (dragged: HTMLElement, getRequiredParent?: RequiredParentGetter): void => {
   if (!elements?.frame.isConnected) elements = createElements();
   draggedElement = dragged;
+  requiredParentGetter = getRequiredParent ?? null;
   currentContainer = null;
   currentTarget = null;
   clipAncestors = null;
@@ -229,6 +249,9 @@ export const stopDropTargetIndicator = (): void => {
   if (frameRequest !== null) cancelAnimationFrame(frameRequest);
   frameRequest = null;
   draggedElement = null;
+  requiredParentGetter = null;
+  removeDragChip();
+  currentContainer?.removeAttribute(DROP_TARGET_INVALID_ATTR);
   currentContainer = null;
   currentTarget = null;
   if (elements) elements.frame.style.display = 'none';
