@@ -272,14 +272,16 @@ namespace Shesha.Roles
 
         public async Task<ShaRoleResult<ShaRoleAppointedPerson>> SetRolesAsync(Person person, IEnumerable<ShaRole> roles, ShaRoleAppointmentData? appointmentData = null)
         {
+            var requestedRoles = roles?.ToList() ?? new List<ShaRole>();
+
             var result = new ShaRoleResult<ShaRoleAppointedPerson>();
             if (person == null) return result.AddError("Person is mandatory");
-            if (roles == null || !roles.Any()) return result.AddError("Roles are mandatory");
+            if (!requestedRoles.Any()) return result.AddError("Roles are mandatory");
             if (result.Succeeded == false) return result;
 
             var rolesInDb = (await GetRolesForPersonAsync(person, appointmentData));
 
-            foreach (var role in roles)
+            foreach (var role in requestedRoles)
             {
                 if (!rolesInDb.Contains(role))
                 {
@@ -290,7 +292,7 @@ namespace Shesha.Roles
 
             foreach (var roleInDb in rolesInDb)
             {
-                if (!roles.Contains(roleInDb))
+                if (!requestedRoles.Contains(roleInDb))
                 {
                     var res = await RemoveFromRoleAsync(person, roleInDb, appointmentData);
                     if (res.Succeeded == false) result.AddErrors(res.Errors);

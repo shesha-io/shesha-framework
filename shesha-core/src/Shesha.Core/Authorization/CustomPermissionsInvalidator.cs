@@ -2,7 +2,6 @@
 using Abp.Dependency;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
-using Shesha.Authorization.Cache;
 using Shesha.Domain;
 using System.Threading.Tasks;
 
@@ -16,15 +15,17 @@ namespace Shesha.Authorization
         IAsyncEventHandler<EntityCreatedEventData<ShaRoleAppointedPerson>>,
         IAsyncEventHandler<EntityUpdatedEventData<ShaRoleAppointedPerson>>,
         IAsyncEventHandler<EntityDeletedEventData<ShaRoleAppointedPerson>>,
+
+        IAsyncEventHandler<EntityCreatedEventData<ShaRolePermission>>,
+        IAsyncEventHandler<EntityUpdatedEventData<ShaRolePermission>>,
+        IAsyncEventHandler<EntityDeletedEventData<ShaRolePermission>>,
         ITransientDependency
     {
-        private readonly ICustomUserPermissionCacheHolder _cacheHolder;
         private readonly IShaPermissionChecker _permissionChecker;
         
 
-        public CustomPermissionsInvalidator(ICustomUserPermissionCacheHolder cacheHolder, IShaPermissionChecker permissionChecker)
+        public CustomPermissionsInvalidator(IShaPermissionChecker permissionChecker)
         {
-            _cacheHolder = cacheHolder;
             _permissionChecker = permissionChecker;
         }
 
@@ -59,6 +60,21 @@ namespace Shesha.Authorization
         }
 
         public async Task HandleEventAsync(EntityDeletedEventData<ShaRoleAppointedPerson> eventData)
+        {
+            await _permissionChecker.ClearPermissionsCacheAsync();
+        }
+
+        public async Task HandleEventAsync(EntityCreatedEventData<ShaRolePermission> eventData)
+        {
+            await _permissionChecker.ClearPermissionsCacheAsync();
+        }
+
+        public async Task HandleEventAsync(EntityUpdatedEventData<ShaRolePermission> eventData)
+        {
+            await _permissionChecker.ClearPermissionsCacheAsync();
+        }
+
+        public async Task HandleEventAsync(EntityDeletedEventData<ShaRolePermission> eventData)
         {
             await _permissionChecker.ClearPermissionsCacheAsync();
         }
