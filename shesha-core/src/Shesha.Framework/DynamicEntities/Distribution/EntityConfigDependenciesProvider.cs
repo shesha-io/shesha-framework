@@ -67,7 +67,12 @@ namespace Shesha.DynamicEntities.Distribution
             while (!string.IsNullOrWhiteSpace(name))
             {
                 if (!chainNames.Add(name))
-                    break; // cyclic Parent chain
+                {
+                    // cyclic Parent chain - can't be rooted, so drop it rather than export unreachable items
+                    foreach (var droppedName in chainNames)
+                        visited.Add(droppedName);
+                    return;
+                }
 
                 var definition = await _permissionDefinitionRepo.GetAll()
                     .Where(p => p.Name == name && p.VersionStatus == ConfigurationItemVersionStatus.Live)
