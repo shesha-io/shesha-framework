@@ -102,6 +102,21 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
+        public async Task TryConsume_should_fail_for_expired_otp_TestAsync()
+        {
+            var storage = Resolve<DbOtpStorage>();
+            var operationId = await SaveOtpAsync(storage);
+            await storage.UpdateAsync(operationId, dto =>
+            {
+                dto.ExpiresOn = DateTime.Now.AddMinutes(-1);
+                return Task.CompletedTask;
+            });
+
+            (await storage.TryConsumeAsync(operationId)).ShouldBeFalse();
+            (await storage.GetAsync(operationId)).ConsumedOn.ShouldBeNull();
+        }
+
+        [Fact]
         public async Task TryConsume_should_fail_for_unknown_operation_TestAsync()
         {
             var storage = Resolve<DbOtpStorage>();

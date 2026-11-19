@@ -2,9 +2,11 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using NHibernate;
+using NHibernate.Linq;
 using Shesha.Domain;
 using Shesha.Otp.Dto;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -35,18 +37,18 @@ namespace Shesha.Otp
             // Runs in its own session and transaction, outside any ambient transaction, so a rollback of the caller
             // doesn't undo the attempt. The `update` holds the row lock until commit, so a concurrent increment waits
             // and each call reads back the value its own increment produced
-            var entityName = typeof(OtpAuditItem).FullName;
             using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             using (var session = _sessionFactory.OpenSession())
             using (var transaction = session.BeginTransaction())
             {
-                await session.CreateQuery($"update {entityName} set VerifyAttempts = VerifyAttempts + 1 where Id = :id")
-                    .SetParameter("id", operationId)
-                    .ExecuteUpdateAsync();
+                await session.Query<OtpAuditItem>()
+                    .Where(i => i.Id == operationId)
+                    .UpdateAsync(i => new { VerifyAttempts = i.VerifyAttempts + 1 });
 
-                var attempts = await session.CreateQuery($"select i.VerifyAttempts from {entityName} i where i.Id = :id")
-                    .SetParameter("id", operationId)
-                    .UniqueResultAsync<int?>();
+                var attempts = await session.Query<OtpAuditItem>()
+                    .Where(i => i.Id == operationId)
+                    .Select(i => (int?)i.VerifyAttempts)
+                    .SingleOrDefaultAsync();
 
                 await transaction.CommitAsync();
 
@@ -60,15 +62,13 @@ namespace Shesha.Otp
             // A single conditional `update` in its own session, outside any ambient transaction: the database lets only
             // one concurrent call change the row, on any instance, and the change is kept even if the caller rolls back.
             // ConsumedOn isn't written by entity updates, so a resend extending the expiry can't make the OTP valid again
-            var entityName = typeof(OtpAuditItem).FullName;
             var now = DateTime.Now;
             using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             using (var session = _sessionFactory.OpenSession())
             {
-                var updated = await session.CreateQuery($"update {entityName} set ConsumedOn = :now where Id = :id and ConsumedOn is null and (ExpiresOn is null or ExpiresOn > :now)")
-                    .SetParameter("id", operationId)
-                    .SetParameter("now", now)
-                    .ExecuteUpdateAsync();
+                var updated = await session.Query<OtpAuditItem>()
+                    .Where(i => i.Id == operationId && i.ConsumedOn == null && (i.ExpiresOn == null || i.ExpiresOn > now))
+                    .UpdateAsync(i => new { ConsumedOn = (DateTime?)now });
 
                 return updated == 1;
             }
