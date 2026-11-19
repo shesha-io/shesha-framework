@@ -4,11 +4,15 @@ using Shesha.Domain.Enums;
 using Shesha.Otp;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
+using Shesha.Settings;
 using Shesha.Sms;
 using Shesha.Testing.Fixtures;
 using Shouldly;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -47,6 +51,94 @@ namespace Shesha.Tests.Otp
 
             response.IsSuccess.ShouldBe(true);
             response.ErrorMessage.ShouldBeNullOrEmpty();
+        }
+
+        [Fact]
+        public async Task RegistrationEmailLink_carries_the_operation_id_TestAsync()
+        {
+            // a template saved before the {{operationId}} and {{isRegistration}} placeholders existed
+            var sentBody = await SendRegistrationEmailLinkAsync("Click <a href='https://app.example/no-auth/shesha/email-link-verification/?token={{token}}&identifier={{userid}}'>link</a>");
+
+            sentBody.Body.ShouldContain($"operationId={sentBody.OperationId}", Case.Sensitive, "the link must work in a browser that didn't request it");
+            sentBody.Body.ShouldContain("&amp;isRegistration=true");
+            sentBody.Body.ShouldNotContain("{{");
+            Regex.IsMatch(sentBody.Body, "&(?!amp;)").ShouldBeFalse("every & in the HTML body must be escaped, a raw &reg is read as the ® entity by mail clients");
+            WebUtility.HtmlDecode(sentBody.Body).ShouldContain($"&operationId={sentBody.OperationId}&isRegistration=true");
+        }
+
+        [Fact]
+        public async Task RegistrationEmailLink_with_the_default_template_TestAsync()
+        {
+            var sentBody = await SendRegistrationEmailLinkAsync(OtpDefaults.DefaultEmailBodyTemplate);
+
+            sentBody.Body.ShouldContain($"isRegistration=true&amp;operationId={sentBody.OperationId}&amp;token=");
+            sentBody.Body.ShouldNotContain("{{");
+            Regex.IsMatch(sentBody.Body, "&(?!amp;)").ShouldBeFalse("every & in the HTML body must be escaped");
+        }
+
+        private async Task<(string Body, Guid OperationId)> SendRegistrationEmailLinkAsync(string bodyTemplate)
+        {
+            var otpSettings = new OtpSettings
+            {
+                PasswordLength = 6,
+                Alphabet = "0123456789",
+                DefaultLifetime = 60,
+                DefaultEmailSubjectTemplate = OtpDefaults.DefaultEmailSubjectTemplate,
+                DefaultEmailBodyTemplate = bodyTemplate,
+            };
+            var accessor = new Mock<ISettingAccessor<OtpSettings>>();
+            accessor.Setup(a => a.GetValueAsync(It.IsAny<SettingManagementContext>())).ReturnsAsync(otpSettings);
+            accessor.Setup(a => a.GetValue(It.IsAny<SettingManagementContext>())).Returns(otpSettings);
+            var settings = new Mock<IOtpSettings>();
+            settings.SetupGet(s => s.OneTimePins).Returns(accessor.Object);
+
+            var otpStorage = new Mock<IOtpStorage>();
+            otpStorage.Setup(s => s.SaveAsync(It.IsAny<OtpDto>())).Returns(Task.CompletedTask);
+
+            string? sentBody = null;
+            var emailSender = new Mock<IEmailSender>();
+            emailSender.Setup(s => s.SendAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Callback<string, string, string, bool>((to, subject, body, isHtml) => sentBody = body)
+                .Returns(Task.CompletedTask);
+
+            var otp = new OtpManager(MockISmsGatewayFactory(), emailSender.Object, otpStorage.Object, new OtpGenerator(settings.Object), settings.Object);
+
+            var response = await otp.SendPinAsync(new SendPinInput
+            {
+                SendTo = "new.user@example.test",
+                SendType = OtpSendType.EmailLink,
+                RecipientId = "bmV3LnVzZXJAZXhhbXBsZS50ZXN0",
+                ActionType = OtpActionTypes.EmailRegistration,
+            });
+
+            sentBody.ShouldNotBeNull();
+            return (sentBody, response.OperationId);
+        }
+
+        [Fact]
+        public async Task A_long_email_address_fits_in_the_recipient_idAsync()
+        {
+            // email links store the Base64-encoded address as the recipient id; a 200-character address (the SendTo limit) is 268 encoded
+            var email = new string('a', 64) + "@" + new string('b', 130) + ".test";
+            var recipientId = Convert.ToBase64String(Encoding.UTF8.GetBytes(email));
+            email.Length.ShouldBe(200);
+            recipientId.Length.ShouldBeGreaterThan(250);
+
+            var storage = LocalIocManager.Resolve<DbOtpStorage>();
+            var otp = new OtpDto
+            {
+                OperationId = Guid.NewGuid(),
+                Pin = "123456",
+                SendTo = email,
+                SendType = OtpSendType.EmailLink,
+                RecipientId = recipientId,
+                ActionType = OtpActionTypes.EmailRegistration,
+                ExpiresOn = DateTime.Now.AddMinutes(5),
+            };
+
+            await storage.SaveAsync(otp);
+
+            (await storage.GetAsync(otp.OperationId))!.RecipientId.ShouldBe(recipientId);
         }
 
         private async Task<IVerifyPinResponse> CheckOtpCommonAsync(Action<VerifyPinInput>? transformAction)

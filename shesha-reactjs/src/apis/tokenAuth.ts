@@ -16,6 +16,8 @@ interface AuthenticateResultModel {
   redirectUrl?: string;
   redirectModule?: string;
   redirectForm?: string;
+  /** Single-use token for completing an incomplete self-registration (returned with resultType 2) */
+  registrationCompletionToken?: string | null;
   requireChangePassword?: boolean;
 }
 
