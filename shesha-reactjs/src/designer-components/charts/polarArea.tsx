@@ -21,6 +21,7 @@ import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/ut
 const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
   type: 'polarAreaChart',
   name: 'Polar Area Chart',
+  isHidden: true,
   isInput: false,
   isOutput: true,
   icon: <RadarChartOutlined />,

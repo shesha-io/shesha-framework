@@ -21,6 +21,7 @@ import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/ut
 const PieChartComponent: IToolboxComponent<IChartProps> = {
   type: 'pieChart',
   name: 'Pie Chart',
+  isHidden: true,
   isInput: false,
   isOutput: true,
   preserveDimensionsInDesigner: ["height"],

@@ -21,6 +21,7 @@ import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/ut
 const LineChartComponent: IToolboxComponent<IChartProps> = {
   type: 'lineChart',
   name: 'Line Chart',
+  isHidden: true,
   isInput: false,
   isOutput: true,
   preserveDimensionsInDesigner: ["height"],

@@ -27,7 +27,8 @@ const buildComponentItems = (): IMenuItem[] => {
       key: componentGroup.name,
       title: componentGroup.name,
       children: componentGroup.components
-        .filter((component) => component.showInThemeEditor !== false && component.isHidden !== true)
+        // An explicit showInThemeEditor: true keeps a component themeable even when it is hidden from the toolbox
+        .filter((component) => component.showInThemeEditor === true || (component.showInThemeEditor !== false && component.isHidden !== true))
         .map((component) => ({
           key: component.type,
           title: component.name,
