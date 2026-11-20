@@ -72,7 +72,7 @@ namespace Shesha.NHibernate.Interceptors
         /// <summary>
         /// Normalizes <see cref="IHasNormalizedFields"/> entities and copies changed values into the
         /// NHibernate state, because NHibernate builds the SQL from the state snapshot, not from the entity itself.
-        /// Only the properties listed by <see cref="IHasNormalizedFields.GetNormalizedFieldNames"/> are read and synced,
+        /// Only the properties returned by <see cref="IHasNormalizedFields.Normalize"/> are read and synced,
         /// so other (e.g. lazy-loaded) properties are never touched during a flush.
         /// Called from <see cref="OnSave"/> (new entities) and <see cref="OnFlushDirty"/> (changed entities only).
         /// </summary>
@@ -82,11 +82,11 @@ namespace Shesha.NHibernate.Interceptors
             if (entity is not IHasNormalizedFields hasNormalizedFields)
                 return false;
 
-            hasNormalizedFields.Normalize();
+            var normalizedFieldNames = hasNormalizedFields.Normalize();
 
             var updated = false;
             var entityType = entity.GetType();
-            foreach (var fieldName in hasNormalizedFields.GetNormalizedFieldNames())
+            foreach (var fieldName in normalizedFieldNames)
             {
                 var i = Array.IndexOf(propertyNames, fieldName);
                 if (i < 0 || types[i].IsAssociationType || types[i].IsCollectionType || types[i].IsComponentType)

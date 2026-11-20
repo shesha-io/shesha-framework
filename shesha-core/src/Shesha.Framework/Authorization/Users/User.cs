@@ -74,25 +74,26 @@ namespace Shesha.Authorization.Users
         public override string? NormalizedEmailAddress { get; set; }
 
         /// <summary>
-        /// UserName is guarded because the method is also called by the NHibernate interceptor (see <see cref="Normalize"/>)
+        /// UserName is null-guarded because the method is also called by the NHibernate interceptor (see <see cref="Normalize"/>)
         /// for users that may not have it yet - the required-field validation reports that case instead of a NullReferenceException.
         /// </summary>
         public override void SetNormalizedNames()
         {
-            if (UserName != null)
-                NormalizedUserName = UserName.ToUpperInvariant();
+            NormalizedUserName = UserName?.ToUpperInvariant()!;
             NormalizedEmailAddress = EmailAddress?.ToUpperInvariant();
         }
+
+        private static readonly string[] NormalizedFieldNames = [nameof(NormalizedUserName), nameof(NormalizedEmailAddress)];
 
         /// <summary>
         /// Keeps normalized names in sync when the user is saved outside of the <see cref="UserManager"/>
         /// (e.g. as a nested entity via dynamic CRUD).
         /// </summary>
-        public virtual void Normalize() => SetNormalizedNames();
-
-        private static readonly string[] NormalizedFieldNames = [nameof(NormalizedUserName), nameof(NormalizedEmailAddress)];
-
-        public virtual IReadOnlyCollection<string> GetNormalizedFieldNames() => NormalizedFieldNames;
+        public virtual IReadOnlyCollection<string> Normalize()
+        {
+            SetNormalizedNames();
+            return NormalizedFieldNames;
+        }
 
         [Display(Name = "Authentication Guid")]
         [MaxLength(36)]

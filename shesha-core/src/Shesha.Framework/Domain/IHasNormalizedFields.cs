@@ -13,14 +13,12 @@ namespace Shesha.Domain
     public interface IHasNormalizedFields
     {
         /// <summary>
-        /// Names of the properties that <see cref="Normalize"/> writes. Only these properties are synced into the
-        /// NHibernate state, so other (e.g. lazy-loaded) properties are never touched during a flush.
-        /// </summary>
-        IReadOnlyCollection<string> GetNormalizedFieldNames();
-
-        /// <summary>
         /// Recalculates normalized fields from the current state of the entity. Must be idempotent.
         /// </summary>
-        void Normalize();
+        /// <returns>
+        /// Names of the properties this method writes. Only these properties are synced into the NHibernate state,
+        /// so other (e.g. lazy-loaded) properties are never touched during a flush.
+        /// </returns>
+        IReadOnlyCollection<string> Normalize();
     }
 }
