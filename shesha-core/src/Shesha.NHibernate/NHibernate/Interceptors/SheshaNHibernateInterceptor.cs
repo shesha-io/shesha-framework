@@ -74,6 +74,7 @@ namespace Shesha.NHibernate.Interceptors
         /// NHibernate state, because NHibernate builds the SQL from the state snapshot, not from the entity itself.
         /// Only the properties listed by <see cref="IHasNormalizedFields.GetNormalizedFieldNames"/> are read and synced,
         /// so other (e.g. lazy-loaded) properties are never touched during a flush.
+        /// Called from <see cref="OnSave"/> (new entities) and <see cref="OnFlushDirty"/> (changed entities only).
         /// </summary>
         /// <returns>true if any state value was changed</returns>
         private static bool ApplyNormalizedFields(object entity, object[] state, string[] propertyNames, IType[] types)
