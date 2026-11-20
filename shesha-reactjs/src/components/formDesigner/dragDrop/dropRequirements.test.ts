@@ -1,7 +1,7 @@
 import { IRequiredParent } from '@/interfaces/formDesigner';
 import { IConfigurableFormComponent, IFlatComponentsStructure } from '@/providers/form/models';
 import { COMPONENT_TYPE_ATTR } from './dragChip';
-import { findDomRequirementViolation, findNewRequirementViolation, getRequirementViolations, getUnmetRequirement } from './dropRequirements';
+import { findDomRequirementViolation, findNewRequirementViolation, getDomRequirementViolations, getRequirementViolations, getUnmetRequirement } from './dropRequirements';
 
 const MESSAGE = 'A Data Table must be placed inside a Data Context.';
 const tableRequirement: IRequiredParent = { types: ['dataContext', 'datatableContext'], message: MESSAGE };
@@ -146,6 +146,34 @@ describe('findDomRequirementViolation', () => {
     panel.appendChild(typed('datatable'));
     document.body.appendChild(panel);
     expect(findDomRequirementViolation(panel, getRequiredParent)).toBe(MESSAGE);
+  });
+
+  it('leaves out elements that were already in the wrong place when the drag started', () => {
+    const panel = typed('panel');
+    const table = typed('datatable');
+    panel.appendChild(table);
+    document.body.appendChild(panel);
+    const preexisting = new Set(getDomRequirementViolations(table, getRequiredParent).keys());
+    expect(preexisting.has(table)).toBe(true);
+
+    const other = typed('panel');
+    other.appendChild(table);
+    document.body.appendChild(other);
+    expect(findDomRequirementViolation(table, getRequiredParent, preexisting)).toBeUndefined();
+  });
+
+  it('still reports a nested element that is newly in the wrong place', () => {
+    const ctx = typed('dataContext');
+    const panel = typed('panel');
+    const table = typed('datatable');
+    panel.appendChild(table);
+    ctx.appendChild(panel);
+    document.body.appendChild(ctx);
+    const preexisting = new Set(getDomRequirementViolations(panel, getRequiredParent).keys());
+    expect(preexisting.size).toBe(0);
+
+    document.body.appendChild(panel);
+    expect(findDomRequirementViolation(panel, getRequiredParent, preexisting)).toBe(MESSAGE);
   });
 
   it('accepts a data context dragged with its table', () => {

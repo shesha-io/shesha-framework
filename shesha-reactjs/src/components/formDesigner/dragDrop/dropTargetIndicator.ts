@@ -1,7 +1,7 @@
 import { designerClassNames } from '../styles/styles';
 import { DROP_TARGET_FRAME_ATTR, DROP_TARGET_INVALID_ATTR, DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from './models';
 import { getDropDirection } from './dropDirection';
-import { findDomRequirementViolation, RequiredParentGetter } from './dropRequirements';
+import { findDomRequirementViolation, getDomRequirementViolations, RequiredParentGetter } from './dropRequirements';
 import { removeDragChip, setDragChipError } from './dragChip';
 
 /** Height of the name drawn above the highlighted component. */
@@ -34,6 +34,8 @@ let frameRequest: number | null = null;
 let colorResolved = false;
 /** Returns the parent a component type needs, used to tell whether the current drop target is valid. */
 let requiredParentGetter: RequiredParentGetter | null = null;
+/** Elements of the dragged item that were already in the wrong place when the drag started. */
+let preexistingViolations: ReadonlySet<Element> = new Set();
 
 const createElements = (): IIndicatorElements => {
   const frame = document.createElement('div');
@@ -206,7 +208,7 @@ const trackContainer = (): void => {
     return;
   }
 
-  const violation = requiredParentGetter ? findDomRequirementViolation(draggedElement, requiredParentGetter) : undefined;
+  const violation = requiredParentGetter ? findDomRequirementViolation(draggedElement, requiredParentGetter, preexistingViolations) : undefined;
   if (violation) container.setAttribute(DROP_TARGET_INVALID_ATTR, '');
   // the line changes colour with the attribute, so the frame borrows it again once it is rendered
   colorResolved = false;
@@ -221,12 +223,20 @@ const trackContainer = (): void => {
 /**
  * Starts highlighting the drop target of `dragged` until `stopDropTargetIndicator` is called. With
  * `getRequiredParent`, a drop target that doesn't meet the dragged component's required parent (see
- * `IToolboxComponent.requiredParent`) is drawn in the error colour, and the reason is shown on the drag chip.
+ * `IToolboxComponent.requiredParent`) is drawn in the error colour, and the reason is shown on the drag chip. A component
+ * that was already in the wrong place when the drag started doesn't count, as the designer accepts moving it.
  */
 export const startDropTargetIndicator = (dragged: HTMLElement, getRequiredParent?: RequiredParentGetter): void => {
   if (!elements?.frame.isConnected) elements = createElements();
   draggedElement = dragged;
   requiredParentGetter = getRequiredParent ?? null;
+  // SortableJS hasn't moved the item yet, so this is where it came from. An item from the canvas that is already in the
+  // wrong place (e.g. on a form saved before the requirement existed) may still be moved, so it isn't shown as invalid.
+  // An item from the toolbox is new, so nothing about it existed before.
+  const startsOnCanvas = dragged.parentElement?.hasAttribute(DROP_TARGET_LABEL_ATTR) === true;
+  preexistingViolations = requiredParentGetter && startsOnCanvas
+    ? new Set(getDomRequirementViolations(dragged, requiredParentGetter).keys())
+    : new Set();
   currentContainer = null;
   currentTarget = null;
   clipAncestors = null;
@@ -250,6 +260,7 @@ export const stopDropTargetIndicator = (): void => {
   frameRequest = null;
   draggedElement = null;
   requiredParentGetter = null;
+  preexistingViolations = new Set();
   removeDragChip();
   currentContainer?.removeAttribute(DROP_TARGET_INVALID_ATTR);
   currentContainer = null;

@@ -27,16 +27,33 @@ const getDomAncestorTypes = (element: Element): string[] => {
 /**
  * Checks an element being dragged at its current place on the page. SortableJS moves the dragged element into the
  * container it will be dropped into, so the components around it are the ones it would end up in. Components nested
- * inside the dragged one are checked too, e.g. a Panel holding a Data Table. Returns the message of the first
- * requirement that isn't met.
+ * inside the dragged one are checked too, e.g. a Panel holding a Data Table. Returns the elements whose required
+ * parent isn't met, with the message to show.
  */
-export const findDomRequirementViolation = (dragged: HTMLElement, getRequiredParent: RequiredParentGetter): string | undefined => {
+export const getDomRequirementViolations = (dragged: HTMLElement, getRequiredParent: RequiredParentGetter): Map<Element, string> => {
+  const result = new Map<Element, string>();
   const elements = [dragged, ...Array.from(dragged.querySelectorAll(TYPED_ELEMENT_SELECTOR))];
   for (const element of elements) {
     const type = element.getAttribute(COMPONENT_TYPE_ATTR);
     if (!type) continue;
     const requirement = getUnmetRequirement(type, getDomAncestorTypes(element), getRequiredParent);
-    if (requirement) return requirement.message;
+    if (requirement) result.set(element, requirement.message);
+  }
+  return result;
+};
+
+/**
+ * Returns the message of the first required parent the dragged element doesn't meet at its current place, leaving out
+ * the elements in `preexisting`: ones already in the wrong place when the drag started. The designer accepts those
+ * drops (see `findNewRequirementViolation`), so they aren't shown as invalid either.
+ */
+export const findDomRequirementViolation = (
+  dragged: HTMLElement,
+  getRequiredParent: RequiredParentGetter,
+  preexisting: ReadonlySet<Element> = new Set(),
+): string | undefined => {
+  for (const [element, message] of getDomRequirementViolations(dragged, getRequiredParent)) {
+    if (!preexisting.has(element)) return message;
   }
   return undefined;
 };

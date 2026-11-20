@@ -52,33 +52,76 @@ describe('dropTargetIndicator', () => {
     expect(getFrame()?.style.transform).toBe('translate(17px, 297px)');
   });
 
-  it('marks a drop target that does not meet the required parent and says why on the drag chip', async () => {
-    const valid = createContainer('Data context', { left: 20, top: 100, width: 100, height: 100 });
-    valid.setAttribute(COMPONENT_TYPE_ATTR, 'dataContext');
-    const invalid = createContainer('Panel', { left: 20, top: 300, width: 100, height: 100 });
-    const dragged = document.createElement('div');
-    dragged.setAttribute(COMPONENT_TYPE_ATTR, 'datatable');
-    invalid.appendChild(dragged);
-    const getRequiredParent = (type: string) => (type === 'datatable' ? { types: ['dataContext'], message: 'Needs a Data Context.' } : undefined);
-
-    setComponentDragImage({ setData: vi.fn(), setDragImage: vi.fn() } as unknown as DataTransfer, null, 'Data Table');
+  describe('required parent', () => {
+    const getRequiredParent = (type: string): { types: string[]; message: string } | undefined =>
+      (type === 'datatable' ? { types: ['dataContext'], message: 'Needs a Data Context.' } : undefined);
     const chipError = (): HTMLElement | null => document.querySelector(`[${DRAG_CHIP_ERROR_ATTR}]`);
+    const createTable = (): HTMLElement => {
+      const table = document.createElement('div');
+      table.setAttribute(COMPONENT_TYPE_ATTR, 'datatable');
+      return table;
+    };
+    const moveTo = async (dragged: HTMLElement, container: HTMLElement): Promise<void> => {
+      container.appendChild(dragged);
+      document.dispatchEvent(new Event('dragover'));
+      await flushFrame();
+    };
 
-    startDropTargetIndicator(dragged, getRequiredParent);
-    await flushFrame();
-    expect(getFrame()?.textContent).toBe('Panel');
-    expect(chipError()?.textContent).toBe('Needs a Data Context.');
-    expect(chipError()?.hidden).toBe(false);
-    expect(invalid.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(true);
+    beforeEach(() => {
+      setComponentDragImage({ setData: vi.fn(), setDragImage: vi.fn() } as unknown as DataTransfer, null, 'Data Table');
+    });
 
-    valid.appendChild(dragged);
-    document.dispatchEvent(new Event('dragover'));
-    await flushFrame();
-    expect(getFrame()?.textContent).toBe('Data context');
-    expect(chipError()?.textContent).toBe('');
-    expect(chipError()?.hidden).toBe(true);
-    expect(invalid.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(false);
-    expect(valid.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(false);
+    it('marks a drop target that does not meet it and says why on the drag chip', async () => {
+      const valid = createContainer('Data context', { left: 20, top: 100, width: 100, height: 100 });
+      valid.setAttribute(COMPONENT_TYPE_ATTR, 'dataContext');
+      const invalid = createContainer('Panel', { left: 20, top: 300, width: 100, height: 100 });
+      // a toolbox item starts outside any drop container
+      const toolbox = document.createElement('div');
+      document.body.appendChild(toolbox);
+      const dragged = createTable();
+      toolbox.appendChild(dragged);
+
+      startDropTargetIndicator(dragged, getRequiredParent);
+      await moveTo(dragged, invalid);
+      expect(getFrame()?.textContent).toBe('Panel');
+      expect(chipError()?.textContent).toBe('Needs a Data Context.');
+      expect(chipError()?.hidden).toBe(false);
+      expect(invalid.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(true);
+
+      await moveTo(dragged, valid);
+      expect(getFrame()?.textContent).toBe('Data context');
+      expect(chipError()?.textContent).toBe('');
+      expect(chipError()?.hidden).toBe(true);
+      expect(invalid.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(false);
+      expect(valid.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(false);
+    });
+
+    it('does not mark moving a component that was already in the wrong place, as the designer accepts it', async () => {
+      const from = createContainer('Form', { left: 20, top: 100, width: 100, height: 100 });
+      const to = createContainer('Panel', { left: 20, top: 300, width: 100, height: 100 });
+      const dragged = createTable();
+      from.appendChild(dragged);
+
+      startDropTargetIndicator(dragged, getRequiredParent);
+      await moveTo(dragged, to);
+
+      expect(chipError()?.hidden).toBe(true);
+      expect(to.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(false);
+    });
+
+    it('marks moving a component out of its required parent', async () => {
+      const context = createContainer('Data context', { left: 20, top: 100, width: 100, height: 100 });
+      context.setAttribute(COMPONENT_TYPE_ATTR, 'dataContext');
+      const panel = createContainer('Panel', { left: 20, top: 300, width: 100, height: 100 });
+      const dragged = createTable();
+      context.appendChild(dragged);
+
+      startDropTargetIndicator(dragged, getRequiredParent);
+      await moveTo(dragged, panel);
+
+      expect(chipError()?.textContent).toBe('Needs a Data Context.');
+      expect(panel.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(true);
+    });
   });
 
   it('frames the whole component that owns the container', async () => {
