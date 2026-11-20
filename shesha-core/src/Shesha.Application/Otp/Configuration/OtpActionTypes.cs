@@ -9,5 +9,10 @@ namespace Shesha.Otp.Configuration
         /// Email link that verifies the email address of a new registration. Its link carries <c>isRegistration=true</c>.
         /// </summary>
         public const string EmailRegistration = "EmailRegistration";
+
+        /// <summary>
+        /// OTP (SMS pin or email link) that verifies a password reset. The password reset endpoints only accept OTPs of this type.
+        /// </summary>
+        public const string PasswordReset = "password-reset";
     }
 }
