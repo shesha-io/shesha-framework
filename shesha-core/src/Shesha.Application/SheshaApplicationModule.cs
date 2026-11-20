@@ -119,6 +119,8 @@ namespace Shesha
                     Alphabet = OtpDefaults.DefaultAlphabet,
                     PasswordLength = OtpDefaults.DefaultPasswordLength,
                     DefaultLifetime = OtpDefaults.DefaultLifetime,
+                    MaxVerifyAttempts = OtpDefaults.DefaultMaxVerifyAttempts,
+                    MaxSendsPerDestinationPerHour = OtpDefaults.DefaultMaxSendsPerDestinationPerHour,
                     DefaultSubjectTemplate = OtpDefaults.DefaultSubjectTemplate,
                     DefaultBodyTemplate = OtpDefaults.DefaultBodyTemplate,
                     DefaultEmailSubjectTemplate = OtpDefaults.DefaultEmailSubjectTemplate,

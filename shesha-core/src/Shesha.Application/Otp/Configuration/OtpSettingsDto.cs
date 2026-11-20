@@ -27,6 +27,16 @@
         public bool IgnoreOtpValidation { get; set; }
 
         /// <summary>
+        /// Maximum number of verification attempts allowed per one-time pin
+        /// </summary>
+        public int MaxVerifyAttempts { get; set; }
+
+        /// <summary>
+        /// Maximum number of one-time pins that may be sent to the same destination within one hour
+        /// </summary>
+        public int MaxSendsPerDestinationPerHour { get; set; }
+
+        /// <summary>
         /// Subject for the email when the email link is sent to the recipient.
         /// TODO: Find a better place to place these
         /// </summary>

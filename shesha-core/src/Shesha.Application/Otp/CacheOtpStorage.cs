@@ -1,13 +1,27 @@
 ﻿using Shesha.Otp.Dto;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Shesha.Otp
 {
+    /// <summary>
+    /// Cache storage for one-time-pins.
+    /// Its operations are only atomic within a single application instance, so it's meant for a local (in-memory)
+    /// cache. When the application runs on several instances, use <see cref="DbOtpStorage"/> (the default), which
+    /// makes the attempt counter and single use atomic in the database.
+    /// </summary>
     public class CacheOtpStorage: IOtpStorage
     {
+        // The cache has no atomic operations, so read-modify-write operations run under a lock. The lock is per
+        // instance, like the in-memory cache this storage is normally used with
+        private static readonly SemaphoreSlim Lock = new SemaphoreSlim(1, 1);
+
         private readonly IOtpCache _otpCache;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public CacheOtpStorage(IOtpCache otpCache)
         {
             _otpCache = otpCache;
@@ -29,9 +43,60 @@ namespace Shesha.Otp
         /// inheritedDoc
         public async Task UpdateAsync(Guid operationId, Func<OtpDto, Task> updateAction)
         {
-            var dto = await GetAsync(operationId);
-            await updateAction.Invoke(dto);
-            await SaveAsync(dto);
+            await Lock.WaitAsync();
+            try
+            {
+                var dto = await GetAsync(operationId);
+                if (dto == null)
+                    return;
+
+                await updateAction.Invoke(dto);
+                await SaveAsync(dto);
+            }
+            finally
+            {
+                Lock.Release();
+            }
+        }
+
+        /// inheritedDoc
+        public async Task<int> IncrementVerifyAttemptsAsync(Guid operationId)
+        {
+            await Lock.WaitAsync();
+            try
+            {
+                var dto = await GetAsync(operationId);
+                if (dto == null)
+                    return 0;
+
+                dto.VerifyAttempts++;
+                await SaveAsync(dto);
+                return dto.VerifyAttempts;
+            }
+            finally
+            {
+                Lock.Release();
+            }
+        }
+
+        /// inheritedDoc
+        public async Task<bool> TryConsumeAsync(Guid operationId)
+        {
+            await Lock.WaitAsync();
+            try
+            {
+                var dto = await GetAsync(operationId);
+                if (dto == null || dto.ConsumedOn.HasValue || dto.ExpiresOn.HasValue && dto.ExpiresOn.Value <= DateTime.Now)
+                    return false;
+
+                dto.ConsumedOn = DateTime.Now;
+                await SaveAsync(dto);
+                return true;
+            }
+            finally
+            {
+                Lock.Release();
+            }
         }
 
         /// inheritedDoc

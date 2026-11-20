@@ -243,6 +243,10 @@ namespace Shesha.Authorization
                     if (!(await CheckImeiAsync(imei)))
                         return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
 
+                    // make the OTP single-use; only one of several concurrent requests for the same OTP gets through
+                    if (!await OtpManager.TryConsumeAsync(operationId))
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant, user);
+
                     // clear reset code
                     user.PasswordResetCode = null;
                     await UserManager.UpdateAsync(user);
@@ -250,6 +254,8 @@ namespace Shesha.Authorization
                     return await CreateLoginResultAsync(user, tenant);
                 });
 
+                // without this the cleared reset code is rolled back and the OTP could be replayed until it expires
+                await uow.CompleteAsync();
             }
 
             await SaveLoginAttemptAsync(result, imei, tenancyName, mobileNo);

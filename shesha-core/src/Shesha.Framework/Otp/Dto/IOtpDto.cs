@@ -35,5 +35,15 @@ namespace Shesha.Otp.Dto
         OtpSendStatus SendStatus { get; }
 
         string ErrorMessage { get; }
+
+        /// <summary>
+        /// Number of verification attempts made against this OTP
+        /// </summary>
+        int VerifyAttempts { get; }
+
+        /// <summary>
+        /// When the OTP was used, null if it hasn't been used. A used OTP can't be accepted again
+        /// </summary>
+        DateTime? ConsumedOn { get; }
     }
 }
