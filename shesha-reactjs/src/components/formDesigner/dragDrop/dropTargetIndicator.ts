@@ -2,7 +2,7 @@ import { designerClassNames } from '../styles/styles';
 import { DROP_TARGET_FRAME_ATTR, DROP_TARGET_INVALID_ATTR, DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from './models';
 import { getDropDirection } from './dropDirection';
 import { findDomRequirementViolation, getDomRequirementViolations, RequiredParentGetter } from './dropRequirements';
-import { removeDragChip, setDragChipError } from './dragChip';
+import { removeDragChip, setDragChipDropMarker, setDragChipError } from './dragChip';
 
 /** Height of the name drawn above the highlighted component. */
 const LABEL_HEIGHT = 18;
@@ -242,6 +242,8 @@ export const startDropTargetIndicator = (dragged: HTMLElement, getRequiredParent
   clipAncestors = null;
   colorResolved = false;
   setColor(FALLBACK_COLOR);
+  // the dragged item is drawn as the drop line, which the chip keeps clear of
+  setDragChipDropMarker(dragged);
 
   resizeObserver ??= typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(scheduleMeasure);
 

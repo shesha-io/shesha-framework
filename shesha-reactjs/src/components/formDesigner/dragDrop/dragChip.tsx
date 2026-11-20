@@ -1,16 +1,14 @@
 import { ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
-import { DRAG_CHIP_INVALID_ATTR, dragChipClassNames } from './models';
+import { DRAG_CHIP_INVALID_ATTR, DROP_TARGET_LABEL_ATTR, dragChipClassNames } from './models';
+import { getChipPosition, IRect } from './chipPlacement';
 
 /** Attribute on a designer component's wrapper holding the component type, used to name it while it is dragged. */
 export const COMPONENT_TYPE_ATTR = 'data-sha-component-type';
 
 /** Attribute on the line of the drag chip that says why the item can't be dropped where it is. */
 export const DRAG_CHIP_ERROR_ATTR = 'data-sha-drag-chip-error';
-
-/** Offset of the cursor from the chip's top-left corner, as the browser's own drag image was placed. */
-const CURSOR_OFFSET = { x: 14, y: 14 };
 
 interface IDragChip {
   host: HTMLDivElement;
@@ -20,6 +18,8 @@ interface IDragChip {
   /** Latest cursor position, applied on the next animation frame. */
   cursor: { x: number; y: number } | null;
   frameRequest: number | null;
+  /** The dragged item, drawn as the drop line while it sits in a drop container (see `setDragChipDropMarker`). */
+  dropMarker: HTMLElement | null;
 }
 
 /** Chip of the drag in progress. */
@@ -31,14 +31,39 @@ const createElement = (className: string): HTMLDivElement => {
   return element;
 };
 
-/** Moves the chip to the latest cursor position. The only place that writes its position. */
+/** Where the drop line is drawn: the dragged item, while it sits in a drop container and is styled as the line. */
+const getDropLineRect = (marker: HTMLElement | null): IRect | null => {
+  if (!marker || marker.parentElement?.hasAttribute(DROP_TARGET_LABEL_ATTR) !== true) return null;
+  const { left, top, right, bottom } = marker.getBoundingClientRect();
+  return { left, top, right, bottom };
+};
+
+/**
+ * Moves the chip next to the latest cursor position, clear of the cursor and of the drop line (see
+ * `getChipPosition`), so the user can always see where the item will land. The only place that writes its position.
+ */
 const applyCursor = (): void => {
   if (!current) return;
   current.frameRequest = null;
   if (!current.cursor) return;
-  const { host, cursor } = current;
+  const { host, chip, cursor, dropMarker } = current;
   host.hidden = false;
-  host.style.transform = `translate(${cursor.x - CURSOR_OFFSET.x}px, ${cursor.y - CURSOR_OFFSET.y}px)`;
+  // read everything before writing, so the frame lays out the page once
+  const position = getChipPosition(
+    cursor,
+    { width: chip.offsetWidth, height: chip.offsetHeight },
+    getDropLineRect(dropMarker),
+    { width: window.innerWidth, height: window.innerHeight },
+  );
+  host.style.transform = `translate(${position.x}px, ${position.y}px)`;
+};
+
+/**
+ * Tells the chip which element shows where the dragged item will land, so it can keep out of its way. SortableJS
+ * moves the dragged item itself into the drop container, where it is drawn as the drop line.
+ */
+export const setDragChipDropMarker = (marker: HTMLElement | null): void => {
+  if (current) current.dropMarker = marker;
 };
 
 /** `dragover` fires many times per frame, so it only records the position, which is applied once per frame. */
@@ -119,7 +144,7 @@ const showChip = (dataTransfer: DataTransfer | null, text: string, fill: (conten
   host.appendChild(chip);
   document.body.appendChild(host);
 
-  current = { host, chip, error, cleanup: fill(content), cursor: null, frameRequest: null };
+  current = { host, chip, error, cleanup: fill(content), cursor: null, frameRequest: null, dropMarker: null };
   hideNativeDragImage(dataTransfer);
 
   document.addEventListener('dragover', followCursor, true);

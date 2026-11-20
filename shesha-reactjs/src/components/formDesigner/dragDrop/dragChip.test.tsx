@@ -1,5 +1,5 @@
-import { DRAG_CHIP_INVALID_ATTR } from './models';
-import { DRAG_CHIP_ERROR_ATTR, removeDragChip, setComponentDragImage, setDragChipError, setItemDragImage } from './dragChip';
+import { DRAG_CHIP_INVALID_ATTR, DROP_TARGET_LABEL_ATTR } from './models';
+import { DRAG_CHIP_ERROR_ATTR, removeDragChip, setComponentDragImage, setDragChipDropMarker, setDragChipError, setItemDragImage } from './dragChip';
 
 interface IFakeDataTransfer {
   dataTransfer: DataTransfer;
@@ -110,9 +110,27 @@ describe('dragChip', () => {
     expect(getHost()?.hidden).toBe(true);
     await flushFrame();
 
-    // the cursor sits 14px into the chip from its top-left corner, where the browser's own drag image put it
+    // below and to the right of the cursor, so the cursor stays visible
     expect(getHost()?.hidden).toBe(false);
-    expect(getHost()?.style.transform).toBe('translate(186px, 86px)');
+    expect(getHost()?.style.transform).toBe('translate(216px, 116px)');
+  });
+
+  it('keeps clear of the drop line the dragged item is drawn as', async () => {
+    const container = document.createElement('div');
+    container.setAttribute(DROP_TARGET_LABEL_ATTR, 'Panel');
+    const dragged = document.createElement('div');
+    // a horizontal line at y 120, across the container
+    dragged.getBoundingClientRect = () => new DOMRect(0, 120, 800, 0);
+    container.appendChild(dragged);
+    document.body.appendChild(container);
+
+    setComponentDragImage(fakeDataTransfer().dataTransfer, null, 'Text');
+    setDragChipDropMarker(dragged);
+    dragOver(200, 100);
+    await flushFrame();
+
+    // the cursor is above the line, so the chip moves up to sit above it too (jsdom gives it no size)
+    expect(getHost()?.style.transform).toBe('translate(216px, 112px)');
   });
 
   it('shows the error below the name and clears it again', () => {
