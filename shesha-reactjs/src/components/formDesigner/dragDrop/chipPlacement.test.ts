@@ -61,6 +61,26 @@ describe('getChipPosition', () => {
     expect(getChipPosition({ x: 300, y: 200 }, chip, line, viewport)).toEqual({ x: 300 + CHIP_CURSOR_GAP, y: 200 + CHIP_CURSOR_GAP });
   });
 
+  it('checks where the chip ends up once kept on screen, and uses the other side of the line when that is clear', () => {
+    // too narrow for the chip beside the cursor, so it is pushed back over it; above the line it would cover the cursor
+    const narrow: ISize = { width: 200, height: 800 };
+    const line: IRect = { left: 0, top: 300, right: 200, bottom: 300 };
+    const cursor = { x: 100, y: 290 };
+    const position = getChipPosition(cursor, chip, line, narrow);
+    expect(position).toEqual({ x: 4, y: 300 + DROP_LINE_CLEARANCE });
+    expect(containsPoint(chipRect(position), cursor)).toBe(false);
+    expect(overlaps(chipRect(position), line)).toBe(false);
+  });
+
+  it('keeps the line in view when nothing is clear of both the line and the cursor', () => {
+    // a window so small the chip can't avoid the cursor anywhere, but it still keeps off the line
+    const tiny: ISize = { width: 130, height: 90 };
+    const line: IRect = { left: 0, top: 20, right: 130, bottom: 20 };
+    const position = getChipPosition({ x: 65, y: 50 }, chip, line, tiny);
+    expect(position).toEqual({ x: 4, y: 20 + DROP_LINE_CLEARANCE });
+    expect(overlaps(chipRect(position), line)).toBe(false);
+  });
+
   it('never covers the cursor or the line, wherever the cursor is around it', () => {
     const lines = [horizontalLine(300), verticalLine(300)];
     for (const line of lines) {

@@ -16,7 +16,11 @@ const clamp = (value: number, min: number, max: number): number => Math.max(min,
 const rectAt = (position: IPoint, size: ISize): IRect =>
   ({ left: position.x, top: position.y, right: position.x + size.width, bottom: position.y + size.height });
 
-const fitsBetween = (start: number, length: number, min: number, max: number): boolean => start >= min && start + length <= max;
+const containsPoint = (rect: IRect, point: IPoint): boolean =>
+  point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom;
+
+/** The spot after the line (below or right of it) first when `afterFirst`, otherwise the one before it. */
+const sidesFirst = (afterFirst: boolean, after: IPoint, before: IPoint): [IPoint, IPoint] => (afterFirst ? [after, before] : [before, after]);
 
 /**
  * Works out where the drag chip goes: next to the cursor, never over it, and never over the line that shows where the
@@ -32,35 +36,34 @@ export const getChipPosition = (cursor: IPoint, chip: ISize, dropLine: IRect | n
   const maxX = viewport.width - VIEWPORT_MARGIN;
   const maxY = viewport.height - VIEWPORT_MARGIN;
 
+  // the window may be too small for a spot to fit, so every spot is checked where it ends up, after being kept on screen
+  const place = (position: IPoint): IPoint =>
+    ({ x: clamp(position.x, minX, maxX - chip.width), y: clamp(position.y, minY, maxY - chip.height) });
+
   // below and to the right of the cursor, or on its other side when that runs off screen
-  let x = cursor.x + CHIP_CURSOR_GAP + chip.width <= maxX ? cursor.x + CHIP_CURSOR_GAP : cursor.x - CHIP_CURSOR_GAP - chip.width;
-  let y = cursor.y + CHIP_CURSOR_GAP + chip.height <= maxY ? cursor.y + CHIP_CURSOR_GAP : cursor.y - CHIP_CURSOR_GAP - chip.height;
+  const initial = place({
+    x: cursor.x + CHIP_CURSOR_GAP + chip.width <= maxX ? cursor.x + CHIP_CURSOR_GAP : cursor.x - CHIP_CURSOR_GAP - chip.width,
+    y: cursor.y + CHIP_CURSOR_GAP + chip.height <= maxY ? cursor.y + CHIP_CURSOR_GAP : cursor.y - CHIP_CURSOR_GAP - chip.height,
+  });
+  if (!dropLine) return initial;
 
-  if (dropLine) {
-    const keepClear: IRect = {
-      left: dropLine.left - DROP_LINE_CLEARANCE,
-      top: dropLine.top - DROP_LINE_CLEARANCE,
-      right: dropLine.right + DROP_LINE_CLEARANCE,
-      bottom: dropLine.bottom + DROP_LINE_CLEARANCE,
-    };
+  const keepClear: IRect = {
+    left: dropLine.left - DROP_LINE_CLEARANCE,
+    top: dropLine.top - DROP_LINE_CLEARANCE,
+    right: dropLine.right + DROP_LINE_CLEARANCE,
+    bottom: dropLine.bottom + DROP_LINE_CLEARANCE,
+  };
+  const coversLine = (position: IPoint): boolean => overlaps(rectAt(position, chip), keepClear);
+  const isClear = (position: IPoint): boolean => !coversLine(position) && !containsPoint(rectAt(position, chip), cursor);
 
-    if (overlaps(rectAt({ x, y }, chip), keepClear)) {
-      const isHorizontal = dropLine.right - dropLine.left >= dropLine.bottom - dropLine.top;
-      if (isHorizontal) {
-        const below = keepClear.bottom;
-        const above = keepClear.top - chip.height;
-        const cursorBelow = cursor.y >= (dropLine.top + dropLine.bottom) / 2;
-        const [preferred, other] = cursorBelow ? [below, above] : [above, below];
-        y = fitsBetween(preferred, chip.height, minY, maxY) || !fitsBetween(other, chip.height, minY, maxY) ? preferred : other;
-      } else {
-        const right = keepClear.right;
-        const left = keepClear.left - chip.width;
-        const cursorRight = cursor.x >= (dropLine.left + dropLine.right) / 2;
-        const [preferred, other] = cursorRight ? [right, left] : [left, right];
-        x = fitsBetween(preferred, chip.width, minX, maxX) || !fitsBetween(other, chip.width, minX, maxX) ? preferred : other;
-      }
-    }
-  }
+  // on the cursor's side of the line first, then on the other side
+  const isHorizontal = dropLine.right - dropLine.left >= dropLine.bottom - dropLine.top;
+  const [preferred, other] = isHorizontal
+    ? sidesFirst(cursor.y >= (dropLine.top + dropLine.bottom) / 2, { ...initial, y: keepClear.bottom }, { ...initial, y: keepClear.top - chip.height })
+    : sidesFirst(cursor.x >= (dropLine.left + dropLine.right) / 2, { ...initial, x: keepClear.right }, { ...initial, x: keepClear.left - chip.width });
+  const onCursorSide = place(preferred);
+  const candidates = [initial, onCursorSide, place(other)];
 
-  return { x: clamp(x, minX, maxX - chip.width), y: clamp(y, minY, maxY - chip.height) };
+  // when nothing is clear of both, seeing the line matters most
+  return candidates.find(isClear) ?? candidates.find((position) => !coversLine(position)) ?? onCursorSide;
 };
