@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization.Users;
 using Abp.Extensions;
 using Newtonsoft.Json;
+using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.EntityHistory;
@@ -13,7 +14,7 @@ namespace Shesha.Authorization.Users
 {
     [Table("AbpUsers")]
     [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
-    public class User : AbpUser<User>
+    public class User : AbpUser<User>, IHasNormalizedFields
     {
         public const string DefaultPassword = "123qwe";
         public const string EmailAlreadyInUse = "Specified email already used by another person";
@@ -72,10 +73,26 @@ namespace Shesha.Authorization.Users
         [MaxLength(MaxEmailAddressLength)]
         public override string? NormalizedEmailAddress { get; set; }
 
+        /// <summary>
+        /// UserName is null-guarded because the method is also called by the NHibernate interceptor (see <see cref="Normalize"/>)
+        /// for users that may not have it yet - the required-field validation reports that case instead of a NullReferenceException.
+        /// </summary>
         public override void SetNormalizedNames()
         {
-            NormalizedUserName = UserName.ToUpperInvariant();
+            NormalizedUserName = UserName?.ToUpperInvariant()!;
             NormalizedEmailAddress = EmailAddress?.ToUpperInvariant();
+        }
+
+        private static readonly string[] NormalizedFieldNames = [nameof(NormalizedUserName), nameof(NormalizedEmailAddress)];
+
+        /// <summary>
+        /// Keeps normalized names in sync when the user is saved outside of the <see cref="UserManager"/>
+        /// (e.g. as a nested entity via dynamic CRUD).
+        /// </summary>
+        public virtual IReadOnlyCollection<string> Normalize()
+        {
+            SetNormalizedNames();
+            return NormalizedFieldNames;
         }
 
         [Display(Name = "Authentication Guid")]

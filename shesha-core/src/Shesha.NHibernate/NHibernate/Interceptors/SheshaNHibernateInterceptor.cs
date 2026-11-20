@@ -14,6 +14,7 @@ using NHibernate.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Transaction;
 using NHibernate.Type;
+using Shesha.Domain;
 using Shesha.NHibernate.UoW;
 using Shesha.Reflection;
 using System;
@@ -68,8 +69,47 @@ namespace Shesha.NHibernate.Interceptors
                 );
         }
 
+        /// <summary>
+        /// Normalizes <see cref="IHasNormalizedFields"/> entities and copies changed values into the
+        /// NHibernate state, because NHibernate builds the SQL from the state snapshot, not from the entity itself.
+        /// Only the properties returned by <see cref="IHasNormalizedFields.Normalize"/> are read and synced,
+        /// so other (e.g. lazy-loaded) properties are never touched during a flush.
+        /// Called from <see cref="OnSave"/> (new entities) and <see cref="OnFlushDirty"/> (changed entities only).
+        /// </summary>
+        /// <returns>true if any state value was changed</returns>
+        private static bool ApplyNormalizedFields(object entity, object[] state, string[] propertyNames, IType[] types)
+        {
+            if (entity is not IHasNormalizedFields hasNormalizedFields)
+                return false;
+
+            var normalizedFieldNames = hasNormalizedFields.Normalize();
+
+            var updated = false;
+            var entityType = entity.GetType();
+            foreach (var fieldName in normalizedFieldNames)
+            {
+                var i = Array.IndexOf(propertyNames, fieldName);
+                if (i < 0 || types[i].IsAssociationType || types[i].IsCollectionType || types[i].IsComponentType)
+                    continue;
+
+                var prop = entityType.GetClosestPropertyOrNull(fieldName);
+                if (prop == null || !prop.CanRead)
+                    continue;
+
+                var value = prop.GetValue(entity);
+                if (!Equals(state[i], value))
+                {
+                    state[i] = value!; // NHibernate state arrays hold nulls for null columns
+                    updated = true;
+                }
+            }
+            return updated;
+        }
+
         public override bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types)
         {
+            var normalizedFieldsUpdated = ApplyNormalizedFields(entity, state, propertyNames, types);
+
             //Set Id for Guids
             if (entity is IEntity<Guid> guidEntity)
             {
@@ -109,12 +149,12 @@ namespace Shesha.NHibernate.Interceptors
             TriggerDomainEvents(entity);
             EntityHistoryHelper?.AddEntityChange(entity);
 
-            return base.OnSave(entity, id, state, propertyNames, types);
+            return base.OnSave(entity, id, state, propertyNames, types) || normalizedFieldsUpdated;
         }
 
         public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
         {
-            var updated = false;
+            var updated = ApplyNormalizedFields(entity, currentState, propertyNames, types);
 
             //Set modification audits
             if (entity is IHasModificationTime hasModificationTime)
