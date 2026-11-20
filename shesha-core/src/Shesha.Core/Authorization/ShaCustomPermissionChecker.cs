@@ -70,7 +70,7 @@ namespace Shesha.Authorization
 
         private async Task<IQueryable<ShaRoleAppointedPerson>> GetPersonGrantsAsync(Person person, string permissionName) 
         {
-            return (await _rolePersonRepository.GetAllAsync()).Where(x => x.Person == person && x.Role.Permissions.Any(rp => rp.Permission == permissionName && rp.IsGranted));
+            return (await _rolePersonRepository.GetAllAsync()).Where(x => x.Person == person && !x.Role.IsDeleted && x.Role.Permissions.Any(rp => rp.Permission == permissionName && rp.IsGranted));
         }
 
         public async Task<bool> IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
