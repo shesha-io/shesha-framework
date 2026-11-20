@@ -70,22 +70,22 @@ namespace Shesha.NHibernate.Interceptors
         }
 
         /// <summary>
-        /// Recalculates derived fields of <see cref="IHasCalculatedFields"/> entities and copies changed values into the
+        /// Normalizes <see cref="IHasNormalizedFields"/> entities and copies changed values into the
         /// NHibernate state, because NHibernate builds the SQL from the state snapshot, not from the entity itself.
-        /// Only the properties listed by <see cref="IHasCalculatedFields.GetCalculatedFieldNames"/> are read and synced,
+        /// Only the properties listed by <see cref="IHasNormalizedFields.GetNormalizedFieldNames"/> are read and synced,
         /// so other (e.g. lazy-loaded) properties are never touched during a flush.
         /// </summary>
         /// <returns>true if any state value was changed</returns>
-        private static bool ApplyCalculatedFields(object entity, object[] state, string[] propertyNames, IType[] types)
+        private static bool ApplyNormalizedFields(object entity, object[] state, string[] propertyNames, IType[] types)
         {
-            if (entity is not IHasCalculatedFields hasCalculatedFields)
+            if (entity is not IHasNormalizedFields hasNormalizedFields)
                 return false;
 
-            hasCalculatedFields.CalculateFields();
+            hasNormalizedFields.Normalize();
 
             var updated = false;
             var entityType = entity.GetType();
-            foreach (var fieldName in hasCalculatedFields.GetCalculatedFieldNames())
+            foreach (var fieldName in hasNormalizedFields.GetNormalizedFieldNames())
             {
                 var i = Array.IndexOf(propertyNames, fieldName);
                 if (i < 0 || types[i].IsAssociationType || types[i].IsCollectionType || types[i].IsComponentType)
@@ -107,7 +107,7 @@ namespace Shesha.NHibernate.Interceptors
 
         public override bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types)
         {
-            var calculatedFieldsUpdated = ApplyCalculatedFields(entity, state, propertyNames, types);
+            var normalizedFieldsUpdated = ApplyNormalizedFields(entity, state, propertyNames, types);
 
             //Set Id for Guids
             if (entity is IEntity<Guid> guidEntity)
@@ -148,12 +148,12 @@ namespace Shesha.NHibernate.Interceptors
             TriggerDomainEvents(entity);
             EntityHistoryHelper?.AddEntityChange(entity);
 
-            return base.OnSave(entity, id, state, propertyNames, types) || calculatedFieldsUpdated;
+            return base.OnSave(entity, id, state, propertyNames, types) || normalizedFieldsUpdated;
         }
 
         public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
         {
-            var updated = ApplyCalculatedFields(entity, currentState, propertyNames, types);
+            var updated = ApplyNormalizedFields(entity, currentState, propertyNames, types);
 
             //Set modification audits
             if (entity is IHasModificationTime hasModificationTime)

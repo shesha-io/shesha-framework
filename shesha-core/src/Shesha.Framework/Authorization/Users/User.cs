@@ -14,7 +14,7 @@ namespace Shesha.Authorization.Users
 {
     [Table("AbpUsers")]
     [Entity(CrudActions = CrudActions.None, IsConfigurable = false)]
-    public class User : AbpUser<User>, IHasCalculatedFields
+    public class User : AbpUser<User>, IHasNormalizedFields
     {
         public const string DefaultPassword = "123qwe";
         public const string EmailAlreadyInUse = "Specified email already used by another person";
@@ -73,27 +73,26 @@ namespace Shesha.Authorization.Users
         [MaxLength(MaxEmailAddressLength)]
         public override string? NormalizedEmailAddress { get; set; }
 
-        public override void SetNormalizedNames()
-        {
-            NormalizedUserName = UserName.ToUpperInvariant();
-            NormalizedEmailAddress = EmailAddress?.ToUpperInvariant();
-        }
-
         /// <summary>
-        /// Keeps normalized names in sync when the user is saved outside of the <see cref="UserManager"/>
-        /// (e.g. as a nested entity via dynamic CRUD). UserName is guarded because a partially bound entity
-        /// may not have it yet - the required-field validation reports that case instead of a NullReferenceException.
+        /// UserName is guarded because the method is also called by the NHibernate interceptor (see <see cref="Normalize"/>)
+        /// for users that may not have it yet - the required-field validation reports that case instead of a NullReferenceException.
         /// </summary>
-        public virtual void CalculateFields()
+        public override void SetNormalizedNames()
         {
             if (UserName != null)
                 NormalizedUserName = UserName.ToUpperInvariant();
             NormalizedEmailAddress = EmailAddress?.ToUpperInvariant();
         }
 
-        private static readonly string[] CalculatedFieldNames = [nameof(NormalizedUserName), nameof(NormalizedEmailAddress)];
+        /// <summary>
+        /// Keeps normalized names in sync when the user is saved outside of the <see cref="UserManager"/>
+        /// (e.g. as a nested entity via dynamic CRUD).
+        /// </summary>
+        public virtual void Normalize() => SetNormalizedNames();
 
-        public virtual IReadOnlyCollection<string> GetCalculatedFieldNames() => CalculatedFieldNames;
+        private static readonly string[] NormalizedFieldNames = [nameof(NormalizedUserName), nameof(NormalizedEmailAddress)];
+
+        public virtual IReadOnlyCollection<string> GetNormalizedFieldNames() => NormalizedFieldNames;
 
         [Display(Name = "Authentication Guid")]
         [MaxLength(36)]
