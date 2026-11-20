@@ -127,6 +127,14 @@ export type StyleGroups = 'common' | 'inputs' | 'common-containers' | 'buttons';
  */
 export type ThemeComponentGroup = 'input' | 'inline' | 'standard' | 'layout';
 
+/** A component that has to enclose another one, at any depth, for it to work. */
+export interface IRequiredParent {
+  /** Types of the components that meet the requirement, e.g. `['dataContext']`. */
+  types: string[];
+  /** Explains the requirement to the user, e.g. "A Data Table must be placed inside a Data Context." */
+  message: string;
+}
+
 export type IToolboxComponentBase = {
   /** Show the component in the theme editor (true by default, unless isHidden is set). Set to true explicitly to keep a hidden component in the theme editor */
   showInThemeEditor?: boolean | undefined;
@@ -194,6 +202,11 @@ export type IToolboxComponentBase = {
    * Name of the child component containers. Note: may be changed in the future releases
    */
   customContainerNames?: string[] | undefined;
+  /**
+   * Component that must enclose this one for it to work, e.g. a Data Table needs a Data Context. The form designer
+   * marks a drop target that doesn't meet it as invalid while dragging, and refuses the drop.
+   */
+  requiredParent?: IRequiredParent | undefined;
   /**
    * Markup of the settings form. Applied when the @settingsFormFactory is not specified, in this case you can render settings for in the designer itself
    */

@@ -10,7 +10,7 @@ import { useStyles } from '../tableContext/styles';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { IQuickSearchComponentProps, QuickSearchComponentDefinition } from './interfaces';
 import { useComponentValidation } from '@/providers/validationErrors';
-import { validationError } from '../utils';
+import { dataContextRequired, validationError } from '../utils';
 import { useDataTableStoreOrUndefined } from '@/providers/dataTable/hooks';
 import { DEFAULT_DESIGNER_PADDING } from '@/components/formDesigner/utils/stylingUtils';
 import { migratePermissionsToVisiblePermissions } from '@/designer-components/_common-migrations/migratePermissionsToVisiblePermissions';
@@ -24,6 +24,7 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
   isInput: false,
   name: 'Quick Search',
   icon: <SearchOutlined />,
+  requiredParent: dataContextRequired('Quick Search'),
   getWrapperStyle: (model) => ({
     style: { dimensions: { width: model.dimensions?.width, maxWidth: model.dimensions?.maxWidth, minWidth: model.dimensions?.minWidth } },
     designerStyle: DEFAULT_DESIGNER_PADDING,

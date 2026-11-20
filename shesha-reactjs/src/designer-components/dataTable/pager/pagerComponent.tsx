@@ -11,6 +11,7 @@ import { IPagerComponentProps, PagerComponentDefinition } from './interfaces';
 import { EMPTY_STYLE } from '@/styles/variables';
 import { DEFAULT_DESIGNER_PADDING } from '@/components/formDesigner/utils/stylingUtils';
 import { migratePermissionsToVisiblePermissions } from '@/designer-components/_common-migrations/migratePermissionsToVisiblePermissions';
+import { dataContextRequired } from '../utils';
 
 const PagerComponent: PagerComponentDefinition = {
   themeGroup: 'inline',
@@ -19,6 +20,7 @@ const PagerComponent: PagerComponentDefinition = {
   isInput: false,
   name: 'Table Pager',
   icon: <ControlOutlined />,
+  requiredParent: dataContextRequired('Table Pager'),
   getWrapperStyle: () => ({ designerStyle: DEFAULT_DESIGNER_PADDING }),
   Factory: ({ model }) => {
     return model.hidden === true ? null : <TablePager {...model} style={model.styleCss ?? EMPTY_STYLE} />;

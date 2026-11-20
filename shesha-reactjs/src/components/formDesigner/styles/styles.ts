@@ -1,7 +1,7 @@
 import { getFormDesignerBackgroundSvg } from '@/components/sidebarContainer/styles/svg/dropHint';
 import { createStyles, sheshaStyles } from '@/styles';
 import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
-import { DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from '../dragDrop/models';
+import { DROP_TARGET_INVALID_ATTR, DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from '../dragDrop/models';
 
 export const designerClassNames = {
   componentDragHandle: "sha-component-drag-handle",
@@ -476,6 +476,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     top: calc(50% - 1.5px);
                 }
             }
+        }
+        /* the dragged item can't be dropped here: the line (and the frame, which borrows its colour) turns red */
+        [${DROP_TARGET_INVALID_ATTR}] > .${shaComponentGhost}::before {
+            background: ${token.colorError};
         }
         /*
          * An empty container's drop list has no height and sits below its drop hint, so the pointer is over the hint

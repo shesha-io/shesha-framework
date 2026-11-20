@@ -6,7 +6,7 @@ import { TableViewSelector } from './tableViewSelector';
 import { getSettings } from './settingsForm';
 import { useStyles } from '../tableContext/styles';
 import { useComponentValidation } from '@/providers/validationErrors';
-import { validationError } from '../utils';
+import { dataContextRequired, validationError } from '../utils';
 import { useDataTableStoreOrUndefined } from '@/providers/dataTable/hooks';
 
 import { isNonEmptyArray } from '@/utils/array';
@@ -23,6 +23,7 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   isInput: false,
   name: 'Table View Selector',
   icon: <SelectOutlined />,
+  requiredParent: dataContextRequired('Table View Selector'),
   getWrapperStyle: () => ({ style: { stylingBoxJson: { marginBottom: 0, marginTop: 0, marginLeft: 0, marginRight: 0, _type: 'styleBox' } } }),
   Factory: ({ model }) => {
     const store = useDataTableStoreOrUndefined();

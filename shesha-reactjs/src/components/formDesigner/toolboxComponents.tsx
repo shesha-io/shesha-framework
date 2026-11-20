@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, useCallback, useMemo } from 'react';
 import ToolboxComponent from './toolboxComponent';
 import { Collapse, CollapseProps, Empty } from 'antd';
 import { useLocalStorage } from '@/hooks';
@@ -8,7 +8,7 @@ import { IToolboxComponentGroup } from '@/interfaces';
 import { SearchBox } from './toolboxSearchBox';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
-import { useFormDesignerComponentGroups } from '@/providers/form/hooks';
+import { useFormDesignerComponentGetter, useFormDesignerComponentGroups } from '@/providers/form/hooks';
 import { isDefined } from '@/utils/nullables';
 import { SortableEvent } from 'sortablejs';
 import { startDropTargetIndicator, stopDropTargetIndicator } from './dragDrop/dropTargetIndicator';
@@ -32,6 +32,8 @@ export const ToolboxComponents: FC = () => {
 
   const toolboxComponentGroups = useFormDesignerComponentGroups();
   const { startDraggingNewItem, endDraggingNewItem } = useFormDesigner();
+  const getToolboxComponent = useFormDesignerComponentGetter();
+  const getRequiredParent = useCallback((type: string) => getToolboxComponent(type)?.requiredParent, [getToolboxComponent]);
 
   const filteredGroups = useMemo<IToolboxComponentGroup[]>(() => {
     if (!Boolean(searchText)) return [...toolboxComponentGroups];
@@ -53,7 +55,7 @@ export const ToolboxComponents: FC = () => {
 
   const onDragStart = (evt: SortableEvent): void => {
     startDraggingNewItem();
-    startDropTargetIndicator(evt.item);
+    startDropTargetIndicator(evt.item, getRequiredParent);
   };
 
   const onDragEnd = (): void => {
