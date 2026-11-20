@@ -216,7 +216,7 @@ namespace Shesha.Authorization
         /// <param name="tenantId">Tenant Id</param>
         /// <param name="permissionedEntity">Permissioned Entity</param>
         /// <returns></returns>
-        private string GetPermissionsCacheKey(long userId, int? tenantId, EntityReferenceDto<string>? permissionedEntity = null)
+        public static string GetPermissionsCacheKey(long userId, int? tenantId, EntityReferenceDto<string>? permissionedEntity = null)
         {
             if (permissionedEntity == null)
                 return userId + "@" + (tenantId ?? 0);

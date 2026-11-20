@@ -101,8 +101,15 @@ namespace Shesha.Domain
         public virtual Guid? LatestImportedRevisionId { get; set; }
         [ReadonlyProperty]
         public virtual bool IsUpdated { get; protected set; }
+        /// <summary>
+        /// If true, indicates that the current item is an exposed version of a base configuration item.
+        /// </summary>
         [ReadonlyProperty]
         public virtual bool IsExposed { get; protected set; }
+        /// <summary>
+        /// If true, indicates that the current item has an exposed version.
+        /// </summary>
+        public virtual bool IsOverriden { get; set; }
 
         public virtual void Normalize()
         {
