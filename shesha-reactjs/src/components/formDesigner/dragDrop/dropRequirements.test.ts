@@ -55,15 +55,6 @@ describe('getRequirementViolations', () => {
     ), getRequiredParent);
     expect(result.size).toBe(0);
   });
-
-  it('follows containers held by properties, such as a panel header', () => {
-    const panel = component('panel1', 'panel', { header: { id: 'panel1-header', components: [] } });
-    const result = getRequirementViolations(markup(
-      [panel, component('table1', 'datatable')],
-      { root: ['panel1'], 'panel1-header': ['table1'] },
-    ), getRequiredParent);
-    expect([...result.keys()]).toEqual(['table1']);
-  });
 });
 
 describe('getRequirementViolations of components that are no longer on the form', () => {

@@ -25,7 +25,7 @@ import { StandaloneTable } from './standaloneTable';
 import { useDataTableStore, useDataTableStoreOrUndefined } from '@/providers/dataTable';
 import { collectMetadataPropertyPaths, defaultStyles, flattenConfiguredColumns, getDataColumnAccessor, getTableDefaults, getTableSettingsDefaults } from './utils';
 import { useComponentValidation } from '@/providers/validationErrors';
-import { parseFetchError } from '../utils';
+import { dataContextRequired, parseFetchError } from '../utils';
 import { useMetadataOrUndefined } from '@/providers/metadata';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { BackendRepositoryType } from '@/providers/dataTable/repository/backendRepository';
@@ -91,10 +91,7 @@ const TableComponent: TableComponentDefinition = {
   name: 'Data Table',
   preserveDimensionsInDesigner: true,
   icon: <TableOutlined />,
-  requiredParent: {
-    types: ['dataContext', 'datatableContext'],
-    message: 'A Data Table must be placed inside a Data Context.',
-  },
+  requiredParent: dataContextRequired('Data Table'),
   getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
   Factory: ({ model }) => {
     const store = useDataTableStoreOrUndefined();

@@ -6,6 +6,7 @@ import { FormDesignerArgs, FormDesignerInstance } from '../instance';
 vi.mock('../formValidator', () => ({
   FormValidator: class {
     validateAllComponentsAsync = (): Promise<void> => Promise.resolve();
+
     validateFormSettingsAsync = (): Promise<never[]> => Promise.resolve([]);
   },
   NULL_DEPENDENCIES_CONTEXT: {},

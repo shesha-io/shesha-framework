@@ -10,7 +10,7 @@ import { useDataTableStoreOrUndefined } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { IAdvancedFilterButtonComponentProps } from './types';
 import { useComponentValidation } from '@/providers/validationErrors';
-import { validationError } from '../utils';
+import { dataContextRequired, validationError } from '../utils';
 import { DEFAULT_DESIGNER_PADDING } from '@/components/formDesigner/utils/stylingUtils';
 import { migratePermissionsToVisiblePermissions } from '@/designer-components/_common-migrations/migratePermissionsToVisiblePermissions';
 
@@ -24,6 +24,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
   isInput: false,
   name: 'Table Filter',
   icon: <FilterOutlined />,
+  requiredParent: dataContextRequired('Table Filter'),
   getWrapperStyle: () => ({ designerStyle: DEFAULT_DESIGNER_PADDING }),
   Factory: ({ model }) => {
     const store = useDataTableStoreOrUndefined();
