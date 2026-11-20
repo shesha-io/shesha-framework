@@ -204,6 +204,23 @@ describe('LayersPanel: keyboard', () => {
     expect(rowLabels()).not.toContain('Email');
   });
 
+  it('goes to the parent with the left arrow key during a search, and leaves rows open', async () => {
+    renderPanel(createTestDesigner(sampleForm()));
+    const search = screen.getByPlaceholderText('Search layers');
+    fireEvent.change(search, { target: { value: 'phone' } });
+    await waitFor(() => expect(rowLabels()).toEqual(['Main tabs', 'Details', 'Phone']));
+    const tree = screen.getByRole('tree');
+    fireEvent.focus(tree);
+
+    fireEvent.keyDown(tree, { key: 'ArrowDown' });
+    fireEvent.keyDown(tree, { key: 'ArrowLeft' });
+    expect(tree).toHaveAttribute('aria-activedescendant', 'layer-row-tabs1');
+
+    fireEvent.keyDown(tree, { key: 'ArrowLeft' });
+    fireEvent.keyDown(search, { key: 'Escape' });
+    await waitFor(() => expect(rowLabels()).toContain('Details'));
+  });
+
   it('jumps to a row by typing the start of its label', () => {
     renderPanel(createTestDesigner(sampleForm()));
     const tree = screen.getByRole('tree');

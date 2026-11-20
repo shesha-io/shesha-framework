@@ -167,6 +167,7 @@ const LayersPanelContent: FC = () => {
     getLabel,
     onSelect: selectRow,
     setExpanded: expandedState.setRowExpanded,
+    canCollapse: !isDefined(search),
     scrollToRow,
     onOpenMenu: openMenu,
     onMoveSelected: moveSelected,

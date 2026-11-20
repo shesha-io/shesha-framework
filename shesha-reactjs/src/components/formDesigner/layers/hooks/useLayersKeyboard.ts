@@ -12,6 +12,8 @@ export interface ILayersKeyboardArgs {
   getLabel: (id: string) => string;
   onSelect: (id: string) => void;
   setExpanded: (id: string, value: boolean) => void;
+  /** False while a search holds every row open */
+  canCollapse: boolean;
   scrollToRow: (index: number) => void;
   onOpenMenu?: ((id: string) => void) | undefined;
   onMoveSelected?: ((direction: 'up' | 'down') => void) | undefined;
@@ -41,7 +43,7 @@ export const useLayersKeyboard = (args: ILayersKeyboardArgs): ((event: KeyboardE
     // keys pressed inside a row (its button, its menu) belong to that control
     if (event.target !== event.currentTarget)
       return;
-    const { rows, activeId, setActiveId, getLabel, onSelect, setExpanded, scrollToRow, onOpenMenu, onMoveSelected } = latest.current;
+    const { rows, activeId, setActiveId, getLabel, onSelect, setExpanded, canCollapse, scrollToRow, onOpenMenu, onMoveSelected } = latest.current;
     if (rows.length === 0)
       return;
     const handled = (): void => {
@@ -110,7 +112,7 @@ export const useLayersKeyboard = (args: ILayersKeyboardArgs): ((event: KeyboardE
         return;
       case 'ArrowLeft': {
         handled();
-        if (current.isExpanded) {
+        if (current.isExpanded && canCollapse) {
           setExpanded(current.id, false);
           return;
         }
