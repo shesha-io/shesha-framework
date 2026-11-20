@@ -175,6 +175,9 @@ namespace Shesha.ConfigurationItems
                     revision.Comments = $"Exposed from {item.Module.Name}";
                 });
 
+                item.IsOverriden = true;
+                await Repository.UpdateAsync(item);
+
                 await UnitOfWorkManager.Current.SaveChangesAsync();
 
                 await AfterItemExposedAsync(exposedConfig);

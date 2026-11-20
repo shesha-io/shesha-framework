@@ -2,6 +2,7 @@
 using Abp.Dependency;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
+using Shesha.Authorization.Cache;
 using Shesha.Domain;
 using System.Threading.Tasks;
 
@@ -21,62 +22,62 @@ namespace Shesha.Authorization
         IAsyncEventHandler<EntityDeletedEventData<ShaRolePermission>>,
         ITransientDependency
     {
-        private readonly IShaPermissionChecker _permissionChecker;
-        
+        private readonly ICustomUserPermissionCacheHolder _cacheHolder;
 
-        public CustomPermissionsInvalidator(IShaPermissionChecker permissionChecker)
+        public CustomPermissionsInvalidator(ICustomUserPermissionCacheHolder cacheHolder)
         {
-            _permissionChecker = permissionChecker;
+            _cacheHolder = cacheHolder;
         }
 
         public async Task HandleEventAsync(EntityDeletedEventData<AbpUserBase> eventData)
         {
-            await _permissionChecker.ClearPermissionsCacheForUserAsync(eventData.Entity.Id, eventData.Entity.TenantId);
+            var cacheKey = ShaPermissionChecker.GetPermissionsCacheKey(eventData.Entity.Id, eventData.Entity.TenantId);
+            await _cacheHolder.Cache.RemoveAsync(cacheKey);            
         }
 
         public async Task HandleEventAsync(EntityCreatedEventData<ShaRole> eventData)
         {
-            await _permissionChecker.ClearPermissionsCacheAsync();
+            await _cacheHolder.Cache.ClearAsync();
         }
 
         public async Task HandleEventAsync(EntityUpdatedEventData<ShaRole> eventData)
         {
-            await _permissionChecker.ClearPermissionsCacheAsync();
+            await _cacheHolder.Cache.ClearAsync();
         }
 
         public async Task HandleEventAsync(EntityDeletedEventData<ShaRole> eventData)
         {
-            await _permissionChecker.ClearPermissionsCacheAsync();
+            await _cacheHolder.Cache.ClearAsync();
         }
 
         public async Task HandleEventAsync(EntityCreatedEventData<ShaRoleAppointedPerson> eventData)
         {
-            await _permissionChecker.ClearPermissionsCacheAsync();
+            await _cacheHolder.Cache.ClearAsync();
         }
 
         public async Task HandleEventAsync(EntityUpdatedEventData<ShaRoleAppointedPerson> eventData)
         {
-            await _permissionChecker.ClearPermissionsCacheAsync();
+            await _cacheHolder.Cache.ClearAsync();
         }
 
         public async Task HandleEventAsync(EntityDeletedEventData<ShaRoleAppointedPerson> eventData)
         {
-            await _permissionChecker.ClearPermissionsCacheAsync();
+            await _cacheHolder.Cache.ClearAsync();
         }
 
         public async Task HandleEventAsync(EntityCreatedEventData<ShaRolePermission> eventData)
         {
-            await _permissionChecker.ClearPermissionsCacheAsync();
+            await _cacheHolder.Cache.ClearAsync();
         }
 
         public async Task HandleEventAsync(EntityUpdatedEventData<ShaRolePermission> eventData)
         {
-            await _permissionChecker.ClearPermissionsCacheAsync();
+            await _cacheHolder.Cache.ClearAsync();
         }
 
         public async Task HandleEventAsync(EntityDeletedEventData<ShaRolePermission> eventData)
         {
-            await _permissionChecker.ClearPermissionsCacheAsync();
+            await _cacheHolder.Cache.ClearAsync();
         }
     }
 }
