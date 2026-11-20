@@ -72,11 +72,22 @@ describe('getChipPosition', () => {
     expect(overlaps(chipRect(position), line)).toBe(false);
   });
 
-  it('keeps the line in view when nothing is clear of both the line and the cursor', () => {
-    // a window so small the chip can't avoid the cursor anywhere, but it still keeps off the line
+  it('tries the other corners around the cursor in a tiny window, before settling for covering it', () => {
+    // above the cursor covers the line and the line's sides cover the cursor, but below the cursor, kept on screen, is clear
     const tiny: ISize = { width: 130, height: 90 };
     const line: IRect = { left: 0, top: 20, right: 130, bottom: 20 };
-    const position = getChipPosition({ x: 65, y: 50 }, chip, line, tiny);
+    const cursor = { x: 65, y: 50 };
+    const position = getChipPosition(cursor, chip, line, tiny);
+    expect(position).toEqual({ x: 6, y: 56 });
+    expect(overlaps(chipRect(position), line)).toBe(false);
+    expect(containsPoint(chipRect(position), cursor)).toBe(false);
+  });
+
+  it('keeps the line in view when nothing is clear of both the line and the cursor', () => {
+    // every spot in this window that keeps off the line covers the cursor
+    const tiny: ISize = { width: 130, height: 90 };
+    const line: IRect = { left: 0, top: 20, right: 130, bottom: 20 };
+    const position = getChipPosition({ x: 65, y: 57 }, chip, line, tiny);
     expect(position).toEqual({ x: 4, y: 20 + DROP_LINE_CLEARANCE });
     expect(overlaps(chipRect(position), line)).toBe(false);
   });

@@ -62,7 +62,11 @@ export const getChipPosition = (cursor: IPoint, chip: ISize, dropLine: IRect | n
     ? sidesFirst(cursor.y >= (dropLine.top + dropLine.bottom) / 2, { ...initial, y: keepClear.bottom }, { ...initial, y: keepClear.top - chip.height })
     : sidesFirst(cursor.x >= (dropLine.left + dropLine.right) / 2, { ...initial, x: keepClear.right }, { ...initial, x: keepClear.left - chip.width });
   const onCursorSide = place(preferred);
-  const candidates = [initial, onCursorSide, place(other)];
+  // every corner around the cursor, for a window so small that keeping the spots above on screen pushes them back over
+  // the cursor or the line
+  const aroundCursor = [cursor.x + CHIP_CURSOR_GAP, cursor.x - CHIP_CURSOR_GAP - chip.width].flatMap((x) =>
+    [cursor.y + CHIP_CURSOR_GAP, cursor.y - CHIP_CURSOR_GAP - chip.height].map((y) => place({ x, y })));
+  const candidates = [initial, onCursorSide, place(other), ...aroundCursor];
 
   // when nothing is clear of both, seeing the line matters most
   return candidates.find(isClear) ?? candidates.find((position) => !coversLine(position)) ?? onCursorSide;
