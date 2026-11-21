@@ -12,6 +12,7 @@ import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 const ContainerCheckerComponent: ContainerCheckerComponentDefinition = {
   type: 'containerChecker',
   isInput: false,
+  acceptsChildren: true,
   name: 'Container checker',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {

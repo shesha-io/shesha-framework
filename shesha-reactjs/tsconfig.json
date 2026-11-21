@@ -31,7 +31,7 @@
         "strictPropertyInitialization": true,
         "target": "esnext",
         "noEmitOnError": true,
-        "types": ["node", "react", "vitest/globals", "vite/client"],
+        "types": ["node", "react", "vitest/globals", "@testing-library/jest-dom/vitest", "vite/client"],
         "paths": {
             "@/*": [
                 "./src/*"

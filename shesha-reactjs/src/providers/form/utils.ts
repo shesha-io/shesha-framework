@@ -480,28 +480,76 @@ const getContainerNames = (toolboxComponent: IToolboxComponent): string[] => {
     : ['components'];
 };
 
-const getSubContainers = (component: IConfigurableFormComponent, componentRegistration: IToolboxComponent | undefined): IComponentsContainer[] => {
-  const customContainerNames = componentRegistration?.customContainerNames || [];
-  let subContainers: IComponentsContainer[] = [];
+/**
+ * A place where child components live: a component's own `components`, a tab pane, a column, a wizard step,
+ * a step's footer...
+ */
+export interface IComponentContainerInfo {
+  /** Container id. Equals the owner's id for its own `components` and for custom containers holding a plain list of components */
+  id: string;
+  /** Name of the owner's property the container comes from, e.g. 'components', 'tabs', 'header', 'stepFooter' */
+  propertyName: string;
+  /** Position within an array property (tab, column, step); undefined for single containers */
+  index?: number | undefined;
+  /** The container object as stored in the owner's model (tab pane, column, step...); the owner itself for its own container */
+  source: object;
+  /** Child components as stored in the markup tree. In the designer's flat state these can be stale: read `componentRelations[id]` there */
+  components: IConfigurableFormComponent[];
+  /** True for containers found inside array items in a second pass (e.g. a wizard step's footer) */
+  isNested: boolean;
+  /** For nested containers: id of the array item that holds them, when that item is itself a container */
+  parentContainerId?: string | undefined;
+}
+
+/**
+ * Lists the child containers of a component in the order `componentsTreeToFlatStructure` processes them.
+ * Returns an empty list for unknown component types.
+ */
+export const getComponentContainers = (component: IConfigurableFormComponent, componentRegistration: IToolboxComponent | undefined): IComponentContainerInfo[] => {
+  if (!isDefined(componentRegistration))
+    return [];
+
+  const result: IComponentContainerInfo[] = [];
+  const customContainerNames = componentRegistration.customContainerNames ?? [];
+
   customContainerNames.forEach((containerName) => {
     const containerValue = unsafeGetValueByPropertyName(component, containerName);
-    const containers = isDefined(containerValue)
-      ? Array.isArray(containerValue)
-        ? containerValue.every((c) => isComponentsContainer(c))
-          ? containerValue
-          : containerValue.every((c) => isConfigurableFormComponent(c))
-            ? [{ id: component.id, components: containerValue }]
-            : undefined
-        : isComponentsContainer(containerValue)
-          ? [containerValue]
-          : undefined
-      : undefined;
-    if (containers) subContainers = [...subContainers, ...containers];
+    if (!isDefined(containerValue))
+      return;
+    if (Array.isArray(containerValue)) {
+      if (containerValue.every((c) => isComponentsContainer(c))) {
+        (containerValue as IComponentsContainer[]).forEach((container, index) => {
+          result.push({ id: container.id, propertyName: containerName, index, source: container, components: container.components, isNested: false });
+        });
+      } else if (containerValue.every((c) => isConfigurableFormComponent(c))) {
+        result.push({ id: component.id, propertyName: containerName, source: component, components: containerValue as IConfigurableFormComponent[], isNested: false });
+      }
+    } else if (isComponentsContainer(containerValue)) {
+      result.push({ id: containerValue.id, propertyName: containerName, source: containerValue, components: containerValue.components, isNested: false });
+    }
   });
+
   const standardComponents = unsafeGetValueByPropertyName(component, "components");
   if (isDefined(standardComponents))
-    subContainers.push({ id: component.id, components: standardComponents as IConfigurableFormComponent[] });
-  return subContainers;
+    result.push({ id: component.id, propertyName: 'components', source: component, components: standardComponents as IConfigurableFormComponent[], isNested: false });
+
+  // containers nested inside array items (e.g. stepFooter inside steps)
+  customContainerNames.forEach((containerName) => {
+    const containerData = unsafeGetValueByPropertyName(component, containerName);
+    if (!Array.isArray(containerData))
+      return;
+    containerData.forEach((item: unknown) => {
+      if (!isDefined(item) || typeof item !== 'object')
+        return;
+      Object.keys(item).forEach((key) => {
+        const prop = (item as Record<string, unknown>)[key];
+        if (isComponentsContainer(prop))
+          result.push({ id: prop.id, propertyName: key, source: prop, components: prop.components, isNested: true, parentContainerId: isComponentsContainer(item) ? item.id : undefined });
+      });
+    });
+  });
+
+  return result;
 };
 
 /**
@@ -531,45 +579,15 @@ export const componentsTreeToFlatStructure = (
     result.componentRelations[parentId] = level;
 
     if (component.type) {
-      const componentRegistration = toolboxComponents[component.type];
-      if (isDefined(componentRegistration)) {
-        // custom containers
-        const subContainers = getSubContainers(component, componentRegistration);
+      getComponentContainers(component, toolboxComponents[component.type]).forEach((container) => {
+        // a container nested in an array item (e.g. a step's footer) is recorded as a child of the component itself
+        if (container.isNested && !isDefined(result.parents[container.id]))
+          result.parents[container.id] = component.id;
 
-        subContainers.forEach((subContainer) => {
-          if (isDefined(subContainer.components)) {
-            subContainer.components.forEach((c) => {
-              processComponent(c, subContainer.id);
-            });
-          }
+        container.components.forEach((c) => {
+          processComponent(c, container.id);
         });
-      }
-
-      // Handle nested custom containers inside array items (e.g., stepFooter inside steps)
-      // Generic approach: look for any property that is a container (has id and components)
-      if (componentRegistration?.customContainerNames) {
-        componentRegistration.customContainerNames.forEach((containerName) => {
-          const containerData = unsafeGetValueByPropertyName(component, containerName);
-          if (Array.isArray(containerData)) {
-            containerData.forEach((item: unknown) => {
-              if (isDefined(item) && typeof item === 'object') {
-                // Check all properties of the item for nested containers
-                Object.keys(item).forEach((key) => {
-                  const prop = (item as Record<string, unknown>)[key];
-                  if (isComponentsContainer(prop)) {
-                    if (!isDefined(result.parents[prop.id]))
-                      result.parents[prop.id] = component.id;
-
-                    prop.components.forEach((c) => {
-                      processComponent(c, prop.id);
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
+      });
     }
   };
 
