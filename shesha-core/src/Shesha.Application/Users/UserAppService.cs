@@ -19,6 +19,7 @@ using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.NHibernate.EntityHistory;
 using Shesha.Otp;
+using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
 using Shesha.RateLimiting;
 using Shesha.SecurityQuestions.Dto;
@@ -249,6 +250,7 @@ namespace Shesha.Users
                 SendTo = mobileNo,
                 SendType = OtpSendType.Sms,
                 Lifetime = securitySettings.ResetPasswordSmsOtpLifetime,
+                ActionType = OtpActionTypes.PasswordReset,
             });
 
             user.PasswordResetCode = otpResponse.OperationId.ToString();
@@ -349,7 +351,7 @@ namespace Shesha.Users
 
             var lifetime = securitySettings.ResetPasswordSmsOtpLifetime;
 
-            var response = await _otpManager.SendPinAsync(new SendPinInput() { SendTo = user.PhoneNumber, SendType = OtpSendType.Sms, Lifetime = lifetime });
+            var response = await _otpManager.SendPinAsync(new SendPinInput() { SendTo = user.PhoneNumber, SendType = OtpSendType.Sms, Lifetime = lifetime, ActionType = OtpActionTypes.PasswordReset });
 
             user.PasswordResetCode = response.OperationId.ToString();
 
@@ -435,6 +437,11 @@ namespace Shesha.Users
                 throw new UserFriendlyException("Failed to verify OTP provided");
             }
 
+            // PasswordResetCode also holds the operation id of an OTP login, so only accept an OTP issued for password reset
+            var otp = await _otpManager.GetOrNullAsync(operationId.Value);
+            if (otp?.ActionType != OtpActionTypes.PasswordReset)
+                throw new UserFriendlyException("Failed to verify OTP provided");
+
             var otpResponse = await _otpManager.VerifyPinAsync(new VerifyPinInput
             {
                 OperationId = operationId.Value,
@@ -442,6 +449,10 @@ namespace Shesha.Users
             });
 
             var response = ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(otpResponse);
+
+            // the OTP is single use: of concurrent requests with the same pin, only the one that consumes it gets a token
+            if (response.IsSuccess && !await _otpManager.TryConsumeAsync(operationId.Value))
+                response = ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(VerifyPinResponse.Failed("Wrong one time pin"));
 
             if (response.IsSuccess)
             {
@@ -554,6 +565,7 @@ namespace Shesha.Users
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<bool> SendEmailLinkAsync(string username)
         {
             var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
@@ -569,7 +581,7 @@ namespace Shesha.Users
 
             var encodedUserName = Convert.ToBase64String(Encoding.UTF8.GetBytes(username));
 
-            var response = await _otpManager.SendPinAsync(new SendPinInput() { SendTo = user.EmailAddress, SendType = OtpSendType.EmailLink, Lifetime = lifetime, RecipientId = encodedUserName });
+            var response = await _otpManager.SendPinAsync(new SendPinInput() { SendTo = user.EmailAddress, SendType = OtpSendType.EmailLink, Lifetime = lifetime, RecipientId = encodedUserName, ActionType = OtpActionTypes.PasswordReset });
 
             user.PasswordResetCode = response.OperationId.ToString();
 
@@ -582,10 +594,14 @@ namespace Shesha.Users
         /// Verify one-time pin that was used for password reset. Returns a token that should be used for password update
         /// </summary>
         [AllowAnonymous]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ResetPasswordVerifyOtpResponse> ResetPasswordVerifyOtpAsync(ResetPasswordVerifyOtpInput input)
         {
             var otp = await _otpManager.GetOrNullAsync(input.OperationId);
-            var personId = otp?.RecipientId?.ToGuid() ?? Guid.Empty;
+            if (otp == null)
+                return ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(VerifyPinResponse.Failed("Wrong one time pin"));
+
+            var personId = otp.RecipientId?.ToGuid() ?? Guid.Empty;
             var user = personId != Guid.Empty
                 ? (await _personRepository.GetAsync(personId))?.User
                 : await GetUniqueUserByMobileNoAsync(input.MobileNo);
@@ -593,10 +609,19 @@ namespace Shesha.Users
             if (user == null)
                 throw new Exception("User not found");
 
+            // only accept the OTP issued for this user's password reset (see ResetPasswordSendOtpAsync). PasswordResetCode
+            // also holds the operation id of an OTP login, so the OTP's action type must be password reset as well
+            if (user.PasswordResetCode != otp.OperationId.ToString() || otp.ActionType != OtpActionTypes.PasswordReset)
+                return ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(VerifyPinResponse.Failed("Wrong one time pin"));
+
             var otpRequest = ObjectMapper.Map<VerifyPinInput>(input);
             var otpResponse = await _otpManager.VerifyPinAsync(otpRequest);
 
             var response = ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(otpResponse);
+
+            // the OTP is single use: of concurrent requests with the same pin, only the one that consumes it gets a token
+            if (response.IsSuccess && !await _otpManager.TryConsumeAsync(otp.OperationId))
+                response = ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(VerifyPinResponse.Failed("Wrong one time pin"));
 
             if (response.IsSuccess)
             {
