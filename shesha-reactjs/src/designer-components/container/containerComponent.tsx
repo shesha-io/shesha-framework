@@ -27,6 +27,7 @@ const ContainerComponent: ContainerComponentDefinition = {
   allowInherit: true,
   type: 'container',
   isInput: false,
+  acceptsChildren: true,
   name: 'Container',
   icon: <GroupOutlined />,
   // Static empty array to prevent unnecessary re-renders when isDynamic is false
