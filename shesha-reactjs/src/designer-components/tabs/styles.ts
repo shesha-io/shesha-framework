@@ -17,10 +17,10 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
   const borderRadius: IBorderValue = {
     radiusType: 'custom',
     radius: {
-      topLeft: isTop || isLeft ? 0 : model.border?.radiusType === 'custom' ? model.border?.radius?.topLeft : model.border?.radius?.all,
-      topRight: isTop || isRight ? 0 : model.border?.radiusType === 'custom' ? model.border?.radius?.topRight : model.border?.radius?.all,
-      bottomLeft: isBottom || isLeft ? 0 : model.border?.radiusType === 'custom' ? model.border?.radius?.bottomLeft : model.border?.radius?.all,
-      bottomRight: isBottom || isRight ? 0 : model.border?.radiusType === 'custom' ? model.border?.radius?.bottomRight : model.border?.radius?.all,
+      topLeft: isTop || isLeft ? 0 : model.border?.radiusType === 'custom' ? model.border.radius?.topLeft : model.border?.radius?.all,
+      topRight: isTop || isRight ? 0 : model.border?.radiusType === 'custom' ? model.border.radius?.topRight : model.border?.radius?.all,
+      bottomLeft: isBottom || isLeft ? 0 : model.border?.radiusType === 'custom' ? model.border.radius?.bottomLeft : model.border?.radius?.all,
+      bottomRight: isBottom || isRight ? 0 : model.border?.radiusType === 'custom' ? model.border.radius?.bottomRight : model.border?.radius?.all,
     },
   };
 
@@ -90,6 +90,7 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
           ${cssPropertiesToString(model.styleCss)}
 
           .ant-tabs-body {
+              ${paddingStyles(model.card?.stylingBoxJson)}
               height: 100%;
               width: 100%;
               overflow: auto;

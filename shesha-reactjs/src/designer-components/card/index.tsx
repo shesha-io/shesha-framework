@@ -25,6 +25,8 @@ import { migrateHiddenToVisible, migrateStylingBoxToJson } from '../_common-migr
 import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 import { getComponentEvents } from '../_common/events';
 import { useMemo } from 'react';
+import { createHeaderModel } from '../headerTitle/layout';
+import { getPreviewSampleText } from '@/generic-pages/settings/dynamic-theme/componentSettings/previewSampleText';
 
 const CARD_EVENTS = ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'] as const;
 
@@ -90,6 +92,19 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
   }),
   getDefaultStyles: () => ({ ...defaultStyles(), headerStyles: defaultHeaderStyles() }),
   settingsFormMarkup: getSettings,
+  // Theme preview: a card as the designer creates it - its title in the header layout - with sample content
+  // in its body, so the body's padding shows. No styles: the preview takes them from the theme.
+  previewConfiguration: {
+    type: 'card',
+    id: 'card-preview',
+    componentName: 'cardPreview',
+    propertyName: 'cardPreview',
+    label: 'Card',
+    hidden: false,
+    version: 'latest',
+    header: createHeaderModel('card-preview', 'cardLabel', 'Card'),
+    content: { id: 'card-preview-content', components: [getPreviewSampleText('card-preview-text', 'card-preview-content', 'Card content')] },
+  },
   customContainerNames: ['header', 'content'],
   migrator: (m) => m
     .add<ICardComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))

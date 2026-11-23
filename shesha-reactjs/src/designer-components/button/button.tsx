@@ -61,6 +61,17 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   },
   getDefaultStyles: () => defaultStyles({} as IButtonComponentProps),
   settingsFormMarkup: getSettings,
+  // Theme preview: a default button with no action. No styles: the preview takes them from the theme.
+  previewConfiguration: {
+    type: 'button',
+    id: 'button',
+    componentName: 'buttonPreview',
+    propertyName: 'buttonAppearance',
+    label: 'Button',
+    hidden: false,
+    version: 'latest',
+    buttonType: 'default',
+  },
 
   initModel: (model) => {
     const buttonModel: IButtonComponentProps = {

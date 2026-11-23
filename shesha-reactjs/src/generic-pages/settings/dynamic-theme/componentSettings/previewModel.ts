@@ -3,7 +3,6 @@ import { getPreviewSampleText } from './previewSampleText';
 import { getEmptyFlatMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { upgradeComponent } from '@/providers/form/utils';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
-import { IDataColumnsProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
 
 /** Sample entity used to give data-driven components something to render in the preview. */
 const DUMMY_ENTITY_TYPE = { name: 'DummyTable', module: 'Shesha' };
@@ -36,26 +35,7 @@ const createNewComponentModel = (definition: IToolboxComponent, model: IConfigur
   return upgradeComponent(initialised, definition, undefined, getEmptyFlatMarkup(), true);
 };
 
-/**
- * Layout components whose body holds other components (`content` container). They preview as when
- * dropped, so the header holds the title they are created with, and get a sample Text in their body,
- * so the body's padding can be judged.
- */
-const PREVIEW_WITH_SAMPLE_BODY: ReadonlySet<string> = new Set(['card', 'collapsiblePanel']);
-
 export { getPreviewSampleText };
-
-type WithContent = IConfigurableFormComponent & { content?: { id: string; components?: IConfigurableFormComponent[] } | undefined };
-
-/** `definition` as when dropped, titled with its name, with a sample Text in its body. */
-const createLayoutPreviewModel = (definition: IToolboxComponent, model: IConfigurableFormComponent): IConfigurableFormComponent => {
-  const created = createNewComponentModel(definition, { ...model, label: definition.name }) as WithContent;
-  const contentId = created.content?.id ?? `${definition.type}-preview-content`;
-  return {
-    ...created,
-    content: { id: contentId, components: [getPreviewSampleText(`${definition.type}PreviewText`, contentId, `${definition.name} content`)] },
-  } as IConfigurableFormComponent;
-};
 
 /**
  * Preview-only model properties, keyed by component type.
@@ -177,15 +157,21 @@ const previewVariantsByType: Record<string, IPreviewVariant[]> = {
 export const getPreviewVariants = (componentType: string | undefined): IPreviewVariant[] | undefined =>
   isNullOrWhiteSpace(componentType) ? undefined : previewVariantsByType[componentType];
 
+/** Per-device blocks of a model: they hold the instance's own styles. */
+const DEVICE_KEYS = ['desktop', 'tablet', 'mobile'] as const;
+
 /**
- * Every preview renders at the small size. `size` is a style value, resolved per device from the
- * model's own device styles (see `getEffectiveStyle`), so it is set there as well as on the model.
+ * The previewed component's model with only theme styles: its per-device blocks are dropped, since a
+ * component's own styles override the theme (see `getEffectiveStyle`), so the preview shows exactly the
+ * component defaults with the theme's group and component styles over them. The small size is a fallback
+ * at the model's root, which the effective style replaces whenever the defaults or the theme set a size.
+ * Components nested in the preview (a header's layout row, sample content) keep their own model.
  */
-const withSmallSize = (model: IConfigurableFormComponent): IConfigurableFormComponent => ({
-  ...model,
-  size: 'small',
-  desktop: { ...model.desktop, size: 'small' },
-});
+const withThemeStyles = (model: IConfigurableFormComponent): IConfigurableFormComponent => {
+  const result: IConfigurableFormComponent & Record<string, unknown> = { ...model, size: 'small' };
+  DEVICE_KEYS.forEach((key) => delete result[key]);
+  return result;
+};
 
 /**
  * Model used to render the preview of a component on the Component Defaults panel: the component's
@@ -206,10 +192,10 @@ export const getPreviewComponentModel = (
     hidden: false,
     version: 'latest',
   };
+  // The component's own preview model; a generic one for components that declare none (only on the
+  // Components tab - every component previewed on a style-group tab declares one).
   const baseModel: IConfigurableFormComponent = componentDefinition.previewConfiguration ??
-    (PREVIEW_WITH_SAMPLE_BODY.has(componentType)
-      ? createLayoutPreviewModel(componentDefinition, genericModel)
-      : PREVIEW_AS_NEW_COMPONENT.has(componentType) ? createNewComponentModel(componentDefinition, genericModel) : genericModel);
+    (PREVIEW_AS_NEW_COMPONENT.has(componentType) ? createNewComponentModel(componentDefinition, genericModel) : genericModel);
 
   const extras = getPreviewModelExtras(componentType);
   const model = isNullOrWhiteSpace(componentType) || !extras
@@ -217,13 +203,13 @@ export const getPreviewComponentModel = (
     : { ...baseModel, ...extras };
 
   if (!variant)
-    return withSmallSize(model);
+    return withThemeStyles(model);
 
   // Each variant needs its own id and propertyName, otherwise the renderings share form state and
   // a value selected in one appears in all of them. The variant's own properties come last so it
   // can override anything the base model or the extras set.
   const variantKey = variant.label.replace(/\W+/g, '-').toLowerCase();
-  return withSmallSize({
+  return withThemeStyles({
     ...model,
     ...variant.model,
     id: `${model.id}-${variantKey}`,
@@ -231,63 +217,4 @@ export const getPreviewComponentModel = (
     // The caption above each rendering names the variant, so an inner label just repeats it.
     label: model.label,
   } as IConfigurableFormComponent);
-};
-
-/** Columns and rows of the sample Data Table: plain text so it needs no metadata or backend. */
-const SAMPLE_TABLE_COLUMNS: Array<{ propertyName: string; caption: string }> = [
-  { propertyName: 'name', caption: 'Name' },
-  { propertyName: 'email', caption: 'Email' },
-  { propertyName: 'city', caption: 'City' },
-];
-
-export const SAMPLE_TABLE_ROWS = [
-  { name: 'Thandi Mokoena', email: 'thandi@example.com', city: 'Johannesburg' },
-  { name: 'Pieter van Wyk', email: 'pieter@example.com', city: 'Cape Town' },
-  { name: 'Sipho Dlamini', email: 'sipho@example.com', city: 'Durban' },
-];
-
-/** Form field holding {@link SAMPLE_TABLE_ROWS} for the Data Table preview. */
-export const SAMPLE_TABLE_PROPERTY = 'sampleTableRows';
-
-/**
- * A Data Table with sample rows, for previewing it outside a real form. A table renders nothing
- * without a data context, so it is wrapped in one whose source is the form field
- * {@link SAMPLE_TABLE_PROPERTY} (an in-memory source): the caller puts {@link SAMPLE_TABLE_ROWS}
- * there. The table itself is created as when dropped in the designer, so it has all its defaults.
- */
-export const getDataTablePreviewModel = (tableDefinition: IToolboxComponent): IConfigurableFormComponent => {
-  const contextId = 'datatablePreviewContext';
-  const table = createNewComponentModel(tableDefinition, {
-    type: tableDefinition.type,
-    id: tableDefinition.type,
-    propertyName: `${tableDefinition.type}Appearance`,
-    parentId: contextId,
-    hidden: false,
-    version: 'latest',
-  });
-  const items: IDataColumnsProps[] = SAMPLE_TABLE_COLUMNS.map(({ propertyName, caption }, index) => ({
-    id: `${tableDefinition.type}-${propertyName}`,
-    itemType: 'item',
-    columnType: 'data',
-    propertyName,
-    caption,
-    sortOrder: index,
-    isVisible: true,
-    allowSorting: true,
-    displayComponent: { type: standardCellComponentTypes.defaultDisplay },
-    editComponent: { type: standardCellComponentTypes.notEditable },
-    createComponent: { type: standardCellComponentTypes.notEditable },
-  }));
-
-  return {
-    type: 'dataContext',
-    id: contextId,
-    propertyName: SAMPLE_TABLE_PROPERTY,
-    parentId: 'root',
-    hidden: false,
-    version: 'latest',
-    sourceType: 'Form',
-    dataFetchingMode: 'fetchAll',
-    components: [withSmallSize({ ...table, items } as IConfigurableFormComponent)],
-  } as IConfigurableFormComponent;
 };

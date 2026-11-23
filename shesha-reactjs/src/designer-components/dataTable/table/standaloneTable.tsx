@@ -2,6 +2,11 @@ import { FC } from 'react';
 import * as React from 'react';
 import { ITableComponentProps } from './models';
 import { SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { createStyles } from '@/styles';
+import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
+import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
+import { isDefined } from '@/utils/nullables';
+import { TableAppearance, useTableAppearance } from './useTableAppearance';
 
 // Ignore any configured items to ensure clean state when dragged outside
 const columns = [
@@ -15,86 +20,143 @@ const dummyRows = [
   { col1: 'Record 2', col2: 'Placeholder Info' },
 ];
 
-export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
-  const tableStyle: React.CSSProperties = {
-    width: '100%',
-    borderCollapse: 'collapse',
-    backgroundColor: '#fff',
-    fontSize: '14px',
-  };
+/** CSS declarations for a React style object, e.g. `{ borderTopWidth: '1px' }` → `border-top-width: 1px;`. */
+const toCss = (style: React.CSSProperties): string => Object.entries(style)
+  .filter(([, value]) => value !== undefined && value !== null && value !== '')
+  .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${String(value)};`)
+  .join(' ');
 
-  const headerStyle: React.CSSProperties = {
-    padding: '12px 16px',
-    backgroundColor: '#fafafa',
-    border: '1px solid #e8e8e8',
-    textAlign: 'left',
-    fontWeight: 500,
-    fontSize: '14px',
-    color: '#262626',
-  };
+/** One CSS declaration, or nothing when the value is not set. */
+const decl = (property: string, value: string | number | undefined | null): string =>
+  value === undefined || value === null || value === '' ? '' : `${property}: ${value};`;
 
-  const cellStyle: React.CSSProperties = {
-    padding: '12px 16px',
-    border: '1px solid #e8e8e8',
-    color: '#595959',
-    fontSize: '14px',
-  };
+type StylesArgs = { appearance: TableAppearance; model: ITableComponentProps };
 
-  const actionCellStyle: React.CSSProperties = {
-    ...cellStyle,
-    textAlign: 'center',
-    width: '20px',
-  };
+/**
+ * The placeholder table drawn with the same table appearance as the real one (the theme and the
+ * component's own settings): header, rows, cells, borders, fonts and action icons.
+ */
+const useStyles = createStyles(({ css, cx, token }, { appearance, model }: StylesArgs) => {
+  const {
+    backgroundColor, headerFontFamily, headerFontSize, headerFontWeight, headerTextColor, headerTextAlign,
+    bodyTextAlign, bodyFontFamily, bodyFontSize, bodyFontWeight, bodyFontColor, rowHeight, rowPadding, rowBorder, boxShadow,
+  } = appearance;
+  const {
+    border, headerBorder, cellBorder, headerShadow, rowShadow, rowBorderStyle, headerBackgroundColor,
+    rowBackgroundColor, rowAlternateBackgroundColor, striped, cellBorders, cellBorderColor, rowDividers,
+    actionIconSize, actionIconColor, dimensions,
+  } = model;
+  const iconSize = actionIconSize ?? bodyFontSize ?? '16px';
+  const alternateBackground = rowAlternateBackgroundColor ?? (striped === true ? 'rgba(0, 0, 0, 0.02)' : rowBackgroundColor);
 
-  const iconStyle: React.CSSProperties = {
-    margin: '0 4px',
-    color: '#1890ff',
-  };
+  const standaloneTable = cx('sha-standalone-table', css`
+    width: 100%;
+    overflow: auto;
+    ${decl('box-shadow', boxShadow)}
+    ${decl('height', dimensions?.height as string | number | undefined)}
+    ${decl('min-height', dimensions?.minHeight as string | number | undefined)}
+    ${decl('max-height', dimensions?.maxHeight as string | number | undefined)}
+    ${toCss(getBorderStyle(border ?? {}, {}))}
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: ${backgroundColor ?? 'white'};
+    }
+
+    th, td {
+      padding: 0.5rem;
+      vertical-align: middle;
+    }
+
+    thead tr {
+      box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
+      background-color: ${headerBackgroundColor ?? backgroundColor ?? token.colorBgContainer};
+      color: ${headerTextColor ?? '#000000'};
+      ${decl('font-family', headerFontFamily)}
+      ${decl('font-size', headerFontSize)}
+      font-weight: ${headerFontWeight ?? 500};
+      ${toCss(getBorderStyle(headerBorder ?? {}, {}))}
+      ${toCss(getShadowStyle(headerShadow))}
+    }
+
+    th {
+      text-align: ${headerTextAlign ?? 'left'};
+    }
+
+    tbody tr {
+      ${decl('height', rowHeight)}
+      background: ${rowBackgroundColor ?? 'transparent'};
+      ${isDefined(rowBorderStyle) ? toCss(getBorderStyle(rowBorderStyle, {})) : decl('border', rowBorder)}
+      ${rowDividers === true ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : ''}
+      ${toCss(getShadowStyle(rowShadow))}
+
+      &:nth-child(even) {
+        background: ${alternateBackground ?? 'transparent'};
+      }
+    }
+
+    td {
+      ${decl('padding', rowPadding)}
+      ${decl('text-align', bodyTextAlign)}
+      ${decl('font-family', bodyFontFamily)}
+      ${decl('font-size', bodyFontSize)}
+      ${decl('font-weight', bodyFontWeight)}
+      ${decl('color', bodyFontColor)}
+      ${cellBorders === true ? decl('border', isDefined(cellBorderColor) ? `1px solid ${cellBorderColor}` : undefined) : ''}
+      ${toCss(getBorderStyle(cellBorder ?? {}, {}))}
+    }
+
+    th.sha-standalone-action, td.sha-standalone-action {
+      width: 1%;
+      padding: 0.5rem 0.25rem;
+      text-align: center;
+    }
+
+    td.sha-standalone-action .anticon {
+      font-size: ${iconSize};
+      color: ${actionIconColor ?? token.colorPrimary};
+    }
+  `);
+
+  return { standaloneTable };
+});
+
+/** The table drawn outside a Data Context, where it has no data: sample columns and rows, in the table's own appearance. */
+export const StandaloneTable: FC<ITableComponentProps> = (props) => {
+  const appearance = useTableAppearance(props);
+  const { styles } = useStyles({ appearance, model: props });
 
   return (
-    <div
-      className="sha-standalone-table-wrapper"
-      style={{
-        padding: '16px',
-        borderRadius: '6px',
-        backgroundColor: '#fafafa',
-        position: 'relative',
-      }}
-    >
-      <table style={tableStyle}>
-        <thead>
-          <tr>
-            <th style={{ ...headerStyle, width: '20px' }}></th>
-            <th style={{ ...headerStyle, width: '20px' }}></th>
-            <th style={{ ...headerStyle, width: '20px' }}></th>
-            {columns.map((column, index) => (
-              <th key={index} style={headerStyle}>
-                {column.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {dummyRows.map((_, rowIndex) => (
-            <tr key={rowIndex} style={{ backgroundColor: rowIndex % 2 === 0 ? '#fff' : '#fafafa' }}>
-              <td style={actionCellStyle}>
-                <SearchOutlined style={iconStyle} />
-              </td>
-              <td style={actionCellStyle}>
-                <EditOutlined style={iconStyle} />
-              </td>
-              <td style={actionCellStyle}>
-                <DeleteOutlined style={iconStyle} />
-              </td>
-              {columns.map((_column, colIndex) => (
-                <td key={colIndex} style={cellStyle}>
-                  {colIndex === 0 ? `Record ${rowIndex + 1}` : 'Placeholder Info'}
-                </td>
+    <div className="sha-standalone-table-wrapper sha-datatable-wrapper">
+      <div className={appearance.wrapperClassName} style={appearance.wrapperStyle}>
+        <div className={styles.standaloneTable}>
+          <table>
+            <thead>
+              <tr>
+                <th className="sha-standalone-action"></th>
+                <th className="sha-standalone-action"></th>
+                <th className="sha-standalone-action"></th>
+                {columns.map((column) => (
+                  <th key={column.accessor}>{column.header}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {dummyRows.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  <td className="sha-standalone-action"><SearchOutlined /></td>
+                  <td className="sha-standalone-action"><EditOutlined /></td>
+                  <td className="sha-standalone-action"><DeleteOutlined /></td>
+                  {columns.map((column) => (
+                    <td key={column.accessor}>{row[column.accessor as keyof typeof row]}</td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

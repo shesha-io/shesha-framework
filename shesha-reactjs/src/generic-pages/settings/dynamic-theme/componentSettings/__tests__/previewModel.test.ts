@@ -1,7 +1,7 @@
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IAutocompleteComponentProps } from '@/designer-components/autocomplete/interfaces';
-import { getDataTablePreviewModel, getPreviewComponentModel, getPreviewModelExtras, getPreviewValue, getPreviewVariants, SAMPLE_TABLE_PROPERTY } from '../previewModel';
+import { getPreviewComponentModel, getPreviewModelExtras, getPreviewValue, getPreviewVariants } from '../previewModel';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
 
 const makeDefinition = (type: string, previewConfiguration?: IConfigurableFormComponent): IToolboxComponent => ({
@@ -72,7 +72,6 @@ describe('getPreviewComponentModel', () => {
       displayPropName: 'city',
       fields: ['city'],
       size: 'small',
-      desktop: { size: 'small' },
     });
   });
 
@@ -110,7 +109,7 @@ describe('getPreviewComponentModel', () => {
 
   it('returns the declared preview configuration, at the small size, for a component with no extras', () => {
     expect(getPreviewComponentModel(makeDefinition('textField', textFieldPreviewConfiguration)))
-      .toEqual({ ...textFieldPreviewConfiguration, size: 'small', desktop: { size: 'small' } });
+      .toEqual({ ...textFieldPreviewConfiguration, size: 'small' });
   });
 });
 
@@ -178,44 +177,47 @@ describe('getPreviewComponentModel - variants', () => {
   });
 });
 
-describe('getDataTablePreviewModel', () => {
-  const definition = getComponentDefinitions().get('datatable');
-  if (!definition) throw new Error('datatable is not registered');
-  const context = getDataTablePreviewModel(definition) as unknown as Record<string, unknown>;
-  const table = (context['components'] as Array<Record<string, unknown>>)[0];
-
-  it('wraps the table in an in-memory data context bound to the sample rows', () => {
-    expect(context['type']).toBe('dataContext');
-    expect(context['sourceType']).toBe('Form');
-    expect(context['propertyName']).toBe(SAMPLE_TABLE_PROPERTY);
-  });
-
-  it('creates the table as when dropped, with sample data columns', () => {
-    expect(table?.['type']).toBe('datatable');
-    expect(table?.['parentId']).toBe(context['id']);
-    expect((table?.['items'] as Array<{ propertyName: string }>).map((c) => c.propertyName)).toEqual(['name', 'email', 'city']);
-    // A default the table only gets from its initModel/migrations.
-    expect(table?.['canEditInline']).toBe('no');
-  });
-});
-
-describe('preview size', () => {
-  it('renders every preview at the small size', () => {
+describe('preview styles come from the theme', () => {
+  it('renders every preview at the small size, as a fallback under the defaults and the theme', () => {
     const model = getPreviewComponentModel(makeDefinition('textField'));
     expect(model.size).toBe('small');
-    expect(model.desktop?.size).toBe('small');
+    // Not a device style: that would override the theme's size.
+    expect(model.desktop).toBeUndefined();
   });
 
-  it('keeps the small size on each variant', () => {
+  it('drops the per-device styles of a preview configuration, which would override the theme', () => {
+    const styled = { type: 'textField', id: 'x', propertyName: 'x', version: 'latest', desktop: { font: { color: 'red' } }, tablet: { size: 'large' }, mobile: {} } as IConfigurableFormComponent;
+    const model = getPreviewComponentModel(makeDefinition('textField', styled));
+    expect(model).not.toHaveProperty('desktop');
+    expect(model).not.toHaveProperty('tablet');
+    expect(model).not.toHaveProperty('mobile');
+  });
+
+  it('keeps the small size and no device styles on each variant', () => {
     const [variant] = getPreviewVariants('dropdown') ?? [];
-    expect(getPreviewComponentModel(makeDefinition('dropdown'), variant).desktop?.size).toBe('small');
+    const model = getPreviewComponentModel(makeDefinition('dropdown'), variant);
+    expect(model.size).toBe('small');
+    expect(model.desktop).toBeUndefined();
   });
 
-  it('renders the sample Data Table at the small size', () => {
+  it('renders the Data Table on its own, as on the Components tab, with no device styles', () => {
     const definition = getComponentDefinitions().get('datatable');
     if (!definition) throw new Error('datatable is not registered');
-    const [table] = (getDataTablePreviewModel(definition) as unknown as { components: IConfigurableFormComponent[] }).components;
-    expect(table?.size).toBe('small');
+    const table = getPreviewComponentModel(definition);
+    expect(table.type).toBe('datatable');
+    expect(table.size).toBe('small');
+    expect(table?.desktop).toBeUndefined();
+  });
+
+  // Every component previewed on a style-group tab (see GROUP_PREVIEW_TYPES) sets its preview up itself.
+  it.each(['textField', 'textArea', 'numberField', 'button', 'statusTag', 'datatable', 'card', 'collapsiblePanel', 'tabs'])('%s declares a preview configuration', (type) => {
+    expect(getComponentDefinitions().get(type)?.previewConfiguration).toBeDefined();
+  });
+
+  it.each(['card', 'collapsiblePanel', 'tabs', 'button'])('%s preview configuration holds no styles of its own', (type) => {
+    const configuration = getComponentDefinitions().get(type)?.previewConfiguration as unknown as Record<string, unknown>;
+    ['desktop', 'tablet', 'mobile', 'font', 'border', 'background', 'shadow', 'dimensions', 'stylingBoxJson', 'headerStyles'].forEach((key) =>
+      expect(configuration).not.toHaveProperty(key));
   });
 });
 

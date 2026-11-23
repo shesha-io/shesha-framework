@@ -3,7 +3,7 @@ import { nanoid } from "@/utils/uuid";
 import { IConfigurableFormComponent, isConfigurableFormComponent } from "@/providers/form/models";
 import { IContainerComponentProps } from "@/designer-components/container/interfaces";
 import { createHeaderTitle, HEADER_LAYOUT_NAME } from "@/designer-components/headerTitle/utils";
-import { defaultStyles as containerDefaultStyles } from "@/designer-components/container/data";
+import { getExtraAreaStyles, getHeaderLayoutStyles } from "@/designer-components/headerTitle/layout";
 import { isDefined } from "@/utils/nullables";
 import { ICardComponentProps } from "../interfaces";
 
@@ -33,12 +33,8 @@ export const migrateCardHeaderLayout = (prev: ICardComponentProps, context: Sett
   const labelTextId = nanoid();
   const extraAreaId = nanoid();
 
-  const extraAreaStyles = containerDefaultStyles({
-    display: 'flex', direction: 'horizontal', flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center', gap: '8',
-  } as IContainerComponentProps);
-  const headerLayoutStyles = containerDefaultStyles({
-    display: 'flex', direction: 'horizontal', flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'space-between', gap: '8',
-  } as IContainerComponentProps);
+  const extraAreaStyles = getExtraAreaStyles();
+  const headerLayoutStyles = getHeaderLayoutStyles();
 
   // The components already in the header: from the flat structure (designer / stored markup), else the tree.
   const existingIds = flatStructure.componentRelations[headerId] ?? header?.components?.map((c) => c.id) ?? [];

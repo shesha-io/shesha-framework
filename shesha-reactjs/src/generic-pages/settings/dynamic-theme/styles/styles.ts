@@ -85,6 +85,10 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
         padding: 8px;
       }
 
+      .ant-tabs-nav {
+        margin-bottom: 0px;
+      }
+
       .ant-tabs-body-holder {
         padding: 8px;
 

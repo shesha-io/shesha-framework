@@ -14,6 +14,8 @@ import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { migrateV9toV10, PANEL_TITLE_NAME } from './migrations/migrate-v10';
 import { replaceTextHeaderTitle } from '../headerTitle/utils';
+import { createHeaderModel } from '../headerTitle/layout';
+import { getPreviewSampleText } from '@/generic-pages/settings/dynamic-theme/componentSettings/previewSampleText';
 import { isDefined } from '@/utils/nullables';
 import { isNonEmptyArray } from '@/utils/array';
 import { defaultHeaderStyles as getDefaultHeaderStyles, defaultStyles as getDefaultStyles } from './utils';
@@ -199,6 +201,21 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
       .add<ICollapsiblePanelComponentProps>(11, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
       // The title becomes a header title: a Text took the theme's Text defaults, not the header's font.
       .add<ICollapsiblePanelComponentProps>(12, (prev, ctx) => ({ ...prev, header: replaceTextHeaderTitle(prev.header, ctx.flatStructure, PANEL_TITLE_NAME) })),
+  // Theme preview: a panel as the designer creates it - its title in the header layout - with sample
+  // content in its body, so the body's padding shows. No styles: the preview takes them from the theme.
+  previewConfiguration: {
+    type: 'collapsiblePanel',
+    id: 'panel-preview',
+    componentName: 'panelPreview',
+    propertyName: 'panelPreview',
+    label: 'Panel',
+    hidden: false,
+    version: 'latest',
+    collapsible: 'icon',
+    overflow: true,
+    header: createHeaderModel('panel-preview', PANEL_TITLE_NAME, 'Panel'),
+    content: { id: 'panel-preview-content', components: [getPreviewSampleText('panel-preview-text', 'panel-preview-content', 'Panel content')] },
+  } as ICollapsiblePanelComponentProps,
   customContainerNames: ['header', 'content'],
   getDefaultStyles: () => {
     const defaultStyles = getDefaultStyles({} as ICollapsiblePanelComponentProps);

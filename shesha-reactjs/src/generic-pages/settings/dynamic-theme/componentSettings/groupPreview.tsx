@@ -8,7 +8,7 @@ import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { useStyles } from '../styles/styles';
 import { CardTitle } from '../cardTitle';
-import { getDataTablePreviewModel, getPreviewComponentModel, getPreviewValue, SAMPLE_TABLE_PROPERTY, SAMPLE_TABLE_ROWS } from './previewModel';
+import { getPreviewComponentModel, getPreviewValue } from './previewModel';
 import { PreviewForm } from './preview';
 import { PreviewThemeProvider } from './previewThemeProvider';
 
@@ -23,9 +23,6 @@ const GROUP_PREVIEW_TYPES: Record<ThemeComponentGroup, string[]> = {
   standard: ['datatable'],
   layout: ['card', 'collapsiblePanel', 'tabs'],
 };
-
-/** Type of the Data Table, which previews with sample rows (see `getDataTablePreviewModel`). */
-const DATATABLE_TYPE = 'datatable';
 
 export interface IGroupDefaultsPreviewProps {
   group: ThemeComponentGroup;
@@ -57,11 +54,6 @@ export const GroupDefaultsPreview: FC<IGroupDefaultsPreviewProps> = ({ group, th
       .map((type) => components[type])
       .filter((definition): definition is IToolboxComponent => isDefined(definition) && definition.themeGroup === group)
       .forEach((definition) => {
-        if (definition.type === DATATABLE_TYPE) {
-          models.push(getDataTablePreviewModel(definition));
-          previewValues[SAMPLE_TABLE_PROPERTY] = SAMPLE_TABLE_ROWS;
-          return;
-        }
         const model = getPreviewComponentModel(definition);
         models.push(model);
         const value = getPreviewValue(definition.type);
