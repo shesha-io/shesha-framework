@@ -1,19 +1,63 @@
 # Release Notes
 
 ## 🐞 Bug Fixes
+- **Entity Picker – "undefined" for New Selections Fix**
+  - Fixed multi-select Entity Picker showing newly selected items as "undefined" instead of the configured Display Property value
+  - New tags now immediately display the entity's name (from the Display Property) upon selection, without requiring a save/reload
+- **Stale page.state Context After Page Navigation Fix**
+  - Fixed stale page.state values from the previously visited page being used after navigating between pages
+  - Corrected the asymmetric context initialization: context is now registered and unregistered consistently (previously registered in render but unregistered in effects)
+  - The new context is now registered in page.state on navigation, so the page displays data for the current context instead of the previous page's
 
-- **Wrapped Form Labels Overflow Fix** - Fixed long form labels that wrap onto multiple lines overflowing into the next row and overlapping subsequent form items
-- **Text Component Visible Condition Fix** - Fixed the Text component ignoring its Visible setting when turned off
-- **Searchable Reference-List Dropdown Fix** - Searchable reference-list dropdowns now match the search text against the item label instead of the item value
-- **Query Builder Filtration Fix** - Fixed 400 Bad Request errors when a permanent filter uses two dynamic Evaluate (mustache) conditions with Required = true and Required = false. Null expressions are no longer sent to the server; the table now returns and displays rows correctly
-- **JS-Configured Interaction Mode & Visibility Fix**
-  - Fixed editMode values (edit, Editable, true) rendering fields as disabled instead of editable on form components
-  - Fixed buttons returning readOnly / false incorrectly remaining clickable
-  - Custom dialog footer button scripts are now evaluated — the Save button correctly respects its condition, and hidden buttons are no longer shown
-- **Subform Wrap/Col & Label/Col Migration Fix** - Added migration for subform wrapCol and labelCol properties
-- **onAfterDataLoad Hook Data Fix**
-  - Fixed the onAfterDataLoad hook receiving only the initial values ({id}) as its data argument
-  - The hook now receives the full entity record, matching form.data
-- **Subform expressions fix** - Fixed Subform expressions cannot see the host record (data, pageContext, query, parentFormValues)
-- **Query Builder Style Fix** - Fixed broken styles in the Query Builder that prevented users from selecting required values
-- **GetAuditTrail RuntimeBinderException Fix** - Fixed GetAuditTrail throwing a RuntimeBinderException for any entity with a tracked many-to-many audit relation (e.g., an Employee with a ShaRoleAppointedPerson role appointment)
+## 💪 Enhancements
+- **Login & OTP Rate Limiting**
+- **Hangfire Dashboard Access Control**
+  - `/hangfire` now enforced by the framework via `Pages.Hangfire` permission
+  - Framework filter rewritten as `IDashboardAsyncAuthorizationFilter:` validates the JWT signature, expiry, issuer/audience and blacklist before checking permission (previously parsed the token without validation)
+  - Added `UseSheshaHangfireDashboard()` extension; hosts call one line, so the filter can't be omitted or replaced
+  - Removed the hard-coded `username == "admin"` filter from the starter, functional-tests host and `Shesha.Web.Host`
+  - `JwtExtensions` helpers marked obsolete / made to validate, since their output must not drive access decisions
+  - Back-end project update — Startup/Startup.cs:
+    - Replace `app.UseHangfireDashboard(...);` with `app.UseSheshaHangfireDashboard();`.
+    - Ensure that `SwaggerUiAccessMiddleware` is registered via `app.UseMiddleware<SwaggerUiAccessMiddleware>();`.   
+- **SheshaAuthorize isConfigurable + Attribute Consolidation**
+  - Added `IsConfigurable` to `SheshaAuthorize: false` = code-based access is final (UI read-only); true = configuration may override
+  - Replaced all `[AbpAuthorize]` / `[Authorize]` on framework app services with `[SheshaAuthorize(..., isConfigurable = false)]`
+  - `[AllowAnonymous]` still takes precedence and is not configurable; use `[SheshaAuthorize(RefListPermissionedAccess.AllowAnonymous, isConfigurable = true)]` for anonymous-but-configurable endpoints
+- **Starter Template Permission Checker Removed**
+  - Deleted the ]*.Web.Core/Authorization] folder (and IoC registration) from the starter template and functional-tests host
+  - Removed the custom checker that granted every permission to any user named admin
+  - Admin now receives only what its roles grant
+- **Entity CRUD Security Attribute Refactor**
+  - Removed `[CrudDisableActions]`; functionality moved into `[Entity]`
+  - `[Entity]` now supports `CrudActions` flags (All/None/Create/Read/Update/Delete), `Access`, `Permissions` and `IsConfigurable`; `GenerateApplicationService` replaced
+  - Added stackable `[EntityAuthorize(actions, access, permissions)]` for per-action rules
+  - `[AllowAnonymous]` on entities is ignored (explicit attributes preferred)
+- **Property-Level Authorization (POPIA) on Core Entities**
+  - Properties may declare stricter authorization than their entity via attribute `SheshaAuthorizeAttribute` (access level + permissions)
+  - Read operations omit/nullify restricted values; write operations reject or ignore changes
+  - Sorting, filtering and quick search on restricted properties are blocked for unauthorised callers
+- **IShaRoleManager — UserManager-Style Role API with Audit Trail**
+  - Added `IShaRoleManager` / `ShaRoleManager` for assigning and removing `ShaRoles`, with XML-documented methods:
+    - `AddToRoleAsync`, `AddToRolesAsync`, `RemoveFromRoleAsync`, `RemoveFromRolesAsync`, `SetRolesAsync`
+    - `DeleteAppointmentAsync`, `IsInRoleAsync`
+    - `GetRolesForPersonAsync`, `GetPersonsInRoleAsync`, `GetAppointmentsAsync` (by person or by role)
+  - All operations go through the audited `ShaRoleAppointedPerson` entity, providing a full audit trail
+  - Optional `ShaRoleAppointmentData` parameter carries appointment context through each operation
+  - `ShaRoleAppointedPersonActionsAppService` reduced to two methods (`AddToRoleAsync`, `DeleteAsync`); role management now goes through `ShaRoleManager` and this AppService
+  - `IShaRoleAppointedPersonDto` updated: removed `Entities`, added `PermissionedEntities
+  - Removed `FromDate`, `ToDate` and `Status` from `ShaRoleAppointment` — appointment lifecycle now relies on the standard `FullAuditedEntity` fields (`CreationTime`, `DeletionTime`, `IsDeleted`)
+- **Permission Cleanup & Standard Roles**
+  - Consolidated permission-name constants (PermissionNames, ShaPermissionNames) under the documented naming convention
+  - Migration renames existing permissions, role assignments and permissioned-object configuration without loss
+  - Four standard roles (Configurator, System Administrator, User Administrator, User) now defined as configuration items in Shesha Core
+- **GraphQL Endpoint & Playground Removed**
+  - `/graphql` and `/ui/playground` removed — clients use GraphQL implicitly only
+  - `GraphQL.Server.Ui.Playground` is deprecated
+- **Role & Entity CRUD Security Tightening**
+  - Default `[Entity]` CRUD policy (`DefaultCrudConfig.Default`) reverted to `CrudActions.All` — entities without an explicit CRUD configuration are reachable again, superseding the earlier opt-in-only default
+  - `ShaRole` now carries a non-configurable CRUD policy (`IsConfigurable = false`, `CrudActions = All`, `CrudActionsAccess = RequiresPermissions`, `CrudActionsPermissions = [Role_Manage]`), plus `[EntityAuthorize(Read, [Role_Manage, User_Manage])]` so reads are also allowed with `User_Manage`; role data can no longer be opened up via configuration
+  - `SheshaAuthorizationProvider.GetModuleId` no longer inserts a new `Module` row when one already exists under concurrent calls — it now selects the existing module's Id directly instead of create-if-missing, preventing duplicate module records
+- **Expose role**
+  - Implemented the expose feature for roles, allowing the new pre-configured standard roles (Configurator, System Administrator, User Administrator, User) to be viewed and edited in the system
+- **Notification Channel Exposure** 
