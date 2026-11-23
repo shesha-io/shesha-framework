@@ -61,6 +61,23 @@ describe('card migrator', () => {
     expect(model.mobile?.headerStyles).toEqual(legacyHeaderStyles());
   });
 
+  it('migrates a v5 card saved without a header or device styles', () => {
+    const { header: _header, ...noHeader } = oldCard();
+    const flat = getEmptyFlatMarkup();
+    const model = upgradeComponent({ ...noHeader, version: 5 } as IConfigurableFormComponent, CardComponent, undefined, flat) as ICardComponentProps;
+    const layout = model.header?.components?.[0];
+    expect(layout?.componentName).toBe(CARD_HEADER_LAYOUT_NAME);
+    expect(flat.componentRelations[model.header?.id ?? '']).toEqual([layout?.id]);
+    expect(model.tablet?.headerStyles).toEqual(legacyHeaderStyles());
+  });
+
+  it('keeps device header styles a v5 card already has over the legacy look', () => {
+    const font = { size: 20 };
+    const model = upgradeComponent({ ...oldCard(), version: 5, desktop: { headerStyles: { font } } } as unknown as IConfigurableFormComponent, CardComponent, undefined, getEmptyFlatMarkup()) as ICardComponentProps;
+    expect(model.desktop?.headerStyles?.font).toEqual(font);
+    expect(model.desktop?.headerStyles?.border).toEqual(legacyHeaderStyles().border);
+  });
+
   it('leaves new cards to the theme and the component defaults', () => {
     const model = upgradeComponent(oldCard() as IConfigurableFormComponent, CardComponent, undefined, getEmptyFlatMarkup(), true) as ICardComponentProps;
     expect(model.desktop?.headerStyles).toBeUndefined();

@@ -114,9 +114,10 @@ export const getEffectiveStyle = (model: IConfigurableFormComponent, effectiveDe
   // deepMergeValues only shallow-copies its target, so merge into a deep copy: some components
   // (e.g. tabs) return nested objects shared with module-level constants from getDefaultStyles.
   const componentDefStyle = deepCopyViaJson(toolboxComponent?.getDefaultStyles?.() ?? { styleCss: {} }) as IStyleValue;
+  // getThemeBaseStyle builds new objects on every call, so it is safe to merge into without a copy.
   const baseStyle = getThemeBaseStyle(theme, toolboxComponent);
   const defStyle: IStyleValue = isDefined(baseStyle)
-    ? deepMergeValues(deepCopyViaJson(baseStyle), componentDefStyle, deepMergeSkipUndefinedFunc)
+    ? deepMergeValues(baseStyle, componentDefStyle, deepMergeSkipUndefinedFunc)
     : componentDefStyle;
   // Only apply theme group styles if the component has an explicit themeGroup property
   const groupStyle = toolboxComponent?.themeGroup !== undefined
