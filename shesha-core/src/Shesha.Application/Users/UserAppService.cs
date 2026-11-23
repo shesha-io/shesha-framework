@@ -234,18 +234,26 @@ namespace Shesha.Users
         /// </summary>
         private async Task<User> GetPasswordResetUserOrNullAsync(IOtpDto otp, string mobileNo)
         {
-            // an OTP sent by an application with a person as the recipient
-            var personId = otp.RecipientId.ToGuid();
-            if (personId != Guid.Empty)
-                return (await _personRepository.FirstOrDefaultAsync(personId))?.User;
-
-            if (otp.RecipientType != PasswordResetRecipientType || string.IsNullOrWhiteSpace(mobileNo))
+            if (string.IsNullOrWhiteSpace(mobileNo))
                 return null;
 
-            // the mobile number must still belong to the account the OTP was sent for
+            // the mobile number must belong to exactly one account...
             var users = await _userRepository.GetAll().Where(u => u.PhoneNumber == mobileNo).ToListAsync();
-            return users.Count == 1 && users[0].Id.ToString() == otp.RecipientId
-                ? users[0]
+            if (users.Count != 1)
+                return null;
+
+            var user = users[0];
+
+            // ...and that must be the account the OTP was sent for: a person (OTPs sent by applications) or a user
+            var personId = otp.RecipientId.ToGuid();
+            if (personId != Guid.Empty)
+            {
+                var person = await _personRepository.FirstOrDefaultAsync(personId);
+                return person?.User != null && person.User.Id == user.Id ? user : null;
+            }
+
+            return otp.RecipientType == PasswordResetRecipientType && otp.RecipientId == user.Id.ToString()
+                ? user
                 : null;
         }
 

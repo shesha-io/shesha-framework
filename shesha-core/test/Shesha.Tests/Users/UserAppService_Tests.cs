@@ -13,9 +13,11 @@ using NHibernate.Linq;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
 using Shesha.Authorization.Users;
+using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Models.TokenAuth;
 using Shesha.Otp;
+using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
 using Shesha.Users;
 using Shesha.Users.Dto;
@@ -574,6 +576,72 @@ namespace Shesha.Tests.Users
             withoutOwner.IsSuccess.ShouldBeFalse();
             moved.IsSuccess.ShouldBeFalse("the pin was sent for another account");
             moved.Token.ShouldBeNullOrEmpty();
+        }
+
+        /// <summary>
+        /// An OTP sent by an application with a person as the recipient is only accepted with that person's mobile number
+        /// </summary>
+        [Fact]
+        public async Task ResetPasswordVerifyOtp_should_check_the_mobile_number_for_a_person_recipient_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var otherMobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var otherUserName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var otpStorage = MockOtpStorage(new Dictionary<Guid, OtpDto>(), dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+            var otpManager = LocalIocManager.Resolve<IOtpManager>();
+            var personRepository = Resolve<IRepository<Person, Guid>>();
+
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+            var otherUserDto = await CreateUserWithMobileNoAsync(userAppService, otherUserName, otherMobileNo);
+
+            Guid personId;
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                var user = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.UserName == userName);
+                personId = await personRepository.InsertAndGetIdAsync(new Person { User = user, FirstName = "Test", LastName = "User" });
+                await uow.CompleteAsync();
+            }
+
+            var otp = await otpManager.SendPinAsync(new SendPinInput
+            {
+                SendTo = mobileNo,
+                SendType = OtpSendType.Sms,
+                ActionType = OtpActionTypes.PasswordReset,
+                RecipientId = personId.ToString(),
+            });
+
+            var withOtherNumber = await userAppService.ResetPasswordVerifyOtpAsync(new ResetPasswordVerifyOtpInput()
+            {
+                MobileNo = otherMobileNo,
+                OperationId = otp.OperationId,
+                Pin = currentPin
+            });
+            var withOwnNumber = await userAppService.ResetPasswordVerifyOtpAsync(new ResetPasswordVerifyOtpInput()
+            {
+                MobileNo = mobileNo,
+                OperationId = otp.OperationId,
+                Pin = currentPin
+            });
+
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                await personRepository.DeleteAsync(personId);
+                await uow.CompleteAsync();
+            }
+            await _userRepository.DeleteAsync(userDto.Id);
+            await _userRepository.DeleteAsync(otherUserDto.Id);
+
+            withOtherNumber.IsSuccess.ShouldBeFalse("the mobile number doesn't belong to the person the OTP was sent for");
+            withOtherNumber.Token.ShouldBeNullOrEmpty();
+            withOwnNumber.IsSuccess.ShouldBeTrue(withOwnNumber.ErrorMessage);
         }
 
         private async Task SetPhoneNumberAsync(string userName, string mobileNo)
