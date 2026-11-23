@@ -4,6 +4,7 @@ using Abp.UI;
 using Shesha.Cache;
 using Shesha.Configuration.Security;
 using Shesha.Domain.Enums;
+using Shesha.Exceptions;
 using Shesha.Otp.Configuration;
 using System;
 using System.Collections.Generic;
@@ -105,12 +106,12 @@ namespace Shesha.Otp
                     if (nextAllowed > now)
                     {
                         var secondsRemaining = (int)Math.Ceiling((nextAllowed - now).TotalSeconds);
-                        throw new UserFriendlyException($"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.");
+                        throw new TooManyRequestsException($"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.");
                     }
                 }
 
                 if (recentSends.Count >= maxSends)
-                    throw new UserFriendlyException("Too many OTP requests. Please try again later.");
+                    throw new TooManyRequestsException("Too many OTP requests. Please try again later.");
 
                 recentSends.Add(now);
                 history.SentOnUtc = recentSends;

@@ -446,6 +446,90 @@ namespace Shesha.Tests.Users
             reuse.IsSuccess.ShouldBeFalse("a consumed OTP must not verify again");
         }
 
+        /// <summary>
+        /// Requesting a login OTP after the reset OTP overwrites PasswordResetCode (it holds the operation id of both). The
+        /// reset pin must still be accepted (#5714)
+        /// </summary>
+        [Fact]
+        public async Task ResetPasswordVerifyOtp_should_accept_reset_pin_after_login_otp_was_requested_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var otpStorage = MockOtpStorage(new Dictionary<Guid, OtpDto>(), dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+
+            var sendOtpResponse = await userAppService.ResetPasswordSendOtpAsync(mobileNo);
+            var resetPin = currentPin;
+
+            // the same as ShaLoginManager.SendLoginOtpAsync: an OTP login stores its operation id in PasswordResetCode
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                var user = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.UserName == userName);
+                user.PasswordResetCode = Guid.NewGuid().ToString();
+                await _userRepository.UpdateAsync(user);
+                await uow.CompleteAsync();
+            }
+
+            var verifyResponse = await userAppService.ResetPasswordVerifyOtpAsync(new ResetPasswordVerifyOtpInput()
+            {
+                MobileNo = mobileNo,
+                OperationId = sendOtpResponse.OperationId,
+                Pin = resetPin
+            });
+
+            await _userRepository.DeleteAsync(userDto.Id);
+
+            verifyResponse.IsSuccess.ShouldBeTrue(verifyResponse.ErrorMessage);
+            verifyResponse.Token.ShouldNotBeNullOrEmpty();
+        }
+
+        /// <summary>
+        /// A password reset pin sent to one user's mobile number can't be used to reset another user's password
+        /// </summary>
+        [Fact]
+        public async Task ResetPasswordVerifyOtp_should_reject_reset_otp_sent_to_another_user_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var otherMobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var otherUserName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var otpStorage = MockOtpStorage(new Dictionary<Guid, OtpDto>(), dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+            var otherUserDto = await CreateUserWithMobileNoAsync(userAppService, otherUserName, otherMobileNo);
+
+            // a valid reset pin, but sent to the other user
+            var otherOtp = await userAppService.ResetPasswordSendOtpAsync(otherMobileNo);
+
+            var verifyResponse = await userAppService.ResetPasswordVerifyOtpAsync(new ResetPasswordVerifyOtpInput()
+            {
+                MobileNo = mobileNo,
+                OperationId = otherOtp.OperationId,
+                Pin = currentPin
+            });
+
+            await _userRepository.DeleteAsync(userDto.Id);
+            await _userRepository.DeleteAsync(otherUserDto.Id);
+
+            verifyResponse.IsSuccess.ShouldBeFalse("a reset pin sent to another user must not be accepted");
+            verifyResponse.Token.ShouldBeNullOrEmpty();
+        }
+
         private async Task<UserDto> CreateUserWithMobileNoAsync(IUserAppService userAppService, string userName, string mobileNo)
         {
             var userDto = await userAppService.CreateAsync(

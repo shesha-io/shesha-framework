@@ -18,6 +18,7 @@ using Shesha.Configuration;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.MultiTenancy;
 using Shesha.Otp;
@@ -195,7 +196,7 @@ namespace Shesha.Authorization
                 return;
 
             var secondsRemaining = (int)Math.Ceiling((nextAllowed - DateTime.Now).TotalSeconds);
-            throw new UserFriendlyException(
+            throw new TooManyRequestsException(
                 $"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.");
         }
 

@@ -62,13 +62,26 @@ namespace Shesha.Tests.UserRegistrations
             otpManager.Setup(m => m.GetAsync(It.IsAny<Guid>()))
                 .Returns<Guid>(id => Task.FromResult<IOtpDto>(_otps.TryGetValue(id, out var otp) ? otp : null));
             otpManager.Setup(m => m.VerifyPinAsync(It.IsAny<VerifyPinInput>()))
-                .Returns<VerifyPinInput>(input => Task.FromResult<IVerifyPinResponse>(
-                    _otps.TryGetValue(input.OperationId, out var otp) && otp.Pin == input.Pin && otp.ExpiresOn > DateTime.Now
-                        ? VerifyPinResponse.Success()
-                        : VerifyPinResponse.Failed("Wrong one time pin")));
-            otpManager.Setup(m => m.TryConsumeAsync(It.IsAny<Guid>()))
-                .Returns<Guid>(id => Task.FromResult(_otps.Remove(id)));
+                .Returns<VerifyPinInput>(input => Task.FromResult(Verify(input, acceptUsed: false)));
+            otpManager.Setup(m => m.VerifyPinAsync(It.IsAny<VerifyPinInput>(), It.IsAny<bool>()))
+                .Returns<VerifyPinInput, bool>((input, acceptUsed) => Task.FromResult(Verify(input, acceptUsed)));
+            otpManager.Setup(m => m.TryConsumeAsync(It.IsAny<Guid>())).Returns<Guid>(id =>
+            {
+                if (!_otps.TryGetValue(id, out var otp) || otp.ConsumedOn.HasValue)
+                    return Task.FromResult(false);
+
+                otp.ConsumedOn = DateTime.Now;
+                return Task.FromResult(true);
+            });
             LocalIocManager.IocContainer.Register(Component.For<IOtpManager>().Instance(otpManager.Object).IsDefault().Named("test-otp-manager"));
+        }
+
+        private IVerifyPinResponse Verify(VerifyPinInput input, bool acceptUsed)
+        {
+            return _otps.TryGetValue(input.OperationId, out var otp) && otp.Pin == input.Pin && otp.ExpiresOn > DateTime.Now
+                && (acceptUsed || !otp.ConsumedOn.HasValue)
+                ? VerifyPinResponse.Success()
+                : VerifyPinResponse.Failed("Wrong one time pin");
         }
 
         #region Settings and access
@@ -287,6 +300,30 @@ namespace Shesha.Tests.UserRegistrations
 
             ex.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
             (await UserExistsAsync(input.UserName)).ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task A_pin_already_checked_with_VerifyPin_is_acceptedAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            // the otp-verification form checks the pin through Otp/VerifyPin, which marks it as used, before registering
+            _otps[input.OtpOperationId.Value].ConsumedOn = DateTime.Now;
+
+            await RegisterAsync(app, input);
+
+            (await UserExistsAsync(input.UserName)).ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task Registration_marks_the_pin_as_usedAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+
+            await RegisterAsync(app, input);
+
+            _otps[input.OtpOperationId.Value].ConsumedOn.ShouldNotBeNull();
         }
 
         [Fact]

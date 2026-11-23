@@ -22,6 +22,13 @@ namespace Shesha.Otp
         Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input);
 
         /// <summary>
+        /// Verify one-time-pin. With <paramref name="acceptUsed"/> set, an OTP that was already used is accepted too, as
+        /// long as the pin matches and hasn't expired. Self-registration uses this because the client checks the pin
+        /// through the Otp/VerifyPin endpoint (which uses it) before the registration is submitted with the same pin
+        /// </summary>
+        Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input, bool acceptUsed);
+
+        /// <summary>
         /// Get OTP
         /// </summary>
         /// <param name="operationId"></param>

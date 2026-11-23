@@ -1,16 +1,25 @@
+using Abp.AspNetCore.Configuration;
 using Abp.Net.Mail;
 using Abp.Runtime.Caching;
 using Abp.UI;
+using Abp.Web.Configuration;
+using Abp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Routing;
 using Moq;
 using Shesha.Authorization;
 using Shesha.Configuration.Security;
 using Shesha.Domain.Enums;
-
+using Shesha.Exceptions;
 using Shesha.Otp;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
+using Shesha.RateLimiting;
 using Shesha.Settings;
 using Shesha.Sms;
 using Shesha.Users;
@@ -161,7 +170,7 @@ namespace Shesha.Tests.Otp
             var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
             storage[operationId].ConsumedOn = DateTime.Now;
 
-            await Should.ThrowAsync<UserFriendlyException>(() => manager.ResendPinAsync(new ResendPinInput { OperationId = operationId }));
+            await Should.ThrowAsync<VerificationFailedException>(() => manager.ResendPinAsync(new ResendPinInput { OperationId = operationId }));
         }
 
         [Fact]
@@ -190,6 +199,108 @@ namespace Shesha.Tests.Otp
             response.IsSuccess.ShouldBeFalse();
         }
 
+        [Fact]
+        public async Task VerifyPin_endpoint_should_accept_a_pin_only_onceAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 5);
+            var appService = new OtpAppService(manager, MockOtpSettings(new OtpSettings { MaxVerifyAttempts = 5 }));
+            var input = new VerifyPinInput { OperationId = operationId, Pin = Pin };
+
+            (await appService.VerifyPinAsync(input)).IsSuccess.ShouldBeTrue();
+            var second = await appService.VerifyPinAsync(input);
+
+            storage[operationId].ConsumedOn.ShouldNotBeNull("the endpoint must mark the pin as used");
+            second.IsSuccess.ShouldBeFalse("a pin must only be accepted once");
+        }
+
+        [Fact]
+        public async Task VerifyPin_endpoint_should_not_use_a_wrong_pinAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 5);
+            var appService = new OtpAppService(manager, MockOtpSettings(new OtpSettings { MaxVerifyAttempts = 5 }));
+
+            (await appService.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "000000" })).IsSuccess.ShouldBeFalse();
+
+            storage[operationId].ConsumedOn.ShouldBeNull();
+            (await appService.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task VerifyPin_should_accept_a_used_otp_only_when_askedAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+            storage[operationId].ConsumedOn = DateTime.Now;
+
+            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin }, acceptUsed: true)).IsSuccess.ShouldBeTrue();
+            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "000000" }, acceptUsed: true)).IsSuccess.ShouldBeFalse();
+            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task VerifyPin_should_count_attempts_for_a_used_otpAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+            storage[operationId].ConsumedOn = DateTime.Now;
+
+            for (var i = 0; i < 3; i++)
+                (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "000000" }, acceptUsed: true)).IsSuccess.ShouldBeFalse();
+
+            var response = await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin }, acceptUsed: true);
+
+            response.IsSuccess.ShouldBeFalse("the attempt limit also applies to a used OTP");
+            response.ErrorMessage.ShouldContain("Too many");
+        }
+
+        [Fact]
+        public async Task ResendPin_should_return_too_many_requests_once_max_attempts_reachedAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+            storage[operationId].VerifyAttempts = 3;
+
+            await Should.ThrowAsync<TooManyRequestsException>(() => manager.ResendPinAsync(new ResendPinInput { OperationId = operationId }));
+        }
+
+        #endregion
+
+        #region Settings and status codes
+
+        [Theory]
+        [InlineData(0, 0, OtpDefaults.DefaultMaxVerifyAttempts, OtpDefaults.DefaultMaxSendsPerDestinationPerHour)]
+        [InlineData(3, 10, 3, 10)]
+        public async Task GetSettings_should_return_the_limits_in_effectAsync(int maxVerifyAttempts, int maxSends, int expectedMaxVerifyAttempts, int expectedMaxSends)
+        {
+            var appService = new OtpAppService(Mock.Of<IOtpManager>(),
+                MockOtpSettings(new OtpSettings { MaxVerifyAttempts = maxVerifyAttempts, MaxSendsPerDestinationPerHour = maxSends }));
+
+            var settings = await appService.GetSettingsAsync();
+
+            settings.MaxVerifyAttempts.ShouldBe(expectedMaxVerifyAttempts);
+            settings.MaxSendsPerDestinationPerHour.ShouldBe(expectedMaxSends);
+        }
+
+        [Fact]
+        public void Exception_filter_should_return_429_for_limits_and_400_for_failed_verification()
+        {
+            var filter = new TestExceptionFilter();
+
+            filter.StatusCodeFor(new TooManyRequestsException("Too many OTP requests. Please try again later.")).ShouldBe(StatusCodes.Status429TooManyRequests);
+            filter.StatusCodeFor(new VerificationFailedException("Failed to verify OTP provided")).ShouldBe(StatusCodes.Status400BadRequest);
+            filter.StatusCodeFor(new UserFriendlyException("Something else")).ShouldBe(StatusCodes.Status500InternalServerError);
+        }
+
+        private class TestExceptionFilter : SheshaExceptionFilter
+        {
+            public TestExceptionFilter() : base(Mock.Of<IErrorInfoBuilder>(), Mock.Of<IAbpAspNetCoreConfiguration>(), Mock.Of<IAbpWebCommonModuleConfiguration>())
+            {
+            }
+
+            public int StatusCodeFor(Exception exception)
+            {
+                var actionContext = new ActionContext(new DefaultHttpContext(), new RouteData(), new ActionDescriptor());
+                return GetStatusCode(new ExceptionContext(actionContext, new List<IFilterMetadata>()) { Exception = exception }, wrapOnError: true);
+            }
+        }
+
         #endregion
 
         #region Send throttling
@@ -201,7 +312,7 @@ namespace Shesha.Tests.Otp
 
             await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms);
 
-            var ex = await Should.ThrowAsync<UserFriendlyException>(() => throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms));
+            var ex = await Should.ThrowAsync<TooManyRequestsException>(() => throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms));
             ex.Message.ShouldContain("Please wait");
 
             // other destinations are not affected
@@ -216,7 +327,7 @@ namespace Shesha.Tests.Otp
             for (var i = 0; i < 3; i++)
                 await throttle.CheckAndRegisterSendAsync("user@example.com", OtpSendType.Email);
 
-            var ex = await Should.ThrowAsync<UserFriendlyException>(() => throttle.CheckAndRegisterSendAsync("user@example.com", OtpSendType.Email));
+            var ex = await Should.ThrowAsync<TooManyRequestsException>(() => throttle.CheckAndRegisterSendAsync("user@example.com", OtpSendType.Email));
             ex.Message.ShouldContain("Too many");
         }
 
@@ -300,7 +411,9 @@ namespace Shesha.Tests.Otp
             var method = serviceType.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
             method.ShouldNotBeNull();
             method.GetCustomAttribute<AllowAnonymousAttribute>().ShouldNotBeNull($"{serviceType.Name}.{methodName} is expected to be anonymous");
-            method.GetCustomAttribute<EnableRateLimitingAttribute>().ShouldNotBeNull($"{serviceType.Name}.{methodName} must have [EnableRateLimiting]");
+            var rateLimiting = method.GetCustomAttribute<EnableRateLimitingAttribute>();
+            rateLimiting.ShouldNotBeNull($"{serviceType.Name}.{methodName} must have [EnableRateLimiting]");
+            rateLimiting.PolicyName.ShouldBe(SheshaRateLimitingPolicies.Otp, $"{serviceType.Name}.{methodName} sends or checks a one-time pin, so it must use the OTP policy");
         }
 
         #endregion
@@ -337,6 +450,14 @@ namespace Shesha.Tests.Otp
                 .Returns<Guid, Func<OtpDto, Task>>((id, action) => action(storage[id]));
             otpStorage.Setup(s => s.IncrementVerifyAttemptsAsync(It.IsAny<Guid>()))
                 .Returns<Guid>(id => Task.FromResult(storage.TryGetValue(id, out var dto) ? ++dto.VerifyAttempts : 0));
+            otpStorage.Setup(s => s.TryConsumeAsync(It.IsAny<Guid>())).Returns<Guid>(id =>
+            {
+                if (!storage.TryGetValue(id, out var dto) || dto.ConsumedOn.HasValue)
+                    return Task.FromResult(false);
+
+                dto.ConsumedOn = DateTime.Now;
+                return Task.FromResult(true);
+            });
 
             var generator = new Mock<IOtpGenerator>();
             generator.Setup(g => g.GeneratePin()).Returns(Pin);

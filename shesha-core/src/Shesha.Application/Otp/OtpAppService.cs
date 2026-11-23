@@ -51,7 +51,17 @@ namespace Shesha.Otp
         [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
         {
-            return await _otpManager.VerifyPinAsync(input);
+            var response = await _otpManager.VerifyPinAsync(input);
+            if (!response.IsSuccess)
+                return response;
+
+            // the pin is single use: once accepted here it can't be verified again through this endpoint. Nothing is
+            // stored when validation is ignored (dev/QA), so there is nothing to mark as used
+            var settings = await _otpSettings.OneTimePins.GetValueAsync();
+            if (!settings.IgnoreOtpValidation && !await _otpManager.TryConsumeAsync(input.OperationId))
+                return VerifyPinResponse.Failed("Wrong one time pin");
+
+            return response;
         }
 
         /// inheritDoc
@@ -89,8 +99,13 @@ namespace Shesha.Otp
                 Alphabet = emailSettings.Alphabet,
                 DefaultLifetime = emailSettings.DefaultLifetime,
                 IgnoreOtpValidation = emailSettings.IgnoreOtpValidation,
-                MaxVerifyAttempts = emailSettings.MaxVerifyAttempts,
-                MaxSendsPerDestinationPerHour = emailSettings.MaxSendsPerDestinationPerHour,
+                // 0 (e.g. settings saved before these limits existed) means the default applies, so show the limit in effect
+                MaxVerifyAttempts = emailSettings.MaxVerifyAttempts > 0
+                    ? emailSettings.MaxVerifyAttempts
+                    : OtpDefaults.DefaultMaxVerifyAttempts,
+                MaxSendsPerDestinationPerHour = emailSettings.MaxSendsPerDestinationPerHour > 0
+                    ? emailSettings.MaxSendsPerDestinationPerHour
+                    : OtpDefaults.DefaultMaxSendsPerDestinationPerHour,
                 EmailSubject = emailSettings.DefaultEmailSubjectTemplate,
                 EmailBodyTemplate = emailSettings.DefaultEmailBodyTemplate,
                 RegistrationEmailSubject = emailSettings.DefaultRegistrationEmailSubjectTemplate,

@@ -27,6 +27,10 @@ namespace Shesha.RateLimiting
                 // policies below and their [EnableRateLimiting] attributes. No global limiter is
                 // registered so that normal application traffic (e.g. configuration work, form
                 // loading) is never throttled. See issue #4771.
+                //
+                // The counts are kept in memory on each server, so with several instances behind a load balancer a client
+                // can make up to (instances x PermitLimit) requests per window. The per-OTP attempt limit (MaxVerifyAttempts)
+                // is stored in the database and applies across all servers.
                 options.AddPolicy<string>(SheshaRateLimitingPolicies.Auth, context =>
                     RateLimitPartition.GetFixedWindowLimiter(
                         partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",

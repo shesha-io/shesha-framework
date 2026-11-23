@@ -57,17 +57,17 @@ namespace Shesha.Otp
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             var otp = await _otpStorage.GetAsync(input.OperationId);
             if (otp == null)
-                throw new UserFriendlyException("OTP not found, try to request a new one");
+                throw new VerificationFailedException("OTP not found, try to request a new one");
 
             if (otp.ExpiresOn < DateTime.Now)
-                throw new UserFriendlyException("OTP has expired, try to request a new one");
+                throw new VerificationFailedException("OTP has expired, try to request a new one");
 
             if (otp.ConsumedOn.HasValue)
-                throw new UserFriendlyException("OTP has already been used, try to request a new one");
+                throw new VerificationFailedException("OTP has already been used, try to request a new one");
 
             // resending doesn't reset the attempt counter, so the pin could no longer be verified
             if (otp.SendType != OtpSendType.EmailLink && otp.VerifyAttempts >= GetMaxVerifyAttempts(settings))
-                throw new UserFriendlyException(TooManyAttemptsMessage);
+                throw new TooManyRequestsException(TooManyAttemptsMessage);
 
             // note: we ignore _otpSettings.IgnoreOtpValidation here, the user pressed `resend` manually
 
@@ -202,11 +202,17 @@ namespace Shesha.Otp
         /// inheritedDoc
         public async Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
         {
+            return await VerifyPinAsync(input, acceptUsed: false);
+        }
+
+        /// inheritedDoc
+        public async Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input, bool acceptUsed)
+        {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             if (!settings.IgnoreOtpValidation)
             {
                 var pinDto = await _otpStorage.GetAsync(input.OperationId);
-                if (pinDto == null || pinDto.ConsumedOn.HasValue)
+                if (pinDto == null || pinDto.ConsumedOn.HasValue && !acceptUsed)
                     return VerifyPinResponse.Failed("Wrong one time pin");
 
                 var isEmailLink = pinDto.SendType == OtpSendType.EmailLink;

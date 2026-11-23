@@ -425,9 +425,13 @@ namespace Shesha.UserRegistrations
             if (otp == null)
                 throw new UserFriendlyException(failureMessage);
 
-            var verification = await _otpManager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId.Value, Pin = pin });
+            // the client checks the pin through Otp/VerifyPin first, which marks it as used, so a used OTP is accepted here
+            var verification = await _otpManager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId.Value, Pin = pin }, acceptUsed: true);
             if (!verification.IsSuccess)
                 throw new UserFriendlyException(failureMessage);
+
+            // mark it as used in case the client didn't call Otp/VerifyPin
+            await _otpManager.TryConsumeAsync(operationId.Value);
 
             return NormalizeContact(otp.SendTo) ?? throw new UserFriendlyException(failureMessage);
         }
