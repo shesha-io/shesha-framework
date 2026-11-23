@@ -217,9 +217,16 @@ namespace Shesha.Otp
 
                 var isEmailLink = pinDto.SendType == OtpSendType.EmailLink;
 
+                // A used OTP (only reachable with acceptUsed) was already verified within the attempt limit. Its correct
+                // pin is accepted again without counting another attempt, so a pin accepted on the last allowed attempt
+                // still passes the second check. Wrong pins are counted as usual, so guesses stay limited.
+                var isRecheckOfUsedOtp = pinDto.ConsumedOn.HasValue
+                    && pinDto.VerifyAttempts <= GetMaxVerifyAttempts(settings)
+                    && PinMatches(pinDto.Pin, input.Pin);
+
                 // Email link tokens are random GUIDs and can't be brute-forced. They are also often opened more than
                 // once (e.g. link scanners in mail clients), so the attempt limit only applies to numeric pins.
-                if (!isEmailLink)
+                if (!isEmailLink && !isRecheckOfUsedOtp)
                 {
                     // the attempt is counted before the pin is checked so that concurrent requests can't exceed the limit
                     var attempts = await _otpStorage.IncrementVerifyAttemptsAsync(input.OperationId);

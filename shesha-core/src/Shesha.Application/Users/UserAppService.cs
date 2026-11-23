@@ -223,6 +223,32 @@ namespace Shesha.Users
 
         #region Reset password using OTP
 
+        /// <summary>
+        /// Recipient type of password reset OTPs; the recipient id is the id of the user the OTP was sent for
+        /// </summary>
+        private static readonly string PasswordResetRecipientType = typeof(User).FullName;
+
+        /// <summary>
+        /// Returns the user a password reset OTP was sent for, or null when the OTP isn't bound to the user with the
+        /// specified mobile number
+        /// </summary>
+        private async Task<User> GetPasswordResetUserOrNullAsync(IOtpDto otp, string mobileNo)
+        {
+            // an OTP sent by an application with a person as the recipient
+            var personId = otp.RecipientId.ToGuid();
+            if (personId != Guid.Empty)
+                return (await _personRepository.FirstOrDefaultAsync(personId))?.User;
+
+            if (otp.RecipientType != PasswordResetRecipientType || string.IsNullOrWhiteSpace(mobileNo))
+                return null;
+
+            // the mobile number must still belong to the account the OTP was sent for
+            var users = await _userRepository.GetAll().Where(u => u.PhoneNumber == mobileNo).ToListAsync();
+            return users.Count == 1 && users[0].Id.ToString() == otp.RecipientId
+                ? users[0]
+                : null;
+        }
+
         private async Task<User> GetUniqueUserByMobileNoAsync(string mobileNo)
         {
             var users = await _userRepository.GetAll().Where(u => u.PhoneNumber == mobileNo).ToListAsync();
@@ -266,6 +292,8 @@ namespace Shesha.Users
                 SendType = OtpSendType.Sms,
                 Lifetime = securitySettings.ResetPasswordSmsOtpLifetime,
                 ActionType = OtpActionTypes.PasswordReset,
+                RecipientType = PasswordResetRecipientType,
+                RecipientId = user.Id.ToString(),
             });
 
             user.PasswordResetCode = otpResponse.OperationId.ToString();
@@ -366,7 +394,15 @@ namespace Shesha.Users
 
             var lifetime = securitySettings.ResetPasswordSmsOtpLifetime;
 
-            var response = await _otpManager.SendPinAsync(new SendPinInput() { SendTo = user.PhoneNumber, SendType = OtpSendType.Sms, Lifetime = lifetime, ActionType = OtpActionTypes.PasswordReset });
+            var response = await _otpManager.SendPinAsync(new SendPinInput()
+            {
+                SendTo = user.PhoneNumber,
+                SendType = OtpSendType.Sms,
+                Lifetime = lifetime,
+                ActionType = OtpActionTypes.PasswordReset,
+                RecipientType = PasswordResetRecipientType,
+                RecipientId = user.Id.ToString(),
+            });
 
             user.PasswordResetCode = response.OperationId.ToString();
 
@@ -618,14 +654,10 @@ namespace Shesha.Users
             if (otp == null || otp.ActionType != OtpActionTypes.PasswordReset)
                 return ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(VerifyPinResponse.Failed("Wrong one time pin"));
 
-            var personId = otp.RecipientId.ToGuid();
-            var user = personId != Guid.Empty
-                ? (await _personRepository.GetAsync(personId))?.User
-                : await GetUniqueUserByMobileNoAsync(input.MobileNo);
-
-            // the OTP must have been sent to this user's mobile number, so a pin sent to one user can't reset another
-            // user's password. PasswordResetCode isn't used for this: it also holds the operation id of an OTP login, so
-            // requesting a login OTP after the reset OTP would make the valid reset pin fail
+            // the OTP must have been sent for this user, to their current mobile number, so a pin sent to one user can't
+            // reset another user's password. PasswordResetCode isn't used for this: it also holds the operation id of an
+            // OTP login, so requesting a login OTP after the reset OTP would make the valid reset pin fail
+            var user = await GetPasswordResetUserOrNullAsync(otp, input.MobileNo);
             if (user == null || string.IsNullOrWhiteSpace(user.PhoneNumber) || otp.SendTo != user.PhoneNumber)
                 return ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(VerifyPinResponse.Failed("Wrong one time pin"));
 

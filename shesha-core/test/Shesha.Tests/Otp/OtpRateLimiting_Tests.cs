@@ -237,17 +237,36 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
+        public async Task VerifyPin_should_accept_a_used_otp_that_was_verified_on_the_last_attemptAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+            var appService = new OtpAppService(manager, MockOtpSettings(new OtpSettings { MaxVerifyAttempts = 3 }));
+
+            for (var i = 0; i < 2; i++)
+                (await appService.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "000000" })).IsSuccess.ShouldBeFalse();
+
+            // the correct pin on the last allowed attempt is accepted and the OTP is marked as used
+            (await appService.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeTrue();
+
+            // the second check (e.g. self-registration) must accept it too, without counting another attempt
+            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin }, acceptUsed: true)).IsSuccess.ShouldBeTrue();
+            storage[operationId].VerifyAttempts.ShouldBe(3);
+        }
+
+        [Fact]
         public async Task VerifyPin_should_count_attempts_for_a_used_otpAsync()
         {
             var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
             storage[operationId].ConsumedOn = DateTime.Now;
 
-            for (var i = 0; i < 3; i++)
+            // wrong pins are counted; the 4th goes over the limit
+            for (var i = 0; i < 4; i++)
                 (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "000000" }, acceptUsed: true)).IsSuccess.ShouldBeFalse();
 
             var response = await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin }, acceptUsed: true);
 
-            response.IsSuccess.ShouldBeFalse("the attempt limit also applies to a used OTP");
+            storage[operationId].VerifyAttempts.ShouldBe(5);
+            response.IsSuccess.ShouldBeFalse("once wrong pins go over the attempt limit, a used OTP isn't accepted either");
             response.ErrorMessage.ShouldContain("Too many");
         }
 

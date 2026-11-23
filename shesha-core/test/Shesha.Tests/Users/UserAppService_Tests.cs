@@ -530,6 +530,63 @@ namespace Shesha.Tests.Users
             verifyResponse.Token.ShouldBeNullOrEmpty();
         }
 
+        /// <summary>
+        /// A password reset pin is bound to the account it was sent for. If the mobile number is moved to another account
+        /// while the pin is still valid, the pin must not reset the other account's password
+        /// </summary>
+        [Fact]
+        public async Task ResetPasswordVerifyOtp_should_reject_reset_otp_after_mobile_number_moved_to_another_user_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var otherUserName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var otpStorage = MockOtpStorage(new Dictionary<Guid, OtpDto>(), dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+            var otherUserDto = await CreateUserWithMobileNoAsync(userAppService, otherUserName, await GetUniqueMobileNoAsync());
+
+            var sendOtpResponse = await userAppService.ResetPasswordSendOtpAsync(mobileNo);
+            var input = new ResetPasswordVerifyOtpInput()
+            {
+                MobileNo = mobileNo,
+                OperationId = sendOtpResponse.OperationId,
+                Pin = currentPin
+            };
+
+            // the number is removed from the first account: nobody has it, which is a failed verification, not an error
+            await SetPhoneNumberAsync(userName, await GetUniqueMobileNoAsync());
+            var withoutOwner = await userAppService.ResetPasswordVerifyOtpAsync(input);
+
+            // then given to the other account
+            await SetPhoneNumberAsync(otherUserName, mobileNo);
+            var moved = await userAppService.ResetPasswordVerifyOtpAsync(input);
+
+            await _userRepository.DeleteAsync(userDto.Id);
+            await _userRepository.DeleteAsync(otherUserDto.Id);
+
+            withoutOwner.IsSuccess.ShouldBeFalse();
+            moved.IsSuccess.ShouldBeFalse("the pin was sent for another account");
+            moved.Token.ShouldBeNullOrEmpty();
+        }
+
+        private async Task SetPhoneNumberAsync(string userName, string mobileNo)
+        {
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                var user = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.UserName == userName);
+                user.PhoneNumber = mobileNo;
+                await _userRepository.UpdateAsync(user);
+                await uow.CompleteAsync();
+            }
+        }
+
         private async Task<UserDto> CreateUserWithMobileNoAsync(IUserAppService userAppService, string userName, string mobileNo)
         {
             var userDto = await userAppService.CreateAsync(
