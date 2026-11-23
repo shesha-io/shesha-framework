@@ -5,6 +5,7 @@ using Shesha.AutoMapper.Dto;
 using Shesha.ConfigurationItems.Exceptions;
 using Shesha.Domain;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Roles;
 using System;
 using System.Linq;
@@ -31,9 +32,18 @@ namespace Shesha.Authorization
             _roleManager = roleManager;
         }
 
+        private ShaRole GetTopRole(ShaRole role) 
+        {
+            return role.ExposedFrom != null
+                ? GetTopRole(role.ExposedFrom.ForceCastAs<ShaRole>())
+                : role;
+        }
+
         /// <summary>Resolves a role to its top-module override; module-less roles are used as-is.</summary>
         private async Task<ShaRole> ResolveRoleAsync(ShaRole role)
         {
+            role = GetTopRole(role);
+
             if (role.Module == null)
                 return role;
 
