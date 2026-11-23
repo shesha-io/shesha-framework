@@ -1,6 +1,6 @@
 import { JsonLogicFilter } from "@/interfaces/jsonLogic";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
-import { JsonLogicTree } from "@react-awesome-query-builder/antd";
+import { FC } from "react";
 
 export interface IQueryBuilderProps {
   jsonExpanded?: boolean | undefined;
@@ -13,7 +13,10 @@ export interface IQueryBuilderProps {
 
 export interface IQueryBuilderFieldProps {
   jsonExpanded?: boolean | undefined;
-  value?: object | undefined;
-  onChange?: (value: JsonLogicTree | null) => void | undefined;
+  value?: JsonLogicFilter | undefined;
+  onChange?: ((value: JsonLogicFilter | null) => void) | undefined;
+  showJsonTestingTools?: boolean | undefined;
   readOnly?: boolean | undefined;
 }
+
+export type QueryBuilderFieldType = FC<IQueryBuilderFieldProps>;

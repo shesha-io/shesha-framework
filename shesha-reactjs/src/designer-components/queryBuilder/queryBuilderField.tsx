@@ -1,59 +1,229 @@
-import { CaretRightOutlined } from '@ant-design/icons';
-import { JsonLogicResult } from '@react-awesome-query-builder/antd';
-import { Button, Collapse, Modal, Space } from 'antd';
-import { FC, useState } from 'react';
+import { CaretRightOutlined, FilterOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { QueryChangeResult } from '@/components/queryBuilder/interfaces';
+import { JsonLogicFilter } from '@/interfaces/jsonLogic';
+import { Alert, Button, Collapse, Modal, Space, Spin, Tabs, Tooltip, Typography } from 'antd';
+import { FC, ReactNode, useEffect, useState } from 'react';
+import { QueryPreviewState, useQueryPreview } from './queryPreview';
+import { useEvaluatedLogicDisplay } from './evaluatedLogicDisplay';
 import { useMedia } from 'react-use';
 import { CodeEditor } from '@/components/codeEditor/codeEditor';
 import { IQueryBuilderFieldProps } from './models';
 import { useStyles } from './styles/styles';
 import { QueryBuilder } from '@/components/queryBuilder';
 import { Show } from '@/components/show';
-import { isDefined } from '@/utils/nullables';
+import { QUERY_BUILDER_DOC_URL } from '@/components/queryBuilder/constants';
 
-const JSON_PANEL = "json";
+const queryBuilderTabKey = 'queryBuilderTab';
+const jsonInputTabKey = 'jsonInputTab';
 
-const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
+const QueryPreviewLine: FC<{ state: QueryPreviewState }> = ({ state }) => {
+  switch (state.status) {
+    case 'waiting':
+      return <Typography.Text type="secondary">Uses runtime values — checked when the form runs</Typography.Text>;
+    case 'loading':
+      return (
+        <Typography.Text type="secondary">
+          <Spin size="small" style={{ marginRight: 8 }} />
+          Checking query…
+        </Typography.Text>
+      );
+    case 'ready':
+      return <Typography.Text type="secondary">{`Matches ${state.totalCount} ${state.totalCount === 1 ? 'record' : 'records'}`}</Typography.Text>;
+    case 'failed':
+      return (
+        <Tooltip title={state.error}>
+          <Typography.Text type="danger" ellipsis style={{ maxWidth: 480 }}>
+            {state.error}
+          </Typography.Text>
+        </Tooltip>
+      );
+    default:
+      return null;
+  }
+};
+// Viewport-relative rather than fixed: 1038px left almost no margin on a 1366px laptop while wasting
+// a third of the width on larger displays, and rule rows need every pixel they can get.
+const maxQueryBuilderModalWidth = 1240;
+const queryBuilderModalWidth = `min(${maxQueryBuilderModalWidth}px, 92vw)`;
+
+export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const { styles } = useStyles();
   const [modalVisible, setModalVisible] = useState(false);
-  const [jsonLogicResult, setJsonLogicResult] = useState<JsonLogicResult | undefined>(undefined);
+  const [jsonLogicResult, setJsonLogicResult] = useState<QueryChangeResult | undefined>(undefined);
+  const [draftLogic, setDraftLogic] = useState<JsonLogicFilter | undefined>(props.value);
+  const [builderErrors, setBuilderErrors] = useState<string[]>([]);
+  const [jsonInput, setJsonInput] = useState('');
+  const [jsonInputError, setJsonInputError] = useState<string | null>(null);
+  const inlineJsonInput = useEvaluatedLogicDisplay(props.value ?? undefined);
+  const [activeTab, setActiveTab] = useState(queryBuilderTabKey);
   const [jsonExpanded, setJsonExpanded] = useState(props.jsonExpanded ?? false);
   const isSmall = useMedia('(max-width: 480px)');
+  const modalWidth = isSmall ? '96vw' : queryBuilderModalWidth;
+  const modalStyles = isSmall ? undefined : {
+    content: {
+      height: 'min(720px, 85vh)',
+      padding: 30,
+      boxSizing: 'border-box' as const,
+      display: 'flex',
+      flexDirection: 'column' as const,
+    },
+    header: {
+      padding: 0,
+      marginBottom: 16,
+    },
+    body: {
+      padding: 0,
+      flex: 1,
+      minHeight: 0,
+      overflow: 'auto',
+    },
+    footer: {
+      padding: 0,
+      marginTop: 16,
+    },
+  };
 
-  const { readOnly = false } = props;
+  const { readOnly = false, showJsonTestingTools = false } = props;
+  const preview = useQueryPreview({
+    logic: draftLogic,
+    enabled: modalVisible,
+    hasErrors: builderErrors.length > 0,
+  });
+
+  useEffect(() => {
+    if (!modalVisible) return;
+
+    const nextValue = props.value ?? undefined;
+    setDraftLogic(nextValue);
+    setJsonLogicResult(undefined);
+    setBuilderErrors([]);
+    setJsonInput(nextValue ? JSON.stringify(nextValue, null, 2) : '');
+    setJsonInputError(null);
+    setActiveTab(queryBuilderTabKey);
+  }, [modalVisible, props.value]);
 
   const onOkClick = (): void => {
-    if (isDefined(jsonLogicResult)) {
-      if (jsonLogicResult.errors && jsonLogicResult.errors.length > 0) {
-        // show errors
-        return;
-      }
-
-      if (props.onChange) {
-        props.onChange(jsonLogicResult.logic ?? null);
-      }
+    if (builderErrors.length > 0) {
+      setActiveTab(queryBuilderTabKey);
+      return;
     }
+
+    if (props.onChange)
+      props.onChange(draftLogic ?? null);
+
     setModalVisible(false);
   };
 
-  const onChange = (result: JsonLogicResult): void => {
+  const onChange = (result: QueryChangeResult): void => {
     if (result !== jsonLogicResult) setJsonLogicResult(result);
+    setBuilderErrors(result.errors);
+    setDraftLogic(result.logic);
+    setJsonInput(result.logic ? JSON.stringify(result.logic, null, 2) : '');
+    setJsonInputError(null);
   };
 
   const onExpandClick = (): void => {
     setJsonExpanded(!jsonExpanded);
   };
 
+  const applyJson = (): void => {
+    const text = jsonInput.trim();
+    if (!text) {
+      setDraftLogic(undefined);
+      setJsonInputError(null);
+      setBuilderErrors([]);
+      setActiveTab(queryBuilderTabKey);
+      return;
+    }
+
+    try {
+      const parsed: unknown = JSON.parse(text);
+      if (!parsed || Array.isArray(parsed) || typeof parsed !== 'object')
+        throw new Error('JSON must be an object');
+
+      setDraftLogic(parsed as JsonLogicFilter);
+      setJsonInput(JSON.stringify(parsed, null, 2));
+      setJsonInputError(null);
+      setBuilderErrors([]);
+      setActiveTab(queryBuilderTabKey);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Invalid JSON';
+      setJsonInputError(message);
+    }
+  };
+
   const hasValue = Boolean(props.value);
+  const actionButtons = (
+    <Space>
+      <Button type={readOnly ? 'default' : 'primary'} onClick={() => setModalVisible(true)} size="small">
+        {`Query Builder ${hasValue ? '(applied)' : ''}`.trim()}
+      </Button>
+
+      <Show when={hasValue && !readOnly}>
+        <Button
+          type="primary"
+          size="small"
+          danger
+          onClick={() => {
+            if (props.onChange) props.onChange(null);
+          }}
+        >
+          Clear
+        </Button>
+      </Show>
+    </Space>
+  );
+  const queryBuilderContent = (
+    <>
+      {builderErrors.length > 0 && (
+        <Alert
+          type="error"
+          showIcon
+          message="Query has validation errors"
+          description={builderErrors.join('\n')}
+          style={{ marginBottom: 8 }}
+        />
+      )}
+      <QueryBuilder value={draftLogic} onChange={onChange} readOnly={readOnly} />
+    </>
+  );
+  const jsonEditorContent = (
+    <>
+      <CodeEditor
+        value={jsonInput}
+        onChange={(v) => setJsonInput(v ?? '')}
+        readOnly={readOnly}
+        language="javascript"
+        style={{ minHeight: 260 }}
+      />
+      {jsonInputError && (
+        <Alert
+          type="error"
+          showIcon
+          message="Invalid JsonLogic JSON"
+          description={jsonInputError}
+          style={{ marginTop: 8 }}
+        />
+      )}
+      {!readOnly && (
+        <div style={{ marginTop: 8 }}>
+          <Button type="primary" onClick={applyJson}>
+            Apply JSON
+          </Button>
+        </div>
+      )}
+    </>
+  );
 
   return (
     <div className={styles.shaQueryBuilderMarginTop8}>
       <Collapse
         className={styles.shaQueryBuilderField}
-        activeKey={jsonExpanded ? JSON_PANEL : ""}
+        {...(jsonExpanded ? { activeKey: '1' } : {})}
         expandIconPlacement="end"
         bordered={false}
         ghost={true}
-        expandIcon={({ isActive = false }) =>
+        expandIcon={({ isActive }) =>
           isActive ? (
             <span onClick={onExpandClick}>
               hide json <CaretRightOutlined rotate={90} />
@@ -65,61 +235,81 @@ const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
           )}
         items={[
           {
-            key: JSON_PANEL,
-            label: (
-              <Space>
-                <Button
-                  type={readOnly ? 'default' : 'primary'}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setModalVisible(true);
-                  }}
-                  size="small"
-                >
-                  {`Query Builder ${hasValue ? '(applied)' : ''}`.trim()}
-                </Button>
-
-                <Show when={hasValue && !readOnly}>
-                  <Button
-                    type="primary"
-                    size="small"
-                    danger
-                    onClick={() => {
-                      if (props.onChange) props.onChange(null);
-                    }}
-                  >
-                    Clear
-                  </Button>
-                </Show>
-              </Space>
+            key: '1',
+            label: actionButtons,
+            children: (
+              <CodeEditor
+                readOnly={true}
+                value={inlineJsonInput}
+                language="javascript"
+                style={{ marginTop: 8 }}
+              />
             ),
-            children: jsonExpanded
-              ? (
-                <CodeEditor
-                  readOnly={true}
-                  value={props.value ? JSON.stringify(props.value, null, 2) : ""}
-                  language="javascript"
-                  style={{ marginTop: 8 }}
-                />
-              )
-              : undefined,
           },
         ]}
-      >
-      </Collapse>
+      />
       <Modal
         open={modalVisible}
-        width={isSmall ? '90%' : '60%'}
-        title="Query Builder"
+        width={modalWidth}
+        {...(modalStyles ? { styles: modalStyles } : {})}
+        title={(
+          <Space size={10} className={styles.shaQueryBuilderModalTitle}>
+            <span className={styles.shaQueryBuilderModalTitleIcon}>
+              <FilterOutlined />
+            </span>
+            <span>Query Builder</span>
+          </Space>
+        )}
         onOk={onOkClick}
         okButtonProps={{ hidden: readOnly }}
         onCancel={() => setModalVisible(false)}
         cancelText={readOnly ? 'Close' : undefined}
         destroyOnHidden
+        footer={(originNode: ReactNode) => (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
+              <QueryPreviewLine state={preview} />
+            </div>
+            <div style={{ flexShrink: 0 }}>{originNode}</div>
+          </div>
+        )}
       >
-        <h4>Here you can create your own filter using the query builder below</h4>
-
-        <QueryBuilder value={props.value} onChange={onChange} readOnly={readOnly} />
+        <div className={styles.shaQueryBuilderModalBody}>
+          <Space size={6} className={styles.shaQueryBuilderModalHelpWrap}>
+            <span className={styles.shaQueryBuilderModalHelpText}>Create your own filter using the query builder below.</span>
+            <Tooltip title={<a href={QUERY_BUILDER_DOC_URL} target="_blank" rel="noopener noreferrer">Open documentation</a>}>
+              <a
+                href={QUERY_BUILDER_DOC_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.shaQueryBuilderModalHelpIcon}
+                aria-label="Open Query Builder documentation"
+              >
+                <QuestionCircleOutlined />
+              </a>
+            </Tooltip>
+          </Space>
+          {showJsonTestingTools ? (
+            <Tabs
+              activeKey={activeTab}
+              onChange={setActiveTab}
+              items={[
+                {
+                  key: queryBuilderTabKey,
+                  label: 'Query builder',
+                  children: queryBuilderContent,
+                },
+                {
+                  key: jsonInputTabKey,
+                  label: 'Edit JSON',
+                  children: jsonEditorContent,
+                },
+              ]}
+            />
+          ) : (
+            queryBuilderContent
+          )}
+        </div>
       </Modal>
     </div>
   );

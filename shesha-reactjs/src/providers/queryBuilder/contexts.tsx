@@ -1,4 +1,3 @@
-import { Widgets } from '@react-awesome-query-builder/antd';
 import { IModelMetadata } from '@/interfaces/metadata';
 import { IProperty } from './models';
 import { createNamedContext } from '@/utils/react';
@@ -6,7 +5,8 @@ import { createNamedContext } from '@/utils/react';
 export interface IQueryBuilderStateContext {
   fields: IProperty[];
   id?: string | undefined;
-  customWidgets?: Widgets | undefined;
+  /** @deprecated custom widgets are not supported by the current builder; kept so callers still compile */
+  customWidgets?: Record<string, unknown> | undefined;
 }
 
 export interface IQueryBuilderActionsContext {

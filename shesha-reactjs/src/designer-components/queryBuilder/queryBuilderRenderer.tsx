@@ -1,10 +1,10 @@
+import { JsonLogicFilter } from '@/interfaces/jsonLogic';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import QueryBuilderField from './queryBuilderField';
 import { FC } from 'react';
 import { Alert, Typography } from 'antd';
 import { IQueryBuilderComponentPropsUnwrapped } from './interfaces';
 import { useForm, useQueryBuilderOrUndefined } from '@/providers';
-import { isNullOrWhiteSpace } from '@/utils';
 
 export const QueryBuilderRenderer: FC<IQueryBuilderComponentPropsUnwrapped> = (props) => {
   const { formMode } = useForm();
@@ -13,7 +13,7 @@ export const QueryBuilderRenderer: FC<IQueryBuilderComponentPropsUnwrapped> = (p
   const queryBuilder = useQueryBuilderOrUndefined();
   const fieldsAvailable = Boolean(queryBuilder);
 
-  if (!fieldsAvailable && formMode === 'designer' && isNullOrWhiteSpace(fieldsUnavailableHint))
+  if (!fieldsAvailable && formMode === 'designer' && !fieldsUnavailableHint)
     return (
       <Alert
         className="sha-designer-warning"
@@ -22,12 +22,12 @@ export const QueryBuilderRenderer: FC<IQueryBuilderComponentPropsUnwrapped> = (p
       />
     );
 
-  return !fieldsAvailable && !isNullOrWhiteSpace(fieldsUnavailableHint) ? (
+  return !fieldsAvailable && fieldsUnavailableHint ? (
     <ConfigurableFormItem model={props}>
       <Typography.Text type="secondary">{fieldsUnavailableHint}</Typography.Text>
     </ConfigurableFormItem>
   ) : (
-    <ConfigurableFormItem<object> model={props}>
+    <ConfigurableFormItem<JsonLogicFilter> model={props}>
       {(value, onChange) => {
         return (
           <QueryBuilderField

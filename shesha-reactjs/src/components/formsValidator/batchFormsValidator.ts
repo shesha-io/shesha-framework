@@ -1,6 +1,6 @@
+import { JsonLogicFilter } from '@/interfaces/jsonLogic';
 import { ActionParametersDictionary, HttpClientApi, IConfigurableTheme } from "@/providers";
 import { FormItem, FormProcessingItem, ValidationResult } from "./models";
-import { JsonLogicTree } from "@react-awesome-query-builder/antd";
 import { extractAjaxResponse, GetAllResponse, IAjaxResponse, IGetAllEntitiesPayload, ISettingsComponent, IToolboxComponentGroup, IToolboxComponents } from "@/interfaces";
 import { buildUrl, isDefined } from "@/utils";
 import { IFormManagerActionsContext } from "@/providers/formManager/contexts";
@@ -117,7 +117,7 @@ export class BatchFormsValidator {
     return this.#settingsComponents.find((c) => c.type === type);
   };
 
-  loadFormsListAsync = async (filter: JsonLogicTree | undefined, transformItem?: (item: FormItem) => FormProcessingItem): Promise<FormProcessingItem[]> => {
+  loadFormsListAsync = async (filter: JsonLogicFilter | undefined, transformItem?: (item: FormItem) => FormProcessingItem): Promise<FormProcessingItem[]> => {
     const finalFilter = isDefined(filter) ? combineExpressionsWithAnd([staticFormsFilter, filter]) : staticFormsFilter;
     const payload: IGetAllEntitiesPayload = {
       name: "FormConfiguration",

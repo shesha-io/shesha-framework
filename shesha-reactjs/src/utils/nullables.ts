@@ -15,9 +15,9 @@ export const getDefault = <T>(value: T | null | undefined, defaultValue: T): T =
  * Checks if the given string is null or white space.
  * @returns True if the string is null or white space, false otherwise.
  */
-export const isNullOrWhiteSpace = (value: string | null | undefined): value is null | undefined => {
+export function isNullOrWhiteSpace(value: string | null | undefined): value is null | undefined {
   return value === null || value === undefined || (typeof value === 'string' && value.trim() === '');
-};
+}
 
 /**
  * Returns the given string if it is not null or white space, otherwise returns undefined.

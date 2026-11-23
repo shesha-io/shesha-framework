@@ -1,0 +1,813 @@
+[
+ {
+  "source": "Shesha/form-template-create",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "isEnabled"
+      },
+      true
+     ]
+    },
+    {
+     "==": [
+      {
+       "var": "isEditable"
+      },
+      true
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Shesha/users",
+  "logic": {
+   "and": [
+    {
+     "!!": {
+      "var": "user.userName"
+     }
+    }
+   ]
+  }
+ },
+ {
+  "source": "Shesha/scheduled-job-details",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "Job"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.id}}"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Shesha/scheduled-job-details",
+  "logic": {
+   "or": [
+    {
+     "==": [
+      {
+       "var": "job"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.id}}"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Shesha/role-assign-user",
+  "logic": {
+   "and": [
+    {
+     "!!": {
+      "var": "fullName"
+     }
+    },
+    {
+     "==": [
+      {
+       "var": "user.isActive"
+      },
+      true
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Shesha/cs-form-create",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "isTemplate"
+      },
+      true
+     ]
+    },
+    {
+     "!!": {
+      "var": "generationLogicTypeName"
+     }
+    },
+    {
+     "!": {
+      "in": [
+       "blank",
+       {
+        "var": "name"
+       }
+      ]
+     }
+    }
+   ]
+  }
+ },
+ {
+  "source": "Shesha/cs-role-editor",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "role"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.id}}"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Shesha/form-templates",
+  "logic": {
+   "!": {
+    "and": [
+     {
+      "==": [
+       {
+        "var": "isTemplate"
+       },
+       false
+      ]
+     }
+    ]
+   }
+  }
+ },
+ {
+  "source": "Shesha/user-details",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "person"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.id}}",
+         "required": true,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Shesha/cs-expose-existing",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "isEnabled"
+      },
+      true
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Shesha/cs-notification-type-editor",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "partOf"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.id}}",
+         "required": true,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Shesha/cs-reflist-editor",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "referenceList"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.id}}",
+         "required": true,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "TestModule/Project_Table",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "gender"
+      },
+      1
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "TestModule/Project_Table",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "gender"
+      },
+      2
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "TestModule/Subformtest-details",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "member"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.id}}",
+         "required": true,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Boxfusion.SheshaFunctionalTests.Common/schoollist-details",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "school"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.id}}",
+         "required": true,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "TestModule/format-dynamic",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "amount"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.selectedAmount}}",
+         "required": false,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "==": [
+      {
+       "var": "member"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.selectedMember.id}}",
+         "required": false,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "==": [
+      {
+       "var": "paymentDate"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.selectedDate}}",
+         "required": false,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "==": [
+      {
+       "var": "paymentType"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.selectedType}}",
+         "required": false,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "TestModule/member-new-implemetation",
+  "logic": {
+   "and": [
+    {
+     "is_satisfied": [
+      {
+       "var": "Boxfusion.SheshaFunctionalTests.MemberAge18PlusSpecification"
+      },
+      "console.log(\"PageContext: \", pageContext.isTrue)\r\nreturn pageContext.isTrue"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Boxfusion.SheshaFunctionalTests.Web/tireTable",
+  "logic": {
+   "and": [
+    {
+     ">": [
+      {
+       "var": "orderIndex"
+      },
+      0
+     ]
+    },
+    {
+     ">": [
+      {
+       "var": "targetingFlag"
+      },
+      0
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Boxfusion.SheshaFunctionalTests.Common/details-demo",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "member"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.id}}",
+         "required": true
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Boxfusion.SheshaFunctionalTests.Common/grouping-table",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "referenceList.name"
+      },
+      "Shesha.Core.AddressType"
+     ]
+    },
+    {
+     "==": [
+      {
+       "var": "referenceList.isLast"
+      },
+      true
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "TestModule/updateTable-table",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "addressLine1"
+      },
+      "34 Degrees South, Knysna Waterfront, Knysna Central, Knysna, South Africa"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "TestModule/updateTable-table",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "itemValue"
+      },
+      1
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Boxfusion.SheshaFunctionalTests.Web/table",
+  "logic": {
+   "and": [
+    {
+     "is_satisfied": {
+      "var": "Boxfusion.SheshaFunctionalTests.Common.Domain.Specifications.MemberSpecification"
+     }
+    }
+   ]
+  }
+ },
+ {
+  "source": "Boxfusion.SheshaFunctionalTests.Web/table",
+  "logic": {
+   "and": [
+    {
+     "is_satisfied": {
+      "var": "Boxfusion.SheshaFunctionalTests.MemberAge18PlusSpecification"
+     }
+    }
+   ]
+  }
+ },
+ {
+  "source": "Boxfusion.SheshaFunctionalTests.Web/notififaction-bulk",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "exposedFrom"
+      },
+      null
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Boxfusion.SheshaFunctionalTests.Common/schoolbus-create",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "address"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.primaryAddress}}",
+         "required": true,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "is_satisfied": {
+      "var": "Boxfusion.SheshaFunctionalTests.PersonAge18PlusSpecification"
+     }
+    }
+   ]
+  }
+ },
+ {
+  "source": "Boxfusion.SheshaFunctionalTests.Web/cs-test-form-from-template",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "parentId"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.id}}",
+         "required": true,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Boxfusion.SheshaFunctionalTests.Common/test-organisation-details-view",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "company"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.id}}",
+         "required": true
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "None/omo-demo",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "organisation"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.id}}",
+         "required": true,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "None/omo-demo",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "parent"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.id}}",
+         "required": true,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Boxfusion.SheshaFunctionalTests.Common/newcompany-details",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "company"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.id}}",
+         "required": true,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Boxfusion.SheshaFunctionalTests.ModuleA/TestMemberTemplateTable",
+  "logic": {
+   "and": [
+    {
+     "!!": {
+      "var": "emailAddress1"
+     }
+    },
+    {
+     "!=": [
+      {
+       "var": "creationTime"
+      },
+      "2025-11-11T00:00:00+02:00"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "TestModule/testform1-create-copy",
+  "logic": {
+   "or": [
+    {
+     "==": [
+      {
+       "var": "member"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.selectedMember.id}}",
+         "required": true,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "==": [
+      {
+       "var": "amount"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.selectedAmount}}",
+         "required": false,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "Boxfusion.SheshaFunctionalTests.Common/mayDetails-view",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "member"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{pageContext.memberPay}}",
+         "required": true,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source": "TestModule/tuesdayBlank-view",
+  "logic": {
+   "and": [
+    {
+     "==": [
+      {
+       "var": "member"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.selectedMember.id}}",
+         "required": false,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "==": [
+      {
+       "var": "amount"
+      },
+      {
+       "evaluate": [
+        {
+         "expression": "{{data.selectedAmounts}}",
+         "required": true,
+         "type": "mustache"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ }
+]

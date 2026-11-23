@@ -1,5 +1,6 @@
 'use client';
 
+import { JsonLogicFilter } from '@/interfaces/jsonLogic';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
@@ -22,7 +23,6 @@ import {
   UndoOutlined,
 } from '@ant-design/icons';
 import { isDefined } from '@/utils';
-import { JsonLogicTree } from '@react-awesome-query-builder/antd';
 import { FormsFilter } from './formsFilter';
 import { useConfigurableActionDispatcher, useFormManager, useHttpClient, useSettingsComponents, useTheme } from '@/providers';
 import { BatchFormsValidator } from './batchFormsValidator';
@@ -53,7 +53,7 @@ export const FormsValidator: FC = () => {
   const [forms, setForms] = useState<FormProcessingItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [running, setRunning] = useState(false);
-  const [filter, setFilter] = useState<JsonLogicTree | undefined>(
+  const [filter, setFilter] = useState<JsonLogicFilter | undefined>(
     // { "==": [{ var: "id" }, "229c6ed8-244b-448d-ada8-f7a3a6b86547"] },
   );
   const [openedForm, setOpenedForm] = useState<FormProcessingItem | undefined>(undefined);

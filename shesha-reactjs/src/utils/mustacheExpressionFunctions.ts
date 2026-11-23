@@ -1,6 +1,6 @@
-type MustacheFunctionCategory = 'String' | 'Date' | 'Number' | 'Logic';
+export type MustacheFunctionCategory = 'String' | 'Date' | 'Number' | 'Logic';
 
-interface MustacheFunctionArg {
+export interface MustacheFunctionArg {
   name: string;
   description: string;
   optional?: boolean;
@@ -31,6 +31,24 @@ function toDate(value: unknown): Date {
   const date = new Date(toStr(value));
   if (Number.isNaN(date.getTime())) throw new Error(`Invalid date: "${value}"`);
   return date;
+}
+
+const pad = (n: number): string => String(n).padStart(2, '0');
+
+/** Local calendar date, or an ISO date-time with the local offset so the instant survives the round trip. Same shape the date pickers send. */
+function formatDate(date: Date, withTime: boolean): string {
+  const day = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  if (!withTime) return day;
+  const offsetMinutes = -date.getTimezoneOffset();
+  const sign = offsetMinutes >= 0 ? '+' : '-';
+  const abs = Math.abs(offsetMinutes);
+  return `${day}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`;
+}
+
+/** A Date, or a string that carries a time component, keeps its time through date arithmetic. */
+function hasTimeComponent(value: unknown): boolean {
+  if (value instanceof Date) return true;
+  return typeof value === 'string' && /\d[T ]\d{1,2}:\d{2}/.test(value);
 }
 
 function toBool(value: unknown): boolean {
@@ -213,7 +231,7 @@ register({
   description: 'Returns the current date (YYYY-MM-DD)',
   category: 'Date',
   args: [],
-  evaluate: () => new Date().toISOString().slice(0, 10),
+  evaluate: () => formatDate(new Date(), false),
 });
 
 register({
@@ -246,12 +264,12 @@ register({
 
 register({
   name: 'DATEADD',
-  description: 'Adds a number of units to a date. Units: days, months, years',
+  description: 'Adds a number of units to a date. Units: day(s), week(s), month(s), year(s)',
   category: 'Date',
   args: [
     { name: 'date', description: 'The base date' },
     { name: 'amount', description: 'Number of units to add' },
-    { name: 'unit', description: '"days", "months", or "years"' },
+    { name: 'unit', description: '"days", "weeks", "months", or "years"' },
   ],
   evaluate: (date, amount, unit) => {
     const parsedDate = toDate(date);
@@ -259,12 +277,13 @@ register({
     const numericAmount = toNum(amount);
     const normalizedUnit = toStr(unit).toLowerCase();
 
-    if (normalizedUnit === 'days') result.setDate(result.getDate() + numericAmount);
-    else if (normalizedUnit === 'months') result.setMonth(result.getMonth() + numericAmount);
-    else if (normalizedUnit === 'years') result.setFullYear(result.getFullYear() + numericAmount);
+    if (normalizedUnit === 'day' || normalizedUnit === 'days') result.setDate(result.getDate() + numericAmount);
+    else if (normalizedUnit === 'week' || normalizedUnit === 'weeks') result.setDate(result.getDate() + (numericAmount * 7));
+    else if (normalizedUnit === 'month' || normalizedUnit === 'months') result.setMonth(result.getMonth() + numericAmount);
+    else if (normalizedUnit === 'year' || normalizedUnit === 'years') result.setFullYear(result.getFullYear() + numericAmount);
     else throw new Error(`Unknown unit: "${normalizedUnit}"`);
 
-    return result.toISOString().slice(0, 10);
+    return formatDate(result, hasTimeComponent(date));
   },
 });
 
@@ -493,5 +512,11 @@ register({
 });
 
 const functionDefinitions = Array.from(registry.values());
+const runtimeScope = functionDefinitions.reduce<Record<string, (...args: unknown[]) => unknown>>((acc, definition) => {
+  acc[definition.name] = (...args: unknown[]) => definition.evaluate(...args);
+  return acc;
+}, {});
 
 export const getMustacheFunctionDefinitions = (): MustacheFunctionDefinition[] => functionDefinitions;
+
+export const getMustacheRuntimeScope = (): Record<string, (...args: unknown[]) => unknown> => runtimeScope;

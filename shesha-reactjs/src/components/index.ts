@@ -86,8 +86,7 @@ export {
 } from './appConfigurator/editModeToggler'; // TODO: convert to subtype
 export { default as ConfigurableComponent } from './appConfigurator/configurableComponent'; // TODO: convert to subtype
 export { FormDesigner, type IFormDesignerProps } from './formDesigner/index';
-export { QueryBuilder, type IQueryBuilderProps } from './queryBuilder';
-export { type JsonLogicResult } from '@react-awesome-query-builder/antd';
+export { QueryBuilder, type IQueryBuilderProps, type QueryChangeResult, type QueryChangeResult as JsonLogicResult } from './queryBuilder';
 export { ConfigurableForm } from './configurableForm';
 export { FormWithFlatMarkup, type IFormWithFlatMarkupProps } from './configurableForm/formWithFlatMarkup';
 export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from './configurableForm/models';
