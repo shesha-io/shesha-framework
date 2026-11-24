@@ -13,6 +13,8 @@ const ColorPickerComponent: ColorPickerComponentDefinition = {
   themeGroup: 'input',
   type: 'colorPicker',
   name: 'Color Picker',
+  isHidden: true,
+  showInThemeEditor: true,
   canBeJsSetting: true,
   isInput: true,
   isOutput: true,

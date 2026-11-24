@@ -48,15 +48,15 @@ namespace Shesha.Settings
         {
             return new SettingManagementContext
             {
-                AppKey = !string.IsNullOrWhiteSpace(appKey) 
-                    ? appKey 
+                AppKey = !string.IsNullOrWhiteSpace(appKey)
+                    ? appKey
                     : _cfRuntime.FrontEndApplication,
                 UserId = isUserSpecific ? AbpSession.UserId : null,
                 TenantId = AbpSession.TenantId,
             };
         }
 
-        private SettingIdentifier ResolveSettingId(SettingIdentifierDto input) 
+        private SettingIdentifier ResolveSettingId(SettingIdentifierDto input)
         {
             // Empty category means that setting is already resolved
             if (string.IsNullOrWhiteSpace(input.Category))
@@ -68,7 +68,7 @@ namespace Shesha.Settings
 
             return new SettingIdentifier(resolvedDefinition.Name, resolvedDefinition.ModuleName);
         }
-        
+
 
         /// <summary>
         /// Get setting value

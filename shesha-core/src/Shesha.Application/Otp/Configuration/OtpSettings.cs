@@ -39,7 +39,8 @@
         public string DefaultEmailSubjectTemplate { get; set; }
 
         /// <summary>
-        /// Email link body template
+        /// Email link body template. Placeholders: <c>{{token}}</c>, <c>{{userid}}</c>, <c>{{operationId}}</c> and <c>{{isRegistration}}</c>.
+        /// Raw <c>&amp;</c> characters are escaped as <c>&amp;amp;</c> before sending.
         /// </summary>
         public string DefaultEmailBodyTemplate { get; set; }
     }

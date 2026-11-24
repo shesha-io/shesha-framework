@@ -136,7 +136,7 @@ namespace Shesha
         public override async Task<PagedResultDto<TEntityDto>> GetAllAsync(TGetAllInput input)
         {
             CheckGetAllPermission();
-            
+
             var permissionedEntityProvider = IocManager.Resolve<IPermissionedEntityProvider>();
             var query = CreateFilteredQuery(input);
 

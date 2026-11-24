@@ -129,7 +129,7 @@ export type StyleGroups = 'common' | 'inputs' | 'common-containers' | 'buttons';
 export type ThemeComponentGroup = 'input' | 'inline' | 'standard' | 'layout';
 
 export type IToolboxComponentBase = {
-  /** Show the component in the theme editor (true by default) */
+  /** Show the component in the theme editor (true by default, unless isHidden is set). Set to true explicitly to keep a hidden component in the theme editor */
   showInThemeEditor?: boolean | undefined;
 
   /** Groupping components by style. Also selects the style API exposed to scripts (see formComponentApi). */

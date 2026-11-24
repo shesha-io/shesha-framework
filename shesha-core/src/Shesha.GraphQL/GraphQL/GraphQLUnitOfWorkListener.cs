@@ -45,6 +45,6 @@ namespace Shesha.GraphQL.UnitOfWork
 
             _disposed = true;
             _unitOfWorkCompleteHandle?.Dispose();
-        }        
+        }
     }
 }

@@ -129,10 +129,13 @@ namespace Shesha
             {
                 s.UserManagementSettings.WithDefaultValue(new UserManagementSettings
                 {
+                    // explicit false, so null only appears on values saved before the property existed (see AllowSelfRegistration)
+                    AllowSelfRegistration = false,
                     SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber,
                     RequireEmailVerification = false,
                     GoToUrlAfterRegistration = "/",
                     UserEmailAsUsername = false,
+                    RequireEmailAddress = false,
                     AdditionalRegistrationInfo = false,
                     AdditionalRegistrationInfoFormModule = null,
                     AdditionalRegistrationInfoFormName = null

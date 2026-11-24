@@ -4,7 +4,7 @@ import { App, Button, Image, Tooltip, Upload, UploadProps } from 'antd';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import { useStyles } from './styles';
-import { useFileUploadOrUndefined } from '@/providers/storedFile';
+import { useFileUploadWithStateOrUndefined } from '@/providers/storedFile';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { toBase64 } from '@/providers/form/utils';
 
@@ -28,7 +28,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
 
   const { styles: classes } = useStyles();
 
-  const { uploadFile, deleteFile, fileInfo } = useFileUploadOrUndefined() ?? {};
+  const { uploadFile, deleteFile, fileInfo } = useFileUploadWithStateOrUndefined() ?? {};
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const { message } = App.useApp();
 

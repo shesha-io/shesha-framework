@@ -28,6 +28,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
   type: 'sizableColumns',
   isInput: false,
   name: 'SizableColumns',
+  isHidden: true,
   icon: <BorderHorizontalOutlined />,
   Factory: ({ model }) => {
     const { data } = useFormData();

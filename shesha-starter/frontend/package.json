@@ -23,7 +23,15 @@
     "next-navigation-guard": {
       "next": "$next"
     },
-    "@rc-component/portal": "2.2.1"
+    "@rc-component/portal": "2.2.1",
+    "@react-awesome-query-builder/antd": {
+      "antd": "$antd",
+      "@ant-design/icons": "$@ant-design/icons",
+      "rc-picker": "4.11.3"
+    },
+    "rc-picker": {
+      "@rc-component/trigger": "2.3.1"
+    }
   },
   "publishConfig": {
     "registry": "https://pkgs.dev.azure.com/boxfusion/_packaging/npm.shesha.dev/npm/registry/"
@@ -32,14 +40,14 @@
     "@ant-design/icons": "^6.3.4",
     "@ant-design/nextjs-registry": "^1.3.0",
     "@next/bundle-analyzer": "^14.2.4",
-    "@shesha-io/reactjs": "0.0.0-build123239",
-    "@types/react-dom": "^19.2.4",
+    "@shesha-io/reactjs": "0.0.0-build126504",
+    "@types/react-dom": "^19.3.0",
     "antd": "^6.6.2",
     "next": "^16.4.2",
     "next-navigation-guard": "^0.2.0",
     "qs": "^6.14.0",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "styled-components": "^5.2.1"
   },
   "devDependencies": {
