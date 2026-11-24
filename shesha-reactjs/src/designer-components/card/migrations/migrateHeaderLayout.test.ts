@@ -59,6 +59,8 @@ describe('card migrator', () => {
     const model = upgradeComponent({ ...oldCard(), version: 5 } as IConfigurableFormComponent, CardComponent, undefined, getEmptyFlatMarkup()) as ICardComponentProps;
     expect(model.desktop?.headerStyles).toEqual(legacyHeaderStyles());
     expect(model.mobile?.headerStyles).toEqual(legacyHeaderStyles());
+    // Its line under the head stays, whatever the theme's Header Defaults say.
+    expect(model.desktop?.headerStyles?.border?.hideBorder).toBe(false);
   });
 
   it('migrates a v5 card saved without a header or device styles', () => {

@@ -41,7 +41,12 @@ export const defaultHeaderStyles = (): IStyleValue => ({
  * whatever the theme's Header Defaults say. The background is transparent: the head showed the card's own
  * background.
  */
-export const legacyHeaderStyles = (): IStyleValue => ({
-  ...defaultHeaderStyles(),
-  background: { type: 'color', color: 'transparent' },
-});
+export const legacyHeaderStyles = (): IStyleValue => {
+  const defaults = defaultHeaderStyles();
+  return {
+    ...defaults,
+    // Pinned, so a theme that hides the header border does not remove the line under the legacy head.
+    border: { ...defaults.border, hideBorder: false },
+    background: { type: 'color', color: 'transparent' },
+  };
+};

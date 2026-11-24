@@ -86,6 +86,8 @@ const useStyles = createStyles(({ css, cx, token }, { appearance, model }: Style
     }
 
     th {
+      /* Browsers make th bold: take the header row's weight instead. */
+      font-weight: inherit;
       text-align: ${headerTextAlign ?? 'left'};
     }
 
