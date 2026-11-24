@@ -31,6 +31,24 @@ export const getGroupStyleForComponent = (groupStyle: IThemeGroupStyle | undefin
 };
 
 /**
+ * A theme component style with what its nested styles inherit from it (see `nestedGroupStyles`): a tab
+ * card or a header inherits the component's own border, background and padding, as it does the group's.
+ * So the component's theme layer wins over the group's for nested styles too, and the component's own
+ * nested values (e.g. its Card Styles) still win over what they inherit.
+ */
+export const getComponentThemeStyle = (componentStyle: IStyleValue | undefined, toolboxComponent: Pick<IToolboxComponent, 'nestedGroupStyles'> | undefined): IStyleValue | undefined => {
+  const nested = toolboxComponent?.nestedGroupStyles;
+  if (!isDefined(componentStyle) || !isDefined(nested)) return componentStyle;
+  const inherited: IStyleValue & Record<string, unknown> = {};
+  Object.entries(nested).forEach(([propertyName, pick]) => {
+    // Only what the component's body passes down: its own nested values are merged over this below.
+    const { [propertyName]: _own, ...body } = componentStyle as Record<string, unknown>;
+    inherited[propertyName] = pick(body as IThemeGroupStyle);
+  });
+  return deepMergeValues(inherited, deepCopyViaJson(componentStyle), deepMergeSkipUndefinedFunc);
+};
+
+/**
  * The theme's base style: the lowest style layer, below every component's own defaults, so whatever a
  * component, group or instance leaves unset is inherited from it. A component's nested style values that
  * inherit the group style (`nestedGroupStyles`, e.g. a panel's header) inherit the base style as well.
@@ -129,7 +147,7 @@ export const getEffectiveStyle = (model: IConfigurableFormComponent, effectiveDe
 
   // + Theme component styles (per-type override wins over the group default)
   const themeDefStyle: IStyleValue = isDefined(theme?.components)
-    ? deepMergeValues(groupDefStyle, withoutEmptyBackgrounds(theme.components[model.type] as IStyleValue | undefined), deepMergeSkipUndefinedFunc)
+    ? deepMergeValues(groupDefStyle, getComponentThemeStyle(withoutEmptyBackgrounds(theme.components[model.type] as IStyleValue | undefined), toolboxComponent), deepMergeSkipUndefinedFunc)
     : groupDefStyle;
 
   // Default styles + Theme component styles + Desktop component styles

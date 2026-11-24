@@ -77,6 +77,38 @@ describe('getEffectiveStyle theme layers for headers', () => {
     expect(style.headerStyles?.font).toEqual({ type: 'Roboto', color: '#222', size: 14 });
     expect(style).not.toHaveProperty('headerStyles.headerStyles');
   });
+
+  // Precedence: instance > theme component > theme group, for a header as for the body.
+  const red = { type: 'color', color: 'red' } as IBackgroundValue;
+  const blue = { type: 'color', color: 'blue' } as IBackgroundValue;
+  const green = { type: 'color', color: 'green' } as IBackgroundValue;
+  const groupTheme = (components?: IConfigurableTheme['components']): IConfigurableTheme => ({
+    componentGroups: { layout: { background: red, headerStyles: { font: { color: 'red' } } } },
+    ...(components ? { components } : {}),
+  });
+
+  it('lets a header inherit the theme component body over the group', () => {
+    const style = getEffectiveStyle(model(), 'desktop', groupTheme({ testComponent: { background: blue } }), panel) as IStyleValue & { headerStyles?: IStyleValue };
+    expect(style.background).toMatchObject(blue);
+    expect(style.headerStyles?.background).toMatchObject(blue);
+    // Only border, background and padding pass from the body: the header font stays the group's.
+    expect(style.headerStyles?.font?.color).toBe('red');
+  });
+
+  it('keeps the theme component header style over what it inherits from the component body', () => {
+    const style = getEffectiveStyle(model(), 'desktop', groupTheme({ testComponent: { background: blue, headerStyles: { background: green } } }), panel) as IStyleValue & { headerStyles?: IStyleValue };
+    expect(style.headerStyles?.background).toMatchObject(green);
+  });
+
+  it('keeps the instance header style over the theme component', () => {
+    const style = getEffectiveStyle(model({ headerStyles: { background: green } } as IStyleValue), 'desktop', groupTheme({ testComponent: { background: blue } }), panel) as IStyleValue & { headerStyles?: IStyleValue };
+    expect(style.headerStyles?.background).toMatchObject(green);
+  });
+
+  it('leaves the header to the group when the theme component sets no body style', () => {
+    const style = getEffectiveStyle(model(), 'desktop', groupTheme(), panel) as IStyleValue & { headerStyles?: IStyleValue };
+    expect(style.headerStyles?.background).toMatchObject(red);
+  });
 });
 
 describe('getGroupStyleForComponent', () => {

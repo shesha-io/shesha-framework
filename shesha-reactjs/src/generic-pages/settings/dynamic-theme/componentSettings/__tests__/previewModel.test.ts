@@ -206,7 +206,7 @@ describe('preview styles come from the theme', () => {
     const table = getPreviewComponentModel(definition);
     expect(table.type).toBe('datatable');
     expect(table.size).toBe('small');
-    expect(table?.desktop).toBeUndefined();
+    expect(table.desktop).toBeUndefined();
   });
 
   // Every component previewed on a style-group tab (see GROUP_PREVIEW_TYPES) sets its preview up itself.

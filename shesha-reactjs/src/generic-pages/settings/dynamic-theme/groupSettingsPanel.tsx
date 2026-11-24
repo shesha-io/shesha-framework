@@ -1,5 +1,5 @@
 import { Card, Form } from 'antd';
-import { FC, useMemo } from 'react';
+import { FC, ReactNode, useMemo } from 'react';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { DEFAULT_FORM_SETTINGS, FormMarkupWithSettings } from '@/providers/form/models';
 import { IConfigurableTheme, ThemeComponentGroup } from '@/providers/theme/contexts';
@@ -25,6 +25,10 @@ export interface IGroupSettingsPanelProps {
   value?: IConfigurableTheme;
   onChange?: (theme: IConfigurableTheme) => void;
   readOnly?: boolean;
+  /** More settings of the group shown in the same card, below the shared appearance (e.g. Header Defaults). */
+  children?: ReactNode;
+  /** Render as a section of an enclosing settings card instead of a card of its own. */
+  asSection?: boolean;
 }
 
 /**
@@ -33,7 +37,7 @@ export interface IGroupSettingsPanelProps {
  * component whose explicit `themeGroup` is that tab, between the
  * component's hardcoded defaults and its own per-type override.
  */
-export const GroupSettingsPanel: FC<IGroupSettingsPanelProps> = ({ group, value: theme, onChange, readOnly }) => {
+export const GroupSettingsPanel: FC<IGroupSettingsPanelProps> = ({ group, value: theme, onChange, readOnly, children, asSection = false }) => {
   const [form] = Form.useForm();
   const { styles } = useStyles();
   const fbf = useFormBuilderFactory();
@@ -58,15 +62,14 @@ export const GroupSettingsPanel: FC<IGroupSettingsPanelProps> = ({ group, value:
 
   const groupTitle = group.charAt(0).toUpperCase() + group.slice(1);
 
-  return (
-    <Card
-      title={(
-        <CardTitle
-          title={`${groupTitle} Defaults`}
-          description={`Shared default appearance for every ${groupTitle.toLowerCase()} component. Individual components can still override it.`}
-        />
-      )}
-    >
+  const title = (
+    <CardTitle
+      title={`${groupTitle} Defaults`}
+      description={`Shared default appearance for every ${groupTitle.toLowerCase()} component. Individual components can still override it.`}
+    />
+  );
+  const content = (
+    <>
       <ConfigurableForm
         key={group}
         form={form}
@@ -79,8 +82,11 @@ export const GroupSettingsPanel: FC<IGroupSettingsPanelProps> = ({ group, value:
         isSettingsForm
         layout="vertical"
       />
-    </Card>
+      {children}
+    </>
   );
+
+  return asSection
+    ? <div className={styles.groupSettingsSection}>{title}{content}</div>
+    : <Card title={title}>{content}</Card>;
 };
-
-

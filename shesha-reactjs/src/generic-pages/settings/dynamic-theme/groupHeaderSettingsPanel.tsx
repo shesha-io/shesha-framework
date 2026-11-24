@@ -1,4 +1,4 @@
-import { Card, Form } from 'antd';
+import { Form } from 'antd';
 import { FC, useMemo } from 'react';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { DEFAULT_FORM_SETTINGS, FormMarkupWithSettings, IStyleValue } from '@/providers/form/models';
@@ -71,6 +71,7 @@ export interface IGroupHeaderSettingsPanelProps {
  * `theme.componentGroups[group].headerStyles` (see `getHeaderGroupStyle`).
  */
 export const GroupHeaderSettingsPanel: FC<IGroupHeaderSettingsPanelProps> = ({ group, value: theme, onChange, readOnly }) => {
+  const { styles } = useStyles();
   const fbf = useFormBuilderFactory();
 
   const markup = useMemo((): FormMarkupWithSettings => ({
@@ -99,18 +100,16 @@ export const GroupHeaderSettingsPanel: FC<IGroupHeaderSettingsPanelProps> = ({ g
     });
   };
 
+  // A section of the group's Defaults card, so the group's settings scroll as one area.
   return (
-    <Card
-      title={(
-        <CardTitle
-          title="Header Defaults"
-          description="Header of cards, panels and tabs. Each value follows the body defaults above unless it is overridden here."
-        />
-      )}
-    >
+    <div className={styles.groupSettingsSection}>
+      <CardTitle
+        title="Header Defaults"
+        description="Header of cards, panels and tabs. Each value follows the body defaults above unless it is overridden here."
+      />
       <DefaultModelProvider<IStyleValue> name="Body defaults" model={overrides} defaultModel={fromBody} updateModelIfChanged>
         <HeaderStylesForm group={group} markup={markup} overrides={overrides} readOnly={readOnly} onChange={handleChange} />
       </DefaultModelProvider>
-    </Card>
+    </div>
   );
 };
