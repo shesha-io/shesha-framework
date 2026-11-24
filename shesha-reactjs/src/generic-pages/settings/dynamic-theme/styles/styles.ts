@@ -143,7 +143,7 @@ export const useStyles = createStyles(({ css, cx, token }, theme?: IConfigurable
         }
 
         > .ant-card-body {
-          padding: 8px;
+          padding: 16px;
           flex: 1 1 auto;
           min-height: 0;
           overflow-y: auto;

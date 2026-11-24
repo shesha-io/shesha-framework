@@ -30,6 +30,9 @@ const toCss = (style: React.CSSProperties): string => Object.entries(style)
 const decl = (property: string, value: string | number | undefined | null): string =>
   value === undefined || value === null || value === '' ? '' : `${property}: ${value};`;
 
+/** A configured color, with an empty string treated as not set (as the live table does). */
+const color = (value: string | undefined): string | undefined => value === '' ? undefined : value;
+
 type StylesArgs = { appearance: TableAppearance; model: ITableComponentProps };
 
 /**
@@ -47,8 +50,10 @@ const useStyles = createStyles(({ css, cx, token }, { appearance, model }: Style
     actionIconSize, actionIconColor, dimensions, hoverHighlight, rowHoverBackgroundColor,
   } = model;
   const iconSize = actionIconSize ?? bodyFontSize ?? '16px';
+  const rowBackground = color(rowBackgroundColor);
   // Alternate rows differ only when striped, as in the live table.
-  const alternateBackground = striped === true ? (rowAlternateBackgroundColor ?? 'rgba(0, 0, 0, 0.02)') : rowBackgroundColor;
+  const alternateBackground = striped === true ? (color(rowAlternateBackgroundColor) ?? 'rgba(0, 0, 0, 0.02)') : rowBackground;
+  const hoverBackground = color(rowHoverBackgroundColor) ?? token.colorPrimary;
 
   const standaloneTable = cx('sha-standalone-table', css`
     width: 100%;
@@ -87,7 +92,7 @@ const useStyles = createStyles(({ css, cx, token }, { appearance, model }: Style
 
     tbody tr {
       ${decl('height', rowHeight)}
-      background: ${rowBackgroundColor ?? 'transparent'};
+      background: ${rowBackground ?? 'transparent'};
       ${isDefined(rowBorderStyle) ? toCss(getBorderStyle(rowBorderStyle, {})) : decl('border', rowBorder)}
       ${rowDividers === true ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : ''}
       ${toCss(getShadowStyle(rowShadow))}
@@ -96,7 +101,7 @@ const useStyles = createStyles(({ css, cx, token }, { appearance, model }: Style
         background: ${alternateBackground ?? 'transparent'};
       }
 
-      ${hoverHighlight === true ? `&:hover { background: ${rowHoverBackgroundColor ?? token.colorPrimary}; }` : ''}
+      ${hoverHighlight === true ? `&:hover { background: ${hoverBackground}; }` : ''}
     }
 
     td {
