@@ -93,6 +93,9 @@ namespace Shesha.Metadata
             var models = allModels
                 .Where(m => !m.IsExposed)
                 .WhereIf(type == "Entity", x => x.Metadata.EntityConfigType == Domain.Enums.EntityConfigTypes.Class)
+                // Entities that can be used as a base entity of a configured entity (see issue #5156)
+                .WhereIf(type == "InheritableEntity", x => x.Metadata.EntityConfigType == Domain.Enums.EntityConfigTypes.Class
+                    && Domain.MappingHelper.SupportsInheritance(x.Type))
                 .WhereIf(type == "JsonEntity", x => x.Metadata.EntityConfigType == Domain.Enums.EntityConfigTypes.Interface)
                 .WhereIf(baseEntity != null, x => x.Type.IsAssignableTo(baseEntity?.Type))
                 .ToList();
