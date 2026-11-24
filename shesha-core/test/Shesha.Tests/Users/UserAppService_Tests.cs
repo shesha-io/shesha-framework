@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.EntityHistory;
 using Abp.UI;
 using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Mvc;
@@ -491,6 +492,56 @@ namespace Shesha.Tests.Users
 
             verifyResponse.IsSuccess.ShouldBeTrue(verifyResponse.ErrorMessage);
             verifyResponse.Token.ShouldNotBeNullOrEmpty();
+        }
+
+        /// <summary>
+        /// A password reset OTP has the user as its recipient and its operation id in PasswordResetCode, like a login OTP.
+        /// It must not log the user in, and the attempt must not use it up for the password reset
+        /// </summary>
+        [Fact]
+        public async Task LoginViaOtp_should_reject_a_password_reset_otp_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var otps = new Dictionary<Guid, OtpDto>();
+            var otpStorage = MockOtpStorage(otps, dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+
+            var sendOtpResponse = await userAppService.ResetPasswordSendOtpAsync(mobileNo);
+            var resetPin = currentPin;
+
+            // saving the login attempt deadlocks in entity history in the test project (#5777), so it's off for the login
+            var entityHistory = Resolve<IEntityHistoryConfiguration>();
+            var entityHistoryWasEnabled = entityHistory.IsEnabled;
+            ShaLoginResult<User> loginResult;
+            try
+            {
+                entityHistory.IsEnabled = false;
+                loginResult = await Resolve<LogInManager>().LoginViaOtpAsync(mobileNo, sendOtpResponse.OperationId, resetPin, shouldLockout: false);
+            }
+            finally
+            {
+                entityHistory.IsEnabled = entityHistoryWasEnabled;
+            }
+
+            var verifyResponse = await userAppService.ResetPasswordVerifyOtpAsync(new ResetPasswordVerifyOtpInput()
+            {
+                MobileNo = mobileNo,
+                OperationId = sendOtpResponse.OperationId,
+                Pin = resetPin
+            });
+
+            await _userRepository.DeleteAsync(userDto.Id);
+
+            loginResult.Result.ShouldBe(ShaLoginResultType.InvalidOTP);
+            verifyResponse.IsSuccess.ShouldBeTrue("the login attempt must not use up the password reset pin");
         }
 
         /// <summary>

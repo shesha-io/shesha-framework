@@ -150,6 +150,11 @@ namespace Shesha.Authorization
                 throw new NotSupportedException("OTP authentication is not supported");
         }
 
+        /// <summary>
+        /// Action type of the OTPs sent by <see cref="SendLoginOtpAsync"/>. Only these OTPs can be used to log in.
+        /// </summary>
+        public const string LoginOtpActionType = "OTP login";
+
         public virtual async Task<ISendPinResponse> SendLoginOtpAsync(TUser user, string mobileNumber)
         {
             CheckOtpAuthAvailability();
@@ -163,7 +168,7 @@ namespace Shesha.Authorization
                 SendTo = mobileNumber,
                 SendType = OtpSendType.Sms,
                 Lifetime = securitySettings.MobileLoginPinLifetime,
-                ActionType = "OTP login",
+                ActionType = LoginOtpActionType,
                 RecipientId = user.Id.ToString(),
             });
 
@@ -210,8 +215,10 @@ namespace Shesha.Authorization
             {
                 result = await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) => {
 
+                    // only an OTP sent for login: e.g. a password reset OTP also has the user as its recipient and its operation
+                    // id in PasswordResetCode, so it would otherwise log the user in. Checked before verification, so the pin isn't used up
                     var otp = await OtpManager.GetAsync(operationId);
-                    if (otp == null)
+                    if (otp == null || otp.ActionType != LoginOtpActionType)
                         return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant);
                     // verification marks the OTP as used, so only one of several concurrent requests for the same OTP gets through
                     var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
