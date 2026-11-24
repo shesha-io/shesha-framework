@@ -191,6 +191,44 @@ namespace Shesha.DynamicEntities
             }).ToList();
         }
 
+        /// <summary>
+        /// Ensures that a new entity can safely inherit from <paramref name="baseConfig"/>.
+        /// An inherited entity is stored in the table of its base entity and rows are distinguished by a discriminator column,
+        /// so the base entity must be mapped with a discriminator and must not be a system (non-configurable) entity.
+        /// Otherwise the ORM mapping becomes invalid and the application fails on startup.
+        /// </summary>
+        private void ValidateInheritanceBase(EntityConfig baseConfig)
+        {
+            // 'Part of entity' (JSON) types are not stored in a table, so a discriminator is not required
+            if (baseConfig.EntityConfigType != EntityConfigTypes.Class)
+                return;
+
+            // User-defined entities are always generated with a discriminator (see DynamicEntityTypeBuilder),
+            // so the restrictions are defined by the closest entity that is implemented in code
+            var codeConfig = baseConfig;
+            while (codeConfig.Source != MetadataSourceType.ApplicationCode && codeConfig.InheritedFrom != null)
+                codeConfig = codeConfig.InheritedFrom;
+
+            if (codeConfig.Source != MetadataSourceType.ApplicationCode)
+                return;
+
+            var type = _typeFinder.Find(x => x.Namespace == codeConfig.Namespace && x.Name == codeConfig.ClassName).FirstOrDefault();
+
+            string? reason = type == null
+                ? $"the implementation of '{codeConfig.FullClassName}' was not found"
+                : !codeConfig.IsConfigurable || MappingHelper.IsSystemEntity(type)
+                    ? $"'{codeConfig.Name}' is a system entity"
+                    : !MappingHelper.SupportsInheritance(type)
+                        ? $"'{codeConfig.Name}' does not support inheritance (it is not mapped with a discriminator column)"
+                        : null;
+
+            if (reason != null)
+                throw new AbpValidationException(
+                    "Check the validation errors",
+                    new List<ValidationResult> { new ValidationResult($"Entity '{baseConfig.Name}' can't be used as a base entity: {reason}") }
+                );
+        }
+
         [UnitOfWork]
         public async Task<ModelConfigurationDto> CreateAsync(ModelConfigurationCreateDto input)
         {
@@ -207,6 +245,8 @@ namespace Shesha.DynamicEntities
 
             if (inheritedFrom != null)
             {
+                ValidateInheritanceBase(inheritedFrom);
+
                 var inheritedFromModel = await GetModelConfigurationOrNullAsync(inheritedFrom);
                 if (inheritedFromModel != null)
                 {
