@@ -154,8 +154,11 @@ const previewVariantsByType: Record<string, IPreviewVariant[]> = {
 export const getPreviewVariants = (componentType: string | undefined): IPreviewVariant[] | undefined =>
   isNullOrWhiteSpace(componentType) ? undefined : previewVariantsByType[componentType];
 
-const withSmallSize = (model: IConfigurableFormComponent): IConfigurableFormComponent => {
+const DEVICE_KEYS = ['desktop', 'tablet', 'mobile'] as const;
+
+const withThemeStyles = (model: IConfigurableFormComponent): IConfigurableFormComponent => {
   const result: IConfigurableFormComponent & Record<string, unknown> = { ...model, size: 'small' };
+  DEVICE_KEYS.forEach((key) => delete result[key]);
   return result;
 };
 
@@ -189,13 +192,13 @@ export const getPreviewComponentModel = (
     : { ...baseModel, ...extras };
 
   if (!variant)
-    return withSmallSize(model);
+    return withThemeStyles(model);
 
   // Each variant needs its own id and propertyName, otherwise the renderings share form state and
   // a value selected in one appears in all of them. The variant's own properties come last so it
   // can override anything the base model or the extras set.
   const variantKey = variant.label.replace(/\W+/g, '-').toLowerCase();
-  return withSmallSize({
+  return withThemeStyles({
     ...model,
     ...variant.model,
     id: `${model.id}-${variantKey}`,
