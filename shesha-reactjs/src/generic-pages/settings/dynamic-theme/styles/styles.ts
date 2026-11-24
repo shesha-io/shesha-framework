@@ -249,11 +249,24 @@ export const useStyles = createStyles(({ css, cx, token }, theme?: IConfigurable
     `,
   );
 
+  /* The Components tab's editor card: shrinks to make room for the preview, as the group editors do
+     (its height cap and body scrolling come from the settings card rule above). */
   const themeCardSettings = cx(
     'theme-card',
     css`
-      height: 450px;
-      overflow-y: auto;
+      min-height: 350px;
+    `,
+  );
+
+  /* The Components tab's editor and preview, laid out like a group tab (see the tab body rule above):
+     both share the column's height, and the preview card's body scrolls. */
+  const componentEditors = cx(
+    'theme-component-editors',
+    css`
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     `,
   );
 
@@ -356,6 +369,7 @@ export const useStyles = createStyles(({ css, cx, token }, theme?: IConfigurable
 
   return {
     groupEditors,
+    componentEditors,
     groupSettingsSection,
     groupComponentsHelpIcon,
     groupComponentsHelp,

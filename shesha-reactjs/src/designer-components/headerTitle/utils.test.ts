@@ -29,7 +29,7 @@ describe('replaceTextHeaderTitle', () => {
     const expected = { id: 'title', type: 'headerTitle', componentName: 'panelLabel', parentId: 'layout', content: 'My panel', visible: true };
     expect(flat.allComponents['title']).toMatchObject(expected);
     expect(flat.allComponents['title']).not.toHaveProperty('desktop');
-    expect((header?.components?.[0] as IConfigurableFormComponent & { components: IConfigurableFormComponent[] }).components[0]).toMatchObject(expected);
+    expect((header?.components[0] as IConfigurableFormComponent & { components: IConfigurableFormComponent[] }).components[0]).toMatchObject(expected);
     expect(flat.allComponents['extra']).toBe(extra);
   });
 

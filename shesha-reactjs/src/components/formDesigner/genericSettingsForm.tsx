@@ -17,7 +17,7 @@ import { OnFormFinishFailedHandler, OnFormValuesChangeHandler } from '../configu
 import { IStyleValue, useThemeActions, useThemeState } from '@/providers';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { getStyleBoxValue } from '@/designer-components/styleBox/utils';
-import { getComponentThemeStyle, getGroupStyleForComponent, getThemeBaseStyle } from '@/utils/style';
+import { getComponentThemeStyle, getGroupStyleForComponent, getThemeBaseStyle, withoutEmptyBackgrounds } from '@/utils/style';
 
 interface IProps<TModel extends IConfigurableFormComponent> {
   readOnly: boolean;
@@ -77,7 +77,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
         : {};
       defaultModel?.setDefaultModel('Theme group Style', tiers(groupStyle));
       // With what its nested styles (e.g. tab cards) inherit from it, as at runtime (see getEffectiveStyle).
-      const themeStyle = getComponentThemeStyle(getComponentStyle(toolboxComponent.type) as IStyleValue | undefined, toolboxComponent) ?? {};
+      const themeStyle = getComponentThemeStyle(withoutEmptyBackgrounds(getComponentStyle(toolboxComponent.type) as IStyleValue | undefined), toolboxComponent) ?? {};
       defaultModel?.setDefaultModel('Theme component Style', tiers(themeStyle));
 
       if (designerDevice !== 'desktop' && designerDevice !== currentDevice.current) {

@@ -43,7 +43,8 @@ export const getComponentThemeStyle = (componentStyle: IStyleValue | undefined, 
   Object.entries(nested).forEach(([propertyName, pick]) => {
     // Only what the component's body passes down: its own nested values are merged over this below.
     const { [propertyName]: _own, ...body } = componentStyle as Record<string, unknown>;
-    inherited[propertyName] = pick(body as IThemeGroupStyle);
+    // A copy: the merge below writes into it, and it may share objects with the component style.
+    inherited[propertyName] = deepCopyViaJson(pick(body as IThemeGroupStyle));
   });
   return deepMergeValues(inherited, deepCopyViaJson(componentStyle), deepMergeSkipUndefinedFunc);
 };

@@ -1,4 +1,4 @@
-import { Card, Col, Empty, Menu, Row, Space } from 'antd';
+import { Card, Col, Empty, Menu, Row } from 'antd';
 import { CSSProperties, FC, useCallback, useMemo, useState } from 'react';
 import * as React from 'react';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
@@ -209,13 +209,15 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
         {/* updateModelIfChanged keeps the instance's model in step with the stored theme entry —
             without it the provider never registers the theme values as the model, so every value
             reports as 'Inherited' and Reset to default/Override state never reflects reality. */}
-        <Space orientation="vertical" size={16} className={styles.fullWidth}>
+        {/* As on the group tabs: the editor scrolls on its own and the preview fills the rest of the
+            height, scrolling inside, so it always stays in view. */}
+        <div className={styles.componentEditors}>
           <DefaultModelProvider key={componentType ?? 'none'} name="Component Default Styles" model={initialModel} defaultModel={defaultStyles} updateModelIfChanged>
             <ComponentDefaultsSettings componentTitle={componentTitle} componentType={componentType} markup={appearanceMarkup} initialModel={initialModel} readonly={readonly ?? false} onChange={handleFormDataChange} />
           </DefaultModelProvider>
           {/* Preview Card: renders the component with the current theme to show a live preview */}
           {isDefined(componentDef) && isDefined(theme) && <ComponentDefaultsPreview componentDefinition={componentDef} theme={theme} />}
-        </Space>
+        </div>
       </Col>
     </Row>
   );

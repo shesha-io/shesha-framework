@@ -63,17 +63,11 @@ export const replaceTextHeaderTitle = <T extends IHeaderContainer>(header: T | u
 
   // Tree.
   if (!isDefined(header.components)) return header;
-  let changed = false;
-  const components = header.components.map((c) => {
-    if (!isLayout(c) || !isDefined(c.components)) return c;
-    return {
-      ...c,
-      components: c.components.map((child) => {
-        if (!isTextTitle(child)) return child;
-        changed = true;
-        return textToHeaderTitle(child);
-      }),
-    };
-  });
-  return changed ? { ...header, components } : header;
+  const hasTitle = (c: IConfigurableFormComponent): c is WithComponents =>
+    isLayout(c) && isDefined(c.components) && c.components.some(isTextTitle);
+  if (!header.components.some(hasTitle)) return header;
+  const components = header.components.map((c) => hasTitle(c)
+    ? { ...c, components: (c.components ?? []).map((child) => isTextTitle(child) ? textToHeaderTitle(child) : child) }
+    : c);
+  return { ...header, components };
 };
