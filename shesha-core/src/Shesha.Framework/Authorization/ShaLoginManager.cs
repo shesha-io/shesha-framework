@@ -18,6 +18,7 @@ using Shesha.Configuration;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.MultiTenancy;
 using Shesha.Otp;
@@ -149,6 +150,11 @@ namespace Shesha.Authorization
                 throw new NotSupportedException("OTP authentication is not supported");
         }
 
+        /// <summary>
+        /// Action type of the OTPs sent by <see cref="SendLoginOtpAsync"/>. Only these OTPs can be used to log in.
+        /// </summary>
+        public const string LoginOtpActionType = "OTP login";
+
         public virtual async Task<ISendPinResponse> SendLoginOtpAsync(TUser user, string mobileNumber)
         {
             CheckOtpAuthAvailability();
@@ -162,7 +168,7 @@ namespace Shesha.Authorization
                 SendTo = mobileNumber,
                 SendType = OtpSendType.Sms,
                 Lifetime = securitySettings.MobileLoginPinLifetime,
-                ActionType = "OTP login",
+                ActionType = LoginOtpActionType,
                 RecipientId = user.Id.ToString(),
             });
 
@@ -195,7 +201,7 @@ namespace Shesha.Authorization
                 return;
 
             var secondsRemaining = (int)Math.Ceiling((nextAllowed - DateTime.Now).TotalSeconds);
-            throw new UserFriendlyException(
+            throw new TooManyRequestsException(
                 $"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.");
         }
 
@@ -209,9 +215,12 @@ namespace Shesha.Authorization
             {
                 result = await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) => {
 
+                    // only an OTP sent for login: e.g. a password reset OTP also has the user as its recipient and its operation
+                    // id in PasswordResetCode, so it would otherwise log the user in. Checked before verification, so the pin isn't used up
                     var otp = await OtpManager.GetAsync(operationId);
-                    if (otp == null)
+                    if (otp == null || otp.ActionType != LoginOtpActionType)
                         return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant);
+                    // verification marks the OTP as used, so only one of several concurrent requests for the same OTP gets through
                     var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
                     {
                         OperationId = operationId,
@@ -242,10 +251,6 @@ namespace Shesha.Authorization
                     // authenticated using internal account, check IMEI
                     if (!(await CheckImeiAsync(imei)))
                         return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
-
-                    // make the OTP single-use; only one of several concurrent requests for the same OTP gets through
-                    if (!await OtpManager.TryConsumeAsync(operationId))
-                        return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant, user);
 
                     // clear reset code
                     user.PasswordResetCode = null;

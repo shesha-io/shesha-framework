@@ -19,9 +19,13 @@ namespace Shesha.Exceptions
 
         protected override int GetStatusCode(ExceptionContext context, bool wrapOnError)
         {
-            return context.Exception is ContentNotModifiedException
-                ? (int)HttpStatusCode.NotModified
-                : base.GetStatusCode(context, wrapOnError);
+            return context.Exception switch
+            {
+                ContentNotModifiedException => (int)HttpStatusCode.NotModified,
+                TooManyRequestsException => (int)HttpStatusCode.TooManyRequests,
+                VerificationFailedException => (int)HttpStatusCode.BadRequest,
+                _ => base.GetStatusCode(context, wrapOnError),
+            };
         }
 
         protected override void HandleAndWrapException(ExceptionContext context, WrapResultAttribute wrapResultAttribute)

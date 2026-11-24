@@ -131,9 +131,22 @@ namespace Shesha.Tests.Otp
             var operationId = await SaveOtpAsync(storage);
             var otpManager = Resolve<IOtpManager>();
 
-            (await otpManager.TryConsumeAsync(operationId)).ShouldBeTrue();
+            (await storage.TryConsumeAsync(operationId)).ShouldBeTrue();
 
             (await otpManager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "123456" })).IsSuccess.ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task VerifyPin_should_mark_the_otp_as_used_and_accept_it_only_once_TestAsync()
+        {
+            var storage = Resolve<DbOtpStorage>();
+            var operationId = await SaveOtpAsync(storage);
+            var otpManager = Resolve<IOtpManager>();
+            var input = new VerifyPinInput { OperationId = operationId, Pin = "123456" };
+
+            (await otpManager.VerifyPinAsync(input)).IsSuccess.ShouldBeTrue();
+            (await storage.GetAsync(operationId)).ConsumedOn.ShouldNotBeNull();
+            (await otpManager.VerifyPinAsync(input)).IsSuccess.ShouldBeFalse();
         }
 
         private static async Task<Guid> SaveOtpAsync(DbOtpStorage storage)

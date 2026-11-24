@@ -267,7 +267,7 @@ namespace Shesha.Authorization
 
         [HttpPost]
         [AllowAnonymous]
-        [EnableRateLimiting(SheshaRateLimitingPolicies.Auth)]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<AuthenticateResultModel> OtpAuthenticateAsync([FromBody] OtpAuthenticateModel model)
         {
             var tenancyName = GetTenancyNameOrNull();
