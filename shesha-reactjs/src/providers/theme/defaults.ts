@@ -10,10 +10,16 @@ export const DEFAULT_LABEL_FONT: IFontValue = { size: 14, weight: '500', type: D
 /** Input Components font a theme starts with; parts the theme saved win over these. */
 export const DEFAULT_INPUT_FONT: IFontValue = { size: 14, weight: '400', type: DEFAULT_FONT_TYPE, color: '#000' };
 
-const withFontDefaults = (defaults: IFontValue, font: IFontValue | undefined): IFontValue => {
+/**
+ * A font with its unset parts filled in: from the theme's base font first, then from the typography
+ * defaults. Parts set on the font itself win.
+ */
+const withFontDefaults = (defaults: IFontValue, font: IFontValue | undefined, base?: IFontValue | undefined): IFontValue => {
   const result: IFontValue = { ...defaults };
-  Object.entries(font ?? {}).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== '') (result as Record<string, unknown>)[key] = value;
+  [base, font].forEach((layer) => {
+    Object.entries(layer ?? {}).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') (result as Record<string, unknown>)[key] = value;
+    });
   });
   return result;
 };
@@ -55,8 +61,9 @@ export const applyThemeDefaults = (theme: IConfigurableTheme): IConfigurableThem
       ...upgraded.componentGroups,
       input: {
         ...inputGroup,
-        font: withFontDefaults(DEFAULT_INPUT_FONT, inputGroup.font),
-        labelFont: withFontDefaults(DEFAULT_LABEL_FONT, inputGroup.labelFont),
+        // Unset parts inherit the theme's base font; the defaults only fill what neither sets.
+        font: withFontDefaults(DEFAULT_INPUT_FONT, inputGroup.font, upgraded.font),
+        labelFont: withFontDefaults(DEFAULT_LABEL_FONT, inputGroup.labelFont, upgraded.font),
       },
     },
   };

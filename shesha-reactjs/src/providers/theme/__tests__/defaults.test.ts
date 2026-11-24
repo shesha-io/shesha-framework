@@ -20,10 +20,22 @@ describe('applyThemeDefaults', () => {
     expect(theme.componentGroups?.inline).toEqual({ font: { size: 12 } });
   });
 
+  it('lets unset input and label font parts inherit the base font', () => {
+    const theme = applyThemeDefaults({ font: { type: 'Roboto', size: 20 } });
+    expect(theme.componentGroups?.input?.font).toEqual({ ...DEFAULT_INPUT_FONT, type: 'Roboto', size: 20 });
+    expect(theme.componentGroups?.input?.labelFont).toEqual({ ...DEFAULT_LABEL_FONT, type: 'Roboto', size: 20 });
+  });
+
+  it('keeps group font parts over the base font', () => {
+    const theme = applyThemeDefaults({ font: { type: 'Roboto', size: 20 }, componentGroups: { input: { font: { size: 12 } } } });
+    expect(theme.componentGroups?.input?.font).toEqual({ ...DEFAULT_INPUT_FONT, type: 'Roboto', size: 12 });
+  });
+
   it('upgrades a legacy theme before filling in defaults', () => {
     const theme = applyThemeDefaults({ fontFamily: 'Roboto', labelFont: { size: 16 } });
     expect(theme.font).toEqual({ type: 'Roboto' });
-    expect(theme.componentGroups?.input?.labelFont).toEqual({ ...DEFAULT_LABEL_FONT, size: 16 });
+    // The label font's unset type inherits the upgraded base font.
+    expect(theme.componentGroups?.input?.labelFont).toEqual({ ...DEFAULT_LABEL_FONT, type: 'Roboto', size: 16 });
     expect(theme.fontFamily).toBeUndefined();
     expect(theme.labelFont).toBeUndefined();
   });

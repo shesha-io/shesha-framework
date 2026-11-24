@@ -31,9 +31,14 @@ const migrateLayoutToThemeDefaults = (prev: IFormSettings): IFormSettings => {
   const { layout, colon, labelCol, wrapperCol, ...rest } = prev;
   const ownLabelCol = withoutDefaultSpan(labelCol, FALLBACK_FORM_LAYOUT.labelCol.span);
   const ownWrapperCol = withoutDefaultSpan(wrapperCol, FALLBACK_FORM_LAYOUT.wrapperCol.span);
+  // The layout follows the theme only when layout and both spans are the built-in defaults: a form with
+  // its own spans chose its horizontal layout, so it keeps it.
+  const isBuiltInDefaultLayout = layout === FALLBACK_FORM_LAYOUT.layout &&
+    labelCol?.span === FALLBACK_FORM_LAYOUT.labelCol.span &&
+    wrapperCol?.span === FALLBACK_FORM_LAYOUT.wrapperCol.span;
   return {
     ...rest,
-    ...(isDefined(layout) && layout !== FALLBACK_FORM_LAYOUT.layout ? { layout } : {}),
+    ...(isDefined(layout) && !isBuiltInDefaultLayout ? { layout } : {}),
     ...(isDefined(colon) && colon !== FALLBACK_FORM_LAYOUT.colon ? { colon } : {}),
     ...(isDefined(ownLabelCol) ? { labelCol: ownLabelCol } : {}),
     ...(isDefined(ownWrapperCol) ? { wrapperCol: ownWrapperCol } : {}),

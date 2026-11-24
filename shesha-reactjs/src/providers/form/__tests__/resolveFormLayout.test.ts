@@ -70,6 +70,11 @@ describe('form settings migration to theme defaults', () => {
     expect(migrate({ layout: 'vertical', labelCol: { span: 6 }, wrapperCol: { span: 18 } })).not.toHaveProperty('labelCol');
   });
 
+  it('keeps the horizontal layout of a form with its own spans', () => {
+    expect(migrate({ layout: 'horizontal', labelCol: { span: 8 }, wrapperCol: { span: 16 } })).toMatchObject({ layout: 'horizontal', labelCol: { span: 8 } });
+    expect(migrate({ layout: 'horizontal', labelCol: { span: 6 }, wrapperCol: { span: 12 } })).toMatchObject({ layout: 'horizontal', wrapperCol: { span: 12 } });
+  });
+
   it('keeps the other column settings of a default span', () => {
     expect(migrate({ labelCol: { span: 6, offset: 1 } }).labelCol).toEqual({ offset: 1 });
   });

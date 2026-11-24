@@ -90,7 +90,6 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
           ${cssPropertiesToString(model.styleCss)}
 
           .ant-tabs-body {
-              ${paddingStyles(model.card?.stylingBoxJson)}
               height: 100%;
               width: 100%;
               overflow: auto;
@@ -117,6 +116,7 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
                   ${isDefined(model.card?.font?.color) ? `--ant-tabs-item-active-color: ${model.card.font.color} !important;` : ''}
                   ${isDefined(model.card?.font?.color) ? `--ant-tabs-item-selected-color: ${model.card.font.color} !important;` : ''}
                   ${cardBorderVars}
+                  ${borderRadiusStyles(model.card?.border)}
 
                   ${fontStyles(model.card?.font)}
                   ${dimensionsStyles(model.card?.dimensions)}
