@@ -8,8 +8,7 @@ interface ICardContent {
   components?: IConfigurableFormComponent[] | undefined;
 }
 
-/** Per-device styles of a card: its own and its header's. */
-export interface ICardDeviceStyles extends IInputStyles {
+interface ICardDeviceStyles extends IInputStyles {
   headerStyles?: IStyleValue | undefined;
 }
 
@@ -27,6 +26,5 @@ export interface ICardComponentProps extends IConfigurableFormComponent<ICardDev
    * Defaults (see `getHeaderGroupStyle`) over the component defaults.
    */
   headerStyles?: IStyleValue | undefined;
-  /** Event handlers of the header (click, hover, ...), as a panel's. */
   headerEvents?: IComponentEventHandlers | undefined;
 }

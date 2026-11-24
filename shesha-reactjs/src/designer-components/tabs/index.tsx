@@ -35,7 +35,6 @@ import { getPreviewSampleText } from '@/generic-pages/settings/dynamic-theme/com
 
 type TabItem = Required<TabsProps>['items'][number];
 
-/** Sample Text for the theme preview's tabs. */
 const previewText = (tabId: string, content: string): IConfigurableFormComponent => getPreviewSampleText(`${tabId}-text`, tabId, content);
 
 const TabsComponent: TabsComponentDefinition = {

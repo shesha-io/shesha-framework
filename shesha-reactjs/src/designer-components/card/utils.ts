@@ -22,7 +22,7 @@ export const defaultStyles = (): IStyleValue => {
 };
 
 /** Font antd gave a card's title (`fontSizeLG`, `fontWeightStrong`, `colorTextHeading`). */
-export const legacyHeadingFont = (): IFontValue => ({ type: DEFAULT_FONT_TYPE, size: 16, weight: '600', color: 'rgba(0, 0, 0, 0.88)', align: 'left' });
+const legacyHeadingFont = (): IFontValue => ({ type: DEFAULT_FONT_TYPE, size: 16, weight: '600', color: 'rgba(0, 0, 0, 0.88)', align: 'left' });
 
 /**
  * Default style of the card's header: antd's card head (a 56px bar with 24px side padding and a light line

@@ -26,7 +26,6 @@ const toCss = (style: React.CSSProperties): string => Object.entries(style)
   .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${String(value)};`)
   .join(' ');
 
-/** One CSS declaration, or nothing when the value is not set. */
 const decl = (property: string, value: string | number | undefined | null): string =>
   value === undefined || value === null || value === '' ? '' : `${property}: ${value};`;
 

@@ -76,7 +76,6 @@ export interface IConfigurableTheme {
 }
 
 /**
-/**
  * Key of a theme group style's header defaults (Layout Components tab > Header Defaults). Only the
  * overrides are stored there: a header otherwise follows the body's style (see `getHeaderGroupStyle`).
  */

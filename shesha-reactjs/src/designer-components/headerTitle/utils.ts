@@ -12,7 +12,6 @@ interface IHeaderTitleArgs {
   content: unknown;
 }
 
-/** A header title for a card's or panel's header layout. */
 export const createHeaderTitle = ({ id, parentId, name, content }: IHeaderTitleArgs): IHeaderTitleComponentProps => ({
   id,
   type: HEADER_TITLE_TYPE,
@@ -28,7 +27,7 @@ export const createHeaderTitle = ({ id, parentId, name, content }: IHeaderTitleA
  * The header title replacing a Text title: its content, name and visibility, without the Text's styles -
  * the title's font now comes from the header.
  */
-export const textToHeaderTitle = (text: IConfigurableFormComponent & { content?: unknown }): IHeaderTitleComponentProps => ({
+const textToHeaderTitle = (text: IConfigurableFormComponent & { content?: unknown }): IHeaderTitleComponentProps => ({
   ...createHeaderTitle({ id: text.id, parentId: text.parentId ?? '', name: text.componentName ?? text.propertyName ?? text.id, content: text.content }),
   hidden: text.hidden,
   ...(isDefined(text.visible) ? { visible: text.visible } : {}),
@@ -61,7 +60,6 @@ export const replaceTextHeaderTitle = <T extends IHeaderContainer>(header: T | u
     });
   });
 
-  // Tree.
   if (!isDefined(header.components)) return header;
   const hasTitle = (c: IConfigurableFormComponent): c is WithComponents =>
     isLayout(c) && isDefined(c.components) && c.components.some(isTextTitle);

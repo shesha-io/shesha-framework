@@ -1,5 +1,4 @@
 import { IFormValidationErrors, IToolboxComponent } from '@/interfaces/formDesigner';
-import { getPreviewSampleText } from './previewSampleText';
 import { getEmptyFlatMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { upgradeComponent } from '@/providers/form/utils';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
@@ -34,8 +33,6 @@ const createNewComponentModel = (definition: IToolboxComponent, model: IConfigur
   const initialised = definition.initModel ? definition.initModel(unversioned) : unversioned;
   return upgradeComponent(initialised, definition, undefined, getEmptyFlatMarkup(), true);
 };
-
-export { getPreviewSampleText };
 
 /**
  * Preview-only model properties, keyed by component type.
@@ -157,19 +154,8 @@ const previewVariantsByType: Record<string, IPreviewVariant[]> = {
 export const getPreviewVariants = (componentType: string | undefined): IPreviewVariant[] | undefined =>
   isNullOrWhiteSpace(componentType) ? undefined : previewVariantsByType[componentType];
 
-/** Per-device blocks of a model: they hold the instance's own styles. */
-const DEVICE_KEYS = ['desktop', 'tablet', 'mobile'] as const;
-
-/**
- * The previewed component's model with only theme styles: its per-device blocks are dropped, since a
- * component's own styles override the theme (see `getEffectiveStyle`), so the preview shows exactly the
- * component defaults with the theme's group and component styles over them. The small size is a fallback
- * at the model's root, which the effective style replaces whenever the defaults or the theme set a size.
- * Components nested in the preview (a header's layout row, sample content) keep their own model.
- */
-const withThemeStyles = (model: IConfigurableFormComponent): IConfigurableFormComponent => {
+const withSmallSize = (model: IConfigurableFormComponent): IConfigurableFormComponent => {
   const result: IConfigurableFormComponent & Record<string, unknown> = { ...model, size: 'small' };
-  DEVICE_KEYS.forEach((key) => delete result[key]);
   return result;
 };
 
@@ -203,13 +189,13 @@ export const getPreviewComponentModel = (
     : { ...baseModel, ...extras };
 
   if (!variant)
-    return withThemeStyles(model);
+    return withSmallSize(model);
 
   // Each variant needs its own id and propertyName, otherwise the renderings share form state and
   // a value selected in one appears in all of them. The variant's own properties come last so it
   // can override anything the base model or the extras set.
   const variantKey = variant.label.replace(/\W+/g, '-').toLowerCase();
-  return withThemeStyles({
+  return withSmallSize({
     ...model,
     ...variant.model,
     id: `${model.id}-${variantKey}`,

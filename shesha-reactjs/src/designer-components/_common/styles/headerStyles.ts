@@ -26,16 +26,6 @@ export const getHeaderStyleFromBody = (groupStyle: IStyleValue): IStyleValue => 
   };
 };
 
-/** The given parts of a theme group's effective header style (see {@link getHeaderGroupStyle}). */
-export const pickHeaderGroupStyle = (...parts: Array<keyof IStyleValue>) => (groupStyle: IThemeGroupStyle): IStyleValue => {
-  const header = getHeaderGroupStyle(groupStyle) as Record<string, unknown>;
-  const result: Record<string, unknown> = {};
-  parts.forEach((part) => {
-    if (isDefined(header[part])) result[part] = header[part];
-  });
-  return result as IStyleValue;
-};
-
 /**
  * A theme group's effective header style: what the header inherits from the body (see
  * {@link getHeaderStyleFromBody}), with the group's own Header Defaults overriding it value by value.

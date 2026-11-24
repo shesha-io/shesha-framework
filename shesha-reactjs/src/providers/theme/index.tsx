@@ -34,8 +34,6 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     // load theme settings
     const loaded = await settings.getSetting<IConfigurableTheme>({ module: 'Shesha', name: 'Shesha.ThemeSettings' });
     // Persisted settings predate the 'system' option, so the stored scheme may be empty or stale.
-    // Moves fonts saved by earlier versions into their layers, and fills in the label and input font
-    // defaults a theme is initialised with, where it saved none.
     const theme: IConfigurableTheme = applyThemeDefaults({ ...loaded, sidebar: normalizeColorScheme(loaded.sidebar) });
     setState((prev) => ({ ...prev, theme: theme, initialTheme: theme }));
   });

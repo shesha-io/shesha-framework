@@ -52,7 +52,6 @@ export const useTableAppearance = (props: ITableComponentProps): TableAppearance
   }, [props.rowDimensions, props.rowHeight]);
 
   const effectiveRowPadding = useMemo(() => {
-    // Try new individual padding fields first
     const convertedFromFields = convertRowPaddingFieldsToPadding(
       props.rowPaddingTop,
       props.rowPaddingRight,
@@ -96,10 +95,8 @@ export const useTableAppearance = (props: ITableComponentProps): TableAppearance
     return allStyles.fontStyles.textAlign ?? props.font?.align;
   }, [allStyles.fontStyles.textAlign, props.font?.align]);
 
-  // State for stored file background URL
   const [storedFileBackgroundUrl, setStoredFileBackgroundUrl] = useState<string>('');
 
-  // Fetch stored file URL when background type is 'storedFile'
   useEffect(() => {
     let isCancelled = false;
 
@@ -132,28 +129,23 @@ export const useTableAppearance = (props: ITableComponentProps): TableAppearance
     };
   }, [props.background, backendUrl, httpHeaders]);
 
-  // Convert background object to CSS string
   const effectiveBackground = useMemo(() => {
     const bgStyles = getBackgroundStyle(props.background, undefined, storedFileBackgroundUrl);
 
-    // Build complete background CSS string with all properties
     const parts: string[] = [];
 
-    // Add image or color
     if (bgStyles.backgroundImage) {
       parts.push(bgStyles.backgroundImage);
     } else if (bgStyles.backgroundColor) {
-      return bgStyles.backgroundColor; // Color doesn't need size/position
+      return bgStyles.backgroundColor;
     }
 
-    // Add position if present
     if (bgStyles.backgroundPosition) {
       parts.push(String(bgStyles.backgroundPosition));
     }
 
     // Add size if present (must come after position with / separator)
     if (bgStyles.backgroundSize) {
-      // If position exists, add size with / separator, otherwise add it separately
       if (bgStyles.backgroundPosition) {
         parts[parts.length - 1] = `${parts[parts.length - 1]} / ${String(bgStyles.backgroundSize)}`;
       } else {
@@ -161,7 +153,6 @@ export const useTableAppearance = (props: ITableComponentProps): TableAppearance
       }
     }
 
-    // Add repeat if present
     if (bgStyles.backgroundRepeat) {
       parts.push(String(bgStyles.backgroundRepeat));
     }
@@ -199,7 +190,6 @@ export const useTableAppearance = (props: ITableComponentProps): TableAppearance
     }
 
     const {
-      // Remove border properties if border prop is set
       border: borderProp,
       borderTop,
       borderRight,
@@ -238,7 +228,6 @@ export const useTableAppearance = (props: ITableComponentProps): TableAppearance
       ...styleWithoutBorderAndBackground
     } = baseStyle;
 
-    // Only remove border properties if props.border is set
     if (props.border) {
       return styleWithoutBorderAndBackground;
     }
