@@ -8,7 +8,10 @@ import { shaHeaderComponentsContainer } from '@/components/panel/styles/styles';
 export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICardComponentProps) => {
   const header = model.headerStyles;
   // The heading bar sits inside the card's own border, so its border is drawn as the line under it.
-  const headerBorder = header?.border?.borderType === 'custom' ? header.border.border?.bottom : header?.border?.border?.all;
+  // Hide Border wins: no line under the header at all.
+  const headerBorder = header?.border?.hideBorder === true
+    ? undefined
+    : header?.border?.borderType === 'custom' ? header.border.border?.bottom : header?.border?.border?.all;
   // The header always spans the card, so only its heights apply.
   const headerDimensions = dimensionsStyles({ ...header?.dimensions, width: undefined, minWidth: undefined, maxWidth: undefined });
   const headerBackground = backgroundStyles(header?.background);
@@ -19,8 +22,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICardCompo
       ${shadowStyles(model.shadow)}
       ${marginStyles(model.stylingBoxJson)}
       
+      /* The background is the card's (above): painting it again here would double a translucent one. */
       > .${prefixCls}-card-body {
-        ${backgroundStyles(model.background)}
+        background: transparent;
         ${paddingStyles(model.stylingBoxJson)}
       }
 
@@ -32,7 +36,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICardCompo
         ${headerDimensions}
         margin-bottom: 0;
         ${paddingStyles(header?.stylingBoxJson)}
-        ${isDefined(headerBorder) ? `border-bottom: ${borderCss(headerBorder)};` : ''}
+        ${header?.border?.hideBorder === true ? 'border-bottom: none;' : isDefined(headerBorder) ? `border-bottom: ${borderCss(headerBorder)};` : ''}
 
         .${prefixCls}-card-head-title {
           ${fontStyles(header?.font)}

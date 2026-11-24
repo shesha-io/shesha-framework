@@ -44,10 +44,11 @@ const useStyles = createStyles(({ css, cx, token }, { appearance, model }: Style
   const {
     border, headerBorder, cellBorder, headerShadow, rowShadow, rowBorderStyle, headerBackgroundColor,
     rowBackgroundColor, rowAlternateBackgroundColor, striped, cellBorders, cellBorderColor, rowDividers,
-    actionIconSize, actionIconColor, dimensions,
+    actionIconSize, actionIconColor, dimensions, hoverHighlight, rowHoverBackgroundColor,
   } = model;
   const iconSize = actionIconSize ?? bodyFontSize ?? '16px';
-  const alternateBackground = rowAlternateBackgroundColor ?? (striped === true ? 'rgba(0, 0, 0, 0.02)' : rowBackgroundColor);
+  // Alternate rows differ only when striped, as in the live table.
+  const alternateBackground = striped === true ? (rowAlternateBackgroundColor ?? 'rgba(0, 0, 0, 0.02)') : rowBackgroundColor;
 
   const standaloneTable = cx('sha-standalone-table', css`
     width: 100%;
@@ -94,6 +95,8 @@ const useStyles = createStyles(({ css, cx, token }, { appearance, model }: Style
       &:nth-child(even) {
         background: ${alternateBackground ?? 'transparent'};
       }
+
+      ${hoverHighlight === true ? `&:hover { background: ${rowHoverBackgroundColor ?? token.colorPrimary}; }` : ''}
     }
 
     td {

@@ -58,10 +58,16 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     if (Boolean(toolboxComponent.allowInherit)) {
       // Theme base style (application font) is the lowest layer: registered first, so the component's
       // own defaults and everything after them override it (default models merge in insertion order).
+      // The theme tiers do not depend on the model, so each is registered for desktop and, when the
+      // designer shows another device, for that device too: registering a name replaces it, so a
+      // desktop-only registration (e.g. on a theme change) would drop the device tier.
+      const tiers = (style: unknown): TModel => (designerDevice === 'desktop'
+        ? { desktop: style }
+        : { desktop: style, [designerDevice]: style }) as unknown as TModel;
       const baseStyle = getThemeBaseStyle(theme, toolboxComponent) ?? {};
-      defaultModel?.setDefaultModel('Theme base Style', { ['desktop']: baseStyle } as TModel);
+      defaultModel?.setDefaultModel('Theme base Style', tiers(baseStyle));
       const defaultComponentStyle = toolboxComponent.getDefaultStyles?.() ?? {};
-      defaultModel?.setDefaultModel('Default component Style', { ['desktop']: defaultComponentStyle } as TModel);
+      defaultModel?.setDefaultModel('Default component Style', tiers(defaultComponentStyle));
       // Group tier (Input/Inline/Standard/Layout Components) sits between the hardcoded default and
       // the component's own theme override, so a component with no per-type override still inherits
       // its group's shared appearance.
@@ -69,16 +75,12 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       const groupStyle = toolboxComponent.themeGroup !== undefined
         ? getGroupStyleForComponent(getComponentGroupStyle(toolboxComponent.themeGroup), toolboxComponent) ?? {}
         : {};
-      defaultModel?.setDefaultModel('Theme group Style', { ['desktop']: groupStyle } as TModel);
+      defaultModel?.setDefaultModel('Theme group Style', tiers(groupStyle));
       const themeStyle = getComponentStyle(toolboxComponent.type);
-      defaultModel?.setDefaultModel('Theme component Style', { ['desktop']: themeStyle } as TModel);
+      defaultModel?.setDefaultModel('Theme component Style', tiers(themeStyle));
 
       if (designerDevice !== 'desktop' && designerDevice !== currentDevice.current) {
         // inherit mobile and tablet styles from desktop styles
-        defaultModel?.setDefaultModel('Theme base Style', { [designerDevice]: baseStyle } as unknown as TModel);
-        defaultModel?.setDefaultModel('Default component Style', { [designerDevice]: defaultComponentStyle } as unknown as TModel);
-        defaultModel?.setDefaultModel('Theme group Style', { [designerDevice]: groupStyle } as unknown as TModel);
-        defaultModel?.setDefaultModel('Theme component Style', { [designerDevice]: themeStyle } as unknown as TModel);
         const model = defaultModel?.getModel();
         const desktopStyles = deepCopyViaJson(unproxyValue((model as IConfigurableFormComponent).desktop ?? {})) as IStyleValue;
         defaultModel?.setDefaultModel('Desktop component Style', { [designerDevice]: { ...desktopStyles, stylingBox: getStyleBoxValue(desktopStyles.stylingBox as string) } } as unknown as TModel);
