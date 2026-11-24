@@ -226,48 +226,47 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
-        public async Task VerifyPin_should_accept_a_used_otp_only_when_askedAsync()
+        public async Task VerifyPin_should_mark_the_otp_as_used_and_accept_it_only_onceAsync()
         {
             var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
-            storage[operationId].ConsumedOn = DateTime.Now;
+            var input = new VerifyPinInput { OperationId = operationId, Pin = Pin };
 
-            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin }, acceptUsed: true)).IsSuccess.ShouldBeTrue();
-            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "000000" }, acceptUsed: true)).IsSuccess.ShouldBeFalse();
-            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeFalse();
+            (await manager.VerifyPinAsync(input)).IsSuccess.ShouldBeTrue();
+            storage[operationId].ConsumedOn.ShouldNotBeNull("verification must mark the OTP as used");
+
+            (await manager.VerifyPinAsync(input)).IsSuccess.ShouldBeFalse("a pin must only be accepted once");
         }
 
         [Fact]
-        public async Task VerifyPin_should_accept_a_used_otp_that_was_verified_on_the_last_attemptAsync()
+        public async Task VerifyPin_should_accept_the_correct_pin_on_the_last_allowed_attemptAsync()
         {
             var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
-            var appService = new OtpAppService(manager, MockOtpSettings(new OtpSettings { MaxVerifyAttempts = 3 }));
 
             for (var i = 0; i < 2; i++)
-                (await appService.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "000000" })).IsSuccess.ShouldBeFalse();
+                (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "000000" })).IsSuccess.ShouldBeFalse();
 
-            // the correct pin on the last allowed attempt is accepted and the OTP is marked as used
-            (await appService.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeTrue();
-
-            // the second check (e.g. self-registration) must accept it too, without counting another attempt
-            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin }, acceptUsed: true)).IsSuccess.ShouldBeTrue();
+            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeTrue();
             storage[operationId].VerifyAttempts.ShouldBe(3);
         }
 
         [Fact]
-        public async Task VerifyPin_should_count_attempts_for_a_used_otpAsync()
+        public async Task VerifyPin_should_not_mark_an_expired_otp_as_usedAsync()
         {
             var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
-            storage[operationId].ConsumedOn = DateTime.Now;
+            storage[operationId].ExpiresOn = DateTime.Now.AddMinutes(-1);
 
-            // wrong pins are counted; the 4th goes over the limit
-            for (var i = 0; i < 4; i++)
-                (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "000000" }, acceptUsed: true)).IsSuccess.ShouldBeFalse();
+            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeFalse();
+            storage[operationId].ConsumedOn.ShouldBeNull();
+        }
 
-            var response = await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin }, acceptUsed: true);
+        [Fact]
+        public async Task VerifyPin_should_accept_an_email_link_only_onceAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.EmailLink, maxVerifyAttempts: 3);
+            var input = new VerifyPinInput { OperationId = operationId, Pin = Pin };
 
-            storage[operationId].VerifyAttempts.ShouldBe(5);
-            response.IsSuccess.ShouldBeFalse("once wrong pins go over the attempt limit, a used OTP isn't accepted either");
-            response.ErrorMessage.ShouldContain("Too many");
+            (await manager.VerifyPinAsync(input)).IsSuccess.ShouldBeTrue();
+            (await manager.VerifyPinAsync(input)).IsSuccess.ShouldBeFalse();
         }
 
         [Fact]

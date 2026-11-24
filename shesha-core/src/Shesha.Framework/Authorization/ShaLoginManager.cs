@@ -213,6 +213,7 @@ namespace Shesha.Authorization
                     var otp = await OtpManager.GetAsync(operationId);
                     if (otp == null)
                         return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant);
+                    // verification marks the OTP as used, so only one of several concurrent requests for the same OTP gets through
                     var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
                     {
                         OperationId = operationId,
@@ -243,10 +244,6 @@ namespace Shesha.Authorization
                     // authenticated using internal account, check IMEI
                     if (!(await CheckImeiAsync(imei)))
                         return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
-
-                    // make the OTP single-use; only one of several concurrent requests for the same OTP gets through
-                    if (!await OtpManager.TryConsumeAsync(operationId))
-                        return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant, user);
 
                     // clear reset code
                     user.PasswordResetCode = null;

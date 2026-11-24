@@ -507,11 +507,8 @@ namespace Shesha.Users
                 Pin = input.Code
             });
 
+            // the OTP is single use: of concurrent requests with the same pin, only one is verified and gets a token
             var response = ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(otpResponse);
-
-            // the OTP is single use: of concurrent requests with the same pin, only the one that consumes it gets a token
-            if (response.IsSuccess && !await _otpManager.TryConsumeAsync(operationId.Value))
-                response = ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(VerifyPinResponse.Failed("Wrong one time pin"));
 
             if (response.IsSuccess)
             {
@@ -672,11 +669,8 @@ namespace Shesha.Users
             var otpRequest = ObjectMapper.Map<VerifyPinInput>(input);
             var otpResponse = await _otpManager.VerifyPinAsync(otpRequest);
 
+            // the OTP is single use: of concurrent requests with the same pin, only one is verified and gets a token
             var response = ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(otpResponse);
-
-            // the OTP is single use: of concurrent requests with the same pin, only the one that consumes it gets a token
-            if (response.IsSuccess && !await _otpManager.TryConsumeAsync(otp.OperationId))
-                response = ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(VerifyPinResponse.Failed("Wrong one time pin"));
 
             if (response.IsSuccess)
             {

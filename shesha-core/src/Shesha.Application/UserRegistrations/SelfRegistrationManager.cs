@@ -1,6 +1,7 @@
 using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Services;
+using Abp.Domain.Uow;
 using Abp.Events.Bus;
 using Abp.Runtime.Validation;
 using Abp.Timing;
@@ -11,6 +12,7 @@ using Shesha.Configuration.Security;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Otp;
 using Shesha.Otp.Dto;
@@ -113,9 +115,12 @@ namespace Shesha.UserRegistrations
             input.UserName = input.UserName?.Trim();
 
             ValidateInput(input, settings);
+            await ValidateAccountDetailsAsync(input, settings);
 
             // Verify the one-time pins before looking up existing Persons or accounts, and match only verified contacts,
-            // so the response can't be used to find out whether an email address or mobile number is registered
+            // so the response can't be used to find out whether an email address or mobile number is registered.
+            // Each pin is verified once, here: verification marks it as used, and the verified contacts are trusted from now on.
+            // The registration forms don't verify the pins themselves, they pass them to Register.
             var verifiedContact = await EnsureContactVerifiedAsync(input);
             var verifiedEmail = await EnsureEmailVerifiedAsync(input);
             var verifiedContacts = new[] { verifiedContact, verifiedEmail }.Where(c => !string.IsNullOrWhiteSpace(c)).Distinct().ToList();
@@ -279,6 +284,38 @@ namespace Shesha.UserRegistrations
         }
 
         /// <summary>
+        /// Checks the username and password before the one-time pins are verified. Verifying a pin uses it up, so these
+        /// common mistakes are reported while the registrant can still correct them and submit again with the same pin.
+        /// The username isn't checked when it's the email address, so this can't reveal whether an email address is registered.
+        /// </summary>
+        protected virtual async Task ValidateAccountDetailsAsync(SelfRegistrationInput input, UserManagementSettings settings)
+        {
+            var errors = new List<ValidationResult>();
+
+            if (!settings.UserEmailAsUsername && !string.IsNullOrWhiteSpace(input.UserName) && await _userManager.FindByNameAsync(input.UserName) != null)
+                errors.Add(new ValidationResult("User with the same username already exists"));
+
+            if (string.IsNullOrWhiteSpace(input.Password))
+                errors.Add(new ValidationResult("Password is mandatory"));
+            if (string.IsNullOrWhiteSpace(input.PasswordConfirmation))
+                errors.Add(new ValidationResult("Password Confirmation is mandatory"));
+            if (!string.IsNullOrWhiteSpace(input.Password) && !string.IsNullOrWhiteSpace(input.PasswordConfirmation) && input.Password != input.PasswordConfirmation)
+                errors.Add(new ValidationResult("Password Confirmation must be the same as Password"));
+
+            if (errors.Any())
+                throw new AbpValidationException("Please correct the errors and try again", errors);
+
+            // the configured password policy
+            await _userManager.InitializeOptionsAsync(CurrentUnitOfWork.GetTenantId());
+            foreach (var validator in _userManager.PasswordValidators)
+            {
+                var result = await validator.ValidateAsync(_userManager, new User(), input.Password);
+                if (!result.Succeeded)
+                    throw new AbpValidationException("Please correct the errors and try again", result.Errors.Select(e => new ValidationResult(e.Description)).ToList());
+            }
+        }
+
+        /// <summary>
         /// Resolves the configured Person entity type; null/empty means <see cref="Person"/>
         /// </summary>
         protected virtual Type ResolvePersonType(string personEntityType)
@@ -327,18 +364,13 @@ namespace Shesha.UserRegistrations
 
         /// <summary>
         /// The registrant must prove they control the email address or mobile number they register with: the one-time pin
-        /// (or email link) must be valid and must have been sent to one of them. The registration forms verify it before
-        /// calling Register; this enforces it on the server so a direct call can't register an address the caller doesn't own.
+        /// (or email link) must be valid and must have been sent to one of them. The registration forms pass the pin to
+        /// Register, which verifies it here, so a direct call can't register an address the caller doesn't own.
         /// </summary>
         /// <returns>The normalised email address or mobile number the one-time pin was sent to</returns>
         protected virtual async Task<string> EnsureContactVerifiedAsync(SelfRegistrationInput input)
         {
-            var sentTo = await GetVerifiedOtpDestinationAsync(input.OtpOperationId, input.OtpPin, ContactNotVerifiedMessage);
-
-            if (sentTo != NormalizeContact(input.EmailAddress) && sentTo != NormalizeContact(input.MobileNumber))
-                throw new UserFriendlyException(ContactNotVerifiedMessage);
-
-            return sentTo;
+            return await VerifyOtpSentToAsync(input.OtpOperationId, input.OtpPin, ContactNotVerifiedMessage, input.EmailAddress, input.MobileNumber);
         }
 
         /// <summary>
@@ -352,11 +384,7 @@ namespace Shesha.UserRegistrations
             if (input.EmailOtpOperationId == null && string.IsNullOrWhiteSpace(input.EmailOtpPin))
                 return null;
 
-            var sentTo = await GetVerifiedOtpDestinationAsync(input.EmailOtpOperationId, input.EmailOtpPin, EmailNotVerifiedMessage);
-            if (sentTo != NormalizeContact(input.EmailAddress))
-                throw new UserFriendlyException(EmailNotVerifiedMessage);
-
-            return sentTo;
+            return await VerifyOtpSentToAsync(input.EmailOtpOperationId, input.EmailOtpPin, EmailNotVerifiedMessage, input.EmailAddress);
         }
 
         /// <summary>
@@ -377,7 +405,7 @@ namespace Shesha.UserRegistrations
                 _ => provedEmail || provedMobile,
             };
             if (!proved)
-                throw new UserFriendlyException(ContactNotVerifiedMessage);
+                throw new VerificationFailedException(ContactNotVerifiedMessage);
         }
 
         /// <summary>
@@ -387,7 +415,7 @@ namespace Shesha.UserRegistrations
         protected virtual void EnsureOwnershipVerified(IReadOnlyCollection<string> verifiedContacts, Person person)
         {
             if (!verifiedContacts.Contains(NormalizeContact(person.EmailAddress1)) && !verifiedContacts.Contains(NormalizeContact(person.MobileNumber1)))
-                throw new UserFriendlyException(OwnershipNotVerifiedMessage);
+                throw new VerificationFailedException(OwnershipNotVerifiedMessage);
         }
 
         /// <summary>
@@ -404,7 +432,7 @@ namespace Shesha.UserRegistrations
             if (!string.IsNullOrWhiteSpace(input.EmailAddress) && !verifiedContacts.Contains(NormalizeContact(input.EmailAddress)))
             {
                 if (IsEmailAddressRequired(settings))
-                    throw new UserFriendlyException(EmailNotVerifiedMessage);
+                    throw new VerificationFailedException(EmailNotVerifiedMessage);
 
                 input.EmailAddress = null;
             }
@@ -414,26 +442,25 @@ namespace Shesha.UserRegistrations
         }
 
         /// <summary>
-        /// Verifies a one-time pin and returns the normalised address/number it was sent to; throws when it isn't valid
+        /// Verifies a one-time pin that must have been sent to one of the specified contacts, and returns the normalised
+        /// address/number it was sent to; throws a <see cref="VerificationFailedException"/> when it isn't valid.
+        /// Verification marks the pin as used, so the destination is checked first: a pin sent to another contact isn't used up.
         /// </summary>
-        private async Task<string> GetVerifiedOtpDestinationAsync(Guid? operationId, string pin, string failureMessage)
+        private async Task<string> VerifyOtpSentToAsync(Guid? operationId, string pin, string failureMessage, params string[] contacts)
         {
             if (operationId == null || string.IsNullOrWhiteSpace(pin))
-                throw new UserFriendlyException(failureMessage);
+                throw new VerificationFailedException(failureMessage);
 
             var otp = await _otpManager.GetAsync(operationId.Value);
-            if (otp == null)
-                throw new UserFriendlyException(failureMessage);
+            var sentTo = NormalizeContact(otp?.SendTo);
+            if (sentTo == null || !contacts.Select(NormalizeContact).Contains(sentTo))
+                throw new VerificationFailedException(failureMessage);
 
-            // the client checks the pin through Otp/VerifyPin first, which marks it as used, so a used OTP is accepted here
-            var verification = await _otpManager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId.Value, Pin = pin }, acceptUsed: true);
+            var verification = await _otpManager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId.Value, Pin = pin });
             if (!verification.IsSuccess)
-                throw new UserFriendlyException(failureMessage);
+                throw new VerificationFailedException(failureMessage);
 
-            // mark it as used in case the client didn't call Otp/VerifyPin
-            await _otpManager.TryConsumeAsync(operationId.Value);
-
-            return NormalizeContact(otp.SendTo) ?? throw new UserFriendlyException(failureMessage);
+            return sentTo;
         }
 
         private static string NormalizeContact(string value)

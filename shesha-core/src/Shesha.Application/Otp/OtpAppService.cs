@@ -51,17 +51,8 @@ namespace Shesha.Otp
         [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
         {
-            var response = await _otpManager.VerifyPinAsync(input);
-            if (!response.IsSuccess)
-                return response;
-
-            // the pin is single use: once accepted here it can't be verified again through this endpoint. Nothing is
-            // stored when validation is ignored (dev/QA), so there is nothing to mark as used
-            var settings = await _otpSettings.OneTimePins.GetValueAsync();
-            if (!settings.IgnoreOtpValidation && !await _otpManager.TryConsumeAsync(input.OperationId))
-                return VerifyPinResponse.Failed("Wrong one time pin");
-
-            return response;
+            // the pin is single use: once accepted it can't be verified again
+            return await _otpManager.VerifyPinAsync(input);
         }
 
         /// inheritDoc
