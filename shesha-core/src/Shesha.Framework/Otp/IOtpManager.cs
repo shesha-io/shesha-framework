@@ -24,6 +24,13 @@ namespace Shesha.Otp
         Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input);
 
         /// <summary>
+        /// Returns true when <see cref="VerifyPinAsync"/> would accept the pin, without counting an attempt or marking the OTP
+        /// as used. Use it to check the pin before other checks that may still fail, then verify it with <see cref="VerifyPinAsync"/>.
+        /// Like <see cref="VerifyPinAsync"/>, it accepts any pin when the IgnoreOtpValidation setting is on.
+        /// </summary>
+        Task<bool> IsPinValidAsync(Guid operationId, string pin);
+
+        /// <summary>
         /// Get OTP
         /// </summary>
         /// <param name="operationId"></param>

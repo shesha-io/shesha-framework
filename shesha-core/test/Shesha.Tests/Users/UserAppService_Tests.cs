@@ -449,6 +449,20 @@ namespace Shesha.Tests.Users
                     });
                 });
 
+                // also once the OTP record is gone, e.g. evicted by CacheOtpStorage when it expires
+                var otpRecord = storage[sendOtpResponse.OperationId];
+                storage.Remove(sendOtpResponse.OperationId);
+                await Should.ThrowAsync<VerificationFailedException>(async () =>
+                {
+                    await userAppService.ResetPasswordUsingTokenAsync(new ResetPasswordUsingTokenInput()
+                    {
+                        Username = userName,
+                        Token = sendOtpResponse.OperationId.ToString(),
+                        NewPassword = "NewPassword123!",
+                    });
+                });
+                storage[sendOtpResponse.OperationId] = otpRecord;
+
                 // the token issued after verification still works
                 var verifyResponse = await userAppService.ResetPasswordVerifyOtpAsync(new ResetPasswordVerifyOtpInput()
                 {
@@ -584,10 +598,13 @@ namespace Shesha.Tests.Users
             // saving the login attempt deadlocks in entity history in the test project (#5777), so it's off for the login
             var entityHistory = Resolve<IEntityHistoryConfiguration>();
             var entityHistoryWasEnabled = entityHistory.IsEnabled;
+            ShaLoginResult<User> wrongPinResult;
             ShaLoginResult<User> loginResult;
             try
             {
                 entityHistory.IsEnabled = false;
+                var wrongPin = loginPin == "000000" ? "111111" : "000000";
+                wrongPinResult = await logInManager.LoginViaOtpAsync(mobileNo, sendResponse.OperationId, wrongPin, imei: "990000000000001", shouldLockout: false);
                 loginResult = await logInManager.LoginViaOtpAsync(mobileNo, sendResponse.OperationId, loginPin, imei: "990000000000001", shouldLockout: false);
             }
             finally
@@ -598,9 +615,10 @@ namespace Shesha.Tests.Users
             var otp = otps[sendResponse.OperationId];
             await _userRepository.DeleteAsync(userDto.Id);
 
+            wrongPinResult.Result.ShouldBe(ShaLoginResultType.InvalidOTP, "a wrong pin must not reveal whether the device is registered");
             loginResult.Result.ShouldBe(ShaLoginResultType.DeviceNotRegistered);
             otp.ConsumedOn.ShouldBeNull("a retry from a registered device can still use the pin");
-            otp.VerifyAttempts.ShouldBe(0);
+            otp.VerifyAttempts.ShouldBe(1, "only the wrong pin counts as an attempt");
         }
 
         [Fact]
