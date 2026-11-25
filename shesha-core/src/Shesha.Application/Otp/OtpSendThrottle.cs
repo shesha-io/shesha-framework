@@ -21,7 +21,7 @@ namespace Shesha.Otp
     public class OtpSendHistory
     {
         /// <summary>
-        /// UTC times of the OTP sends within the throttling window
+        /// UTC times of the OTP sends within the last hour, or within the cooldown when that is longer
         /// </summary>
         public List<DateTime> SentOnUtc { get; set; } = new List<DateTime>();
     }
@@ -97,12 +97,15 @@ namespace Shesha.Otp
             try
             {
                 var now = DateTime.UtcNow;
+                // sends are kept for the hourly cap and for the cooldown, which may be longer than an hour
+                var cooldown = TimeSpan.FromSeconds(Math.Max(cooldownSeconds, 0));
+                var retention = cooldown > Window ? cooldown : Window;
                 var history = await _cache.Cache.GetOrDefaultAsync(key) ?? new OtpSendHistory();
-                var recentSends = history.SentOnUtc.Where(t => t > now - Window).OrderBy(t => t).ToList();
+                var retainedSends = history.SentOnUtc.Where(t => t > now - retention).OrderBy(t => t).ToList();
 
-                if (cooldownSeconds > 0 && recentSends.Any())
+                if (cooldownSeconds > 0 && retainedSends.Any())
                 {
-                    var nextAllowed = recentSends.Last().AddSeconds(cooldownSeconds);
+                    var nextAllowed = retainedSends.Last().AddSeconds(cooldownSeconds);
                     if (nextAllowed > now)
                     {
                         var secondsRemaining = (int)Math.Ceiling((nextAllowed - now).TotalSeconds);
@@ -110,12 +113,12 @@ namespace Shesha.Otp
                     }
                 }
 
-                if (recentSends.Count >= maxSends)
+                if (retainedSends.Count(t => t > now - Window) >= maxSends)
                     throw new TooManyRequestsException("Too many OTP requests. Please try again later.");
 
-                recentSends.Add(now);
-                history.SentOnUtc = recentSends;
-                await _cache.Cache.SetAsync(key, history, absoluteExpireTime: new DateTimeOffset(now.Add(Window)));
+                retainedSends.Add(now);
+                history.SentOnUtc = retainedSends;
+                await _cache.Cache.SetAsync(key, history, absoluteExpireTime: new DateTimeOffset(now.Add(retention)));
             }
             finally
             {

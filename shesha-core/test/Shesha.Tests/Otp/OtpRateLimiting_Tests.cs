@@ -338,6 +338,23 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
+        public async Task Throttle_should_enforce_cooldown_longer_than_an_hourAsync()
+        {
+            var store = new Dictionary<string, OtpSendHistory>();
+            var throttle = CreateThrottle(cooldownSeconds: 7200, maxSendsPerHour: 1, store);
+
+            // sent 90 minutes ago: outside the hourly window, but still inside the two hour cooldown
+            await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms);
+            store.Values.Single().SentOnUtc = new List<DateTime> { DateTime.UtcNow.AddMinutes(-90) };
+            var ex = await Should.ThrowAsync<TooManyRequestsException>(async () => { await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms); });
+            ex.Message.ShouldContain("Please wait");
+
+            // once the cooldown has passed, the old send doesn't count towards the hourly cap either
+            store.Values.Single().SentOnUtc = new List<DateTime> { DateTime.UtcNow.AddMinutes(-121) };
+            await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms);
+        }
+
+        [Fact]
         public async Task Throttle_should_enforce_hourly_cap_per_destinationAsync()
         {
             var throttle = CreateThrottle(cooldownSeconds: 0, maxSendsPerHour: 3);
@@ -521,9 +538,9 @@ namespace Shesha.Tests.Otp
             return new CacheOtpStorage(otpCache.Object);
         }
 
-        private static OtpSendThrottle CreateThrottle(int cooldownSeconds, int maxSendsPerHour)
+        private static OtpSendThrottle CreateThrottle(int cooldownSeconds, int maxSendsPerHour, Dictionary<string, OtpSendHistory>? store = null)
         {
-            var store = new Dictionary<string, OtpSendHistory>();
+            store ??= new Dictionary<string, OtpSendHistory>();
             var typedCache = new Mock<ITypedCache<string, OtpSendHistory>>();
             typedCache.Setup(c => c.GetOrDefaultAsync(It.IsAny<string>()))
                 .Returns<string>(key => Task.FromResult(store.TryGetValue(key, out var value) ? value : null!));
