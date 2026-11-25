@@ -51,6 +51,7 @@ namespace Shesha.Otp
         [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
         {
+            // the pin is single use: once accepted it can't be verified again
             return await _otpManager.VerifyPinAsync(input);
         }
 
@@ -87,8 +88,13 @@ namespace Shesha.Otp
                 Alphabet = emailSettings.Alphabet,
                 DefaultLifetime = emailSettings.DefaultLifetime,
                 IgnoreOtpValidation = emailSettings.IgnoreOtpValidation,
-                MaxVerifyAttempts = emailSettings.MaxVerifyAttempts,
-                MaxSendsPerDestinationPerHour = emailSettings.MaxSendsPerDestinationPerHour,
+                // 0 (e.g. settings saved before these limits existed) means the default applies, so show the limit in effect
+                MaxVerifyAttempts = emailSettings.MaxVerifyAttempts > 0
+                    ? emailSettings.MaxVerifyAttempts
+                    : OtpDefaults.DefaultMaxVerifyAttempts,
+                MaxSendsPerDestinationPerHour = emailSettings.MaxSendsPerDestinationPerHour > 0
+                    ? emailSettings.MaxSendsPerDestinationPerHour
+                    : OtpDefaults.DefaultMaxSendsPerDestinationPerHour,
                 EmailSubject = emailSettings.DefaultEmailSubjectTemplate,
                 EmailBodyTemplate = emailSettings.DefaultEmailBodyTemplate,
             };
