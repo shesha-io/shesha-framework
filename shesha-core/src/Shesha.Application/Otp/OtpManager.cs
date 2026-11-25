@@ -264,7 +264,7 @@ namespace Shesha.Otp
         /// <summary>
         /// Maximum number of verification attempts per OTP, falling back to the default when not configured
         /// </summary>
-        private static int GetMaxVerifyAttempts(OtpSettings settings)
+        internal static int GetMaxVerifyAttempts(OtpSettings settings)
         {
             return settings.MaxVerifyAttempts > 0
                 ? settings.MaxVerifyAttempts

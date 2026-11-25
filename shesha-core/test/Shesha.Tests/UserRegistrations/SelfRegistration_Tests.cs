@@ -19,6 +19,7 @@ using Shesha.Domain.Enums;
 using Shesha.Exceptions;
 using Shesha.Models.TokenAuth;
 using Shesha.Otp;
+using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
 using Shesha.Reflection;
 using Shesha.Settings;
@@ -609,6 +610,24 @@ namespace Shesha.Tests.UserRegistrations
             (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
             _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldNotBeNull();
             _otps[input.EmailOtpOperationId!.Value].ConsumedOn.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task An_email_pin_out_of_attempts_does_not_use_up_the_mobile_pinAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.UserEmailAsUsername = true;
+            }));
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+            ProvideEmailOtp(input, sentTo: input.EmailAddress);
+            _otps[input.EmailOtpOperationId!.Value].VerifyAttempts = OtpDefaults.DefaultMaxVerifyAttempts;
+
+            var ex = await Should.ThrowAsync<VerificationFailedException>(async () => { await RegisterAsync(app, input); });
+            ex.Message.ShouldBe(SelfRegistrationManager.EmailNotVerifiedMessage);
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull("the mobile pin isn't used up when the email pin can't be verified");
         }
 
         [Fact]
