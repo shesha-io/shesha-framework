@@ -55,7 +55,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   .stdCollapsiblePanel('Card Styles', (fbf) => fbf
                     .stdFontPanel(undefined, 'card.font')
                     .stdDimensionsPanel('card.dimensions')
-                    .stdBorderPanel(removeStyleRouter !== true, 'card.border', 'radius')
+                    .stdBorderPanel(removeStyleRouter !== true, 'card.border')
                     .stdContainer((fbf) => fbf.stdBackgroundPanel(removeStyleRouter !== true, 'card.background'), 'return  getSettingValue(data?.tabType) !== "line";')
                     .stdMarginPaddingPanel('card.stylingBoxJson')
                     .addSettingsInput({ inputType: 'codeEditor', propertyName: 'card.style', label: 'Style', description: 'A script that returns the style of the element as an object. This should conform to CSSProperties' })

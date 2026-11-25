@@ -11,7 +11,8 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
 
   const isLeft = model.tabPosition === 'left';
   const isRight = model.tabPosition === 'right';
-  const isTop = model.tabPosition === 'top';
+  // Unset renders at the top (see the component's Factory).
+  const isTop = (model.tabPosition ?? 'top') === 'top';
   const isBottom = model.tabPosition === 'bottom';
 
   const borderRadius: IBorderValue = {
@@ -55,6 +56,21 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
     },
   };
 
+  // A tab card is rounded only on its outer side: the corners facing the content stay square, as the
+  // content's own corners on that side do (see borderRadius above).
+  const cardRadiusSource = model.card?.border ?? model.border;
+  const cardCorner = (corner: 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight'): string | number | undefined =>
+    cardRadiusSource?.radiusType === 'custom' ? cardRadiusSource.radius?.[corner] : cardRadiusSource?.radius?.all;
+  const cardRadius: IBorderValue = {
+    radiusType: 'custom',
+    radius: {
+      topLeft: isBottom || isRight ? 0 : cardCorner('topLeft'),
+      topRight: isBottom || isLeft ? 0 : cardCorner('topRight'),
+      bottomLeft: isTop || isRight ? 0 : cardCorner('bottomLeft'),
+      bottomRight: isTop || isLeft ? 0 : cardCorner('bottomRight'),
+    },
+  };
+
   const cardBackground = backgroundCss(model.card?.background);
 
   const shaTabContent = cx('sha-tab-content', css`
@@ -67,6 +83,7 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
         ${/* Card margin & padding apply to every tab card (selected and not). The extra specificity beats antd's
              gutter rules (e.g. '.ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab'). */ ''}
         .ant-tabs-nav .ant-tabs-tab {
+          ${tabType === 'card' ? borderRadiusStyles(cardRadius) : ''}
           ${paddingStyles(model.card?.stylingBoxJson)}
           ${marginStyles(model.card?.stylingBoxJson)}
         }
@@ -116,7 +133,6 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
                   ${isDefined(model.card?.font?.color) ? `--ant-tabs-item-active-color: ${model.card.font.color} !important;` : ''}
                   ${isDefined(model.card?.font?.color) ? `--ant-tabs-item-selected-color: ${model.card.font.color} !important;` : ''}
                   ${cardBorderVars}
-                  ${borderRadiusStyles(model.card?.border)}
 
                   ${fontStyles(model.card?.font)}
                   ${dimensionsStyles(model.card?.dimensions)}
