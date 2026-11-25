@@ -556,6 +556,54 @@ namespace Shesha.Tests.Users
         /// It must not log the user in, and the attempt must not use it up for the password reset
         /// </summary>
         [Fact]
+        public async Task LoginViaOtp_from_an_unregistered_device_should_not_use_up_the_otp_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var otps = new Dictionary<Guid, OtpDto>();
+            var otpStorage = MockOtpStorage(otps, dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+            var logInManager = Resolve<LogInManager>();
+
+            ISendPinResponse sendResponse;
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                var user = await _userRepository.GetAsync(userDto.Id);
+                sendResponse = await logInManager.SendLoginOtpAsync(user, mobileNo);
+                await uow.CompleteAsync();
+            }
+            var loginPin = currentPin;
+
+            // saving the login attempt deadlocks in entity history in the test project (#5777), so it's off for the login
+            var entityHistory = Resolve<IEntityHistoryConfiguration>();
+            var entityHistoryWasEnabled = entityHistory.IsEnabled;
+            ShaLoginResult<User> loginResult;
+            try
+            {
+                entityHistory.IsEnabled = false;
+                loginResult = await logInManager.LoginViaOtpAsync(mobileNo, sendResponse.OperationId, loginPin, imei: "990000000000001", shouldLockout: false);
+            }
+            finally
+            {
+                entityHistory.IsEnabled = entityHistoryWasEnabled;
+            }
+
+            var otp = otps[sendResponse.OperationId];
+            await _userRepository.DeleteAsync(userDto.Id);
+
+            loginResult.Result.ShouldBe(ShaLoginResultType.DeviceNotRegistered);
+            otp.ConsumedOn.ShouldBeNull("a retry from a registered device can still use the pin");
+            otp.VerifyAttempts.ShouldBe(0);
+        }
+
+        [Fact]
         public async Task LoginViaOtp_should_reject_a_password_reset_otp_TestAsync()
         {
             var mobileNo = await GetUniqueMobileNoAsync();

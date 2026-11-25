@@ -220,12 +220,6 @@ namespace Shesha.Authorization
                     var otp = await OtpManager.GetAsync(operationId);
                     if (otp == null || otp.ActionType != LoginOtpActionType)
                         return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant);
-                    // verification marks the OTP as used, so only one of several concurrent requests for the same OTP gets through
-                    var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
-                    {
-                        OperationId = operationId,
-                        Pin = code
-                    });
 
                     var user = !string.IsNullOrWhiteSpace(otp.RecipientId)
                             ? await UserManager.FindByIdAsync(otp.RecipientId)
@@ -233,6 +227,17 @@ namespace Shesha.Authorization
 
                     if (user == null)
                         return new ShaLoginResult<TUser>(ShaLoginResultType.UserNotFound, tenant);
+
+                    // checked before verification, so a retry from a registered device can still use the pin
+                    if (!(await CheckImeiAsync(imei)))
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
+
+                    // verification marks the OTP as used, so only one of several concurrent requests for the same OTP gets through
+                    var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
+                    {
+                        OperationId = operationId,
+                        Pin = code
+                    });
 
                     if (await UserManager.IsLockedOutAsync(user))
                         return new ShaLoginResult<TUser>(ShaLoginResultType.LockedOut, tenant, user);
@@ -247,10 +252,6 @@ namespace Shesha.Authorization
 
                         return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant, user);
                     }
-
-                    // authenticated using internal account, check IMEI
-                    if (!(await CheckImeiAsync(imei)))
-                        return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
 
                     // clear reset code
                     user.PasswordResetCode = null;
