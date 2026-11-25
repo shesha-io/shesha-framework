@@ -723,6 +723,20 @@ const resolveFormCol = (col: ColProps | undefined, inheritedSpan: NonNullable<Co
   isDefined(col) && (isDefined(col.flex) || isDefined(col.span)) ? col : { ...col, span: inheritedSpan };
 
 /**
+ * The label column when there is no theme: an unset span gets the fallback span, reduced so the label's
+ * offset, the label and the control still fit one 24-column row. When no span fits, it is left unset and
+ * the label sizes to its content, as it did before spans were inherited.
+ */
+const resolveFallbackLabelCol = (col: ColProps | undefined, wrapperCol: ColProps): ColProps => {
+  if (isDefined(col) && (isDefined(col.flex) || isDefined(col.span))) return col;
+  const fallbackSpan = Number(FALLBACK_FORM_LAYOUT.labelCol.span ?? 6);
+  if (isDefined(wrapperCol.flex)) return { ...col, span: fallbackSpan };
+  const used = Number(col?.offset ?? 0) + Number(wrapperCol.span ?? 0) + Number(wrapperCol.offset ?? 0);
+  const span = Math.min(fallbackSpan, GRID_COLUMNS - used);
+  return span > 0 ? { ...col, span } : { ...col };
+};
+
+/**
  * Effective layout of a form: Layout, Colon, Label Span and Component Span each come from the form's
  * settings when it set them, and are inherited from the theme's Form Span settings when it did not
  * (then from {@link FALLBACK_FORM_LAYOUT}). Label alignment always comes from the theme, as forms have no
@@ -734,10 +748,11 @@ export const resolveFormLayout = (
 ): IResolvedFormLayout => {
   const own = settings ?? {};
   if (own.isSettingsForm === true || !isDefined(theme)) {
+    const wrapperCol = resolveFormCol(own.wrapperCol, FALLBACK_FORM_LAYOUT.wrapperCol.span ?? GRID_COLUMNS - 6);
     return withOptional({
       layout: own.layout ?? FALLBACK_FORM_LAYOUT.layout,
-      labelCol: resolveFormCol(own.labelCol, FALLBACK_FORM_LAYOUT.labelCol.span ?? 6),
-      wrapperCol: resolveFormCol(own.wrapperCol, FALLBACK_FORM_LAYOUT.wrapperCol.span ?? GRID_COLUMNS - 6),
+      labelCol: resolveFallbackLabelCol(own.labelCol, wrapperCol),
+      wrapperCol,
     }, { colon: own.colon });
   }
 

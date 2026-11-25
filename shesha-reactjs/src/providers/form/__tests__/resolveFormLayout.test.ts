@@ -49,6 +49,15 @@ describe('resolveFormLayout', () => {
     });
   });
 
+  it('shrinks the fallback label span so the offset, label and control fit one row when there is no theme', () => {
+    expect(resolveFormLayout({ labelCol: { offset: 2 } }, undefined)).toMatchObject({ labelCol: { offset: 2, span: 4 }, wrapperCol: { span: 18 } });
+  });
+
+  it('leaves the fallback label span unset when no span fits, so the label sizes to its content', () => {
+    const { labelCol } = resolveFormLayout({ labelCol: { offset: 6 }, wrapperCol: { span: 18 } }, undefined);
+    expect(labelCol).toEqual({ offset: 6 });
+  });
+
   it('never applies the theme to settings forms', () => {
     expect(resolveFormLayout({ isSettingsForm: true, layout: 'vertical', labelCol: { span: 24 }, wrapperCol: { span: 24 } }, theme)).toEqual({
       layout: 'vertical', labelCol: { span: 24 }, wrapperCol: { span: 24 },

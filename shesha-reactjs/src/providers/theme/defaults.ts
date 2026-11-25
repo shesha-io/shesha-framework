@@ -23,15 +23,9 @@ const fontOver = (under: IFontValue | undefined, font: IFontValue | undefined): 
   return result as IFontValue;
 };
 
-/**
- * A font with the typography defaults filled in where neither it nor the theme's base font sets a part.
- * Parts the base font sets are left unset, so they keep following the base font (see {@link getThemeGroupStyle}).
- */
-const withFontDefaults = (defaults: IFontValue, font: IFontValue | undefined, base: IFontValue | undefined): IFontValue => {
-  const baseParts = base as Record<string, unknown> | undefined;
-  const missingDefaults = Object.fromEntries(Object.entries(defaults).filter(([key]) => !isSet(baseParts?.[key])));
-  return fontOver(missingDefaults as IFontValue, font);
-};
+/** A font resolved in layers: the typography defaults, then the theme's base font, then the font's own parts. */
+const resolveFont = (defaults: IFontValue, base: IFontValue | undefined, font: IFontValue | undefined): IFontValue =>
+  fontOver(fontOver(defaults, base), font);
 
 /**
  * Moves fonts saved by earlier versions into their layers: the application font type (`fontFamily`)
@@ -57,44 +51,23 @@ export const upgradeLegacyThemeFonts = (theme: IConfigurableTheme): IConfigurabl
 };
 
 /**
- * Upgrades fonts saved by earlier versions (see {@link upgradeLegacyThemeFonts}) and fills in the font
- * defaults a theme is initialised with (label font and Input Components font), so they show in the theme
- * settings and apply to forms. Only parts the saved theme left unset are filled in.
+ * Upgrades fonts saved by earlier versions (see {@link upgradeLegacyThemeFonts}). The font defaults are not
+ * stored: they are the lowest layer when the Input Components and label fonts are resolved (see
+ * {@link getThemeGroupStyle}, {@link getEffectiveLabelFont}), so the base font always overrides them.
  */
-export const applyThemeDefaults = (theme: IConfigurableTheme): IConfigurableTheme => {
-  const upgraded = upgradeLegacyThemeFonts(theme);
-  const inputGroup = upgraded.componentGroups?.input ?? {};
-  return {
-    ...upgraded,
-    componentGroups: {
-      ...upgraded.componentGroups,
-      input: {
-        ...inputGroup,
-        // Unset parts inherit the theme's base font; the defaults only fill what neither sets.
-        font: withFontDefaults(DEFAULT_INPUT_FONT, inputGroup.font, upgraded.font),
-        labelFont: withFontDefaults(DEFAULT_LABEL_FONT, inputGroup.labelFont, upgraded.font),
-      },
-    },
-  };
-};
+export const applyThemeDefaults = (theme: IConfigurableTheme): IConfigurableTheme => upgradeLegacyThemeFonts(theme);
 
 /**
- * A theme component group's style as its components inherit it. The Input Components font inherits the
- * parts it leaves unset from the base font, so a base font edit reaches inputs over their own defaults.
+ * A theme component group's style as its components inherit it. The Input Components font is resolved
+ * from the defaults, the base font and the group's own parts, so a base font edit reaches inputs over
+ * their own defaults.
  */
 export const getThemeGroupStyle = (theme: IConfigurableTheme | undefined, group: ThemeComponentGroup): IThemeGroupStyle | undefined => {
   const groupStyle = theme?.componentGroups?.[group];
-  if (group !== 'input' || !isDefined(theme?.font)) return groupStyle;
-  return { ...groupStyle, font: fontOver(theme.font, groupStyle?.font) };
+  if (group !== 'input') return groupStyle;
+  return { ...groupStyle, font: resolveFont(DEFAULT_INPUT_FONT, theme?.font, groupStyle?.font) };
 };
 
-/**
- * Font of form item labels: the theme's base font, overridden by the Input Components group's label font.
- * Unset parts of the label font inherit the base font.
- */
-export const getEffectiveLabelFont = (theme: IConfigurableTheme | undefined): IFontValue | undefined => {
-  const base = theme?.font;
-  const label = theme?.componentGroups?.input?.labelFont;
-  if (base === undefined && label === undefined) return undefined;
-  return deepMergeValues({ ...base }, label ?? {}, deepMergeSkipUndefinedFunc);
-};
+/** Font of form item labels: the label defaults, then the theme's base font, then the Input Components label font. */
+export const getEffectiveLabelFont = (theme: IConfigurableTheme | undefined): IFontValue =>
+  resolveFont(DEFAULT_LABEL_FONT, theme?.font, theme?.componentGroups?.input?.labelFont);

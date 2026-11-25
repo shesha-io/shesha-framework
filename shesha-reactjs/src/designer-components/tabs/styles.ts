@@ -14,10 +14,34 @@ const cornersFromBorder = (border: IBorderValue | undefined): Corners | undefine
   return { topLeft: corner('topLeft'), topRight: corner('topRight'), bottomLeft: corner('bottomLeft'), bottomRight: corner('bottomRight') };
 };
 
-/** The corners of a CSS border-radius value (one to four values, in CSS order; elliptical radii are ignored). */
-const cornersFromCss = (value: CSSProperties['borderRadius']): Corners | undefined => {
+/**
+ * The values of a CSS border-radius before any `/` (the elliptical part is ignored), split on whitespace
+ * outside parentheses, so a function such as `calc(8px + 2px)` stays one value.
+ */
+const radiusValues = (value: string): string[] => {
+  const values: string[] = [];
+  let current = '';
+  let depth = 0;
+  for (const char of value) {
+    if (char === '(') depth++;
+    if (char === ')') depth = Math.max(0, depth - 1);
+    if (depth === 0 && char === '/') break;
+    if (depth === 0 && /\s/.test(char)) {
+      if (current !== '') values.push(current);
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  if (current !== '') values.push(current);
+  return values;
+};
+
+/** The corners of a CSS border-radius value (one to four values, in CSS order). */
+export const cornersFromCss = (value: CSSProperties['borderRadius']): Corners | undefined => {
   if (value === undefined || value === '') return undefined;
-  const [first = '0', second = first, third = first, fourth = second] = String(typeof value === 'number' ? `${value}px` : value).split('/')[0]?.trim().split(/\s+/) ?? [];
+  const [first, second = first, third = first, fourth = second] = radiusValues(typeof value === 'number' ? `${value}px` : value);
+  if (first === undefined) return undefined;
   return { topLeft: first, topRight: second, bottomRight: third, bottomLeft: fourth };
 };
 
