@@ -70,6 +70,8 @@ namespace Shesha.Tests.UserRegistrations
                 .Returns<Guid>(id => Task.FromResult<IOtpDto?>(_otps.TryGetValue(id, out var otp) ? otp : null));
             otpManager.Setup(m => m.VerifyPinAsync(It.IsAny<VerifyPinInput>()))
                 .Returns<VerifyPinInput>(input => Task.FromResult(Verify(input)));
+            otpManager.Setup(m => m.IsPinValidAsync(It.IsAny<Guid>(), It.IsAny<string>()))
+                .Returns<Guid, string>((id, pin) => Task.FromResult(IsPinValid(id, pin)));
             LocalIocManager.IocContainer.Register(Component.For<IOtpManager>().Instance(otpManager.Object).IsDefault().Named("test-otp-manager"));
         }
 
@@ -87,6 +89,18 @@ namespace Shesha.Tests.UserRegistrations
 
             otp.ConsumedOn = DateTime.Now;
             return VerifyPinResponse.Success();
+        }
+
+        /// <summary>
+        /// Like OtpManager.IsPinValidAsync: whether Verify would accept the pin, without using it up
+        /// </summary>
+        private bool IsPinValid(Guid operationId, string pin)
+        {
+            if (_ignoreOtpValidation)
+                return true;
+
+            return _otps.TryGetValue(operationId, out var otp) && otp.Pin == pin && otp.ExpiresOn > DateTime.Now && !otp.ConsumedOn.HasValue
+                && otp.VerifyAttempts < OtpDefaults.DefaultMaxVerifyAttempts;
         }
 
         #region Settings and access

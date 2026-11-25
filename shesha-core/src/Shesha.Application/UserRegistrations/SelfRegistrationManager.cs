@@ -14,7 +14,6 @@ using Shesha.Domain.Enums;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Otp;
-using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
 using Shesha.UserManagements.Configurations;
 using Shesha.UserRegistrations.Dto;
@@ -49,7 +48,6 @@ namespace Shesha.UserRegistrations
         private readonly IRepository<ShaUserRegistration, Guid> _userRegistrationRepository;
         private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
         private readonly IOtpManager _otpManager;
-        private readonly IOtpSettings _otpSettings;
         private readonly ISecuritySettings _securitySettings;
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly IUserManagementSettings _userManagementSettings;
@@ -69,8 +67,7 @@ namespace Shesha.UserRegistrations
             IOtpManager otpManager,
             ISecuritySettings securitySettings,
             IConfigurationFrameworkRuntime cfRuntime,
-            IUserManagementSettings userManagementSettings,
-            IOtpSettings otpSettings)
+            IUserManagementSettings userManagementSettings)
         {
             _userManager = userManager;
             _personRepository = personRepository;
@@ -82,7 +79,6 @@ namespace Shesha.UserRegistrations
             _securitySettings = securitySettings;
             _cfRuntime = cfRuntime;
             _userManagementSettings = userManagementSettings;
-            _otpSettings = otpSettings;
         }
 
         /// <summary>
@@ -498,23 +494,17 @@ namespace Shesha.UserRegistrations
             if (input.EmailOtpOperationId == null && string.IsNullOrWhiteSpace(input.EmailOtpPin))
                 return;
 
-            var otpSettings = await _otpSettings.OneTimePins.GetValueAsync();
-            await CheckPinBeforeVerificationAsync(otpSettings, input.OtpOperationId, input.OtpPin, ContactNotVerifiedMessage, input.EmailAddress, input.MobileNumber);
-            await CheckPinBeforeVerificationAsync(otpSettings, input.EmailOtpOperationId, input.EmailOtpPin, EmailNotVerifiedMessage, input.EmailAddress);
+            await CheckPinBeforeVerificationAsync(input.OtpOperationId, input.OtpPin, ContactNotVerifiedMessage, input.EmailAddress, input.MobileNumber);
+            await CheckPinBeforeVerificationAsync(input.EmailOtpOperationId, input.EmailOtpPin, EmailNotVerifiedMessage, input.EmailAddress);
         }
 
-        private async Task CheckPinBeforeVerificationAsync(OtpSettings otpSettings, Guid? operationId, string? pin, string failureMessage, params string?[] contacts)
+        private async Task CheckPinBeforeVerificationAsync(Guid? operationId, string? pin, string failureMessage, params string?[] contacts)
         {
             var (otp, _) = await GetOtpSentToAsync(operationId, pin, failureMessage, contacts);
-            if (otp.ConsumedOn != null)
-                throw new VerificationFailedException(failureMessage);
 
-            // an OTP that has used up its attempts would fail verification, after the other pin was used up
-            // (same limit as OtpManager.VerifyPinAsync, which doesn't count attempts for email links or when validation is ignored)
-            if (!otpSettings.IgnoreOtpValidation && otp.SendType != OtpSendType.EmailLink && otp.VerifyAttempts >= OtpManager.GetMaxVerifyAttempts(otpSettings))
-                throw new VerificationFailedException(failureMessage);
-
-            if (!IsPinValid(otp, pin!))
+            // IsPinValidAsync checks the pin like VerifyPinAsync (used, attempt limit, expiry) without using it up; the pin is
+            // compared here as well because IsPinValidAsync accepts any pin when the IgnoreOtpValidation setting is on
+            if (!await _otpManager.IsPinValidAsync(operationId!.Value, pin!) || !IsPinValid(otp, pin!))
             {
                 // counts the failed attempt; a wrong or expired pin isn't used up
                 await _otpManager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId!.Value, Pin = pin! });

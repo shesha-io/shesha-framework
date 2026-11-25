@@ -235,6 +235,22 @@ namespace Shesha.Otp
             return VerifyPinResponse.Success();
         }
 
+        /// inheritedDoc
+        public async Task<bool> IsPinValidAsync(Guid operationId, string pin)
+        {
+            var settings = await _otpSettings.OneTimePins.GetValueAsync();
+            if (settings.IgnoreOtpValidation)
+                return true;
+
+            // the same checks as VerifyPinAsync, which counts the attempt before comparing the pin
+            var pinDto = await _otpStorage.GetOrNullAsync(operationId);
+            return pinDto != null
+                && !pinDto.ConsumedOn.HasValue
+                && (pinDto.SendType == OtpSendType.EmailLink || pinDto.VerifyAttempts < GetMaxVerifyAttempts(settings))
+                && PinMatches(pinDto.Pin, pin)
+                && pinDto.ExpiresOn >= DateTime.Now;
+        }
+
         private const string TooManyAttemptsMessage = "Too many failed verification attempts. Please request a new code.";
 
         /// <summary>
@@ -264,7 +280,7 @@ namespace Shesha.Otp
         /// <summary>
         /// Maximum number of verification attempts per OTP, falling back to the default when not configured
         /// </summary>
-        internal static int GetMaxVerifyAttempts(OtpSettings settings)
+        private static int GetMaxVerifyAttempts(OtpSettings settings)
         {
             return settings.MaxVerifyAttempts > 0
                 ? settings.MaxVerifyAttempts

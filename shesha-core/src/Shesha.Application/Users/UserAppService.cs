@@ -685,9 +685,10 @@ namespace Shesha.Users
                 throw new VerificationFailedException("Your token is invalid or has expired, try to reset password again");
 
             // PasswordResetCode also holds the operation id of a pending OTP (password reset, email link or OTP login), which
-            // the send endpoints return to anonymous callers. Only a token issued after the pin was verified is accepted
-            var tokenOperationId = input.Token.ToGuidOrNull();
-            if (tokenOperationId.HasValue && await _otpManager.GetOrNullAsync(tokenOperationId.Value) != null)
+            // the send endpoints return to anonymous callers. Operation ids are stored in the GUID "D" format (with dashes), and
+            // the tokens issued after a pin is verified (SetNewPasswordResetCode) in the "N" format, so a token in the "D" format
+            // is never accepted. This doesn't depend on the OTP still being stored, which isn't the case after a cache evicts it
+            if (Guid.TryParseExact(input.Token, "D", out _))
                 throw new VerificationFailedException("Your token is invalid or has expired, try to reset password again");
 
             // validate password against configured policy

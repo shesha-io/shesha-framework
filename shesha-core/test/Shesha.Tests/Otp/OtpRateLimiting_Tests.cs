@@ -156,6 +156,38 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
+        public async Task IsPinValid_should_not_count_an_attempt_or_use_up_the_otpAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+
+            (await manager.IsPinValidAsync(operationId, Pin)).ShouldBeTrue();
+            (await manager.IsPinValidAsync(operationId, "000000")).ShouldBeFalse();
+            storage[operationId].VerifyAttempts.ShouldBe(0);
+            storage[operationId].ConsumedOn.ShouldBeNull();
+
+            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeTrue();
+            (await manager.IsPinValidAsync(operationId, Pin)).ShouldBeFalse("a used OTP is no longer valid");
+        }
+
+        [Fact]
+        public async Task IsPinValid_should_reject_a_correct_pin_once_max_attempts_reachedAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+            storage[operationId].VerifyAttempts = 3;
+
+            (await manager.IsPinValidAsync(operationId, Pin)).ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task IsPinValid_should_reject_an_expired_pinAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+            storage[operationId].ExpiresOn = DateTime.Now.AddMinutes(-1);
+
+            (await manager.IsPinValidAsync(operationId, Pin)).ShouldBeFalse();
+        }
+
+        [Fact]
         public async Task VerifyPin_should_fail_for_consumed_otpAsync()
         {
             var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
