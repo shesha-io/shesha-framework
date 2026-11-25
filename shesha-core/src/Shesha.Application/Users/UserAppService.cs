@@ -699,6 +699,12 @@ namespace Shesha.Users
             if (user.PasswordResetCode != input.Token)
                 throw new VerificationFailedException("Your token is invalid or has expired, try to reset password again");
 
+            // PasswordResetCode also holds the operation id of a pending OTP (password reset, email link or OTP login), which
+            // the send endpoints return to anonymous callers. Only a token issued after the pin was verified is accepted
+            var tokenOperationId = input.Token.ToGuidOrNull();
+            if (tokenOperationId.HasValue && await _otpManager.GetAsync(tokenOperationId.Value) != null)
+                throw new VerificationFailedException("Your token is invalid or has expired, try to reset password again");
+
             // validate password against configured policy
             await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
             foreach (var validator in _userManager.PasswordValidators)
