@@ -586,6 +586,32 @@ namespace Shesha.Tests.UserRegistrations
         }
 
         [Fact]
+        public async Task A_wrong_email_pin_does_not_use_up_the_mobile_pinAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.UserEmailAsUsername = true;
+            }));
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+            ProvideEmailOtp(input, sentTo: input.EmailAddress);
+            var emailPin = input.EmailOtpPin;
+            input.EmailOtpPin = "000000";
+
+            var ex = await Should.ThrowAsync<VerificationFailedException>(async () => { await RegisterAsync(app, input); });
+            ex.Message.ShouldBe(SelfRegistrationManager.EmailNotVerifiedMessage);
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull("the mobile pin is only used up when both pins are correct");
+            _otps[input.EmailOtpOperationId!.Value].ConsumedOn.ShouldBeNull();
+
+            // the registrant corrects the email pin and keeps the mobile pin
+            input.EmailOtpPin = emailPin;
+            (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldNotBeNull();
+            _otps[input.EmailOtpOperationId!.Value].ConsumedOn.ShouldNotBeNull();
+        }
+
+        [Fact]
         public async Task An_email_pin_sent_to_a_different_address_is_refusedAsync()
         {
             var app = await CreateAppAsync(EnabledSettings(s =>

@@ -12,6 +12,7 @@ using Shesha.Authorization;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.Exceptions;
 using Shesha.Models.TokenAuth;
 using Shesha.Otp;
 using Shesha.Otp.Configuration;
@@ -424,6 +425,62 @@ namespace Shesha.Tests.Users
         /// <summary>
         /// A password reset OTP is single use: it's consumed when it's exchanged for a reset token
         /// </summary>
+        /// <summary>
+        /// ResetPasswordSendOtp returns the OTP's operation id and stores it in PasswordResetCode, so the operation id must not
+        /// work as a reset token: only the token issued after the pin is verified does
+        /// </summary>
+        [Fact]
+        public async Task ResetPasswordUsingToken_should_reject_otp_operation_id_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var storage = new Dictionary<Guid, OtpDto>();
+            var otpStorage = MockOtpStorage(storage, dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+            try
+            {
+                var sendOtpResponse = await userAppService.ResetPasswordSendOtpAsync(mobileNo);
+
+                await Should.ThrowAsync<VerificationFailedException>(async () =>
+                {
+                    await WithUnitOfWorkAsync(async () => await userAppService.ResetPasswordUsingTokenAsync(new ResetPasswordUsingTokenInput()
+                    {
+                        Username = userName,
+                        Token = sendOtpResponse.OperationId.ToString(),
+                        NewPassword = "NewPassword123!",
+                    }));
+                });
+
+                // the token issued after verification still works
+                var verifyResponse = await userAppService.ResetPasswordVerifyOtpAsync(new ResetPasswordVerifyOtpInput()
+                {
+                    MobileNo = mobileNo,
+                    OperationId = sendOtpResponse.OperationId,
+                    Pin = currentPin
+                });
+                verifyResponse.IsSuccess.ShouldBeTrue();
+                var reset = await WithUnitOfWorkAsync(async () => await userAppService.ResetPasswordUsingTokenAsync(new ResetPasswordUsingTokenInput()
+                {
+                    Username = userName,
+                    Token = verifyResponse.Token!,
+                    NewPassword = "NewPassword123!",
+                }));
+                reset.ShouldBeTrue();
+            }
+            finally
+            {
+                await _userRepository.DeleteAsync(userDto.Id);
+            }
+        }
+
         [Fact]
         public async Task ResetPasswordVerifyOtp_should_consume_otp_TestAsync()
         {

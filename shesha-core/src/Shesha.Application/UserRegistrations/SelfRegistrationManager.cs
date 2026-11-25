@@ -138,6 +138,7 @@ namespace Shesha.UserRegistrations
             // so the response can't be used to find out whether an email address or mobile number is registered.
             // Each pin is verified once, here: verification marks it as used, and the verified contacts are trusted from now on.
             // The registration forms don't verify the pins themselves, they pass them to Register.
+            await CheckBothPinsBeforeVerificationAsync(input);
             var verifiedContact = await EnsureContactVerifiedAsync(input);
             var verifiedEmail = await EnsureEmailVerifiedAsync(input);
             var verifiedContacts = new[] { verifiedContact, verifiedEmail }.Where(c => !string.IsNullOrWhiteSpace(c)).Select(c => c!).Distinct().ToList();
@@ -468,6 +469,55 @@ namespace Shesha.UserRegistrations
         /// </summary>
         private async Task<string> VerifyOtpSentToAsync(Guid? operationId, string? pin, string failureMessage, params string?[] contacts)
         {
+            var (otp, sentTo) = await GetOtpSentToAsync(operationId, pin, failureMessage, contacts);
+
+            var verification = await _otpManager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId!.Value, Pin = pin! });
+            if (!verification.IsSuccess)
+                throw new VerificationFailedException(failureMessage);
+
+            // The pin proves the registrant owns the email address or mobile number, so it's checked here as well:
+            // VerifyPinAsync accepts any pin when the IgnoreOtpValidation setting is on
+            if (!IsPinValid(otp, pin!))
+                throw new VerificationFailedException(failureMessage);
+
+            return sentTo;
+        }
+
+        /// <summary>
+        /// When a mobile pin and an email pin are both supplied, checks both before either is verified. Verification uses a
+        /// pin up, so otherwise a correct first pin would be used up by a registration that then fails on a wrong second pin,
+        /// and the registrant couldn't just correct the second one. A wrong or expired pin is still verified, so the failed
+        /// attempt counts towards its limit.
+        /// </summary>
+        private async Task CheckBothPinsBeforeVerificationAsync(SelfRegistrationInput input)
+        {
+            if (input.EmailOtpOperationId == null && string.IsNullOrWhiteSpace(input.EmailOtpPin))
+                return;
+
+            await CheckPinBeforeVerificationAsync(input.OtpOperationId, input.OtpPin, ContactNotVerifiedMessage, input.EmailAddress, input.MobileNumber);
+            await CheckPinBeforeVerificationAsync(input.EmailOtpOperationId, input.EmailOtpPin, EmailNotVerifiedMessage, input.EmailAddress);
+        }
+
+        private async Task CheckPinBeforeVerificationAsync(Guid? operationId, string? pin, string failureMessage, params string?[] contacts)
+        {
+            var (otp, _) = await GetOtpSentToAsync(operationId, pin, failureMessage, contacts);
+            if (otp.ConsumedOn != null)
+                throw new VerificationFailedException(failureMessage);
+
+            if (!IsPinValid(otp, pin!))
+            {
+                // counts the failed attempt; a wrong or expired pin isn't used up
+                await _otpManager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId!.Value, Pin = pin! });
+                throw new VerificationFailedException(failureMessage);
+            }
+        }
+
+        /// <summary>
+        /// Returns the OTP, and the normalised contact it was sent to, when a pin was supplied and the OTP was sent to one of
+        /// the contacts; otherwise throws
+        /// </summary>
+        private async Task<(IOtpDto Otp, string SentTo)> GetOtpSentToAsync(Guid? operationId, string? pin, string failureMessage, params string?[] contacts)
+        {
             if (operationId == null || string.IsNullOrWhiteSpace(pin))
                 throw new VerificationFailedException(failureMessage);
 
@@ -476,17 +526,15 @@ namespace Shesha.UserRegistrations
             if (otp == null || sentTo == null || !contacts.Select(NormalizeContact).Contains(sentTo))
                 throw new VerificationFailedException(failureMessage);
 
-            var verification = await _otpManager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId.Value, Pin = pin });
-            if (!verification.IsSuccess)
-                throw new VerificationFailedException(failureMessage);
+            return (otp, sentTo);
+        }
 
-            // The pin proves the registrant owns the email address or mobile number, so it's checked here as well:
-            // VerifyPinAsync accepts any pin when the IgnoreOtpValidation setting is on
-            // (same comparison and clock as OtpManager.VerifyPinAsync)
-            if (otp.ExpiresOn == null || otp.ExpiresOn < DateTime.Now || !CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(otp.Pin), Encoding.UTF8.GetBytes(pin)))
-                throw new VerificationFailedException(failureMessage);
-
-            return sentTo;
+        /// <summary>
+        /// Same comparison and clock as OtpManager.VerifyPinAsync
+        /// </summary>
+        private static bool IsPinValid(IOtpDto otp, string pin)
+        {
+            return otp.ExpiresOn != null && otp.ExpiresOn >= DateTime.Now && CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(otp.Pin), Encoding.UTF8.GetBytes(pin));
         }
 
         private static string? NormalizeContact(string? value)
