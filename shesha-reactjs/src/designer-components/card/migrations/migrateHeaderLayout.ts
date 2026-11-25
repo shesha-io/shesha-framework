@@ -28,6 +28,11 @@ export const migrateCardHeaderLayout = (prev: ICardComponentProps, context: Sett
     }));
   if (alreadyMigrated) return prev;
 
+  // An existing card with no heading and nothing in its header showed no header: keep it that way.
+  const existingCount = isDefined(header) ? (flatStructure.componentRelations[header.id] ?? header.components ?? []).length : 0;
+  const hasHeading = isDefined(prev.label) && prev.label !== '';
+  if (context.isNew !== true && !hasHeading && existingCount === 0) return prev;
+
   const headerId = header?.id ?? nanoid();
   const headerLayoutId = nanoid();
   const labelTextId = nanoid();

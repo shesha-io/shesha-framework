@@ -44,6 +44,20 @@ describe('migrateCardHeaderLayout', () => {
     expect((flat.allComponents[textId] as unknown as { content: unknown }).content).toBe(jsLabel);
   });
 
+  it('leaves an existing card with no heading and an empty header without a header', () => {
+    const flat = getEmptyFlatMarkup();
+    const card = { ...oldCard(''), header: { id: 'header', components: [] } };
+    expect(migrateCardHeaderLayout(card, { flatStructure: flat, componentId: 'card' })).toBe(card);
+    expect(flat.componentRelations['header']).toBeUndefined();
+  });
+
+  it('still gives a new card with no heading a header layout', () => {
+    const flat = getEmptyFlatMarkup();
+    const card = { ...oldCard(''), header: { id: 'header', components: [] } };
+    const result = migrateCardHeaderLayout(card, { flatStructure: flat, componentId: 'card', isNew: true });
+    expect(result.header?.components?.[0]?.componentName).toBe(CARD_HEADER_LAYOUT_NAME);
+  });
+
   it('runs only once', () => {
     const flat = getEmptyFlatMarkup();
     const once = migrateCardHeaderLayout(oldCard(), { flatStructure: flat, componentId: 'card' });

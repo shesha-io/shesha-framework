@@ -5,7 +5,8 @@ import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { useStyles } from '../styles/styles';
 import { findComponentNode, getMenuItems, IMenuItem } from '../toolboxComponents';
 import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from '@/utils/object';
-import { getGroupStyleForComponent } from '@/utils/style';
+import { getGroupStyleForComponent, getThemeBaseStyle } from '@/utils/style';
+import { getThemeGroupStyle } from '@/providers/theme/defaults';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
 import {
   DEFAULT_FORM_SETTINGS,
@@ -116,10 +117,12 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
     // Only apply theme group styles if the component has an explicit themeGroup property
     const groupStyle = componentDef?.themeGroup !== undefined
       // Shaped for the component (as at runtime): nested values such as a tab card's style get the header defaults.
-      ? getGroupStyleForComponent(theme?.componentGroups?.[componentDef.themeGroup], componentDef) ?? {}
+      ? getGroupStyleForComponent(getThemeGroupStyle(theme, componentDef.themeGroup), componentDef) ?? {}
       : {};
-    return deepMergeValues(deepCopyViaJson(hardcodedDefaults) as object, groupStyle, deepMergeSkipUndefinedFunc);
-  }, [componentDef, theme?.componentGroups]);
+    // The theme's base style (application font) is the lowest layer, as at runtime (see getEffectiveStyle).
+    const withBase = deepMergeValues(getThemeBaseStyle(theme, componentDef) ?? {}, deepCopyViaJson(hardcodedDefaults) as object, deepMergeSkipUndefinedFunc);
+    return deepMergeValues(withBase, groupStyle, deepMergeSkipUndefinedFunc);
+  }, [componentDef, theme]);
 
   // Get the settings form markup (could be a function or object)
   const settingsFormMarkup = componentDef?.settingsFormMarkup;

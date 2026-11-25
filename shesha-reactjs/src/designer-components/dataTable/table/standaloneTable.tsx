@@ -6,6 +6,7 @@ import { createStyles } from '@/styles';
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
 import { isDefined } from '@/utils/nullables';
+import { addPx } from '@/utils/style';
 import { TableAppearance, useTableAppearance } from './useTableAppearance';
 
 // Ignore any configured items to ensure clean state when dragged outside
@@ -48,7 +49,7 @@ const useStyles = createStyles(({ css, cx, token }, { appearance, model }: Style
     rowBackgroundColor, rowAlternateBackgroundColor, striped, cellBorders, cellBorderColor, rowDividers,
     actionIconSize, actionIconColor, dimensions, hoverHighlight, rowHoverBackgroundColor,
   } = model;
-  const iconSize = actionIconSize ?? bodyFontSize ?? '16px';
+  const iconSize = addPx(actionIconSize ?? bodyFontSize) ?? '16px';
   const rowBackground = color(rowBackgroundColor);
   // Alternate rows differ only when striped, as in the live table.
   const alternateBackground = striped === true ? (color(rowAlternateBackgroundColor) ?? 'rgba(0, 0, 0, 0.02)') : rowBackground;
@@ -58,9 +59,9 @@ const useStyles = createStyles(({ css, cx, token }, { appearance, model }: Style
     width: 100%;
     overflow: auto;
     ${decl('box-shadow', boxShadow)}
-    ${decl('height', dimensions?.height as string | number | undefined)}
-    ${decl('min-height', dimensions?.minHeight as string | number | undefined)}
-    ${decl('max-height', dimensions?.maxHeight as string | number | undefined)}
+    ${decl('height', addPx(dimensions?.height as string | number | undefined))}
+    ${decl('min-height', addPx(dimensions?.minHeight as string | number | undefined))}
+    ${decl('max-height', addPx(dimensions?.maxHeight as string | number | undefined))}
     ${toCss(getBorderStyle(border ?? {}, {}))}
 
     table {

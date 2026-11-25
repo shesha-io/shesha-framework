@@ -2,7 +2,7 @@ import type { IFontValue } from '@/designer-components/_settings/utils/font/inte
 import { DEFAULT_FONT_TYPE } from '@/designer-components/_settings/utils/font/utils';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { deepMergeSkipUndefinedFunc, deepMergeValues } from '@/utils/object';
-import type { IConfigurableTheme } from './contexts';
+import type { IConfigurableTheme, IThemeGroupStyle, ThemeComponentGroup } from './contexts';
 
 /** Label font a theme starts with; parts the theme saved win over these. */
 export const DEFAULT_LABEL_FONT: IFontValue = { size: 14, weight: '500', type: DEFAULT_FONT_TYPE, color: '#000' };
@@ -10,18 +10,27 @@ export const DEFAULT_LABEL_FONT: IFontValue = { size: 14, weight: '500', type: D
 /** Input Components font a theme starts with; parts the theme saved win over these. */
 export const DEFAULT_INPUT_FONT: IFontValue = { size: 14, weight: '400', type: DEFAULT_FONT_TYPE, color: '#000' };
 
-/**
- * A font with its unset parts filled in: from the theme's base font first, then from the typography
- * defaults. Parts set on the font itself win.
- */
-const withFontDefaults = (defaults: IFontValue, font: IFontValue | undefined, base?: IFontValue | undefined): IFontValue => {
-  const result: IFontValue = { ...defaults };
-  [base, font].forEach((layer) => {
+const isSet = (value: unknown): boolean => value !== undefined && value !== null && value !== '';
+
+/** The parts of `font` that are set, over the parts of `under` that are set. */
+const fontOver = (under: IFontValue | undefined, font: IFontValue | undefined): IFontValue => {
+  const result: Record<string, unknown> = {};
+  [under, font].forEach((layer) => {
     Object.entries(layer ?? {}).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') (result as Record<string, unknown>)[key] = value;
+      if (isSet(value)) result[key] = value;
     });
   });
-  return result;
+  return result as IFontValue;
+};
+
+/**
+ * A font with the typography defaults filled in where neither it nor the theme's base font sets a part.
+ * Parts the base font sets are left unset, so they keep following the base font (see {@link getThemeGroupStyle}).
+ */
+const withFontDefaults = (defaults: IFontValue, font: IFontValue | undefined, base: IFontValue | undefined): IFontValue => {
+  const baseParts = base as Record<string, unknown> | undefined;
+  const missingDefaults = Object.fromEntries(Object.entries(defaults).filter(([key]) => !isSet(baseParts?.[key])));
+  return fontOver(missingDefaults as IFontValue, font);
 };
 
 /**
@@ -67,6 +76,16 @@ export const applyThemeDefaults = (theme: IConfigurableTheme): IConfigurableThem
       },
     },
   };
+};
+
+/**
+ * A theme component group's style as its components inherit it. The Input Components font inherits the
+ * parts it leaves unset from the base font, so a base font edit reaches inputs over their own defaults.
+ */
+export const getThemeGroupStyle = (theme: IConfigurableTheme | undefined, group: ThemeComponentGroup): IThemeGroupStyle | undefined => {
+  const groupStyle = theme?.componentGroups?.[group];
+  if (group !== 'input' || !isDefined(theme?.font)) return groupStyle;
+  return { ...groupStyle, font: fontOver(theme.font, groupStyle?.font) };
 };
 
 /**

@@ -8,6 +8,7 @@ import { IBackgroundValue } from "@/designer-components/_settings/utils/backgrou
 import { IConfigurableTheme } from "@/providers";
 import { GROUP_NON_COMPONENT_STYLE_KEYS, IThemeGroupStyle } from "@/providers/theme/contexts";
 import { DeviceTypes } from "@/providers/canvas/contexts";
+import { getThemeGroupStyle } from "@/providers/theme/defaults";
 import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from "@/utils/object";
 
 /**
@@ -140,7 +141,7 @@ export const getEffectiveStyle = (model: IConfigurableFormComponent, effectiveDe
     : componentDefStyle;
   // Only apply theme group styles if the component has an explicit themeGroup property
   const groupStyle = toolboxComponent?.themeGroup !== undefined
-    ? withoutEmptyBackgrounds(getGroupStyleForComponent(theme?.componentGroups?.[toolboxComponent.themeGroup], toolboxComponent))
+    ? withoutEmptyBackgrounds(getGroupStyleForComponent(getThemeGroupStyle(theme, toolboxComponent.themeGroup), toolboxComponent))
     : undefined;
   const groupDefStyle: IStyleValue = isDefined(groupStyle)
     ? deepMergeValues(defStyle, groupStyle, deepMergeSkipUndefinedFunc)

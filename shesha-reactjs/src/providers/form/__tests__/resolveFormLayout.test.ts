@@ -43,6 +43,12 @@ describe('resolveFormLayout', () => {
     expect(resolveFormLayout({}, {})).toMatchObject({ layout: 'horizontal', labelCol: { span: 6 }, wrapperCol: { span: 18 } });
   });
 
+  it('keeps column offsets and gives an unset span the fallback span when there is no theme', () => {
+    expect(resolveFormLayout({ labelCol: { offset: 2 }, wrapperCol: { span: 12 } }, undefined)).toMatchObject({
+      labelCol: { offset: 2, span: 6 }, wrapperCol: { span: 12 },
+    });
+  });
+
   it('never applies the theme to settings forms', () => {
     expect(resolveFormLayout({ isSettingsForm: true, layout: 'vertical', labelCol: { span: 24 }, wrapperCol: { span: 24 } }, theme)).toEqual({
       layout: 'vertical', labelCol: { span: 24 }, wrapperCol: { span: 24 },

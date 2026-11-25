@@ -47,7 +47,8 @@ describe('getEffectiveStyle theme layers', () => {
       theme,
       component(() => ({ font: { type: 'Inter Variable', size: 14, weight: '400' } })),
     );
-    expect(style.font).toEqual({ type: 'Inter Variable', color: '#999', size: 13, weight: '600' });
+    // The Input Components font inherits the base font's type over the component's own default.
+    expect(style.font).toEqual({ type: 'Roboto', color: '#999', size: 13, weight: '600' });
   });
 
   it('never applies the theme to settings forms', () => {

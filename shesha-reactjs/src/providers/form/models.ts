@@ -702,9 +702,6 @@ export interface IResolvedFormLayout {
 
 const GRID_COLUMNS = 24;
 
-const isColUnset = (col: ColProps | undefined): boolean =>
-  !isDefined(col) || Object.values(col).every((value) => !isDefined(value));
-
 /** Adds the optional parts of a resolved layout only when defined (exactOptionalPropertyTypes rejects explicit undefined). */
 const withOptional = (
   resolved: Pick<IResolvedFormLayout, 'layout' | 'labelCol' | 'wrapperCol'>,
@@ -739,8 +736,8 @@ export const resolveFormLayout = (
   if (own.isSettingsForm === true || !isDefined(theme)) {
     return withOptional({
       layout: own.layout ?? FALLBACK_FORM_LAYOUT.layout,
-      labelCol: isColUnset(own.labelCol) ? FALLBACK_FORM_LAYOUT.labelCol : own.labelCol ?? FALLBACK_FORM_LAYOUT.labelCol,
-      wrapperCol: isColUnset(own.wrapperCol) ? FALLBACK_FORM_LAYOUT.wrapperCol : own.wrapperCol ?? FALLBACK_FORM_LAYOUT.wrapperCol,
+      labelCol: resolveFormCol(own.labelCol, FALLBACK_FORM_LAYOUT.labelCol.span ?? 6),
+      wrapperCol: resolveFormCol(own.wrapperCol, FALLBACK_FORM_LAYOUT.wrapperCol.span ?? GRID_COLUMNS - 6),
     }, { colon: own.colon });
   }
 

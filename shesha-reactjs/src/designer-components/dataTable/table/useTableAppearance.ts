@@ -99,12 +99,16 @@ export const useTableAppearance = (props: ITableComponentProps): TableAppearance
 
   useEffect(() => {
     let isCancelled = false;
+    let objectUrl: string | undefined;
 
     const fetchStoredFileUrl = async (): Promise<void> => {
       if (isDefined(props.background) && props.background.type === 'storedFile' && props.background.storedFile?.id) {
         try {
           const url = await getBackgroundImageUrl(props.background, backendUrl, httpHeaders);
-          if (!isCancelled) {
+          if (isCancelled) {
+            URL.revokeObjectURL(url);
+          } else {
+            objectUrl = url;
             setStoredFileBackgroundUrl(url);
           }
         } catch (error) {
@@ -126,6 +130,7 @@ export const useTableAppearance = (props: ITableComponentProps): TableAppearance
 
     return () => {
       isCancelled = true;
+      if (isDefined(objectUrl)) URL.revokeObjectURL(objectUrl);
     };
   }, [props.background, backendUrl, httpHeaders]);
 

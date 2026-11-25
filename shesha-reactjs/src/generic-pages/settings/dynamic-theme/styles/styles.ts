@@ -275,7 +275,8 @@ export const useStyles = createStyles(({ css, cx, token }, theme?: IConfigurable
 
       > .preview-section {
         flex: 1 1 0;
-        min-height: 0;
+        /* Room for the preview's head and some of its body on a short screen: the column scrolls instead. */
+        min-height: 250px;
       }
     `,
   );

@@ -6,6 +6,21 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { addPx } from '@/utils/style';
 import { CSSProperties } from 'react';
 
+type Corners = { topLeft?: string | number | undefined; topRight?: string | number | undefined; bottomLeft?: string | number | undefined; bottomRight?: string | number | undefined };
+
+const cornersFromBorder = (border: IBorderValue | undefined): Corners | undefined => {
+  if (!isDefined(border)) return undefined;
+  const corner = (name: keyof Corners): string | number | undefined => border.radiusType === 'custom' ? border.radius?.[name] : border.radius?.all;
+  return { topLeft: corner('topLeft'), topRight: corner('topRight'), bottomLeft: corner('bottomLeft'), bottomRight: corner('bottomRight') };
+};
+
+/** The corners of a CSS border-radius value (one to four values, in CSS order; elliptical radii are ignored). */
+const cornersFromCss = (value: CSSProperties['borderRadius']): Corners | undefined => {
+  if (value === undefined || value === '') return undefined;
+  const [first = '0', second = first, third = first, fourth = second] = String(typeof value === 'number' ? `${value}px` : value).split('/')[0]?.trim().split(/\s+/) ?? [];
+  return { topLeft: first, topRight: second, bottomRight: third, bottomLeft: fourth };
+};
+
 export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss, activeCardStyleCss }: { model: ITabsComponentProps; cardStyleCss?: CSSProperties | undefined; activeCardStyleCss?: CSSProperties | undefined }) => {
   const tabType = model.tabType ?? 'card';
 
@@ -58,18 +73,20 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
 
   // A tab card is rounded only on its outer side: the corners facing the content stay square, as the
   // content's own corners on that side do (see borderRadius above).
-  const cardRadiusSource = model.card?.border ?? model.border;
-  const cardCorner = (corner: 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight'): string | number | undefined =>
-    cardRadiusSource?.radiusType === 'custom' ? cardRadiusSource.radius?.[corner] : cardRadiusSource?.radius?.all;
-  const cardRadius: IBorderValue = {
-    radiusType: 'custom',
-    radius: {
-      topLeft: isBottom || isRight ? 0 : cardCorner('topLeft'),
-      topRight: isBottom || isLeft ? 0 : cardCorner('topRight'),
-      bottomLeft: isTop || isRight ? 0 : cardCorner('bottomLeft'),
-      bottomRight: isTop || isLeft ? 0 : cardCorner('bottomRight'),
-    },
-  };
+  // A border-radius from the card's Style or Active Card Style wins over the Card Styles border.
+  const outerCorners = (corners: Corners | undefined): IBorderValue | undefined => isDefined(corners)
+    ? {
+      radiusType: 'custom',
+      radius: {
+        topLeft: isBottom || isRight ? 0 : corners.topLeft,
+        topRight: isBottom || isLeft ? 0 : corners.topRight,
+        bottomLeft: isTop || isRight ? 0 : corners.bottomLeft,
+        bottomRight: isTop || isLeft ? 0 : corners.bottomRight,
+      },
+    }
+    : undefined;
+  const cardRadius = outerCorners(cornersFromCss(cardStyleCss?.borderRadius) ?? cornersFromBorder(model.card?.border ?? model.border));
+  const activeCardRadius = outerCorners(cornersFromCss(activeCardStyleCss?.borderRadius));
 
   const cardBackground = backgroundCss(model.card?.background);
 
@@ -82,10 +99,14 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
 
         ${/* Card margin & padding apply to every tab card (selected and not). The extra specificity beats antd's
              gutter rules (e.g. '.ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab'). */ ''}
-        .ant-tabs-nav .ant-tabs-tab {
+        > .ant-tabs-nav .ant-tabs-tab {
           ${tabType === 'card' ? borderRadiusStyles(cardRadius) : ''}
           ${paddingStyles(model.card?.stylingBoxJson)}
           ${marginStyles(model.card?.stylingBoxJson)}
+        }
+
+        > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active {
+          ${tabType === 'card' ? borderRadiusStyles(activeCardRadius) : ''}
         }
       }
 
