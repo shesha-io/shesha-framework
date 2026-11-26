@@ -1,12 +1,14 @@
 import classNames from 'classnames';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { ConfigurableFormComponent } from '../configurableFormComponent';
-import { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
+import { FC, PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
+import { App } from 'antd';
 import { IComponentsContainerProps } from './componentsContainer';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
 import { ShaForm } from '@/providers/form';
 import { useFormDesigner, useFormDesignerReadOnly } from '@/providers/formDesigner';
+import { IComponentPlacementOptions, IComponentPlacementResult } from '@/providers/formDesigner/contexts';
 import { useStyles } from '../styles/styles';
 import { useParent } from '@/providers/parentProvider';
 import _ from 'lodash';
@@ -52,6 +54,34 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
   const readOnly = useFormDesignerReadOnly();
   const formDesigner = useFormDesigner();
   const { updateChildComponents, addComponent, addDataProperty, startDragging, endDragging } = useFormDesigner();
+  const { modal } = App.useApp();
+
+  /**
+   * Applies a drop. One that breaks a required parent of the dropped component is ignored, as the drop target already
+   * showed why while dragging. One that only breaks components nested in it, e.g. a Panel holding a Data Table, is
+   * applied once the user confirms, and those components are listed in the validation panel until they are fixed.
+   */
+  const place = (apply: (options?: IComponentPlacementOptions) => IComponentPlacementResult): void => {
+    const result = apply();
+    if (!result.requiresConfirmation) return;
+    modal.confirm({
+      title: 'Drop it here anyway?',
+      content: (
+        <>
+          <p>{result.errorMessage}</p>
+          <ul>
+            {result.errors.map((error) => <li key={error}>{error}</li>)}
+          </ul>
+          <p>They will be listed in the validation panel until they are fixed.</p>
+        </>
+      ),
+      okText: 'Yes',
+      cancelText: 'No',
+      onOk: () => {
+        apply({ confirmed: true });
+      },
+    });
+  };
 
   const dropTarget = useDropContainerElementState(containerId, direction);
 
@@ -78,11 +108,11 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
       // dropped data item
       const draggedItem = newState[newDataItemIndex];
       if (isToolboxDroppableDataItem(draggedItem)) {
-        addDataProperty({
+        place((options) => addDataProperty({
           propertyMetadata: draggedItem.metadata,
           containerId,
           index: newDataItemIndex,
-        });
+        }, options));
       }
     } else {
       const newComponentIndex = newState.findIndex((item) => item['type'] === TOOLBOX_COMPONENT_DROPPABLE_KEY);
@@ -90,11 +120,11 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
         // add new component
         const toolboxComponent = newState[newComponentIndex];
         if (isToolboxDroppableComponent(toolboxComponent)) {
-          addComponent({
+          place((options) => addComponent({
             containerId,
             componentType: toolboxComponent.id.toString(),
             index: newComponentIndex,
-          });
+          }, options));
         }
       } else {
         // reorder existing components
@@ -113,18 +143,20 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
 
         if (isModified) {
           const newIds = newState.map<string>((item) => item.id.toString());
-          updateChildComponents({ containerId, componentIds: newIds });
+          place((options) => updateChildComponents({ containerId, componentIds: newIds }, options));
         }
       }
     }
   };
 
+  const getToolboxComponent = useFormDesignerComponentGetter();
+  const getRequiredParent = useCallback((type: string) => getToolboxComponent(type)?.requiredParent, [getToolboxComponent]);
+
   const onDragStart = (evt: SortableEvent): void => {
     startDragging();
-    startDropTargetIndicator(evt.item);
+    startDropTargetIndicator(evt.item, getRequiredParent);
   };
 
-  const getToolboxComponent = useFormDesignerComponentGetter();
   const setDragImage = (dataTransfer: DataTransfer, dragEl: HTMLElement): void => {
     const type = dragEl.getAttribute(COMPONENT_TYPE_ATTR) ?? '';
     const toolboxComponent = getToolboxComponent(type);

@@ -4,6 +4,7 @@ import { IToolboxComponentBase } from '@/interfaces';
 import { Show } from '@/components/show';
 import { Space, Tooltip } from 'antd';
 import { useStyles } from './styles/styles';
+import { COMPONENT_TYPE_ATTR } from './dragDrop/dragChip';
 
 interface IProps {
   component: IToolboxComponentBase;
@@ -14,7 +15,7 @@ const ToolbarComponent: FC<IProps> = ({ component }) => {
   const { styles } = useStyles();
 
   return (
-    <div className={styles.shaToolboxComponent}>
+    <div className={styles.shaToolboxComponent} {...{ [COMPONENT_TYPE_ATTR]: component.type }}>
       <div>
         {component.icon}
         <Space size="small">

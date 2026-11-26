@@ -11,6 +11,7 @@ import {
   IFormSettings,
   IFormValidationRulesOptions,
   isConfigurableFormComponent,
+  IRequiredParent,
   IToolboxComponents,
   ValidationNodeRef } from "@/interfaces";
 import { isDefined } from "@/utils";
@@ -28,6 +29,7 @@ import { ComponentValidationError } from "@/utils/validation";
 import { IConfigurationLoader } from "../configurationItemsLoader/configurationLoader";
 import { FormDependency, UpdateFormDependenciesInput, ValidationResult } from "@/components/formsValidator/models";
 import { ConfigurationIssue } from "./models";
+import { getRequiredParentViolation } from "@/components/formDesigner/dragDrop/dropRequirements";
 import { getFormSettingsFormMarkup } from "@/components/formDesigner/formSettings";
 import { HttpClientApi } from "../sheshaApplication/publicApi";
 import { extractErrorMessage } from "@/utils/errors";
@@ -111,6 +113,8 @@ export class FormValidator implements IFormValidator {
   #appContext: IApplicationContext;
 
   #configurationLoader: IConfigurationLoader;
+
+  #getRequiredParent = (type: string): IRequiredParent | undefined => this.#componentGetter(type)?.requiredParent;
 
   #getConfigurableActionOrNull: <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IGetConfigurableActionPayload) => IConfigurableActionDescriptor<TArguments> | null;
 
@@ -199,6 +203,10 @@ export class FormValidator implements IFormValidator {
 
     const validationErrors: IAsyncValidationError[] = [];
     if (isDefined(toolboxComponent)) {
+      const requiredParentViolation = getRequiredParentViolation(context.formFlatMarkup, component.id, this.#getRequiredParent);
+      if (isDefined(requiredParentViolation))
+        validationErrors.push({ field: '', message: requiredParentViolation, path });
+
       if (isDefined(toolboxComponent.validateModel)) {
         toolboxComponent.validateModel(component, (propertyName, error) => {
           validationErrors.push({ field: propertyName, message: error });

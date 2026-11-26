@@ -1,12 +1,11 @@
 import { getFormDesignerBackgroundSvg } from '@/components/sidebarContainer/styles/svg/dropHint';
 import { createStyles, sheshaStyles } from '@/styles';
 import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
-import { DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from '../dragDrop/models';
+import { DROP_TARGET_INVALID_ATTR, DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from '../dragDrop/models';
 
 export const designerClassNames = {
   componentDragHandle: "sha-component-drag-handle",
   designerWorkArea: "sha-designer-work-area",
-  hasConfigErrors: "has-config-errors",
   mainArea: "sha-designer-main-area",
   previewBorderTop10: "preview-form-border-top-10",
   shaComponent: "sha-component",
@@ -90,7 +89,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     designerWorkArea,
     siteTreeSearchValue,
     shaDesignerWarning,
-    hasConfigErrors,
     shaComponentValidationIcon,
     shaDesignerHeaderRight,
     shaForm,
@@ -477,6 +475,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
             }
         }
+        /* the dragged item can't be dropped here: the line (and the frame, which borrows its colour) turns red */
+        [${DROP_TARGET_INVALID_ATTR}] > .${shaComponentGhost}::before {
+            background: ${token.colorError};
+        }
         /*
          * An empty container's drop list has no height and sits below its drop hint, so the pointer is over the hint
          * rather than the list. While empty, the list covers the hint, so dropping anywhere on the hint works.
@@ -555,18 +557,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               background-color: ${token.colorPrimaryBg}80;
             }
 
-            &.${hasConfigErrors} {
-              background-color: ${token.colorErrorBg};
-              &:not(.${designerClassNames.selectedComponent}){
-                border: ${token.colorErrorBg} 1px solid;
-                border-radius: 4px;
-              }             
-
-              .${shaComponentIndicator} {
-                display: none;
-              }
-            }
-
             .${shaComponentValidationIcon} {
               display: flex;
               align-items: center;
@@ -636,7 +626,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     designerPage,
     formDesigner,
     quickEditModal,
-    hasConfigErrors: designerClassNames.hasConfigErrors,
     selectedComponent: designerClassNames.selectedComponent,
   };
 });

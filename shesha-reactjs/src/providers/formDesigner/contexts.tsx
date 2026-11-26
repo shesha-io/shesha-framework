@@ -32,6 +32,26 @@ export interface IAddDataPropertyPayload {
   containerId: string;
 }
 
+/** What happened to a change that adds or moves components, see `IToolboxComponent.requiredParent`. */
+export interface IComponentPlacementResult {
+  isSuccess: boolean;
+  /** Why the change wasn't applied. */
+  errorMessage: string | undefined;
+  /** Every required parent the change would break, one line per component. */
+  errors: string[];
+  /**
+   * The change only breaks components nested in the ones it places, e.g. a Data Table in a Panel dropped outside a Data
+   * Context. Repeating it with `IComponentPlacementOptions.confirmed` applies it, and those components show up in the
+   * validation panel until they are fixed.
+   */
+  requiresConfirmation: boolean;
+}
+
+export interface IComponentPlacementOptions {
+  /** Applies a change that needs confirming (see `IComponentPlacementResult.requiresConfirmation`). */
+  confirmed?: boolean | undefined;
+}
+
 export interface IUpdateChildComponentsPayload {
   containerId: string;
   componentIds: string[];
@@ -99,13 +119,13 @@ type FormDesignerState = {
 type FormDesignerActions = {
   setMarkupAndSettings: (flatMarkup: IFlatComponentsStructure, settings: IFormSettings) => void;
 
-  addComponent: (payload: IComponentAddPayload) => void;
+  addComponent: (payload: IComponentAddPayload, options?: IComponentPlacementOptions) => IComponentPlacementResult;
   updateComponent: <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(payload: IComponentUpdatePayload<TModel>) => void;
   deleteComponent: (payload: IComponentDeletePayload) => void;
   deleteSelectedComponent: () => boolean;
   duplicateComponent: (payload: IComponentDuplicatePayload) => void;
-  updateChildComponents: (payload: IUpdateChildComponentsPayload) => void;
-  addDataProperty: (payload: IAddDataPropertyPayload) => void;
+  updateChildComponents: (payload: IUpdateChildComponentsPayload, options?: IComponentPlacementOptions) => IComponentPlacementResult;
+  addDataProperty: (payload: IAddDataPropertyPayload, options?: IComponentPlacementOptions) => IComponentPlacementResult;
 
   startDraggingNewItem: () => void;
   endDraggingNewItem: () => void;

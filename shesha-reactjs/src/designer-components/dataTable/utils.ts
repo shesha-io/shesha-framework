@@ -3,6 +3,19 @@ import { IErrorInfo, IValidationErrorInfo } from "@/interfaces/errorInfo";
 import { isAjaxErrorResponse, isAxiosResponse, IAjaxErrorResponse } from "@/interfaces/ajaxResponse";
 import axios, { AxiosError } from "axios";
 import { isNonEmptyArray } from "@/utils/array";
+import { IRequiredParent } from "@/interfaces/formDesigner";
+
+/** Types of the Data Context components: the current one and the legacy one. */
+const DATA_CONTEXT_TYPES = ['dataContext', 'datatableContext'];
+
+/**
+ * Required parent of a component that reads its data from the closest Data Context. The form designer won't let it be
+ * dropped anywhere else.
+ */
+export const dataContextRequired = (componentName: string): IRequiredParent => ({
+  types: DATA_CONTEXT_TYPES,
+  message: `${componentName} must be placed inside a Data Context.`,
+});
 
 /**
  * Type guard to check if an error is an AxiosError with response data

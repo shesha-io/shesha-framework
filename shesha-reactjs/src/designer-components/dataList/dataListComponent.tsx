@@ -19,6 +19,7 @@ import { DataListApi } from "@/componentsApi/dataListApi";
 import apiCode from "../../componentsApi/dataListApi.ts?raw";
 import { migratePermissionsToVisiblePermissions } from "../_common-migrations/migratePermissionsToVisiblePermissions";
 import { AddNewItem } from "./configurableActions";
+import { dataContextRequired } from "../dataTable/utils";
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -26,6 +27,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   themeGroup: 'standard',
   name: 'DataList',
   icon: <UnorderedListOutlined />,
+  requiredParent: dataContextRequired('DataList'),
   initModel: (model) => ({ ...model, visible: model.visible ?? true }),
   Factory: ({ model }) => {
     const ds = useDataSources();

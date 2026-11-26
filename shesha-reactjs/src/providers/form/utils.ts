@@ -537,6 +537,11 @@ export const componentsTreeToFlatStructure = (
         const subContainers = getSubContainers(component, componentRegistration);
 
         subContainers.forEach((subContainer) => {
+          // a container of its own (a Tab, a Column, a Panel's header) belongs to the component, so that
+          // getComponentsChain carries on past it
+          if (subContainer.id !== component.id && !isDefined(result.parents[subContainer.id]))
+            result.parents[subContainer.id] = component.id;
+
           if (isDefined(subContainer.components)) {
             subContainer.components.forEach((c) => {
               processComponent(c, subContainer.id);
