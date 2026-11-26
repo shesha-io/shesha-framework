@@ -262,10 +262,10 @@ namespace Shesha.Users
             var users = await _userRepository.GetAll().Where(u => u.PhoneNumber == mobileNo).ToListAsync();
 
             if (users.Count > 1)
-                throw new UserFriendlyException("Found more than one user with the provided Mobile No");
+                throw new BadRequestException("Found more than one user with the provided Mobile No");
 
             if (!users.Any())
-                throw new UserFriendlyException("User with the specified `Mobile No` not found");
+                throw new BadRequestException("User with the specified `Mobile No` not found");
 
             return users.FirstOrDefault();
         }
@@ -288,7 +288,7 @@ namespace Shesha.Users
             var user = await GetUniqueUserByMobileNoAsync(mobileNo);
             
             if (user == null)
-                throw new UserFriendlyException("Your username is not recognised");
+                throw new BadRequestException("Your username is not recognised");
             
             ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SmsOtp);
 
@@ -329,7 +329,7 @@ namespace Shesha.Users
 
             if (person == null)
             {
-                throw new UserFriendlyException("Your username is not recognised");
+                throw new BadRequestException("Your username is not recognised");
             }
 
             var resetOptions = person.SupportedPasswordResetMethods;
@@ -442,7 +442,7 @@ namespace Shesha.Users
 
             var secondsRemaining = (int)Math.Ceiling((nextAllowed - DateTime.Now).TotalSeconds);
             throw new TooManyRequestsException(
-                $"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.");
+                $"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.", secondsRemaining);
         }
 
         /// <summary>
@@ -476,7 +476,15 @@ namespace Shesha.Users
             var username = input.Username;
             if ((RefListPasswordResetMethods)input.Method == RefListPasswordResetMethods.EmailLink)
             {
-                username = Encoding.UTF8.GetString(Convert.FromBase64String(username));
+                // the email link carries the username Base64-encoded
+                try
+                {
+                    username = Encoding.UTF8.GetString(Convert.FromBase64String(username ?? string.Empty));
+                }
+                catch (FormatException)
+                {
+                    throw new BadRequestException("Your username is not recognised");
+                }
             }
 
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
@@ -693,10 +701,17 @@ namespace Shesha.Users
         {
             var user = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.UserName == input.Username);
             if (user == null)
-                throw new UserFriendlyException("User not found");
+                throw new BadRequestException("User not found");
 
             // check the token
             if (user.PasswordResetCode != input.Token)
+                throw new VerificationFailedException("Your token is invalid or has expired, try to reset password again");
+
+            // PasswordResetCode also holds the operation id of a pending OTP (password reset, email link or OTP login), which
+            // the send endpoints return to anonymous callers. Operation ids are stored in the GUID "D" format (with dashes), and
+            // the tokens issued after a pin is verified (SetNewPasswordResetCode) in the "N" format, so a token in the "D" format
+            // is never accepted. This doesn't depend on the OTP still being stored, which isn't the case after a cache evicts it
+            if (Guid.TryParseExact(input.Token, "D", out _))
                 throw new VerificationFailedException("Your token is invalid or has expired, try to reset password again");
 
             // validate password against configured policy
@@ -732,27 +747,27 @@ namespace Shesha.Users
             var isSecurityQuestionsEnabled = securitySettings.UseResetPasswordViaSecurityQuestions;
 
             if (user == null)
-                throw new UserFriendlyException("Your username is not recognised");
+                throw new BadRequestException("Your username is not recognised");
 
             var userSupportedMethods = EntityExtensions.DecomposeIntoBitFlagComponents(user.SupportedPasswordResetMethods);
 
             if (!userSupportedMethods.Any())
-                throw new UserFriendlyException("User has no supported password reset methods");
+                throw new BadRequestException("User has no supported password reset methods");
 
             if (!userSupportedMethods.Contains(resetMethod))
-                throw new UserFriendlyException("User is not allowed to reset password using the selected method");
+                throw new BadRequestException("User is not allowed to reset password using the selected method");
 
             if ((RefListPasswordResetMethods)resetMethod == RefListPasswordResetMethods.EmailLink && !isEmailLinkEnabled)
-                throw new UserFriendlyException("Resetting password through email link is not allowed");
+                throw new BadRequestException("Resetting password through email link is not allowed");
 
             if ((RefListPasswordResetMethods)resetMethod == RefListPasswordResetMethods.SmsOtp && !isSmsOtpEnabled)
-                throw new UserFriendlyException("Resetting password through SMS one time passwords is not allowed");
+                throw new BadRequestException("Resetting password through SMS one time passwords is not allowed");
 
             if ((RefListPasswordResetMethods)resetMethod == RefListPasswordResetMethods.SecurityQuestions && !isSecurityQuestionsEnabled)
-                throw new UserFriendlyException("Resetting password through security questions is not allowed");
+                throw new BadRequestException("Resetting password through security questions is not allowed");
 
             if ((RefListPasswordResetMethods)resetMethod == RefListPasswordResetMethods.SecurityQuestions && user.SecurityQuestionStatus != RefListSecurityQuestionStatus.Set)
-                throw new UserFriendlyException("User has not set the security questions");
+                throw new BadRequestException("User has not set the security questions");
         }
 
         #endregion

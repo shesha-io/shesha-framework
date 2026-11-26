@@ -4,10 +4,12 @@ using Abp.Runtime.Caching;
 using Abp.UI;
 using Abp.Web.Configuration;
 using Abp.Web.Models;
+using Abp.Web.Results.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
@@ -153,6 +155,38 @@ namespace Shesha.Tests.Otp
 
             results.Count(r => r).ShouldBe(1);
             (await storage.GetAsync(operationId)).ConsumedOn.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task IsPinValid_should_not_count_an_attempt_or_use_up_the_otpAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+
+            (await manager.IsPinValidAsync(operationId, Pin)).ShouldBeTrue();
+            (await manager.IsPinValidAsync(operationId, "000000")).ShouldBeFalse();
+            storage[operationId].VerifyAttempts.ShouldBe(0);
+            storage[operationId].ConsumedOn.ShouldBeNull();
+
+            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeTrue();
+            (await manager.IsPinValidAsync(operationId, Pin)).ShouldBeFalse("a used OTP is no longer valid");
+        }
+
+        [Fact]
+        public async Task IsPinValid_should_reject_a_correct_pin_once_max_attempts_reachedAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+            storage[operationId].VerifyAttempts = 3;
+
+            (await manager.IsPinValidAsync(operationId, Pin)).ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task IsPinValid_should_reject_an_expired_pinAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+            storage[operationId].ExpiresOn = DateTime.Now.AddMinutes(-1);
+
+            (await manager.IsPinValidAsync(operationId, Pin)).ShouldBeFalse();
         }
 
         [Fact]
@@ -303,12 +337,23 @@ namespace Shesha.Tests.Otp
 
             filter.StatusCodeFor(new TooManyRequestsException("Too many OTP requests. Please try again later.")).ShouldBe(StatusCodes.Status429TooManyRequests);
             filter.StatusCodeFor(new VerificationFailedException("Failed to verify OTP provided")).ShouldBe(StatusCodes.Status400BadRequest);
+            filter.StatusCodeFor(new BadRequestException("Your username is not recognised")).ShouldBe(StatusCodes.Status400BadRequest);
             filter.StatusCodeFor(new UserFriendlyException("Something else")).ShouldBe(StatusCodes.Status500InternalServerError);
+        }
+
+        [Fact]
+        public void Exception_filter_should_send_retry_after_when_known()
+        {
+            var filter = new TestExceptionFilter();
+
+            filter.HandleAndGetHeaders(new TooManyRequestsException("An OTP was recently sent.", 42))["Retry-After"].ToString().ShouldBe("42");
+            filter.HandleAndGetHeaders(new TooManyRequestsException("Too many attempts.")).ContainsKey("Retry-After").ShouldBeFalse();
         }
 
         private class TestExceptionFilter : SheshaExceptionFilter
         {
-            public TestExceptionFilter() : base(Mock.Of<IErrorInfoBuilder>(), Mock.Of<IAbpAspNetCoreConfiguration>(), Mock.Of<IAbpWebCommonModuleConfiguration>())
+            public TestExceptionFilter() : base(Mock.Of<IErrorInfoBuilder>(), Mock.Of<IAbpAspNetCoreConfiguration>(),
+                Mock.Of<IAbpWebCommonModuleConfiguration>(c => c.WrapResultFilters == new WrapResultFilterCollection()))
             {
             }
 
@@ -317,11 +362,89 @@ namespace Shesha.Tests.Otp
                 var actionContext = new ActionContext(new DefaultHttpContext(), new RouteData(), new ActionDescriptor());
                 return GetStatusCode(new ExceptionContext(actionContext, new List<IFilterMetadata>()) { Exception = exception }, wrapOnError: true);
             }
+
+            public IHeaderDictionary HandleAndGetHeaders(Exception exception)
+            {
+                var descriptor = new ControllerActionDescriptor { MethodInfo = typeof(TestExceptionFilter).GetMethod(nameof(SampleActionAsync), BindingFlags.NonPublic | BindingFlags.Static) };
+                var httpContext = new DefaultHttpContext();
+                httpContext.Request.Scheme = "https";
+                httpContext.Request.Host = new HostString("localhost");
+                var actionContext = new ActionContext(httpContext, new RouteData(), descriptor);
+                var context = new ExceptionContext(actionContext, new List<IFilterMetadata>()) { Exception = exception };
+                HandleAndWrapException(context, new WrapResultAttribute());
+                return context.HttpContext.Response.Headers;
+            }
+
+            private static Task<object> SampleActionAsync() => Task.FromResult<object>(null);
         }
 
         #endregion
 
         #region Send throttling
+
+        [Theory]
+        [InlineData(0, 60)]
+        [InlineData(60, 60)]
+        [InlineData(3600, 60)]
+        [InlineData(7200, 120)]
+        public void Throttle_retention_should_cover_the_hour_and_the_cooldown(int cooldownSeconds, int expectedMinutes)
+        {
+            OtpSendThrottle.GetRetention(cooldownSeconds).ShouldBe(TimeSpan.FromMinutes(expectedMinutes));
+        }
+
+        [Fact]
+        public async Task Throttle_should_not_remove_old_sends_when_sendingAsync()
+        {
+            // old sends are removed by OtpSendLogCleanupJob, not while a send is recorded
+            var store = new Dictionary<string, List<DateTime>> { ["sms:0820000000"] = new List<DateTime> { DateTime.UtcNow.AddDays(-2) } };
+            var throttle = CreateThrottle(cooldownSeconds: 60, maxSendsPerHour: 5, store);
+
+            await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms);
+
+            store["sms:0820000000"].Count.ShouldBe(1);
+        }
+
+        [Fact]
+        public async Task Cleanup_job_should_remove_sends_older_than_the_retentionAsync()
+        {
+            var store = new Dictionary<string, List<DateTime>>
+            {
+                ["sms:0821234567"] = new List<DateTime> { DateTime.UtcNow.AddMinutes(-150), DateTime.UtcNow.AddMinutes(-90), DateTime.UtcNow.AddMinutes(-5) },
+            };
+            var securityAccessor = new Mock<ISettingAccessor<SecuritySettings>>();
+            securityAccessor.Setup(a => a.GetValueAsync(It.IsAny<SettingManagementContext>()))
+                .ReturnsAsync(new SecuritySettings { OtpCooldownSeconds = 7200 });
+            var securitySettings = new Mock<ISecuritySettings>();
+            securitySettings.SetupGet(s => s.SecuritySettings).Returns(securityAccessor.Object);
+
+            // a two hour cooldown keeps sends for two hours
+            var deleted = await OtpSendLogCleanupJob.CleanupAsync(new InMemoryOtpSendLog(store), securitySettings.Object);
+
+            deleted.ShouldBe(1);
+            store["sms:0821234567"].Count.ShouldBe(2);
+        }
+
+        [Theory]
+        [InlineData(60, 10)] // cooldown
+        [InlineData(0, 1)] // hourly cap of one
+        public async Task Throttle_should_refuse_a_send_when_another_instance_sends_concurrentlyAsync(int cooldownSeconds, int maxSendsPerHour)
+        {
+            // another instance registers a send to the same destination after this request recorded its send but before it
+            // read the history
+            var store = new Dictionary<string, List<DateTime>>();
+            var sendLog = new InMemoryOtpSendLog(store);
+            sendLog.AfterAdd = destination =>
+            {
+                sendLog.AfterAdd = null;
+                store[destination].Add(DateTime.UtcNow);
+            };
+            var throttle = CreateThrottle(cooldownSeconds, maxSendsPerHour, sendLog);
+
+            await Should.ThrowAsync<TooManyRequestsException>(() => throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms));
+
+            // only the other instance's send is left
+            store[store.Keys.Single()].Count.ShouldBe(1);
+        }
 
         [Fact]
         public async Task Throttle_should_enforce_cooldown_per_destinationAsync()
@@ -335,6 +458,49 @@ namespace Shesha.Tests.Otp
 
             // other destinations are not affected
             await throttle.CheckAndRegisterSendAsync("0827654321", OtpSendType.Sms);
+        }
+
+        [Fact]
+        public async Task Throttle_should_enforce_cooldown_longer_than_an_hourAsync()
+        {
+            var store = new Dictionary<string, List<DateTime>>();
+            var throttle = CreateThrottle(cooldownSeconds: 7200, maxSendsPerHour: 1, store);
+
+            // sent 90 minutes ago: outside the hourly window, but still inside the two hour cooldown
+            await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms);
+            store[store.Keys.Single()] = new List<DateTime> { DateTime.UtcNow.AddMinutes(-90) };
+            var ex = await Should.ThrowAsync<TooManyRequestsException>(async () => { await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms); });
+            ex.Message.ShouldContain("Please wait");
+
+            // once the cooldown has passed, the old send doesn't count towards the hourly cap either
+            store[store.Keys.Single()] = new List<DateTime> { DateTime.UtcNow.AddMinutes(-121) };
+            await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms);
+        }
+
+        [Fact]
+        public async Task Throttle_should_say_when_to_retry_after_the_cooldownAsync()
+        {
+            var throttle = CreateThrottle(cooldownSeconds: 60, maxSendsPerHour: 10);
+            await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms);
+
+            var ex = await Should.ThrowAsync<TooManyRequestsException>(() => throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms));
+            ex.RetryAfterSeconds.ShouldNotBeNull();
+            ex.RetryAfterSeconds.Value.ShouldBeInRange(59, 60);
+        }
+
+        [Fact]
+        public async Task Throttle_should_say_when_to_retry_after_the_hourly_capAsync()
+        {
+            var store = new Dictionary<string, List<DateTime>>();
+            var throttle = CreateThrottle(cooldownSeconds: 0, maxSendsPerHour: 2, store);
+            await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms);
+
+            // the oldest send drops out of the hourly window in 10 minutes
+            store[store.Keys.Single()] = new List<DateTime> { DateTime.UtcNow.AddMinutes(-50), DateTime.UtcNow.AddMinutes(-5) };
+
+            var ex = await Should.ThrowAsync<TooManyRequestsException>(() => throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms));
+            ex.RetryAfterSeconds.ShouldNotBeNull();
+            ex.RetryAfterSeconds.Value.ShouldBeInRange(595, 600);
         }
 
         [Fact]
@@ -521,21 +687,13 @@ namespace Shesha.Tests.Otp
             return new CacheOtpStorage(otpCache.Object);
         }
 
-        private static OtpSendThrottle CreateThrottle(int cooldownSeconds, int maxSendsPerHour)
+        private static OtpSendThrottle CreateThrottle(int cooldownSeconds, int maxSendsPerHour, Dictionary<string, List<DateTime>> store = null)
         {
-            var store = new Dictionary<string, OtpSendHistory>();
-            var typedCache = new Mock<ITypedCache<string, OtpSendHistory>>();
-            typedCache.Setup(c => c.GetOrDefaultAsync(It.IsAny<string>()))
-                .Returns<string>(key => Task.FromResult(store.TryGetValue(key, out var value) ? value : null));
-            typedCache.Setup(c => c.SetAsync(It.IsAny<string>(), It.IsAny<OtpSendHistory>(), It.IsAny<TimeSpan?>(), It.IsAny<DateTimeOffset?>()))
-                .Returns<string, OtpSendHistory, TimeSpan?, DateTimeOffset?>((key, value, _, _) =>
-                {
-                    store[key] = value;
-                    return Task.CompletedTask;
-                });
+            return CreateThrottle(cooldownSeconds, maxSendsPerHour, new InMemoryOtpSendLog(store ?? new Dictionary<string, List<DateTime>>()));
+        }
 
-            var cacheHolder = new Mock<IOtpSendThrottleCache>();
-            cacheHolder.SetupGet(c => c.Cache).Returns(typedCache.Object);
+        private static OtpSendThrottle CreateThrottle(int cooldownSeconds, int maxSendsPerHour, IOtpSendLog sendLog)
+        {
 
             var securityAccessor = new Mock<ISettingAccessor<SecuritySettings>>();
             securityAccessor.Setup(a => a.GetValueAsync(It.IsAny<SettingManagementContext>()))
@@ -545,7 +703,68 @@ namespace Shesha.Tests.Otp
 
             var otpSettings = MockOtpSettings(new OtpSettings { MaxSendsPerDestinationPerHour = maxSendsPerHour });
 
-            return new OtpSendThrottle(cacheHolder.Object, otpSettings, securitySettings.Object);
+            return new OtpSendThrottle(sendLog, otpSettings, securitySettings.Object);
+        }
+
+        /// <summary>
+        /// Send times per destination, like <see cref="DbOtpSendLog"/>. Tests can change the times directly
+        /// </summary>
+        private class InMemoryOtpSendLog : IOtpSendLog
+        {
+            private readonly Dictionary<string, List<DateTime>> _store;
+            private readonly Dictionary<Guid, (string Destination, DateTime SentOn)> _added = new();
+
+            public InMemoryOtpSendLog(Dictionary<string, List<DateTime>> store)
+            {
+                _store = store;
+            }
+
+            public Task<List<OtpSendRecord>> GetSendsAsync(string destination, DateTime sinceUtc)
+            {
+                var times = _store.TryGetValue(destination, out var list) ? list.Where(t => t > sinceUtc).ToList() : new List<DateTime>();
+                var records = times.Select(t => new OtpSendRecord(FindId(destination, t) ?? Guid.NewGuid(), t)).ToList();
+                return Task.FromResult(records);
+            }
+
+            public Task<Guid> AddAsync(string destination, DateTime sentOnUtc)
+            {
+                if (!_store.TryGetValue(destination, out var list))
+                    _store[destination] = list = new List<DateTime>();
+                list.Add(sentOnUtc);
+
+                var id = Guid.NewGuid();
+                _added[id] = (destination, sentOnUtc);
+                AfterAdd?.Invoke(destination);
+                return Task.FromResult(id);
+            }
+
+            /// <summary>
+            /// Called after a send is recorded, e.g. to simulate a send registered by another instance
+            /// </summary>
+            public Action<string> AfterAdd { get; set; }
+
+            public Task<int> DeleteOlderThanAsync(DateTime utc)
+            {
+                var deleted = 0;
+                foreach (var times in _store.Values)
+                    deleted += times.RemoveAll(t => t < utc);
+                return Task.FromResult(deleted);
+            }
+
+            public Task RemoveAsync(Guid id)
+            {
+                if (_added.Remove(id, out var send) && _store.TryGetValue(send.Destination, out var list))
+                    list.Remove(send.SentOn);
+                return Task.CompletedTask;
+            }
+
+            private Guid? FindId(string destination, DateTime sentOn)
+            {
+                foreach (var added in _added)
+                    if (added.Value.Destination == destination && added.Value.SentOn == sentOn)
+                        return added.Key;
+                return null;
+            }
         }
 
         private static IOtpSettings MockOtpSettings(OtpSettings value)

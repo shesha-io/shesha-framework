@@ -202,7 +202,7 @@ namespace Shesha.Authorization
 
             var secondsRemaining = (int)Math.Ceiling((nextAllowed - DateTime.Now).TotalSeconds);
             throw new TooManyRequestsException(
-                $"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.");
+                $"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.", secondsRemaining);
         }
 
         public virtual async Task<ShaLoginResult<TUser>> LoginViaOtpAsync(string mobileNo, Guid operationId, string code, string imei = null, string tenancyName = null, bool shouldLockout = true)
@@ -220,12 +220,6 @@ namespace Shesha.Authorization
                     var otp = await OtpManager.GetAsync(operationId);
                     if (otp == null || otp.ActionType != LoginOtpActionType)
                         return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant);
-                    // verification marks the OTP as used, so only one of several concurrent requests for the same OTP gets through
-                    var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
-                    {
-                        OperationId = operationId,
-                        Pin = code
-                    });
 
                     var user = !string.IsNullOrWhiteSpace(otp.RecipientId)
                             ? await UserManager.FindByIdAsync(otp.RecipientId)
@@ -233,6 +227,19 @@ namespace Shesha.Authorization
 
                     if (user == null)
                         return new ShaLoginResult<TUser>(ShaLoginResultType.UserNotFound, tenant);
+
+                    // Verification uses the pin up, so the device is checked first: a correct pin sent from an unregistered device can
+                    // still be used from a registered one. The device is only checked once the pin is known to be correct, so a wrong
+                    // pin gets the same result whatever the IMEI, and the response doesn't reveal which devices are registered
+                    if (await OtpManager.IsPinValidAsync(operationId, code) && !(await CheckImeiAsync(imei)))
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
+
+                    // verification marks the OTP as used, so only one of several concurrent requests for the same OTP gets through
+                    var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
+                    {
+                        OperationId = operationId,
+                        Pin = code
+                    });
 
                     if (await UserManager.IsLockedOutAsync(user))
                         return new ShaLoginResult<TUser>(ShaLoginResultType.LockedOut, tenant, user);

@@ -236,6 +236,22 @@ namespace Shesha.Otp
             return VerifyPinResponse.Success();
         }
 
+        /// inheritedDoc
+        public async Task<bool> IsPinValidAsync(Guid operationId, string pin)
+        {
+            var settings = await _otpSettings.OneTimePins.GetValueAsync();
+            if (settings.IgnoreOtpValidation)
+                return true;
+
+            // the same checks as VerifyPinAsync, which counts the attempt before comparing the pin
+            var pinDto = await _otpStorage.GetAsync(operationId);
+            return pinDto != null
+                && !pinDto.ConsumedOn.HasValue
+                && (pinDto.SendType == OtpSendType.EmailLink || pinDto.VerifyAttempts < GetMaxVerifyAttempts(settings))
+                && PinMatches(pinDto.Pin, pin)
+                && pinDto.ExpiresOn >= DateTime.Now;
+        }
+
         private const string TooManyAttemptsMessage = "Too many failed verification attempts. Please request a new code.";
 
         /// <summary>

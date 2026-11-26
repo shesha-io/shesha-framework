@@ -16,6 +16,7 @@ using Shesha.Authorization;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.Exceptions;
 using Shesha.Models.TokenAuth;
 using Shesha.Otp;
 using Shesha.Otp.Configuration;
@@ -414,6 +415,76 @@ namespace Shesha.Tests.Users
         /// <summary>
         /// A password reset OTP is single use: it's consumed when it's exchanged for a reset token
         /// </summary>
+        /// <summary>
+        /// ResetPasswordSendOtp returns the OTP's operation id and stores it in PasswordResetCode, so the operation id must not
+        /// work as a reset token: only the token issued after the pin is verified does
+        /// </summary>
+        [Fact]
+        public async Task ResetPasswordUsingToken_should_reject_otp_operation_id_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var storage = new Dictionary<Guid, OtpDto>();
+            var otpStorage = MockOtpStorage(storage, dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+            try
+            {
+                var sendOtpResponse = await userAppService.ResetPasswordSendOtpAsync(mobileNo);
+
+                await Should.ThrowAsync<VerificationFailedException>(async () =>
+                {
+                    await userAppService.ResetPasswordUsingTokenAsync(new ResetPasswordUsingTokenInput()
+                    {
+                        Username = userName,
+                        Token = sendOtpResponse.OperationId.ToString(),
+                        NewPassword = "NewPassword123!",
+                    });
+                });
+
+                // also once the OTP record is gone, e.g. evicted by CacheOtpStorage when it expires
+                var otpRecord = storage[sendOtpResponse.OperationId];
+                storage.Remove(sendOtpResponse.OperationId);
+                await Should.ThrowAsync<VerificationFailedException>(async () =>
+                {
+                    await userAppService.ResetPasswordUsingTokenAsync(new ResetPasswordUsingTokenInput()
+                    {
+                        Username = userName,
+                        Token = sendOtpResponse.OperationId.ToString(),
+                        NewPassword = "NewPassword123!",
+                    });
+                });
+                storage[sendOtpResponse.OperationId] = otpRecord;
+
+                // the token issued after verification still works
+                var verifyResponse = await userAppService.ResetPasswordVerifyOtpAsync(new ResetPasswordVerifyOtpInput()
+                {
+                    MobileNo = mobileNo,
+                    OperationId = sendOtpResponse.OperationId,
+                    Pin = currentPin
+                });
+                verifyResponse.IsSuccess.ShouldBeTrue();
+                var reset = await userAppService.ResetPasswordUsingTokenAsync(new ResetPasswordUsingTokenInput()
+                {
+                    Username = userName,
+                    Token = verifyResponse.Token,
+                    NewPassword = "NewPassword123!",
+                });
+                reset.ShouldBeTrue();
+            }
+            finally
+            {
+                await _userRepository.DeleteAsync(userDto.Id);
+            }
+        }
+
         [Fact]
         public async Task ResetPasswordVerifyOtp_should_consume_otp_TestAsync()
         {
@@ -498,6 +569,58 @@ namespace Shesha.Tests.Users
         /// A password reset OTP has the user as its recipient and its operation id in PasswordResetCode, like a login OTP.
         /// It must not log the user in, and the attempt must not use it up for the password reset
         /// </summary>
+        [Fact]
+        public async Task LoginViaOtp_from_an_unregistered_device_should_not_use_up_the_otp_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var otps = new Dictionary<Guid, OtpDto>();
+            var otpStorage = MockOtpStorage(otps, dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+            var logInManager = Resolve<LogInManager>();
+
+            ISendPinResponse sendResponse;
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                var user = await _userRepository.GetAsync(userDto.Id);
+                sendResponse = await logInManager.SendLoginOtpAsync(user, mobileNo);
+                await uow.CompleteAsync();
+            }
+            var loginPin = currentPin;
+
+            // saving the login attempt deadlocks in entity history in the test project (#5777), so it's off for the login
+            var entityHistory = Resolve<IEntityHistoryConfiguration>();
+            var entityHistoryWasEnabled = entityHistory.IsEnabled;
+            ShaLoginResult<User> wrongPinResult;
+            ShaLoginResult<User> loginResult;
+            try
+            {
+                entityHistory.IsEnabled = false;
+                var wrongPin = loginPin == "000000" ? "111111" : "000000";
+                wrongPinResult = await logInManager.LoginViaOtpAsync(mobileNo, sendResponse.OperationId, wrongPin, imei: "990000000000001", shouldLockout: false);
+                loginResult = await logInManager.LoginViaOtpAsync(mobileNo, sendResponse.OperationId, loginPin, imei: "990000000000001", shouldLockout: false);
+            }
+            finally
+            {
+                entityHistory.IsEnabled = entityHistoryWasEnabled;
+            }
+
+            var otp = otps[sendResponse.OperationId];
+            await _userRepository.DeleteAsync(userDto.Id);
+
+            wrongPinResult.Result.ShouldBe(ShaLoginResultType.InvalidOTP, "a wrong pin must not reveal whether the device is registered");
+            loginResult.Result.ShouldBe(ShaLoginResultType.DeviceNotRegistered);
+            otp.ConsumedOn.ShouldBeNull("a retry from a registered device can still use the pin");
+            otp.VerifyAttempts.ShouldBe(1, "only the wrong pin counts as an attempt");
+        }
+
         [Fact]
         public async Task LoginViaOtp_should_reject_a_password_reset_otp_TestAsync()
         {
@@ -841,6 +964,38 @@ namespace Shesha.Tests.Users
             tokenAuthConfig.Audience = "SheshaTest";
             tokenAuthConfig.SigningCredentials = new SigningCredentials(tokenAuthConfig.SecurityKey, SecurityAlgorithms.HmacSha256);
             tokenAuthConfig.Expiration = TimeSpan.FromDays(1);
+        }
+
+        [Theory]
+        [InlineData(RefListPasswordResetMethods.SmsOtp)]
+        [InlineData(RefListPasswordResetMethods.EmailLink)]
+        public async Task ValidateResetCode_should_return_bad_request_for_an_unknown_username_TestAsync(RefListPasswordResetMethods method)
+        {
+            var userAppService = Resolve<IUserAppService>();
+            var userName = Guid.NewGuid().ToString("N");
+            var sentUserName = method == RefListPasswordResetMethods.EmailLink ? Convert.ToBase64String(Encoding.UTF8.GetBytes(userName)) : userName;
+
+            var ex = await Should.ThrowAsync<BadRequestException>(async () => await userAppService.ValidateResetCodeAsync(
+                new ResetPasswordValidateCodeInput { Username = sentUserName, Code = "123456", Method = (long)method }));
+            ex.Message.ShouldBe("Your username is not recognised");
+        }
+
+        [Fact]
+        public async Task ValidateResetCode_should_return_bad_request_for_an_email_link_username_that_is_not_base64_TestAsync()
+        {
+            var userAppService = Resolve<IUserAppService>();
+
+            await Should.ThrowAsync<BadRequestException>(async () => await userAppService.ValidateResetCodeAsync(
+                new ResetPasswordValidateCodeInput { Username = "not base64!", Code = "123456", Method = (long)RefListPasswordResetMethods.EmailLink }));
+        }
+
+        [Fact]
+        public async Task SendEmailLink_should_return_bad_request_for_an_unknown_username_TestAsync()
+        {
+            var userAppService = Resolve<IUserAppService>();
+
+            var ex = await Should.ThrowAsync<BadRequestException>(async () => await userAppService.SendEmailLinkAsync(Guid.NewGuid().ToString("N")));
+            ex.Message.ShouldBe("Your username is not recognised");
         }
 
         [Fact]
