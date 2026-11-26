@@ -5,6 +5,7 @@ using Shesha.Domain.Enums;
 using Shesha.Exceptions;
 using Shesha.Otp.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,8 +30,8 @@ namespace Shesha.Otp
     {
         private static readonly TimeSpan Window = TimeSpan.FromHours(1);
 
-        // Serializes check-and-register within this process. The send history is in the database, so all instances apply the
-        // same limits, but two instances that check the same destination at the same moment can both let a send through
+        // Avoids needless refusals when requests in this process clash (see CheckAndRegisterSendAsync). Not needed for the
+        // limits to hold across instances
         private static readonly SemaphoreSlim Lock = new SemaphoreSlim(1, 1);
 
         private readonly IOtpSendLog _sendLog;
@@ -67,32 +68,53 @@ namespace Shesha.Otp
                 // sends are kept for the hourly cap and for the cooldown, which may be longer than an hour
                 var cooldown = TimeSpan.FromSeconds(Math.Max(cooldownSeconds, 0));
                 var retention = cooldown > Window ? cooldown : Window;
-                var retainedSends = (await _sendLog.GetSendTimesAsync(key, now - retention)).OrderBy(t => t).ToList();
+                // The send is recorded (and committed) before the history is read, and removed again if it isn't allowed. Of two
+                // requests for the same destination on different instances, the one that reads last sees the other's record,
+                // so they can't both get through. If they clash, both may be refused
+                var id = await _sendLog.AddAsync(key, now, now - retention);
+                var otherSends = (await _sendLog.GetSendsAsync(key, now - retention))
+                    .Where(s => s.Id != id)
+                    .Select(s => s.SentOnUtc)
+                    .OrderBy(t => t)
+                    .ToList();
 
-                if (cooldownSeconds > 0 && retainedSends.Any())
+                var refusal = GetRefusal(otherSends, now, cooldownSeconds, maxSends);
+                if (refusal != null)
                 {
-                    var nextAllowed = retainedSends.Last().AddSeconds(cooldownSeconds);
-                    if (nextAllowed > now)
-                    {
-                        var secondsRemaining = SecondsUntil(nextAllowed, now);
-                        throw new TooManyRequestsException($"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.", secondsRemaining);
-                    }
+                    await _sendLog.RemoveAsync(id);
+                    throw refusal;
                 }
-
-                var sendsInWindow = retainedSends.Where(t => t > now - Window).ToList();
-                if (sendsInWindow.Count >= maxSends)
-                {
-                    // a send is allowed again once enough of the sends in the window have dropped out of it
-                    var nextAllowed = sendsInWindow[sendsInWindow.Count - maxSends].Add(Window);
-                    throw new TooManyRequestsException("Too many OTP requests. Please try again later.", SecondsUntil(nextAllowed, now));
-                }
-
-                await _sendLog.AddAsync(key, now, now - retention);
             }
             finally
             {
                 Lock.Release();
             }
+        }
+
+        /// <summary>
+        /// Returns the exception to throw if a send isn't allowed yet, otherwise null
+        /// </summary>
+        private static TooManyRequestsException GetRefusal(List<DateTime> otherSends, DateTime now, int cooldownSeconds, int maxSends)
+        {
+            if (cooldownSeconds > 0 && otherSends.Any())
+            {
+                var nextAllowed = otherSends.Last().AddSeconds(cooldownSeconds);
+                if (nextAllowed > now)
+                {
+                    var secondsRemaining = SecondsUntil(nextAllowed, now);
+                    return new TooManyRequestsException($"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.", secondsRemaining);
+                }
+            }
+
+            var sendsInWindow = otherSends.Where(t => t > now - Window).ToList();
+            if (sendsInWindow.Count >= maxSends)
+            {
+                // a send is allowed again once enough of the sends in the window have dropped out of it
+                var nextAllowed = sendsInWindow[sendsInWindow.Count - maxSends].Add(Window);
+                return new TooManyRequestsException("Too many OTP requests. Please try again later.", SecondsUntil(nextAllowed, now));
+            }
+
+            return null;
         }
 
         private static int SecondsUntil(DateTime time, DateTime now)

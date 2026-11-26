@@ -16,15 +16,28 @@ namespace Shesha.Otp
     public interface IOtpSendLog
     {
         /// <summary>
-        /// Returns the UTC times of the sends to the destination since the specified time
+        /// Returns the sends to the destination since the specified time
         /// </summary>
-        Task<List<DateTime>> GetSendTimesAsync(string destination, DateTime sinceUtc);
+        Task<List<OtpSendRecord>> GetSendsAsync(string destination, DateTime sinceUtc);
 
         /// <summary>
         /// Records a send to the destination, and removes sends (to any destination) from before <paramref name="deleteBeforeUtc"/>
         /// </summary>
-        Task AddAsync(string destination, DateTime sentOnUtc, DateTime deleteBeforeUtc);
+        /// <returns>Id of the new record</returns>
+        Task<Guid> AddAsync(string destination, DateTime sentOnUtc, DateTime deleteBeforeUtc);
+
+        /// <summary>
+        /// Removes a send that was recorded but not allowed
+        /// </summary>
+        Task RemoveAsync(Guid id);
     }
+
+    /// <summary>
+    /// A send recorded in <see cref="IOtpSendLog"/>
+    /// </summary>
+    /// <param name="Id">Id of the record</param>
+    /// <param name="SentOnUtc">When the pin was sent (UTC)</param>
+    public record OtpSendRecord(Guid Id, DateTime SentOnUtc);
 
     /// <summary>
     /// Database history of OTP sends, shared by all instances of the application
@@ -46,26 +59,28 @@ namespace Shesha.Otp
         // transaction while another transaction waits for them
 
         /// <inheritdoc/>
-        public async Task<List<DateTime>> GetSendTimesAsync(string destination, DateTime sinceUtc)
+        public async Task<List<OtpSendRecord>> GetSendsAsync(string destination, DateTime sinceUtc)
         {
             using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             using (var session = _sessionFactory.OpenSession())
             {
-                return await session.Query<OtpSendLogItem>()
+                var items = await session.Query<OtpSendLogItem>()
                     .Where(i => i.Destination == destination && i.SentOnUtc > sinceUtc)
-                    .Select(i => i.SentOnUtc)
+                    .Select(i => new { i.Id, i.SentOnUtc })
                     .ToListAsync();
+                return items.Select(i => new OtpSendRecord(i.Id, i.SentOnUtc)).ToList();
             }
         }
 
         /// <inheritdoc/>
-        public async Task AddAsync(string destination, DateTime sentOnUtc, DateTime deleteBeforeUtc)
+        public async Task<Guid> AddAsync(string destination, DateTime sentOnUtc, DateTime deleteBeforeUtc)
         {
             using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             using (var session = _sessionFactory.OpenSession())
             using (var transaction = session.BeginTransaction())
             {
-                await session.SaveAsync(new OtpSendLogItem { Id = Guid.NewGuid(), Destination = destination, SentOnUtc = sentOnUtc });
+                var id = Guid.NewGuid();
+                await session.SaveAsync(new OtpSendLogItem { Id = id, Destination = destination, SentOnUtc = sentOnUtc });
                 await session.FlushAsync();
 
                 await session.Query<OtpSendLogItem>()
@@ -73,6 +88,19 @@ namespace Shesha.Otp
                     .DeleteAsync();
 
                 await transaction.CommitAsync();
+                return id;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task RemoveAsync(Guid id)
+        {
+            using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
+            using (var session = _sessionFactory.OpenSession())
+            {
+                await session.Query<OtpSendLogItem>()
+                    .Where(i => i.Id == id)
+                    .DeleteAsync();
             }
         }
     }

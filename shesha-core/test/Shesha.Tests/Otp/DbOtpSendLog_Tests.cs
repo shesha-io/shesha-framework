@@ -23,9 +23,9 @@ namespace Shesha.Tests.Otp
             await log.AddAsync(destination, now.AddMinutes(-5), now.AddDays(-1));
             await log.AddAsync(other, now.AddMinutes(-5), now.AddDays(-1));
 
-            var times = await log.GetSendTimesAsync(destination, now.AddMinutes(-10));
+            var times = await log.GetSendsAsync(destination, now.AddMinutes(-10));
             times.Count.ShouldBe(1);
-            (await log.GetSendTimesAsync(destination, now.AddHours(-1))).Count.ShouldBe(2);
+            (await log.GetSendsAsync(destination, now.AddHours(-1))).Count.ShouldBe(2);
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace Shesha.Tests.Otp
             await log.AddAsync(destination, now.AddHours(-3), now.AddDays(-1));
             await log.AddAsync(destination, now, now.AddHours(-2));
 
-            (await log.GetSendTimesAsync(destination, now.AddDays(-1))).Count.ShouldBe(1);
+            (await log.GetSendsAsync(destination, now.AddDays(-1))).Count.ShouldBe(1);
         }
 
         [Fact]
@@ -50,7 +50,36 @@ namespace Shesha.Tests.Otp
 
             var log = Resolve<IOtpSendLog>();
             log.ShouldBeOfType<DbOtpSendLog>();
-            (await log.GetSendTimesAsync($"sms:{mobileNo}", DateTime.UtcNow.AddMinutes(-1))).Count.ShouldBe(1);
+            (await log.GetSendsAsync($"sms:{mobileNo}", DateTime.UtcNow.AddMinutes(-1))).Count.ShouldBe(1);
+        }
+
+        [Fact]
+        public async Task Should_remove_a_send_TestAsync()
+        {
+            var log = Resolve<DbOtpSendLog>();
+            var destination = $"sms:{Guid.NewGuid():N}";
+            var now = DateTime.UtcNow;
+
+            var id = await log.AddAsync(destination, now, now.AddDays(-1));
+            var kept = await log.AddAsync(destination, now.AddSeconds(-1), now.AddDays(-1));
+            await log.RemoveAsync(id);
+
+            (await log.GetSendsAsync(destination, now.AddMinutes(-1))).Select(s => s.Id).ShouldBe(new[] { kept });
+        }
+
+        [Fact]
+        public async Task Throttle_should_refuse_a_send_recorded_by_another_instance_without_counting_it_TestAsync()
+        {
+            // a send recorded by another instance, e.g. a moment ago
+            var mobileNo = "08" + new Random().Next(10000000, 99999999);
+            var log = Resolve<IOtpSendLog>();
+            await log.AddAsync($"sms:{mobileNo}", DateTime.UtcNow, DateTime.UtcNow.AddDays(-1));
+
+            // the default 60 second cooldown refuses the next send
+            await Should.ThrowAsync<TooManyRequestsException>(() => Resolve<IOtpSendThrottle>().CheckAndRegisterSendAsync(mobileNo, OtpSendType.Sms));
+
+            // the refused send was removed again
+            (await log.GetSendsAsync($"sms:{mobileNo}", DateTime.UtcNow.AddMinutes(-1))).Count.ShouldBe(1);
         }
     }
 }

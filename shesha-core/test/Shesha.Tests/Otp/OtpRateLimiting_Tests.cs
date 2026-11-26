@@ -625,21 +625,7 @@ namespace Shesha.Tests.Otp
 
         private static OtpSendThrottle CreateThrottle(int cooldownSeconds, int maxSendsPerHour, Dictionary<string, List<DateTime>> store = null)
         {
-            // send times per destination, like DbOtpSendLog
-            store ??= new Dictionary<string, List<DateTime>>();
-            var sendLog = new Mock<IOtpSendLog>();
-            sendLog.Setup(l => l.GetSendTimesAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .Returns<string, DateTime>((key, since) => Task.FromResult(store.TryGetValue(key, out var times) ? times.Where(t => t > since).ToList() : new List<DateTime>()));
-            sendLog.Setup(l => l.AddAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .Returns<string, DateTime, DateTime>((key, sentOn, deleteBefore) =>
-                {
-                    foreach (var times in store.Values)
-                        times.RemoveAll(t => t < deleteBefore);
-                    if (!store.TryGetValue(key, out var list))
-                        store[key] = list = new List<DateTime>();
-                    list.Add(sentOn);
-                    return Task.CompletedTask;
-                });
+            var sendLog = new InMemoryOtpSendLog(store ?? new Dictionary<string, List<DateTime>>());
 
             var securityAccessor = new Mock<ISettingAccessor<SecuritySettings>>();
             securityAccessor.Setup(a => a.GetValueAsync(It.IsAny<SettingManagementContext>()))
@@ -649,7 +635,56 @@ namespace Shesha.Tests.Otp
 
             var otpSettings = MockOtpSettings(new OtpSettings { MaxSendsPerDestinationPerHour = maxSendsPerHour });
 
-            return new OtpSendThrottle(sendLog.Object, otpSettings, securitySettings.Object);
+            return new OtpSendThrottle(sendLog, otpSettings, securitySettings.Object);
+        }
+
+        /// <summary>
+        /// Send times per destination, like <see cref="DbOtpSendLog"/>. Tests can change the times directly
+        /// </summary>
+        private class InMemoryOtpSendLog : IOtpSendLog
+        {
+            private readonly Dictionary<string, List<DateTime>> _store;
+            private readonly Dictionary<Guid, (string Destination, DateTime SentOn)> _added = new();
+
+            public InMemoryOtpSendLog(Dictionary<string, List<DateTime>> store)
+            {
+                _store = store;
+            }
+
+            public Task<List<OtpSendRecord>> GetSendsAsync(string destination, DateTime sinceUtc)
+            {
+                var times = _store.TryGetValue(destination, out var list) ? list.Where(t => t > sinceUtc).ToList() : new List<DateTime>();
+                var records = times.Select(t => new OtpSendRecord(FindId(destination, t) ?? Guid.NewGuid(), t)).ToList();
+                return Task.FromResult(records);
+            }
+
+            public Task<Guid> AddAsync(string destination, DateTime sentOnUtc, DateTime deleteBeforeUtc)
+            {
+                foreach (var times in _store.Values)
+                    times.RemoveAll(t => t < deleteBeforeUtc);
+                if (!_store.TryGetValue(destination, out var list))
+                    _store[destination] = list = new List<DateTime>();
+                list.Add(sentOnUtc);
+
+                var id = Guid.NewGuid();
+                _added[id] = (destination, sentOnUtc);
+                return Task.FromResult(id);
+            }
+
+            public Task RemoveAsync(Guid id)
+            {
+                if (_added.Remove(id, out var send) && _store.TryGetValue(send.Destination, out var list))
+                    list.Remove(send.SentOn);
+                return Task.CompletedTask;
+            }
+
+            private Guid? FindId(string destination, DateTime sentOn)
+            {
+                foreach (var added in _added)
+                    if (added.Value.Destination == destination && added.Value.SentOn == sentOn)
+                        return added.Key;
+                return null;
+            }
         }
 
         private static IOtpSettings MockOtpSettings(OtpSettings value)
