@@ -54,6 +54,23 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
+        public async Task Concurrent_sends_should_see_each_other_TestAsync()
+        {
+            // two instances both record a send to the same destination before either reads the history: each must see the
+            // other's committed record, so the throttle on both instances refuses (and neither send gets through)
+            var instanceA = Resolve<DbOtpSendLog>();
+            var instanceB = Resolve<DbOtpSendLog>();
+            var destination = $"sms:{Guid.NewGuid():N}";
+            var now = DateTime.UtcNow;
+
+            var idA = await instanceA.AddAsync(destination, now, now.AddDays(-1));
+            var idB = await instanceB.AddAsync(destination, now, now.AddDays(-1));
+
+            (await instanceA.GetSendsAsync(destination, now.AddMinutes(-1))).Select(s => s.Id).ShouldContain(idB);
+            (await instanceB.GetSendsAsync(destination, now.AddMinutes(-1))).Select(s => s.Id).ShouldContain(idA);
+        }
+
+        [Fact]
         public async Task Should_remove_a_send_TestAsync()
         {
             var log = Resolve<DbOtpSendLog>();

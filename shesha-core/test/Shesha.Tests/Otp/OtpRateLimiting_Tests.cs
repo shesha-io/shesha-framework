@@ -382,6 +382,28 @@ namespace Shesha.Tests.Otp
 
         #region Send throttling
 
+        [Theory]
+        [InlineData(60, 10)] // cooldown
+        [InlineData(0, 1)] // hourly cap of one
+        public async Task Throttle_should_refuse_a_send_when_another_instance_sends_concurrentlyAsync(int cooldownSeconds, int maxSendsPerHour)
+        {
+            // another instance registers a send to the same destination after this request recorded its send but before it
+            // read the history
+            var store = new Dictionary<string, List<DateTime>>();
+            var sendLog = new InMemoryOtpSendLog(store);
+            sendLog.AfterAdd = destination =>
+            {
+                sendLog.AfterAdd = null;
+                store[destination].Add(DateTime.UtcNow);
+            };
+            var throttle = CreateThrottle(cooldownSeconds, maxSendsPerHour, sendLog);
+
+            await Should.ThrowAsync<TooManyRequestsException>(() => throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms));
+
+            // only the other instance's send is left
+            store[store.Keys.Single()].Count.ShouldBe(1);
+        }
+
         [Fact]
         public async Task Throttle_should_enforce_cooldown_per_destinationAsync()
         {
@@ -625,7 +647,11 @@ namespace Shesha.Tests.Otp
 
         private static OtpSendThrottle CreateThrottle(int cooldownSeconds, int maxSendsPerHour, Dictionary<string, List<DateTime>> store = null)
         {
-            var sendLog = new InMemoryOtpSendLog(store ?? new Dictionary<string, List<DateTime>>());
+            return CreateThrottle(cooldownSeconds, maxSendsPerHour, new InMemoryOtpSendLog(store ?? new Dictionary<string, List<DateTime>>()));
+        }
+
+        private static OtpSendThrottle CreateThrottle(int cooldownSeconds, int maxSendsPerHour, IOtpSendLog sendLog)
+        {
 
             var securityAccessor = new Mock<ISettingAccessor<SecuritySettings>>();
             securityAccessor.Setup(a => a.GetValueAsync(It.IsAny<SettingManagementContext>()))
@@ -668,8 +694,14 @@ namespace Shesha.Tests.Otp
 
                 var id = Guid.NewGuid();
                 _added[id] = (destination, sentOnUtc);
+                AfterAdd?.Invoke(destination);
                 return Task.FromResult(id);
             }
+
+            /// <summary>
+            /// Called after a send is recorded, e.g. to simulate a send registered by another instance
+            /// </summary>
+            public Action<string> AfterAdd { get; set; }
 
             public Task RemoveAsync(Guid id)
             {
