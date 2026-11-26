@@ -51,7 +51,12 @@ interface IOption {
 
 export type EntityIdentifier = ConfigurableItemFullName | string;
 
-export type EntityTypeAutocompleteType = 'All' | 'Entity' | 'JsonEntity';
+/**
+ * - `Entity` - all entities
+ * - `InheritableEntity` - entities that can be used as a base entity of a configured entity (have a discriminator and are not system entities)
+ * - `JsonEntity` - 'Part of entity' types
+ */
+export type EntityTypeAutocompleteType = 'All' | 'Entity' | 'InheritableEntity' | 'JsonEntity';
 
 interface IEntityTypeAutocompleteProps {
   value?: EntityIdentifier | undefined;

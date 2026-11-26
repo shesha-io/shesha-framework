@@ -575,6 +575,24 @@ namespace Shesha.Domain
         }
 
         /// <summary>
+        /// Returns true if the entity is a system (non-configurable) entity, e.g. an internal framework table
+        /// </summary>
+        public static bool IsSystemEntity(Type type)
+        {
+            return type.GetAttributeOrNull<EntityAttribute>(true)?.IsConfigurable == false;
+        }
+
+        /// <summary>
+        /// Returns true if the entity can be used as a base entity of a configured (user-defined) entity.
+        /// An inherited entity is stored in the table of its base entity, so the base entity must be mapped
+        /// with a discriminator column and must not be a system entity.
+        /// </summary>
+        public static bool SupportsInheritance(Type type)
+        {
+            return !IsSystemEntity(type) && !string.IsNullOrWhiteSpace(GetDiscriminatorColumn(type));
+        }
+
+        /// <summary>
         /// Returns true if NH should filter out unknown discriminators
         /// </summary>
         /// <param name="type"></param>
