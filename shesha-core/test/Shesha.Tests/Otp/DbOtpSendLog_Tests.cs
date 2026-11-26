@@ -1,8 +1,13 @@
+using Moq;
+using Shesha.Configuration.Security;
 using Shesha.Domain.Enums;
 using Shesha.Exceptions;
 using Shesha.Otp;
+using Shesha.Otp.Configuration;
+using Shesha.Settings;
 using Shouldly;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -68,6 +73,72 @@ namespace Shesha.Tests.Otp
 
             (await instanceA.GetSendsAsync(destination, now.AddMinutes(-1))).Select(s => s.Id).ShouldContain(idB);
             (await instanceB.GetSendsAsync(destination, now.AddMinutes(-1))).Select(s => s.Id).ShouldContain(idA);
+        }
+
+        [Theory]
+        [InlineData(60, 10)] // cooldown
+        [InlineData(0, 1)] // hourly cap of one
+        public async Task Throttle_should_refuse_when_another_instance_records_a_send_concurrently_TestAsync(int cooldownSeconds, int maxSendsPerHour)
+        {
+            // Two instances, each with its own DbOtpSendLog on the shared database. Instance B records its send after
+            // instance A recorded its own but before A reads the history, the interleaving the throttle has to handle
+            var mobileNo = "08" + new Random().Next(10000000, 99999999);
+            var destination = $"sms:{mobileNo}";
+            var instanceB = Resolve<DbOtpSendLog>();
+            var instanceA = new InterleavingSendLog(Resolve<DbOtpSendLog>(),
+                () => instanceB.AddAsync(destination, DateTime.UtcNow, DateTime.UtcNow.AddDays(-1)));
+
+            var throttleA = CreateThrottle(instanceA, cooldownSeconds, maxSendsPerHour);
+            await Should.ThrowAsync<TooManyRequestsException>(() => throttleA.CheckAndRegisterSendAsync(mobileNo, OtpSendType.Sms));
+
+            // A removed its refused send; only B's send is left in the database
+            (await instanceB.GetSendsAsync(destination, DateTime.UtcNow.AddMinutes(-1))).Count.ShouldBe(1);
+        }
+
+        private static OtpSendThrottle CreateThrottle(IOtpSendLog sendLog, int cooldownSeconds, int maxSendsPerHour)
+        {
+            var securityAccessor = new Mock<ISettingAccessor<SecuritySettings>>();
+            securityAccessor.Setup(a => a.GetValueAsync(It.IsAny<SettingManagementContext>()))
+                .ReturnsAsync(new SecuritySettings { OtpCooldownSeconds = cooldownSeconds });
+            var securitySettings = new Mock<ISecuritySettings>();
+            securitySettings.SetupGet(s => s.SecuritySettings).Returns(securityAccessor.Object);
+
+            var otpAccessor = new Mock<ISettingAccessor<OtpSettings>>();
+            otpAccessor.Setup(a => a.GetValueAsync(It.IsAny<SettingManagementContext>()))
+                .ReturnsAsync(new OtpSettings { MaxSendsPerDestinationPerHour = maxSendsPerHour });
+            var otpSettings = new Mock<IOtpSettings>();
+            otpSettings.SetupGet(s => s.OneTimePins).Returns(otpAccessor.Object);
+
+            return new OtpSendThrottle(sendLog, otpSettings.Object, securitySettings.Object);
+        }
+
+        /// <summary>
+        /// A database send log that runs another instance's action once, right after recording its own send
+        /// </summary>
+        private class InterleavingSendLog : IOtpSendLog
+        {
+            private readonly IOtpSendLog _inner;
+            private Func<Task> _afterAdd;
+
+            public InterleavingSendLog(IOtpSendLog inner, Func<Task> afterAdd)
+            {
+                _inner = inner;
+                _afterAdd = afterAdd;
+            }
+
+            public async Task<Guid> AddAsync(string destination, DateTime sentOnUtc, DateTime deleteBeforeUtc)
+            {
+                var id = await _inner.AddAsync(destination, sentOnUtc, deleteBeforeUtc);
+                var afterAdd = _afterAdd;
+                _afterAdd = null;
+                if (afterAdd != null)
+                    await afterAdd();
+                return id;
+            }
+
+            public Task<List<OtpSendRecord>> GetSendsAsync(string destination, DateTime sinceUtc) => _inner.GetSendsAsync(destination, sinceUtc);
+
+            public Task RemoveAsync(Guid id) => _inner.RemoveAsync(id);
         }
 
         [Fact]
