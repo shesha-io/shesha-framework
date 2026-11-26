@@ -6,7 +6,6 @@ import { DROP_TARGET_INVALID_ATTR, DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_AT
 export const designerClassNames = {
   componentDragHandle: "sha-component-drag-handle",
   designerWorkArea: "sha-designer-work-area",
-  hasConfigErrors: "has-config-errors",
   mainArea: "sha-designer-main-area",
   previewBorderTop10: "preview-form-border-top-10",
   shaComponent: "sha-component",
@@ -90,7 +89,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     designerWorkArea,
     siteTreeSearchValue,
     shaDesignerWarning,
-    hasConfigErrors,
     shaComponentValidationIcon,
     shaDesignerHeaderRight,
     shaForm,
@@ -559,18 +557,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               background-color: ${token.colorPrimaryBg}80;
             }
 
-            &.${hasConfigErrors} {
-              background-color: ${token.colorErrorBg};
-              &:not(.${designerClassNames.selectedComponent}){
-                border: ${token.colorErrorBg} 1px solid;
-                border-radius: 4px;
-              }             
-
-              .${shaComponentIndicator} {
-                display: none;
-              }
-            }
-
             .${shaComponentValidationIcon} {
               display: flex;
               align-items: center;
@@ -640,7 +626,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     designerPage,
     formDesigner,
     quickEditModal,
-    hasConfigErrors: designerClassNames.hasConfigErrors,
     selectedComponent: designerClassNames.selectedComponent,
   };
 });

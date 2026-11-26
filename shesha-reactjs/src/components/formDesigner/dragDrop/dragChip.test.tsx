@@ -1,5 +1,5 @@
-import { DRAG_CHIP_INVALID_ATTR, DROP_TARGET_LABEL_ATTR } from './models';
-import { DRAG_CHIP_ERROR_ATTR, removeDragChip, setComponentDragImage, setDragChipDropMarker, setDragChipError, setItemDragImage } from './dragChip';
+import { DRAG_CHIP_INVALID_ATTR, DRAG_CHIP_WARNING_ATTR, DROP_TARGET_LABEL_ATTR } from './models';
+import { DRAG_CHIP_ERROR_ATTR, removeDragChip, setComponentDragImage, setDragChipDropMarker, setDragChipFeedback, setItemDragImage } from './dragChip';
 
 interface IFakeDataTransfer {
   dataTransfer: DataTransfer;
@@ -136,16 +136,25 @@ describe('dragChip', () => {
   it('shows the error below the name and clears it again', () => {
     setComponentDragImage(fakeDataTransfer().dataTransfer, null, 'Data Table');
 
-    setDragChipError('A Data Table must be placed inside a Data Context.');
+    setDragChipFeedback({ severity: 'error', messages: ['A Data Table must be placed inside a Data Context.'] });
     expect(getError()?.textContent).toBe('A Data Table must be placed inside a Data Context.');
     expect(getError()?.hidden).toBe(false);
     expect(getError()?.getAttribute('role')).toBe('status');
     expect(getChip().lastElementChild).toBe(getError());
     expect(getChip().hasAttribute(DRAG_CHIP_INVALID_ATTR)).toBe(true);
 
-    setDragChipError(undefined);
+    setDragChipFeedback(undefined);
     expect(getError()?.textContent).toBe('');
     expect(getError()?.hidden).toBe(true);
+    expect(getChip().hasAttribute(DRAG_CHIP_INVALID_ATTR)).toBe(false);
+  });
+
+  it('shows a warning one message per line', () => {
+    setComponentDragImage(fakeDataTransfer().dataTransfer, null, 'Panel');
+
+    setDragChipFeedback({ severity: 'warning', messages: ['Inside it:', '• Needs a Data Context.'] });
+    expect(getError()?.textContent).toBe('Inside it:\n• Needs a Data Context.');
+    expect(getChip().hasAttribute(DRAG_CHIP_WARNING_ATTR)).toBe(true);
     expect(getChip().hasAttribute(DRAG_CHIP_INVALID_ATTR)).toBe(false);
   });
 

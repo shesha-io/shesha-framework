@@ -25,3 +25,5 @@ export const dragChipClassNames = {
 };
 /** Attribute set on the drag chip while the dragged item can't be dropped where it is. */
 export const DRAG_CHIP_INVALID_ATTR: string = 'data-sha-drag-chip-invalid';
+/** Attribute set on the drag chip while dropping the dragged item where it is needs confirming. */
+export const DRAG_CHIP_WARNING_ATTR: string = 'data-sha-drag-chip-warning';

@@ -36,7 +36,8 @@ import {
   IValidationResultsPayload,
   IFormDesignerInstance,
   IUpdateChildComponentsPayload,
-  DropRejection,
+  IComponentPlacementOptions,
+  IComponentPlacementResult,
   VALIDATABLE_ITEM_TYPES,
 } from "./contexts";
 import { BaseHistoryItem, FormDesignerSubscription, FormDesignerSubscriptionType, IComponentSettingsEditorsCache } from "./models";
@@ -56,7 +57,7 @@ import { isNonEmptyArray } from "@/utils/array";
 import { AmbientScopeProvider } from "@/utils/ambientScopeProvider";
 import { IConfigurationLoader } from "../configurationItemsLoader/configurationLoader";
 import { HttpClientApi } from "../sheshaApplication/publicApi";
-import { findNewRequirementViolation } from "@/components/formDesigner/dragDrop/dropRequirements";
+import { findNewRequirementViolations } from "@/components/formDesigner/dragDrop/dropRequirements";
 
 export type FormDesignerArgs = {
   httpClient: HttpClientApi;
@@ -91,6 +92,30 @@ const isPlainContainer = (value: unknown): value is IPlainComponentsContainer =>
 const idArraysEqual = (array1: string[], array2: string[]): boolean => {
   return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 };
+
+/**
+ * Returns `parents` with every id listed in `relations` pointing at its container, so that getComponentsChain follows
+ * the markup after a change that adds or moves components or containers.
+ */
+const withParentsOf = (parents: Record<string, string>, relations: IComponentRelations): Record<string, string> => {
+  const result = { ...parents };
+  Object.entries(relations).forEach(([containerId, ids]) => {
+    ids?.forEach((id) => {
+      result[id] = containerId;
+    });
+  });
+  return result;
+};
+
+/** A change of the markup that adds or moves components. */
+interface IComponentsPlacement {
+  markup: IFlatComponentsStructure;
+  /** The components added, or moved in from another container; components nested in them aren't listed. */
+  placedIds: string[];
+  selectedComponentId?: string | undefined;
+}
+
+const PLACEMENT_SUCCEEDED: IComponentPlacementResult = { isSuccess: true, errorMessage: undefined, errors: [], requiresConfirmation: false };
 
 export class FormDesignerInstance implements IFormDesignerInstance {
   undoableState: IUndoRedoManager<FormDesignerFormState>;
@@ -414,16 +439,19 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     formComponents.forEach((component) => {
       containerComponents.splice(index, 0, component.id);
     });
-    const componentRelations = {
-      ...formFlatMarkup.componentRelations,
+    const changedRelations: IComponentRelations = {
       [currentLevel]: containerComponents,
       ...childRelations,
+    };
+    const componentRelations = {
+      ...formFlatMarkup.componentRelations,
+      ...changedRelations,
     };
 
     return {
       allComponents,
       componentRelations,
-      parents: formFlatMarkup.parents,
+      parents: withParentsOf(formFlatMarkup.parents, changedRelations),
     };
   };
 
@@ -451,12 +479,14 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       if (this.selectedComponentId === payload.componentId) {
         this.selectedComponentId = undefined; // clear selection if we delete current component
       }
+      // the components inside it stay in allComponents, but no longer lead to the root (see getComponentsChain)
+      const { [payload.componentId]: _deletedParent, ...parents } = formFlatMarkup.parents;
       return {
         ...state,
         formFlatMarkup: {
           allComponents,
           componentRelations,
-          parents: formFlatMarkup.parents,
+          parents,
         },
       };
     }, `Removed component ${payload.componentId}`);
@@ -506,10 +536,13 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       const cloneIndex = parentRelations.indexOf(srcComponent.id) + 1;
       parentRelations.splice(cloneIndex, 0, clone.id);
 
-      const componentRelations = {
-        ...formFlatMarkup.componentRelations,
+      const changedRelations: IComponentRelations = {
         ...(!isNullOrWhiteSpace(srcComponent.parentId) ? { [srcComponent.parentId]: parentRelations } : {}),
         ...nestedRelations,
+      };
+      const componentRelations = {
+        ...formFlatMarkup.componentRelations,
+        ...changedRelations,
       };
       const allComponents = {
         ...formFlatMarkup.allComponents,
@@ -524,7 +557,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         formFlatMarkup: {
           allComponents,
           componentRelations,
-          parents: formFlatMarkup.parents,
+          parents: withParentsOf(formFlatMarkup.parents, changedRelations),
         },
       };
     }, `Duplicated component ${payload.componentId}`);
@@ -550,6 +583,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
       const newComponents = { ...formFlatMarkup.allComponents, [payload.componentId]: newComponent };
       const componentRelations = { ...formFlatMarkup.componentRelations };
+      let { parents } = formFlatMarkup;
 
       if (isDefined(toolboxComponent.getContainers)) {
         // update child components
@@ -574,6 +608,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
         // update component child ids
         componentRelations[payload.componentId] = newContainers.map((c) => c.id);
+        parents = withParentsOf(parents, { [payload.componentId]: componentRelations[payload.componentId] });
       }
 
       return {
@@ -581,7 +616,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         formFlatMarkup: {
           allComponents: newComponents,
           componentRelations,
-          parents: formFlatMarkup.parents,
+          parents,
         },
       };
     }, `Component ${payload.componentId} updated`);
@@ -700,27 +735,53 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   /**
    * Applies a change of the markup that places components (adding or moving them), unless it breaks a required parent
-   * (see `IToolboxComponent.requiredParent`). Returns why the change was refused, if it was.
+   * (see `IToolboxComponent.requiredParent`):
+   * - of a placed component itself: the change is refused;
+   * - only of components nested in the placed ones, e.g. a Data Table in a Panel: the change needs confirming, and once
+   *   confirmed (`options.confirmed`) is applied, leaving them to the validation errors they get until fixed.
    */
   private placeComponents = (
     description: string,
-    change: (state: FormDesignerFormState) => { markup: IFlatComponentsStructure; selectedComponentId?: string | undefined } | undefined,
-  ): DropRejection => {
-    let rejection: DropRejection = undefined;
+    options: IComponentPlacementOptions | undefined,
+    change: (state: FormDesignerFormState) => IComponentsPlacement | undefined,
+  ): IComponentPlacementResult => {
+    let result = PLACEMENT_SUCCEEDED;
     this.updateState((state): FormDesignerFormState => {
-      const result = change(state);
-      if (!result || result.markup === state.formFlatMarkup) return state;
+      const placement = change(state);
+      if (!placement || placement.markup === state.formFlatMarkup) return state;
 
-      rejection = findNewRequirementViolation(state.formFlatMarkup, result.markup, this.getRequiredParent);
-      if (rejection !== undefined) {
-        this.log(`FD: ${description} refused. ${rejection}`);
-        return state;
+      const violations = findNewRequirementViolations(state.formFlatMarkup, placement.markup, this.getRequiredParent);
+      if (violations.size > 0) {
+        const ownViolation = placement.placedIds.map((id) => violations.get(id)).find(isDefined);
+        if (isDefined(ownViolation) || options?.confirmed !== true) {
+          result = this.makePlacementRejection(placement.markup, violations, ownViolation);
+          this.log(`FD: ${description} refused. ${result.errorMessage}`, result.errors);
+          return state;
+        }
       }
 
-      if (result.selectedComponentId !== undefined) this.selectedComponentId = result.selectedComponentId;
-      return { ...state, formFlatMarkup: result.markup };
+      if (placement.selectedComponentId !== undefined) this.selectedComponentId = placement.selectedComponentId;
+      return { ...state, formFlatMarkup: placement.markup };
     }, description);
-    return rejection;
+    return result;
+  };
+
+  private makePlacementRejection = (markup: IFlatComponentsStructure, violations: Map<string, string>, ownViolation: string | undefined): IComponentPlacementResult => {
+    const errors = [...violations].map(([componentId, message]) => {
+      const component = markup.allComponents[componentId];
+      const name = isConfigurableFormComponent(component) ? component.componentName ?? component.type : componentId;
+      return `${name}: ${message}`;
+    });
+    return isDefined(ownViolation)
+      ? { isSuccess: false, errorMessage: ownViolation, errors, requiresConfirmation: false }
+      : {
+        isSuccess: false,
+        errorMessage: errors.length === 1
+          ? 'A component inside it would miss its required parent.'
+          : `${errors.length} components inside it would miss their required parent.`,
+        errors,
+        requiresConfirmation: true,
+      };
   };
 
   private buildMarkupWithNewComponent = (state: FormDesignerFormState, payload: IComponentAddPayload): { markup: IFlatComponentsStructure; newComponents: IConfigurableFormComponent[] } => {
@@ -774,10 +835,10 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     return { markup: newStructure, newComponents };
   };
 
-  addComponent = (payload: IComponentAddPayload): DropRejection =>
-    this.placeComponents(`Added component ${payload.componentType}`, (state) => {
+  addComponent = (payload: IComponentAddPayload, options?: IComponentPlacementOptions): IComponentPlacementResult =>
+    this.placeComponents(`Added component ${payload.componentType}`, options, (state) => {
       const { markup, newComponents } = this.buildMarkupWithNewComponent(state, payload);
-      return { markup, selectedComponentId: newComponents[0]?.id };
+      return { markup, placedIds: newComponents.map((component) => component.id), selectedComponentId: newComponents[0]?.id };
     });
 
   private buildMarkupWithUpdatedChildren = (formFlatMarkup: IFlatComponentsStructure, payload: IUpdateChildComponentsPayload): IFlatComponentsStructure => {
@@ -816,15 +877,20 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     return {
       componentRelations,
       allComponents,
-      parents: formFlatMarkup.parents,
+      parents: withParentsOf(formFlatMarkup.parents, updatedRelations),
     };
   };
 
-  updateChildComponents = (payload: IUpdateChildComponentsPayload): DropRejection => {
+  updateChildComponents = (payload: IUpdateChildComponentsPayload, options?: IComponentPlacementOptions): IComponentPlacementResult => {
     this.log('FD: updateChildComponents', payload);
-    return this.placeComponents(`Updated child components ${payload.containerId}`, (state) => ({
-      markup: this.buildMarkupWithUpdatedChildren(state.formFlatMarkup, payload),
-    }));
+    return this.placeComponents(`Updated child components ${payload.containerId}`, options, (state) => {
+      const oldChildIds = state.formFlatMarkup.componentRelations[payload.containerId] ?? [];
+      return {
+        markup: this.buildMarkupWithUpdatedChildren(state.formFlatMarkup, payload),
+        // the components moved in from another container
+        placedIds: payload.componentIds.filter((id) => !oldChildIds.includes(id)),
+      };
+    });
   };
 
   startDraggingNewItem = (): void => {
@@ -863,8 +929,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     }, 'Form settings updated');
   };
 
-  addDataProperty = (payload: IAddDataPropertyPayload): DropRejection =>
-    this.placeComponents(`Added data property ${payload.propertyMetadata.path}`, (state) => {
+  addDataProperty = (payload: IAddDataPropertyPayload, options?: IComponentPlacementOptions): IComponentPlacementResult =>
+    this.placeComponents(`Added data property ${payload.propertyMetadata.path}`, options, (state) => {
       const { propertyMetadata, index, containerId } = payload;
 
       const { formFlatMarkup } = state;
@@ -886,7 +952,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
       formComponent.parentId = containerId; // set parent
       const markup = this.addComponentToFlatStructure(newFlatMarkup, [formComponent], containerId, index);
-      return { markup, selectedComponentId: formComponent.id };
+      return { markup, placedIds: [formComponent.id], selectedComponentId: formComponent.id };
     });
 
   setReadOnly = (value: boolean): void => {

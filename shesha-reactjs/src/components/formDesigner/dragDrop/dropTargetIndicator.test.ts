@@ -1,4 +1,4 @@
-import { DROP_TARGET_FRAME_ATTR, DROP_TARGET_INVALID_ATTR, DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from './models';
+import { DRAG_CHIP_WARNING_ATTR, DROP_TARGET_FRAME_ATTR, DROP_TARGET_INVALID_ATTR, DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from './models';
 import { COMPONENT_TYPE_ATTR, DRAG_CHIP_ERROR_ATTR, setComponentDragImage } from './dragChip';
 import { designerClassNames } from '../styles/styles';
 import { startDropTargetIndicator, stopDropTargetIndicator } from './dropTargetIndicator';
@@ -107,6 +107,50 @@ describe('dropTargetIndicator', () => {
 
       expect(chipError()?.hidden).toBe(true);
       expect(to.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(false);
+    });
+
+    /** Dispatches a dragover the way the browser does, and returns the drop effect it ends up with. */
+    const dropEffectOfDragOver = (): string => {
+      const dataTransfer = { dropEffect: 'move' };
+      const event = new Event('dragover', { bubbles: true });
+      Object.defineProperty(event, 'dataTransfer', { value: dataTransfer });
+      document.body.dispatchEvent(event);
+      return dataTransfer.dropEffect;
+    };
+
+    it('shows the not-allowed cursor over a drop target that does not meet it', () => {
+      const panel = createContainer('Panel', { left: 20, top: 300, width: 100, height: 100 });
+      const context = createContainer('Data context', { left: 20, top: 100, width: 100, height: 100 });
+      context.setAttribute(COMPONENT_TYPE_ATTR, 'dataContext');
+      const dragged = createTable();
+      context.appendChild(dragged);
+
+      startDropTargetIndicator(dragged, getRequiredParent);
+      expect(dropEffectOfDragOver()).toBe('move');
+
+      panel.appendChild(dragged);
+      expect(dropEffectOfDragOver()).toBe('none');
+
+      context.appendChild(dragged);
+      expect(dropEffectOfDragOver()).toBe('move');
+    });
+
+    it('warns that dropping a container holding misplaced components asks to confirm, listing them once each', async () => {
+      const context = createContainer('Data context', { left: 20, top: 100, width: 100, height: 100 });
+      context.setAttribute(COMPONENT_TYPE_ATTR, 'dataContext');
+      const panel = createContainer('Panel', { left: 20, top: 300, width: 100, height: 100 });
+      const dragged = document.createElement('div');
+      dragged.setAttribute(COMPONENT_TYPE_ATTR, 'panel');
+      dragged.append(createTable(), createTable());
+      context.appendChild(dragged);
+
+      startDropTargetIndicator(dragged, getRequiredParent);
+      await moveTo(dragged, panel);
+
+      expect(chipError()?.textContent).toBe('Dropping it here asks to confirm, as inside it:\n• Needs a Data Context. (×2)');
+      expect(document.querySelector(`[${DRAG_CHIP_WARNING_ATTR}]`)).not.toBeNull();
+      expect(panel.hasAttribute(DROP_TARGET_INVALID_ATTR)).toBe(false);
+      expect(dropEffectOfDragOver()).toBe('move');
     });
 
     it('marks moving a component out of its required parent', async () => {

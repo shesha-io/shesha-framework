@@ -1,14 +1,22 @@
 import { ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
-import { DRAG_CHIP_INVALID_ATTR, DROP_TARGET_LABEL_ATTR, dragChipClassNames } from './models';
+import { DRAG_CHIP_INVALID_ATTR, DRAG_CHIP_WARNING_ATTR, DROP_TARGET_LABEL_ATTR, dragChipClassNames } from './models';
 import { getChipPosition, IRect } from './chipPlacement';
 
 /** Attribute on a designer component's wrapper holding the component type, used to name it while it is dragged. */
 export const COMPONENT_TYPE_ATTR = 'data-sha-component-type';
 
-/** Attribute on the line of the drag chip that says why the item can't be dropped where it is. */
+/** Attribute on the part of the drag chip that says what dropping the item where it is would break. */
 export const DRAG_CHIP_ERROR_ATTR = 'data-sha-drag-chip-error';
+
+/** What the drag chip says about dropping the item where it is. */
+export interface IDragChipFeedback {
+  /** `error`: it can't be dropped there; `warning`: dropping it there needs confirming. */
+  severity: 'error' | 'warning';
+  /** Shown one per line. */
+  messages: string[];
+}
 
 interface IDragChip {
   host: HTMLDivElement;
@@ -92,16 +100,18 @@ export const removeDragChip = (): void => {
 };
 
 /**
- * Shows why the dragged item can't be dropped where it is, below its icon and name, or clears the reason when called
- * without one.
+ * Shows what dropping the dragged item where it is would break, below its icon and name, or clears it when called
+ * without feedback.
  */
-export const setDragChipError = (message: string | undefined): void => {
+export const setDragChipFeedback = (feedback: IDragChipFeedback | undefined): void => {
   if (!current) return;
   const { chip, error } = current;
-  const hasError = message !== undefined && message !== '';
-  error.textContent = hasError ? message : '';
-  error.hidden = !hasError;
-  chip.toggleAttribute(DRAG_CHIP_INVALID_ATTR, hasError);
+  const messages = feedback?.messages.filter((message) => message !== '') ?? [];
+  const severity = messages.length > 0 ? feedback?.severity : undefined;
+  error.textContent = messages.join('\n');
+  error.hidden = severity === undefined;
+  chip.toggleAttribute(DRAG_CHIP_INVALID_ATTR, severity === 'error');
+  chip.toggleAttribute(DRAG_CHIP_WARNING_ATTR, severity === 'warning');
 };
 
 /**

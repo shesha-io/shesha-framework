@@ -5,7 +5,6 @@ import { useStyles } from "../styles/styles";
 import { isDefined } from "@/utils/nullables";
 import { isPropertySettings } from "@/designer-components/_settings/utils/utils";
 import classNames from "classnames";
-import { isNonEmptyArray } from "@/utils/array";
 import { Show } from "@/components/show";
 import { ConfigProvider, Tooltip, theme as antdTheme } from "antd";
 import { EyeInvisibleOutlined, FunctionOutlined, LockOutlined } from "@ant-design/icons";
@@ -22,7 +21,6 @@ import { useThemeState } from "@/providers/theme";
 import { useFormDesignerComponentGetter } from "@/providers/form/hooks";
 import { createPortal } from "react-dom";
 import { ComponentProperties } from "../componentPropertiesPanel/componentProperties";
-import { useComponentValidationResults } from "@/providers/validator/hooks";
 import { getDesignerIndicators } from "./designerIndicators";
 import { DropTargetOwnerProvider } from "../dragDrop/dropTargetContext";
 interface IDesignerFormComponentProps {
@@ -43,7 +41,6 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
   const { readOnly } = useFormDesigner();
   const settingsPanelElement = useFormDesignerSettingsPanelElement();
   const getToolboxComponent = useFormDesignerComponentGetter();
-  const validationResults = useComponentValidationResults(componentModel.id);
   // Memoize component lookup to prevent unnecessary re-renders
   const component = useMemo(() => getToolboxComponent(componentModel.type), [getToolboxComponent, componentModel.type]);
   const selectedComponentId = useFormDesignerSelectedComponentId();
@@ -93,8 +90,6 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
       className={classNames(shaComponentStyles.shaComponent, shaComponentStyles.componentDragHandle,
         {
           [styles.selectedComponent]: isSelected,
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          [styles.hasConfigErrors]: false && isNonEmptyArray(validationResults),
         })}
     >
       <span className={styles.shaComponentIndicator}>

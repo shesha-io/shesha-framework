@@ -1,5 +1,5 @@
 import { createGlobalStyle } from '@/styles';
-import { DRAG_CHIP_INVALID_ATTR, dragChipClassNames } from './models';
+import { DRAG_CHIP_INVALID_ATTR, DRAG_CHIP_WARNING_ATTR, dragChipClassNames } from './models';
 
 const { host, chip, content, error } = dragChipClassNames;
 
@@ -36,6 +36,9 @@ export const DragChipGlobalStyles = createGlobalStyle`
   .${chip}[${DRAG_CHIP_INVALID_ATTR}] {
     border-color: ${({ theme }) => theme.colorError};
   }
+  .${chip}[${DRAG_CHIP_WARNING_ATTR}] {
+    border-color: ${({ theme }) => theme.colorWarning};
+  }
   .${content} {
     display: inline-flex;
     align-items: center;
@@ -47,6 +50,10 @@ export const DragChipGlobalStyles = createGlobalStyle`
     font-size: ${({ theme }) => theme.fontSizeSM}px;
     font-weight: 400;
     line-height: 18px;
-    white-space: normal;
+    /* one message per line */
+    white-space: pre-line;
+  }
+  .${chip}[${DRAG_CHIP_WARNING_ATTR}] .${error} {
+    color: ${({ theme }) => theme.colorWarningText};
   }
 `;

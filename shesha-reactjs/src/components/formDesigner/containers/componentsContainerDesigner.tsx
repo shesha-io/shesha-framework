@@ -8,7 +8,7 @@ import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
 import { ShaForm } from '@/providers/form';
 import { useFormDesigner, useFormDesignerReadOnly } from '@/providers/formDesigner';
-import { DropRejection } from '@/providers/formDesigner/contexts';
+import { IComponentPlacementOptions, IComponentPlacementResult } from '@/providers/formDesigner/contexts';
 import { useStyles } from '../styles/styles';
 import { useParent } from '@/providers/parentProvider';
 import _ from 'lodash';
@@ -54,11 +54,33 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
   const readOnly = useFormDesignerReadOnly();
   const formDesigner = useFormDesigner();
   const { updateChildComponents, addComponent, addDataProperty, startDragging, endDragging } = useFormDesigner();
-  const { message } = App.useApp();
+  const { modal } = App.useApp();
 
-  /** Tells the user why the designer refused a drop, e.g. a Data Table dropped outside a Data Context. */
-  const reportRejection = (rejection: DropRejection): void => {
-    if (isDefined(rejection)) void message.error(rejection);
+  /**
+   * Applies a drop. One that breaks a required parent of the dropped component is ignored, as the drop target already
+   * showed why while dragging. One that only breaks components nested in it, e.g. a Panel holding a Data Table, is
+   * applied once the user confirms, and those components are listed in the validation panel until they are fixed.
+   */
+  const place = (apply: (options?: IComponentPlacementOptions) => IComponentPlacementResult): void => {
+    const result = apply();
+    if (!result.requiresConfirmation) return;
+    modal.confirm({
+      title: 'Drop it here anyway?',
+      content: (
+        <>
+          <p>{result.errorMessage}</p>
+          <ul>
+            {result.errors.map((error) => <li key={error}>{error}</li>)}
+          </ul>
+          <p>They will be listed in the validation panel until they are fixed.</p>
+        </>
+      ),
+      okText: 'Yes',
+      cancelText: 'No',
+      onOk: () => {
+        apply({ confirmed: true });
+      },
+    });
   };
 
   const dropTarget = useDropContainerElementState(containerId, direction);
@@ -86,11 +108,11 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
       // dropped data item
       const draggedItem = newState[newDataItemIndex];
       if (isToolboxDroppableDataItem(draggedItem)) {
-        reportRejection(addDataProperty({
+        place((options) => addDataProperty({
           propertyMetadata: draggedItem.metadata,
           containerId,
           index: newDataItemIndex,
-        }));
+        }, options));
       }
     } else {
       const newComponentIndex = newState.findIndex((item) => item['type'] === TOOLBOX_COMPONENT_DROPPABLE_KEY);
@@ -98,11 +120,11 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
         // add new component
         const toolboxComponent = newState[newComponentIndex];
         if (isToolboxDroppableComponent(toolboxComponent)) {
-          reportRejection(addComponent({
+          place((options) => addComponent({
             containerId,
             componentType: toolboxComponent.id.toString(),
             index: newComponentIndex,
-          }));
+          }, options));
         }
       } else {
         // reorder existing components
@@ -121,7 +143,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
 
         if (isModified) {
           const newIds = newState.map<string>((item) => item.id.toString());
-          reportRejection(updateChildComponents({ containerId, componentIds: newIds }));
+          place((options) => updateChildComponents({ containerId, componentIds: newIds }, options));
         }
       }
     }

@@ -1,8 +1,8 @@
 import { designerClassNames } from '../styles/styles';
 import { DROP_TARGET_FRAME_ATTR, DROP_TARGET_INVALID_ATTR, DROP_TARGET_LABEL_ATTR, DROP_TARGET_LAYOUT_ATTR } from './models';
 import { getDropDirection } from './dropDirection';
-import { findDomRequirementViolation, getDomRequirementViolations, RequiredParentGetter } from './dropRequirements';
-import { removeDragChip, setDragChipDropMarker, setDragChipError } from './dragChip';
+import { checkDomDrop, getDomRequirementViolations, IDomDropCheck, RequiredParentGetter } from './dropRequirements';
+import { IDragChipFeedback, removeDragChip, setDragChipDropMarker, setDragChipFeedback } from './dragChip';
 
 /** Height of the name drawn above the highlighted component. */
 const LABEL_HEIGHT = 18;
@@ -36,6 +36,8 @@ let colorResolved = false;
 let requiredParentGetter: RequiredParentGetter | null = null;
 /** Elements of the dragged item that were already in the wrong place when the drag started. */
 let preexistingViolations: ReadonlySet<Element> = new Set();
+/** The dragged item can't be dropped where it is, so the drop is refused and the cursor says so. */
+let dropRefused = false;
 
 const createElements = (): IIndicatorElements => {
   const frame = document.createElement('div');
@@ -183,6 +185,29 @@ const getHighlightTarget = (container: HTMLElement): HTMLElement => {
 };
 
 /**
+ * What the drag chip says about a drop: why it can't be made, or every problem it would leave inside the dragged
+ * component, once each, which the user is asked to confirm on dropping.
+ */
+const getChipFeedback = (check: IDomDropCheck | undefined): IDragChipFeedback | undefined => {
+  if (!check) return undefined;
+  if (check.error !== undefined) return { severity: 'error', messages: [check.error] };
+  if (check.nestedErrors.length === 0) return undefined;
+
+  const counts = new Map<string, number>();
+  check.nestedErrors.forEach((message) => counts.set(message, (counts.get(message) ?? 0) + 1));
+  const lines = [...counts].map(([message, count]) => `• ${message}${count > 1 ? ` (×${count})` : ''}`);
+  return { severity: 'warning', messages: ['Dropping it here asks to confirm, as inside it:', ...lines] };
+};
+
+/**
+ * Shows the not-allowed cursor while the drop is refused. Runs on the window after the drop containers' own dragover
+ * handlers, as SortableJS allows every drop in them.
+ */
+const showRefusedCursor = (event: DragEvent): void => {
+  if (dropRefused && event.dataTransfer) event.dataTransfer.dropEffect = 'none';
+};
+
+/**
  * SortableJS moves the dragged element into the container it will be dropped into, so its parent is the drop target.
  * Runs on every dragover, so it only compares elements and attributes; styles are read only when the container changes.
  */
@@ -204,17 +229,19 @@ const trackContainer = (): void => {
 
   if (!container || !currentTarget) {
     elements.frame.style.display = 'none';
-    setDragChipError(undefined);
+    dropRefused = false;
+    setDragChipFeedback(undefined);
     return;
   }
 
-  const violation = requiredParentGetter ? findDomRequirementViolation(draggedElement, requiredParentGetter, preexistingViolations) : undefined;
-  if (violation) container.setAttribute(DROP_TARGET_INVALID_ATTR, '');
+  const check = requiredParentGetter ? checkDomDrop(draggedElement, requiredParentGetter, preexistingViolations) : undefined;
+  dropRefused = check?.error !== undefined;
+  if (dropRefused) container.setAttribute(DROP_TARGET_INVALID_ATTR, '');
   // the line changes colour with the attribute, so the frame borrows it again once it is rendered
   colorResolved = false;
-  setColor(violation ? FALLBACK_ERROR_COLOR : FALLBACK_COLOR);
-  // the reason is shown on the chip next to the cursor, where the user is looking
-  setDragChipError(violation);
+  setColor(dropRefused ? FALLBACK_ERROR_COLOR : FALLBACK_COLOR);
+  // shown on the chip next to the cursor, where the user is looking
+  setDragChipFeedback(getChipFeedback(check));
   elements.labelText.textContent = container.getAttribute(DROP_TARGET_LABEL_ATTR);
   resizeObserver?.observe(currentTarget);
   scheduleMeasure();
@@ -223,8 +250,10 @@ const trackContainer = (): void => {
 /**
  * Starts highlighting the drop target of `dragged` until `stopDropTargetIndicator` is called. With
  * `getRequiredParent`, a drop target that doesn't meet the dragged component's required parent (see
- * `IToolboxComponent.requiredParent`) is drawn in the error colour, and the reason is shown on the drag chip. A component
- * that was already in the wrong place when the drag started doesn't count, as the designer accepts moving it.
+ * `IToolboxComponent.requiredParent`) is drawn in the error colour with the not-allowed cursor, and the reason is shown
+ * on the drag chip. A drop target that only breaks components nested in the dragged one lists them on the chip, as
+ * dropping there asks to confirm. A component that was already in the wrong place when the drag started doesn't count,
+ * as the designer accepts moving it.
  */
 export const startDropTargetIndicator = (dragged: HTMLElement, getRequiredParent?: RequiredParentGetter): void => {
   if (!elements?.frame.isConnected) elements = createElements();
@@ -237,6 +266,7 @@ export const startDropTargetIndicator = (dragged: HTMLElement, getRequiredParent
   preexistingViolations = requiredParentGetter && startsOnCanvas
     ? new Set(getDomRequirementViolations(dragged, requiredParentGetter).keys())
     : new Set();
+  dropRefused = false;
   currentContainer = null;
   currentTarget = null;
   clipAncestors = null;
@@ -248,6 +278,8 @@ export const startDropTargetIndicator = (dragged: HTMLElement, getRequiredParent
   resizeObserver ??= typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(scheduleMeasure);
 
   document.addEventListener('dragover', trackContainer, true);
+  // bubbling, so it runs after the drop containers' own handlers
+  window.addEventListener('dragover', showRefusedCursor);
   document.addEventListener('scroll', scheduleMeasure, true);
   window.addEventListener('resize', scheduleMeasure);
   trackContainer();
@@ -255,6 +287,7 @@ export const startDropTargetIndicator = (dragged: HTMLElement, getRequiredParent
 
 export const stopDropTargetIndicator = (): void => {
   document.removeEventListener('dragover', trackContainer, true);
+  window.removeEventListener('dragover', showRefusedCursor);
   document.removeEventListener('scroll', scheduleMeasure, true);
   window.removeEventListener('resize', scheduleMeasure);
   resizeObserver?.disconnect();
@@ -263,6 +296,7 @@ export const stopDropTargetIndicator = (): void => {
   draggedElement = null;
   requiredParentGetter = null;
   preexistingViolations = new Set();
+  dropRefused = false;
   removeDragChip();
   currentContainer?.removeAttribute(DROP_TARGET_INVALID_ATTR);
   currentContainer = null;
