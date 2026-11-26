@@ -202,7 +202,7 @@ namespace Shesha.Authorization
 
             var secondsRemaining = (int)Math.Ceiling((nextAllowed - DateTime.Now).TotalSeconds);
             throw new TooManyRequestsException(
-                $"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.");
+                $"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.", secondsRemaining);
         }
 
         public virtual async Task<ShaLoginResult<TUser>> LoginViaOtpAsync(string mobileNo, Guid operationId, string code, string imei = null, string tenancyName = null, bool shouldLockout = true)

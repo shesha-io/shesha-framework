@@ -966,6 +966,38 @@ namespace Shesha.Tests.Users
             tokenAuthConfig.Expiration = TimeSpan.FromDays(1);
         }
 
+        [Theory]
+        [InlineData(RefListPasswordResetMethods.SmsOtp)]
+        [InlineData(RefListPasswordResetMethods.EmailLink)]
+        public async Task ValidateResetCode_should_return_bad_request_for_an_unknown_username_TestAsync(RefListPasswordResetMethods method)
+        {
+            var userAppService = Resolve<IUserAppService>();
+            var userName = Guid.NewGuid().ToString("N");
+            var sentUserName = method == RefListPasswordResetMethods.EmailLink ? Convert.ToBase64String(Encoding.UTF8.GetBytes(userName)) : userName;
+
+            var ex = await Should.ThrowAsync<BadRequestException>(async () => await userAppService.ValidateResetCodeAsync(
+                new ResetPasswordValidateCodeInput { Username = sentUserName, Code = "123456", Method = (long)method }));
+            ex.Message.ShouldBe("Your username is not recognised");
+        }
+
+        [Fact]
+        public async Task ValidateResetCode_should_return_bad_request_for_an_email_link_username_that_is_not_base64_TestAsync()
+        {
+            var userAppService = Resolve<IUserAppService>();
+
+            await Should.ThrowAsync<BadRequestException>(async () => await userAppService.ValidateResetCodeAsync(
+                new ResetPasswordValidateCodeInput { Username = "not base64!", Code = "123456", Method = (long)RefListPasswordResetMethods.EmailLink }));
+        }
+
+        [Fact]
+        public async Task SendEmailLink_should_return_bad_request_for_an_unknown_username_TestAsync()
+        {
+            var userAppService = Resolve<IUserAppService>();
+
+            var ex = await Should.ThrowAsync<BadRequestException>(async () => await userAppService.SendEmailLinkAsync(Guid.NewGuid().ToString("N")));
+            ex.Message.ShouldBe("Your username is not recognised");
+        }
+
         [Fact]
         public async Task CreateUser_TestAsync()
         {
