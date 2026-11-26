@@ -24,9 +24,9 @@ namespace Shesha.Tests.Otp
             var other = $"sms:{Guid.NewGuid():N}";
             var now = DateTime.UtcNow;
 
-            await log.AddAsync(destination, now.AddMinutes(-30), now.AddDays(-1));
-            await log.AddAsync(destination, now.AddMinutes(-5), now.AddDays(-1));
-            await log.AddAsync(other, now.AddMinutes(-5), now.AddDays(-1));
+            await log.AddAsync(destination, now.AddMinutes(-30));
+            await log.AddAsync(destination, now.AddMinutes(-5));
+            await log.AddAsync(other, now.AddMinutes(-5));
 
             var times = await log.GetSendsAsync(destination, now.AddMinutes(-10));
             times.Count.ShouldBe(1);
@@ -34,15 +34,20 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
-        public async Task Should_remove_sends_older_than_the_retention_TestAsync()
+        public async Task Should_delete_sends_older_than_the_specified_time_TestAsync()
         {
             var log = Resolve<DbOtpSendLog>();
             var destination = $"sms:{Guid.NewGuid():N}";
             var now = DateTime.UtcNow;
 
-            await log.AddAsync(destination, now.AddHours(-3), now.AddDays(-1));
-            await log.AddAsync(destination, now, now.AddHours(-2));
+            await log.AddAsync(destination, now.AddHours(-3));
+            await log.AddAsync(destination, now);
 
+            // recording a send doesn't remove old sends...
+            (await log.GetSendsAsync(destination, now.AddDays(-1))).Count.ShouldBe(2);
+
+            // ...the cleanup job does
+            (await log.DeleteOlderThanAsync(now.AddHours(-2))).ShouldBeGreaterThanOrEqualTo(1);
             (await log.GetSendsAsync(destination, now.AddDays(-1))).Count.ShouldBe(1);
         }
 
@@ -68,8 +73,8 @@ namespace Shesha.Tests.Otp
             var destination = $"sms:{Guid.NewGuid():N}";
             var now = DateTime.UtcNow;
 
-            var idA = await instanceA.AddAsync(destination, now, now.AddDays(-1));
-            var idB = await instanceB.AddAsync(destination, now, now.AddDays(-1));
+            var idA = await instanceA.AddAsync(destination, now);
+            var idB = await instanceB.AddAsync(destination, now);
 
             (await instanceA.GetSendsAsync(destination, now.AddMinutes(-1))).Select(s => s.Id).ShouldContain(idB);
             (await instanceB.GetSendsAsync(destination, now.AddMinutes(-1))).Select(s => s.Id).ShouldContain(idA);
@@ -86,7 +91,7 @@ namespace Shesha.Tests.Otp
             var destination = $"sms:{mobileNo}";
             var instanceB = Resolve<DbOtpSendLog>();
             var instanceA = new InterleavingSendLog(Resolve<DbOtpSendLog>(),
-                () => instanceB.AddAsync(destination, DateTime.UtcNow, DateTime.UtcNow.AddDays(-1)));
+                () => instanceB.AddAsync(destination, DateTime.UtcNow));
 
             var throttleA = CreateThrottle(instanceA, cooldownSeconds, maxSendsPerHour);
             await Should.ThrowAsync<TooManyRequestsException>(() => throttleA.CheckAndRegisterSendAsync(mobileNo, OtpSendType.Sms));
@@ -126,9 +131,9 @@ namespace Shesha.Tests.Otp
                 _afterAdd = afterAdd;
             }
 
-            public async Task<Guid> AddAsync(string destination, DateTime sentOnUtc, DateTime deleteBeforeUtc)
+            public async Task<Guid> AddAsync(string destination, DateTime sentOnUtc)
             {
-                var id = await _inner.AddAsync(destination, sentOnUtc, deleteBeforeUtc);
+                var id = await _inner.AddAsync(destination, sentOnUtc);
                 var afterAdd = _afterAdd;
                 _afterAdd = null;
                 if (afterAdd != null)
@@ -139,6 +144,8 @@ namespace Shesha.Tests.Otp
             public Task<List<OtpSendRecord>> GetSendsAsync(string destination, DateTime sinceUtc) => _inner.GetSendsAsync(destination, sinceUtc);
 
             public Task RemoveAsync(Guid id) => _inner.RemoveAsync(id);
+
+            public Task<int> DeleteOlderThanAsync(DateTime utc) => _inner.DeleteOlderThanAsync(utc);
         }
 
         [Fact]
@@ -148,8 +155,8 @@ namespace Shesha.Tests.Otp
             var destination = $"sms:{Guid.NewGuid():N}";
             var now = DateTime.UtcNow;
 
-            var id = await log.AddAsync(destination, now, now.AddDays(-1));
-            var kept = await log.AddAsync(destination, now.AddSeconds(-1), now.AddDays(-1));
+            var id = await log.AddAsync(destination, now);
+            var kept = await log.AddAsync(destination, now.AddSeconds(-1));
             await log.RemoveAsync(id);
 
             (await log.GetSendsAsync(destination, now.AddMinutes(-1))).Select(s => s.Id).ShouldBe(new[] { kept });
@@ -161,7 +168,7 @@ namespace Shesha.Tests.Otp
             // a send recorded by another instance, e.g. a moment ago
             var mobileNo = "08" + new Random().Next(10000000, 99999999);
             var log = Resolve<IOtpSendLog>();
-            await log.AddAsync($"sms:{mobileNo}", DateTime.UtcNow, DateTime.UtcNow.AddDays(-1));
+            await log.AddAsync($"sms:{mobileNo}", DateTime.UtcNow);
 
             // the default 60 second cooldown refuses the next send
             await Should.ThrowAsync<TooManyRequestsException>(() => Resolve<IOtpSendThrottle>().CheckAndRegisterSendAsync(mobileNo, OtpSendType.Sms));

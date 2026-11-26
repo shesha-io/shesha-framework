@@ -383,6 +383,48 @@ namespace Shesha.Tests.Otp
         #region Send throttling
 
         [Theory]
+        [InlineData(0, 60)]
+        [InlineData(60, 60)]
+        [InlineData(3600, 60)]
+        [InlineData(7200, 120)]
+        public void Throttle_retention_should_cover_the_hour_and_the_cooldown(int cooldownSeconds, int expectedMinutes)
+        {
+            OtpSendThrottle.GetRetention(cooldownSeconds).ShouldBe(TimeSpan.FromMinutes(expectedMinutes));
+        }
+
+        [Fact]
+        public async Task Throttle_should_not_remove_old_sends_when_sendingAsync()
+        {
+            // old sends are removed by OtpSendLogCleanupJob, not while a send is recorded
+            var store = new Dictionary<string, List<DateTime>> { ["sms:0820000000"] = new List<DateTime> { DateTime.UtcNow.AddDays(-2) } };
+            var throttle = CreateThrottle(cooldownSeconds: 60, maxSendsPerHour: 5, store);
+
+            await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms);
+
+            store["sms:0820000000"].Count.ShouldBe(1);
+        }
+
+        [Fact]
+        public async Task Cleanup_job_should_remove_sends_older_than_the_retentionAsync()
+        {
+            var store = new Dictionary<string, List<DateTime>>
+            {
+                ["sms:0821234567"] = new List<DateTime> { DateTime.UtcNow.AddMinutes(-150), DateTime.UtcNow.AddMinutes(-90), DateTime.UtcNow.AddMinutes(-5) },
+            };
+            var securityAccessor = new Mock<ISettingAccessor<SecuritySettings>>();
+            securityAccessor.Setup(a => a.GetValueAsync(It.IsAny<SettingManagementContext>()))
+                .ReturnsAsync(new SecuritySettings { OtpCooldownSeconds = 7200 });
+            var securitySettings = new Mock<ISecuritySettings>();
+            securitySettings.SetupGet(s => s.SecuritySettings).Returns(securityAccessor.Object);
+
+            // a two hour cooldown keeps sends for two hours
+            var deleted = await OtpSendLogCleanupJob.CleanupAsync(new InMemoryOtpSendLog(store), securitySettings.Object);
+
+            deleted.ShouldBe(1);
+            store["sms:0821234567"].Count.ShouldBe(2);
+        }
+
+        [Theory]
         [InlineData(60, 10)] // cooldown
         [InlineData(0, 1)] // hourly cap of one
         public async Task Throttle_should_refuse_a_send_when_another_instance_sends_concurrentlyAsync(int cooldownSeconds, int maxSendsPerHour)
@@ -684,10 +726,8 @@ namespace Shesha.Tests.Otp
                 return Task.FromResult(records);
             }
 
-            public Task<Guid> AddAsync(string destination, DateTime sentOnUtc, DateTime deleteBeforeUtc)
+            public Task<Guid> AddAsync(string destination, DateTime sentOnUtc)
             {
-                foreach (var times in _store.Values)
-                    times.RemoveAll(t => t < deleteBeforeUtc);
                 if (!_store.TryGetValue(destination, out var list))
                     _store[destination] = list = new List<DateTime>();
                 list.Add(sentOnUtc);
@@ -702,6 +742,14 @@ namespace Shesha.Tests.Otp
             /// Called after a send is recorded, e.g. to simulate a send registered by another instance
             /// </summary>
             public Action<string> AfterAdd { get; set; }
+
+            public Task<int> DeleteOlderThanAsync(DateTime utc)
+            {
+                var deleted = 0;
+                foreach (var times in _store.Values)
+                    deleted += times.RemoveAll(t => t < utc);
+                return Task.FromResult(deleted);
+            }
 
             public Task RemoveAsync(Guid id)
             {

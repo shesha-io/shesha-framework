@@ -65,13 +65,11 @@ namespace Shesha.Otp
             try
             {
                 var now = DateTime.UtcNow;
-                // sends are kept for the hourly cap and for the cooldown, which may be longer than an hour
-                var cooldown = TimeSpan.FromSeconds(Math.Max(cooldownSeconds, 0));
-                var retention = cooldown > Window ? cooldown : Window;
+                var retention = GetRetention(cooldownSeconds);
                 // The send is recorded (and committed) before the history is read, and removed again if it isn't allowed. Of two
                 // requests for the same destination on different instances, the one that reads last sees the other's record,
                 // so they can't both get through. If they clash, both may be refused
-                var id = await _sendLog.AddAsync(key, now, now - retention);
+                var id = await _sendLog.AddAsync(key, now);
                 var otherSends = (await _sendLog.GetSendsAsync(key, now - retention))
                     .Where(s => s.Id != id)
                     .Select(s => s.SentOnUtc)
@@ -89,6 +87,16 @@ namespace Shesha.Otp
             {
                 Lock.Release();
             }
+        }
+
+        /// <summary>
+        /// How long sends are needed: for the hourly cap, and for the cooldown, which may be longer than an hour. Older sends
+        /// are ignored, and removed by <see cref="OtpSendLogCleanupJob"/>
+        /// </summary>
+        public static TimeSpan GetRetention(int cooldownSeconds)
+        {
+            var cooldown = TimeSpan.FromSeconds(Math.Max(cooldownSeconds, 0));
+            return cooldown > Window ? cooldown : Window;
         }
 
         /// <summary>
