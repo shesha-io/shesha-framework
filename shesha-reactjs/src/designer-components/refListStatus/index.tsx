@@ -8,12 +8,13 @@ import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useForm } from '@/providers';
 import { useComponentApiProvider } from '@/providers/componentApi/provider';
-import { useComponentModel } from '@/providers/form/providers/formMarkupProvider';
+import { FormFlatMarkupContext } from '@/providers/form/providers/formMarkupProvider';
+import { useParentOrUndefined } from '@/providers/parentProvider';
 import { isPropertySettings } from '../_settings/utils/utils';
 import { isDefined } from '@/utils/nullables';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { RefListStatusApi } from '../../componentsApi/componentApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
@@ -47,8 +48,12 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
     /* The raw markup still carries the unevaluated setting, which is the only way to tell a JS
        display apart from a chosen mode: by the time the model reaches here the evaluators have all
        been resolved. The canvas needs to know because it has no data to resolve them against. */
-    const rawModel: Partial<IRefListStatusComponentProps> = useComponentModel(model.id);
-    const displayIsDynamic = isPropertySettings(rawModel.itemDisplay) && rawModel.itemDisplay._mode === 'code';
+    // a subForm keeps its markup on the parent, not in the form markup context, so fall back to it
+    const formMarkup = useContext(FormFlatMarkupContext);
+    const parent = useParentOrUndefined();
+    const rawModel: Partial<IRefListStatusComponentProps> | undefined =
+      formMarkup?.allComponents[model.id] ?? parent?.formFlatMarkup?.allComponents[model.id];
+    const displayIsDynamic = isPropertySettings(rawModel?.itemDisplay) && rawModel.itemDisplay._mode === 'code';
 
     const [itemText, setItemText] = useState<string | undefined>(undefined);
     const onItemTextChange = useCallback((value: string | null | undefined) => setItemText(value ?? undefined), []);
