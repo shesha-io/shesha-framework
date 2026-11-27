@@ -152,6 +152,10 @@ namespace Shesha.Otp
                 ActionType = input.ActionType,
             };
 
+            // record the send-attempt time regardless of the outcome so that the per-user OTP
+            // cooldown works even when IgnoreOtpValidation is on (dev/QA) or the gateway fails.
+            otp.SentOn = DateTime.Now;
+
             // send otp
             if (settings.IgnoreOtpValidation)
             {
@@ -161,8 +165,6 @@ namespace Shesha.Otp
             {
                 try
                 {
-                    otp.SentOn = DateTime.Now;
-
                     await SendInternalAsync(otp);
 
                     otp.SendStatus = OtpSendStatus.Sent;

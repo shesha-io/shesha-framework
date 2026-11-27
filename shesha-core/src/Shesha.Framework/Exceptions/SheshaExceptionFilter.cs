@@ -4,6 +4,7 @@ using Abp.Authorization;
 using Abp.Web.Configuration;
 using Abp.Web.Models;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Globalization;
 using System.Net;
 
 namespace Shesha.Exceptions
@@ -24,13 +25,21 @@ namespace Shesha.Exceptions
                 ContentNotModifiedException => (int)HttpStatusCode.NotModified,
                 TooManyRequestsException => (int)HttpStatusCode.TooManyRequests,
                 VerificationFailedException => (int)HttpStatusCode.BadRequest,
+                BadRequestException => (int)HttpStatusCode.BadRequest,
                 _ => base.GetStatusCode(context, wrapOnError),
             };
         }
 
         protected override void HandleAndWrapException(ExceptionContext context, WrapResultAttribute wrapResultAttribute)
         {
+            // the base class clears context.Exception once it has wrapped the error
+            var exception = context.Exception;
+
             base.HandleAndWrapException(context, wrapResultAttribute);
+
+            // like the framework rate limiter's 429 responses, tell the client when it may try again
+            if (exception is TooManyRequestsException { RetryAfterSeconds: > 0 } tooManyRequests)
+                context.HttpContext.Response.Headers["Retry-After"] = tooManyRequests.RetryAfterSeconds.Value.ToString(CultureInfo.InvariantCulture);
 
             // prevent `Writing to the response body is invalid for responses with status code 304.` exception
             if (context.HttpContext.Response.StatusCode == (int)HttpStatusCode.NotModified)

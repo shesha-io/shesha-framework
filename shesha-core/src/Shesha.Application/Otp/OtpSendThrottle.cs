@@ -1,7 +1,5 @@
 using Abp.Dependency;
-using Abp.Runtime.Caching;
 using Abp.UI;
-using Shesha.Cache;
 using Shesha.Configuration.Security;
 using Shesha.Domain.Enums;
 using Shesha.Exceptions;
@@ -14,36 +12,6 @@ using System.Threading.Tasks;
 
 namespace Shesha.Otp
 {
-    /// <summary>
-    /// History of OTP sends to a single destination
-    /// </summary>
-    [Serializable]
-    public class OtpSendHistory
-    {
-        /// <summary>
-        /// UTC times of the OTP sends within the last hour, or within the cooldown when that is longer
-        /// </summary>
-        public List<DateTime> SentOnUtc { get; set; } = new List<DateTime>();
-    }
-
-    /// <summary>
-    /// Cache of OTP send history, keyed by normalized destination
-    /// </summary>
-    public interface IOtpSendThrottleCache : ICacheHolder<string, OtpSendHistory>
-    {
-    }
-
-    /// <inheritdoc/>
-    public class OtpSendThrottleCache : CacheHolder<string, OtpSendHistory>, IOtpSendThrottleCache, ISingletonDependency
-    {
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public OtpSendThrottleCache(ICacheManager cacheManager) : base("OtpSendThrottleCache", cacheManager)
-        {
-        }
-    }
-
     /// <summary>
     /// Limits how often one-time pins can be sent to the same destination (mobile number or email address),
     /// regardless of which endpoint or user requested them
@@ -62,20 +30,20 @@ namespace Shesha.Otp
     {
         private static readonly TimeSpan Window = TimeSpan.FromHours(1);
 
-        // Serializes check-and-register within this process. The cache has no atomic operations, so the limits are
-        // approximate across multiple instances
+        // Avoids needless refusals when requests in this process clash (see CheckAndRegisterSendAsync). Not needed for the
+        // limits to hold across instances
         private static readonly SemaphoreSlim Lock = new SemaphoreSlim(1, 1);
 
-        private readonly IOtpSendThrottleCache _cache;
+        private readonly IOtpSendLog _sendLog;
         private readonly IOtpSettings _otpSettings;
         private readonly ISecuritySettings _securitySettings;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public OtpSendThrottle(IOtpSendThrottleCache cache, IOtpSettings otpSettings, ISecuritySettings securitySettings)
+        public OtpSendThrottle(IOtpSendLog sendLog, IOtpSettings otpSettings, ISecuritySettings securitySettings)
         {
-            _cache = cache;
+            _sendLog = sendLog;
             _otpSettings = otpSettings;
             _securitySettings = securitySettings;
         }
@@ -97,28 +65,23 @@ namespace Shesha.Otp
             try
             {
                 var now = DateTime.UtcNow;
-                // sends are kept for the hourly cap and for the cooldown, which may be longer than an hour
-                var cooldown = TimeSpan.FromSeconds(Math.Max(cooldownSeconds, 0));
-                var retention = cooldown > Window ? cooldown : Window;
-                var history = await _cache.Cache.GetOrDefaultAsync(key) ?? new OtpSendHistory();
-                var retainedSends = history.SentOnUtc.Where(t => t > now - retention).OrderBy(t => t).ToList();
+                var retention = GetRetention(cooldownSeconds);
+                // The send is recorded (and committed) before the history is read, and removed again if it isn't allowed. Of two
+                // requests for the same destination on different instances, the one that reads last sees the other's record,
+                // so they can't both get through. If they clash, both may be refused
+                var id = await _sendLog.AddAsync(key, now);
+                var otherSends = (await _sendLog.GetSendsAsync(key, now - retention))
+                    .Where(s => s.Id != id)
+                    .Select(s => s.SentOnUtc)
+                    .OrderBy(t => t)
+                    .ToList();
 
-                if (cooldownSeconds > 0 && retainedSends.Any())
+                var refusal = GetRefusal(otherSends, now, cooldownSeconds, maxSends);
+                if (refusal != null)
                 {
-                    var nextAllowed = retainedSends.Last().AddSeconds(cooldownSeconds);
-                    if (nextAllowed > now)
-                    {
-                        var secondsRemaining = (int)Math.Ceiling((nextAllowed - now).TotalSeconds);
-                        throw new TooManyRequestsException($"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.");
-                    }
+                    await _sendLog.RemoveAsync(id);
+                    throw refusal;
                 }
-
-                if (retainedSends.Count(t => t > now - Window) >= maxSends)
-                    throw new TooManyRequestsException("Too many OTP requests. Please try again later.");
-
-                retainedSends.Add(now);
-                history.SentOnUtc = retainedSends;
-                await _cache.Cache.SetAsync(key, history, absoluteExpireTime: new DateTimeOffset(now.Add(retention)));
             }
             finally
             {
@@ -127,9 +90,50 @@ namespace Shesha.Otp
         }
 
         /// <summary>
+        /// How long sends are needed: for the hourly cap, and for the cooldown, which may be longer than an hour. Older sends
+        /// are ignored, and removed by <see cref="OtpSendLogCleanupJob"/>
+        /// </summary>
+        public static TimeSpan GetRetention(int cooldownSeconds)
+        {
+            var cooldown = TimeSpan.FromSeconds(Math.Max(cooldownSeconds, 0));
+            return cooldown > Window ? cooldown : Window;
+        }
+
+        /// <summary>
+        /// Returns the exception to throw if a send isn't allowed yet, otherwise null
+        /// </summary>
+        private static TooManyRequestsException? GetRefusal(List<DateTime> otherSends, DateTime now, int cooldownSeconds, int maxSends)
+        {
+            if (cooldownSeconds > 0 && otherSends.Any())
+            {
+                var nextAllowed = otherSends.Last().AddSeconds(cooldownSeconds);
+                if (nextAllowed > now)
+                {
+                    var secondsRemaining = SecondsUntil(nextAllowed, now);
+                    return new TooManyRequestsException($"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.", secondsRemaining);
+                }
+            }
+
+            var sendsInWindow = otherSends.Where(t => t > now - Window).ToList();
+            if (sendsInWindow.Count >= maxSends)
+            {
+                // a send is allowed again once enough of the sends in the window have dropped out of it
+                var nextAllowed = sendsInWindow[sendsInWindow.Count - maxSends].Add(Window);
+                return new TooManyRequestsException("Too many OTP requests. Please try again later.", SecondsUntil(nextAllowed, now));
+            }
+
+            return null;
+        }
+
+        private static int SecondsUntil(DateTime time, DateTime now)
+        {
+            return Math.Max((int)Math.Ceiling((time - now).TotalSeconds), 1);
+        }
+
+        /// <summary>
         /// Normalizes the destination so that formatting variations (spaces, dashes, case) map to the same key
         /// </summary>
-        /// <returns>Cache key for the destination, or null if the destination is empty</returns>
+        /// <returns>Key for the destination, or null if the destination is empty</returns>
         private static string? NormalizeDestination(string sendTo, OtpSendType sendType)
         {
             if (string.IsNullOrWhiteSpace(sendTo))
