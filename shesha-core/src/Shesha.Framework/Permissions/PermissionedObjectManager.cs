@@ -480,6 +480,11 @@ namespace Shesha.Permissions
 
             if (obj == null) return null;
 
+            // Access to hardcoded objects is defined in code (e.g. [SheshaAuthorize(IsConfigurable = false)] or [AllowAnonymous])
+            // and must not be changed at runtime. Keep this consistent with SetAsync.
+            if (obj.Hardcoded == true)
+                return await GetDtoAsync(obj);
+
             obj.Permissions = string.Join(",", permissions ?? new List<string>());
             obj.Access = (RefListPermissionedAccess)access;
             await _permissionedObjectRepository.InsertOrUpdateAsync(obj);
