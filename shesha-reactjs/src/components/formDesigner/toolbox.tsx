@@ -6,6 +6,7 @@ import { Tabs } from 'antd';
 import { isEntityMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { useMetadataOrUndefined } from '@/providers';
 import { IDataSource } from '@/providers/formDesigner/models';
+import { LayersPanel } from './layers';
 
 const Toolbox: FC = () => {
   const { styles } = useStyles();
@@ -18,6 +19,8 @@ const Toolbox: FC = () => {
     const dataSources: IDataSource[] = [];
 
     const defaultItems = [{ key: '1', label: 'Components', children: <ToolboxComponents /> }];
+    // unmounted while another tab is open, so the tree costs nothing then
+    const layersItem = { key: 'layers', label: 'Layers', children: <LayersPanel />, destroyOnHidden: true };
 
     if (isEntityMetadata(metadata))
       dataSources.push({
@@ -28,9 +31,9 @@ const Toolbox: FC = () => {
         items: isPropertiesArray(metadata.properties) ? metadata.properties : [],
       });
     if (dataSources.length > 0) {
-      return [...defaultItems, { key: '2', label: 'Data', children: <ToolboxDataSources dataSources={dataSources} /> }];
+      return [...defaultItems, { key: '2', label: 'Data', children: <ToolboxDataSources dataSources={dataSources} /> }, layersItem];
     } else {
-      return [...defaultItems];
+      return [...defaultItems, layersItem];
     }
   }, [metadata, currentMetaId]);
 
