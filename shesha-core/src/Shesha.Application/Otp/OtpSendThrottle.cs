@@ -69,8 +69,7 @@ namespace Shesha.Otp
                 // The send is recorded (and committed) before the history is read, and removed again if it isn't allowed. Of two
                 // requests for the same destination on different instances, the one that reads last sees the other's record,
                 // so they can't both get through. If they clash, both may be refused
-                // the send is kept as long as this cooldown needs it, which may differ between tenants and applications
-                var id = await _sendLog.AddAsync(key, now, now + retention);
+                var id = await _sendLog.AddAsync(key, now);
                 var otherSends = (await _sendLog.GetSendsAsync(key, now - retention))
                     .Where(s => s.Id != id)
                     .Select(s => s.SentOnUtc)
@@ -91,13 +90,29 @@ namespace Shesha.Otp
         }
 
         /// <summary>
-        /// How long sends are needed: for the hourly cap, and for the cooldown, which may be longer than an hour. Older sends
-        /// are ignored, and removed by <see cref="OtpSendLogCleanupJob"/>
+        /// How far back a request reads the sends: for the hourly cap, and for the cooldown, which may be longer than an hour.
+        /// Older sends are ignored
         /// </summary>
         public static TimeSpan GetRetention(int cooldownSeconds)
         {
             var cooldown = TimeSpan.FromSeconds(Math.Max(cooldownSeconds, 0));
             return cooldown > Window ? cooldown : Window;
+        }
+
+        /// <summary>
+        /// Sends are kept for at least this long by <see cref="OtpSendLogCleanupJob"/>
+        /// </summary>
+        public static readonly TimeSpan MinimumCleanupRetention = TimeSpan.FromHours(24);
+
+        /// <summary>
+        /// How long <see cref="OtpSendLogCleanupJob"/> keeps sends: at least a day, or the cooldown if that's longer. Sends are
+        /// counted per destination whatever the tenant or front-end application, and the cooldown can be set differently for
+        /// each, so the job can't rely on the one cooldown it reads: a day covers any realistic cooldown, wherever it's set
+        /// </summary>
+        public static TimeSpan GetCleanupRetention(int cooldownSeconds)
+        {
+            var cooldown = TimeSpan.FromSeconds(Math.Max(cooldownSeconds, 0));
+            return cooldown > MinimumCleanupRetention ? cooldown : MinimumCleanupRetention;
         }
 
         /// <summary>

@@ -416,39 +416,58 @@ namespace Shesha.Tests.Otp
             store["sms:0820000000"].Count.ShouldBe(1);
         }
 
-        [Fact]
-        public async Task Cleanup_job_should_remove_only_sends_past_their_keep_until_timeAsync()
+        [Theory]
+        [InlineData(0, 24)]
+        [InlineData(3600, 24)]
+        [InlineData(7200, 24)]
+        [InlineData(30 * 3600, 30)]
+        public void Cleanup_retention_should_be_at_least_a_day(int cooldownSeconds, int expectedHours)
         {
-            var store = new Dictionary<string, List<DateTime>>();
-            var sendLog = new InMemoryOtpSendLog(store);
-            var now = DateTime.UtcNow;
-            await sendLog.AddAsync("sms:0821111111", now.AddMinutes(-150), now.AddMinutes(-30));
-            // sent 90 minutes ago where the cooldown is two hours (e.g. another tenant's setting): still needed
-            await sendLog.AddAsync("sms:0822222222", now.AddMinutes(-90), now.AddMinutes(30));
-            await sendLog.AddAsync("sms:0823333333", now.AddMinutes(-5), now.AddMinutes(55));
-
-            var deleted = await OtpSendLogCleanupJob.CleanupAsync(sendLog);
-
-            deleted.ShouldBe(1);
-            store["sms:0821111111"].ShouldBeEmpty();
-            store["sms:0822222222"].Count.ShouldBe(1);
-            store["sms:0823333333"].Count.ShouldBe(1);
+            OtpSendThrottle.GetCleanupRetention(cooldownSeconds).ShouldBe(TimeSpan.FromHours(expectedHours));
         }
 
         [Theory]
-        [InlineData(0, 60)]
-        [InlineData(60, 60)]
-        [InlineData(7200, 120)]
-        public async Task Throttle_should_keep_a_send_as_long_as_its_cooldown_needs_itAsync(int cooldownSeconds, int expectedMinutes)
+        [InlineData(60)]
+        [InlineData(7200)]
+        public async Task Cleanup_job_should_keep_sends_for_a_dayAsync(int cooldownSeconds)
         {
-            var store = new Dictionary<string, List<DateTime>>();
+            // sends are kept for a day whatever cooldown the job reads: another tenant or application may use a longer one
+            var now = DateTime.UtcNow;
+            var store = new Dictionary<string, List<DateTime>>
+            {
+                ["sms:0821234567"] = new List<DateTime> { now.AddHours(-25), now.AddHours(-23), now.AddMinutes(-100), now.AddMinutes(-5) },
+            };
+
+            var deleted = await OtpSendLogCleanupJob.CleanupAsync(new InMemoryOtpSendLog(store), MockSecuritySettings(cooldownSeconds));
+
+            deleted.ShouldBe(1);
+            store["sms:0821234567"].Count.ShouldBe(3);
+        }
+
+        [Fact]
+        public async Task A_longer_cooldown_should_see_a_send_made_under_a_shorter_one_after_cleanupAsync()
+        {
+            // a send under a one hour cooldown (e.g. one application), the cleanup job runs 100 minutes later, then a request
+            // under a two hour cooldown (another application or tenant) for the same destination
+            var store = new Dictionary<string, List<DateTime>> { ["sms:0821234567"] = new List<DateTime> { DateTime.UtcNow.AddMinutes(-100) } };
             var sendLog = new InMemoryOtpSendLog(store);
-            var throttle = CreateThrottle(cooldownSeconds, maxSendsPerHour: 5, sendLog);
+            await OtpSendLogCleanupJob.CleanupAsync(sendLog, MockSecuritySettings(3600));
 
-            await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms);
+            var ex = await Should.ThrowAsync<TooManyRequestsException>(async () =>
+            {
+                await CreateThrottle(cooldownSeconds: 7200, maxSendsPerHour: 5, sendLog).CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms);
+            });
+            ex.RetryAfterSeconds!.Value.ShouldBeInRange(19 * 60, 20 * 60 + 1);
+        }
 
-            var (sentOn, keepUntil) = sendLog.KeepUntil.Single();
-            (keepUntil - sentOn).ShouldBe(TimeSpan.FromMinutes(expectedMinutes));
+        private static ISecuritySettings MockSecuritySettings(int cooldownSeconds)
+        {
+            var securityAccessor = new Mock<ISettingAccessor<SecuritySettings>>();
+            securityAccessor.Setup(a => a.GetValueAsync(It.IsAny<SettingManagementContext>()))
+                .ReturnsAsync(new SecuritySettings { OtpCooldownSeconds = cooldownSeconds });
+            var securitySettings = new Mock<ISecuritySettings>();
+            securitySettings.SetupGet(s => s.SecuritySettings).Returns(securityAccessor.Object);
+            return securitySettings.Object;
         }
 
         [Theory]
@@ -739,12 +758,6 @@ namespace Shesha.Tests.Otp
         private class InMemoryOtpSendLog : IOtpSendLog
         {
             private readonly Dictionary<string, List<DateTime>> _store;
-
-            /// <summary>
-            /// Keep-until time of each send recorded through <see cref="AddAsync"/>, by send time. Sends that tests put in the
-            /// store directly are kept for an hour
-            /// </summary>
-            public Dictionary<DateTime, DateTime> KeepUntil { get; } = new();
             private readonly Dictionary<Guid, (string Destination, DateTime SentOn)> _added = new();
 
             public InMemoryOtpSendLog(Dictionary<string, List<DateTime>> store)
@@ -759,12 +772,11 @@ namespace Shesha.Tests.Otp
                 return Task.FromResult(records);
             }
 
-            public Task<Guid> AddAsync(string destination, DateTime sentOnUtc, DateTime keepUntilUtc)
+            public Task<Guid> AddAsync(string destination, DateTime sentOnUtc)
             {
                 if (!_store.TryGetValue(destination, out var list))
                     _store[destination] = list = new List<DateTime>();
                 list.Add(sentOnUtc);
-                KeepUntil[sentOnUtc] = keepUntilUtc;
 
                 var id = Guid.NewGuid();
                 _added[id] = (destination, sentOnUtc);
@@ -777,11 +789,11 @@ namespace Shesha.Tests.Otp
             /// </summary>
             public Action<string>? AfterAdd { get; set; }
 
-            public Task<int> DeleteExpiredAsync(DateTime nowUtc)
+            public Task<int> DeleteOlderThanAsync(DateTime utc)
             {
                 var deleted = 0;
                 foreach (var times in _store.Values)
-                    deleted += times.RemoveAll(t => (KeepUntil.TryGetValue(t, out var keepUntil) ? keepUntil : t.AddHours(1)) < nowUtc);
+                    deleted += times.RemoveAll(t => t < utc);
                 return Task.FromResult(deleted);
             }
 

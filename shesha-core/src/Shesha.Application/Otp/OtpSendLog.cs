@@ -23,11 +23,8 @@ namespace Shesha.Otp
         /// <summary>
         /// Records a send to the destination
         /// </summary>
-        /// <param name="destination">Normalized destination</param>
-        /// <param name="sentOnUtc">When the pin was sent (UTC)</param>
-        /// <param name="keepUntilUtc">Until when the send is needed by the limits (UTC); <see cref="DeleteExpiredAsync"/> removes it after that</param>
         /// <returns>Id of the new record</returns>
-        Task<Guid> AddAsync(string destination, DateTime sentOnUtc, DateTime keepUntilUtc);
+        Task<Guid> AddAsync(string destination, DateTime sentOnUtc);
 
         /// <summary>
         /// Removes a send that was recorded but not allowed
@@ -35,11 +32,10 @@ namespace Shesha.Otp
         Task RemoveAsync(Guid id);
 
         /// <summary>
-        /// Removes sends (to any destination) that are no longer needed: their keep-until time is before <paramref name="nowUtc"/>.
-        /// Used by <see cref="OtpSendLogCleanupJob"/>
+        /// Removes sends (to any destination) from before the specified time. Used by <see cref="OtpSendLogCleanupJob"/>
         /// </summary>
         /// <returns>Number of sends removed</returns>
-        Task<int> DeleteExpiredAsync(DateTime nowUtc);
+        Task<int> DeleteOlderThanAsync(DateTime utc);
     }
 
     /// <summary>
@@ -83,7 +79,7 @@ namespace Shesha.Otp
         }
 
         /// <inheritdoc/>
-        public async Task<Guid> AddAsync(string destination, DateTime sentOnUtc, DateTime keepUntilUtc)
+        public async Task<Guid> AddAsync(string destination, DateTime sentOnUtc)
         {
             // only the insert: old sends are removed by OtpSendLogCleanupJob, so recording a send never waits for a cleanup
             using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
@@ -91,7 +87,7 @@ namespace Shesha.Otp
             using (var transaction = session.BeginTransaction())
             {
                 var id = Guid.NewGuid();
-                await session.SaveAsync(new OtpSendLogItem { Id = id, Destination = destination, SentOnUtc = sentOnUtc, KeepUntilUtc = keepUntilUtc });
+                await session.SaveAsync(new OtpSendLogItem { Id = id, Destination = destination, SentOnUtc = sentOnUtc });
                 await transaction.CommitAsync();
                 return id;
             }
@@ -110,13 +106,13 @@ namespace Shesha.Otp
         }
 
         /// <inheritdoc/>
-        public async Task<int> DeleteExpiredAsync(DateTime nowUtc)
+        public async Task<int> DeleteOlderThanAsync(DateTime utc)
         {
             using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             using (var session = _sessionFactory.OpenSession())
             {
                 return await session.Query<OtpSendLogItem>()
-                    .Where(i => i.KeepUntilUtc < nowUtc)
+                    .Where(i => i.SentOnUtc < utc)
                     .DeleteAsync();
             }
         }
