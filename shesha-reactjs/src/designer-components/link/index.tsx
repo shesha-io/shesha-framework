@@ -21,6 +21,7 @@ const LinkComponent: LinkComponentDefinition = {
   allowInherit: true,
   type: 'link',
   isInput: false,
+  itemsLimit: 1,
   name: 'link',
   preserveDimensionsInDesigner: true,
   icon: <LinkOutlined />,

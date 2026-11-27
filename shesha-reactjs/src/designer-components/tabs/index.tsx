@@ -1,5 +1,6 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useFormDesignerReveal } from '@/providers/formDesigner';
 import { ShaIcon } from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
 import { IFormComponentContainer } from '@/providers/form/models';
@@ -53,6 +54,12 @@ const TabsComponent: TabsComponentDefinition = {
         ? model.defaultActiveKey
         : isNonEmptyArray(model.tabs) ? model.tabs[0].key : undefined; // ToDo: review checking visibility of Tabs (it is dificult for now because some visibility calculated lster on the render stage)
     });
+    const paneIds = useMemo(() => model.tabs.map((tab) => tab.id), [model.tabs]);
+    const openPane = useCallback((containerId: string) => {
+      const tab = model.tabs.find((t) => t.id === containerId);
+      if (isDefined(tab))
+        setActiveKey(tab.key);
+    }, [model.tabs]);
     const componentApi = useComponentApiProvider();
     useDeepCompareEffect(() => {
       componentApi?.updateApi<TabsApi>({
@@ -90,6 +97,7 @@ const TabsComponent: TabsComponentDefinition = {
     useEffect(() => {
       if (isDefined(defaultActiveKey)) setActiveKey(defaultActiveKey);
     }, [defaultActiveKey]);
+    useFormDesignerReveal(paneIds, openPane);
 
     const { styles } = useStyles({ model, cardStyleCss: calculatedModel.cardStyleCss, activeCardStyleCss: calculatedModel.activeCardStyleCss });
 
