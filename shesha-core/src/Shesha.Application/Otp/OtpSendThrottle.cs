@@ -69,7 +69,8 @@ namespace Shesha.Otp
                 // The send is recorded (and committed) before the history is read, and removed again if it isn't allowed. Of two
                 // requests for the same destination on different instances, the one that reads last sees the other's record,
                 // so they can't both get through. If they clash, both may be refused
-                var id = await _sendLog.AddAsync(key, now);
+                // the send is kept as long as this cooldown needs it, which may differ between tenants and applications
+                var id = await _sendLog.AddAsync(key, now, now + retention);
                 var otherSends = (await _sendLog.GetSendsAsync(key, now - retention))
                     .Where(s => s.Id != id)
                     .Select(s => s.SentOnUtc)

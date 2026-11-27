@@ -26,5 +26,11 @@ namespace Shesha.Domain
         /// When the pin was sent (UTC)
         /// </summary>
         public virtual DateTime SentOnUtc { get; set; }
+
+        /// <summary>
+        /// Until when the send limits need this send (UTC): the send time plus the longer of an hour and the OTP cooldown that
+        /// applied when it was sent. The cleanup job removes it after that
+        /// </summary>
+        public virtual DateTime KeepUntilUtc { get; set; }
     }
 }

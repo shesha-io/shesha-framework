@@ -17,7 +17,8 @@ namespace Shesha.Migrations
     public class M20261127120099 : OneWayMigration
     {
         /// <summary>
-        /// Creates the table and an index on the destination and send time
+        /// Creates the table, with an index on the destination and send time for the limits and one on the keep-until time for
+        /// the cleanup job
         /// </summary>
         public override void Up()
         {
@@ -26,11 +27,15 @@ namespace Shesha.Migrations
                 Create.Table("otp_send_log_items").InSchema("frwk")
                     .WithIdAsGuid("id")
                     .WithColumn("destination").AsString(300).NotNullable()
-                    .WithColumn("sent_on_utc").AsDateTime().NotNullable();
+                    .WithColumn("sent_on_utc").AsDateTime().NotNullable()
+                    .WithColumn("keep_until_utc").AsDateTime().NotNullable();
 
                 Create.Index("ix_otp_send_log_items_destination_sent_on_utc").OnTable("otp_send_log_items").InSchema("frwk")
                     .OnColumn("destination").Ascending()
                     .OnColumn("sent_on_utc").Ascending();
+
+                Create.Index("ix_otp_send_log_items_keep_until_utc").OnTable("otp_send_log_items").InSchema("frwk")
+                    .OnColumn("keep_until_utc").Ascending();
             }
 
             if (Schema.Table("Frwk_OtpSendLogItems").Exists())
