@@ -238,7 +238,11 @@ namespace Shesha.Authorization
                         Pin = code
                     };
                     var verificationResult = await OtpManager.CheckPinAsync(pinInput);
-                    if (verificationResult.IsSuccess && !await CheckImeiAsync(imei))
+
+                    // only for the user's own login OTP: the send endpoints let anyone send an OTP to their own phone with
+                    // another user as the recipient, which mustn't reveal whether a device is registered to that user
+                    var isUsersLoginOtp = user.PasswordResetCode == otp.OperationId.ToString();
+                    if (verificationResult.IsSuccess && isUsersLoginOtp && !await CheckImeiAsync(imei))
                         return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
 
                     // checked before the pin is used up, so a correct pin sent while the account is locked out can still be used
@@ -250,7 +254,7 @@ namespace Shesha.Authorization
                     if (verificationResult.IsSuccess)
                         verificationResult = await OtpManager.ConsumePinAsync(pinInput);
 
-                    if (!verificationResult.IsSuccess || user.PasswordResetCode != otp.OperationId.ToString())
+                    if (!verificationResult.IsSuccess || !isUsersLoginOtp)
                     {
                         if (shouldLockout)
                         {

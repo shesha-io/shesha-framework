@@ -678,6 +678,57 @@ namespace Shesha.Tests.Users
             otp.ConsumedOn.ShouldBeNull("the pin can still be used once the lockout ends");
         }
 
+        /// <summary>
+        /// An OTP sent through the Otp endpoints with the login action type and another user as the recipient isn't that
+        /// user's login OTP: a correct pin from an unregistered device gets InvalidOTP, so it doesn't reveal the user's devices
+        /// </summary>
+        [Fact]
+        public async Task LoginViaOtp_should_not_check_the_device_for_an_otp_not_sent_for_the_users_login_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var otps = new Dictionary<Guid, OtpDto>();
+            var otpStorage = MockOtpStorage(otps, dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+            var otpManager = LocalIocManager.Resolve<IOtpManager>();
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+            var logInManager = Resolve<LogInManager>();
+
+            // sent to the caller's own phone, with the user as the recipient, without SendLoginOtpAsync
+            var sendResponse = await otpManager.SendPinAsync(new SendPinInput
+            {
+                SendTo = await GetUniqueMobileNoAsync(),
+                SendType = OtpSendType.Sms,
+                ActionType = LogInManager.LoginOtpActionType,
+                RecipientId = userDto.Id.ToString(),
+            });
+            var pin = currentPin;
+
+            // saving the login attempt deadlocks in entity history in the test project (#5777), so it's off for the login
+            var entityHistory = Resolve<IEntityHistoryConfiguration>();
+            var entityHistoryWasEnabled = entityHistory.IsEnabled;
+            ShaLoginResult<User> loginResult;
+            try
+            {
+                entityHistory.IsEnabled = false;
+                loginResult = await logInManager.LoginViaOtpAsync(mobileNo, sendResponse.OperationId, pin, imei: "990000000000001", shouldLockout: false);
+            }
+            finally
+            {
+                entityHistory.IsEnabled = entityHistoryWasEnabled;
+            }
+
+            await _userRepository.DeleteAsync(userDto.Id);
+
+            loginResult.Result.ShouldBe(ShaLoginResultType.InvalidOTP);
+        }
+
         [Fact]
         public async Task LoginViaOtp_should_reject_a_password_reset_otp_TestAsync()
         {
@@ -857,6 +908,44 @@ namespace Shesha.Tests.Users
             asEmailLinkException.ShouldNotBeNull();
             response.IsSuccess.ShouldBeTrue();
             response.Token.ShouldNotBeNullOrEmpty();
+        }
+
+        /// <summary>
+        /// ResetPasswordVerifyOtp applies the reset method policy as well as the send endpoints: an OTP isn't accepted once the
+        /// user can no longer reset with SMS, and isn't used up
+        /// </summary>
+        [Fact]
+        public async Task ResetPasswordVerifyOtp_should_refuse_when_sms_reset_is_not_allowed_for_the_user_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var otps = new Dictionary<Guid, OtpDto>();
+            var otpStorage = MockOtpStorage(otps, dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+
+            var sendOtpResponse = await userAppService.ResetPasswordSendOtpAsync(mobileNo);
+            await SetSupportedPasswordResetMethodsAsync(userName, (long)RefListPasswordResetMethods.EmailLink);
+
+            var ex = await Should.ThrowAsync<BadRequestException>(async () => await userAppService.ResetPasswordVerifyOtpAsync(new ResetPasswordVerifyOtpInput
+            {
+                MobileNo = mobileNo,
+                OperationId = sendOtpResponse.OperationId,
+                Pin = currentPin
+            }));
+
+            var otp = otps[sendOtpResponse.OperationId];
+            await _userRepository.DeleteAsync(userDto.Id);
+
+            ex.Message.ShouldBe("User is not allowed to reset password using the selected method");
+            otp.ConsumedOn.ShouldBeNull();
+            otp.VerifyAttempts.ShouldBe(0);
         }
 
         /// <summary>

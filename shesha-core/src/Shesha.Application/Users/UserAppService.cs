@@ -682,6 +682,10 @@ namespace Shesha.Users
             if (user == null || string.IsNullOrWhiteSpace(user.PhoneNumber) || otp.SendTo != user.PhoneNumber)
                 return ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(VerifyPinResponse.Failed("Wrong one time pin"));
 
+            // the same policy as the send endpoints, checked again here: an OTP can also be sent through the Otp endpoints, and
+            // SMS reset may have been turned off since the OTP was sent. Checked before the pin, so the OTP isn't used up
+            ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SmsOtp);
+
             var otpRequest = ObjectMapper.Map<VerifyPinInput>(input);
             var otpResponse = await _otpManager.VerifyPinAsync(otpRequest);
 
