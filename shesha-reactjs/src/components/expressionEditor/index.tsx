@@ -712,12 +712,15 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   }, [draftValue, onChange]);
 
   const cancelModal = useCallback(() => {
-    onChange(valueBeforeExpandRef.current);
+    // Only inline mode pre-commits keystrokes to `value`; non-inline must never call onChange here, or Cancel could clobber an already-saved value with a stale snapshot.
+    if (inline) {
+      onChange(valueBeforeExpandRef.current);
+    }
     setDraftValue(null);
     setIsFocused(false);
     setSuggestions([]);
     setIsExpanded(false);
-  }, [onChange]);
+  }, [inline, onChange]);
 
   const insertSuggestion = useCallback((suggestion: ExpressionSuggestion) => {
     const textarea = textareaRef.current;

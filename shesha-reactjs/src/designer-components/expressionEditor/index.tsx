@@ -37,6 +37,8 @@ const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
   isOutput: true,
   canBeJsSetting: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.string,
+  // Excludes `value` from generic mustache evaluation, which would otherwise interpolate a complete {{...}} expression away.
+  actualModelPropertyFilter: (propName) => propName !== 'value',
   Factory: ({ model }) => {
     const { formMode } = useForm();
     const formDesigner = useFormDesignerOrUndefined();
