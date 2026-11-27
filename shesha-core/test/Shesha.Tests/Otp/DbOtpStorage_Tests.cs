@@ -18,6 +18,36 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
+        public async Task Manager_should_check_then_consume_a_pin_stored_in_the_database_TestAsync()
+        {
+            // CheckPinAsync counts the attempt in its own session, and ConsumePinAsync must read that count back, here inside
+            // one unit of work as on OTP login
+            Resolve<IOtpStorage>().ShouldBeOfType<DbOtpStorage>();
+            var storage = Resolve<DbOtpStorage>();
+            var manager = Resolve<IOtpManager>();
+            var operationId = Guid.NewGuid();
+            await storage.SaveAsync(new OtpDto
+            {
+                OperationId = operationId,
+                Pin = "123456",
+                SendTo = "0820000000",
+                SendType = OtpSendType.Sms,
+                ExpiresOn = DateTime.Now.AddMinutes(3),
+            });
+
+            var consumed = await WithUnitOfWorkAsync(async () =>
+            {
+                (await manager.CheckPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "123456" })).IsSuccess.ShouldBeTrue();
+                return (await manager.ConsumePinAsync(new VerifyPinInput { OperationId = operationId, Pin = "123456" })).IsSuccess;
+            });
+
+            consumed.ShouldBeTrue();
+            var stored = await storage.GetAsync(operationId);
+            stored.VerifyAttempts.ShouldBe(1);
+            stored.ConsumedOn.ShouldNotBeNull();
+        }
+
+        [Fact]
         public async Task IncrementVerifyAttempts_should_persist_counter_TestAsync()
         {
             var storage = Resolve<DbOtpStorage>();

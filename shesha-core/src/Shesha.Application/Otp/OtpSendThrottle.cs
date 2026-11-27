@@ -3,6 +3,7 @@ using Abp.UI;
 using Shesha.Configuration.Security;
 using Shesha.Domain.Enums;
 using Shesha.Exceptions;
+using Shesha.Notifications.Helpers;
 using Shesha.Otp.Configuration;
 using System;
 using System.Collections.Generic;
@@ -59,7 +60,8 @@ namespace Shesha.Otp
             var maxSends = otpSettings.MaxSendsPerDestinationPerHour > 0
                 ? otpSettings.MaxSendsPerDestinationPerHour
                 : OtpDefaults.DefaultMaxSendsPerDestinationPerHour;
-            var cooldownSeconds = (await _securitySettings.SecuritySettings.GetValueAsync())?.OtpCooldownSeconds ?? 0;
+            // capped at MaxCooldown: OtpSendLogCleanupJob keeps the sends that long
+            var cooldownSeconds = Math.Min((await _securitySettings.SecuritySettings.GetValueAsync())?.OtpCooldownSeconds ?? 0, (int)MaxCooldown.TotalSeconds);
 
             await Lock.WaitAsync();
             try
@@ -100,20 +102,12 @@ namespace Shesha.Otp
         }
 
         /// <summary>
-        /// Sends are kept for at least this long by <see cref="OtpSendLogCleanupJob"/>
+        /// The longest cooldown the send limits apply; a longer <see cref="SecuritySettings.OtpCooldownSeconds"/> is treated as
+        /// this. <see cref="OtpSendLogCleanupJob"/> keeps sends this long. Sends are counted per destination whatever the tenant
+        /// or front-end application, and the cooldown can be set differently for each, so the job keeps enough history for any
+        /// cooldown, wherever it's set, without reading the setting
         /// </summary>
-        public static readonly TimeSpan MinimumCleanupRetention = TimeSpan.FromHours(24);
-
-        /// <summary>
-        /// How long <see cref="OtpSendLogCleanupJob"/> keeps sends: at least a day, or the cooldown if that's longer. Sends are
-        /// counted per destination whatever the tenant or front-end application, and the cooldown can be set differently for
-        /// each, so the job can't rely on the one cooldown it reads: a day covers any realistic cooldown, wherever it's set
-        /// </summary>
-        public static TimeSpan GetCleanupRetention(int cooldownSeconds)
-        {
-            var cooldown = TimeSpan.FromSeconds(Math.Max(cooldownSeconds, 0));
-            return cooldown > MinimumCleanupRetention ? cooldown : MinimumCleanupRetention;
-        }
+        public static readonly TimeSpan MaxCooldown = TimeSpan.FromHours(24);
 
         /// <summary>
         /// Returns the exception to throw if a send isn't allowed yet, otherwise null
@@ -147,7 +141,10 @@ namespace Shesha.Otp
         }
 
         /// <summary>
-        /// Normalizes the destination so that formatting variations (spaces, dashes, case) map to the same key
+        /// Normalizes the destination so that formatting variations (spaces, dashes, case) map to the same key. Mobile numbers
+        /// are converted to the international form the SMS gateway dials (<see cref="MobileHelper.CleanupMobileNo"/>), so
+        /// <c>082 123 4567</c>, <c>+27821234567</c> and <c>0027821234567</c> share one budget. Merging forms can only make the
+        /// limits stricter
         /// </summary>
         /// <returns>Key for the destination, or null if the destination is empty</returns>
         private static string? NormalizeDestination(string sendTo, OtpSendType sendType)
@@ -155,9 +152,14 @@ namespace Shesha.Otp
             if (string.IsNullOrWhiteSpace(sendTo))
                 return null;
 
-            var normalized = sendType == OtpSendType.Sms
-                ? new string(sendTo.Where(char.IsDigit).ToArray())
-                : sendTo.Trim().ToLowerInvariant();
+            string normalized;
+            if (sendType == OtpSendType.Sms)
+            {
+                var digits = new string(sendTo.Where(char.IsDigit).ToArray());
+                normalized = string.IsNullOrEmpty(digits) ? digits : MobileHelper.CleanupMobileNo(digits);
+            }
+            else
+                normalized = sendTo.Trim().ToLowerInvariant();
 
             // email and email link share the same budget
             var channel = sendType == OtpSendType.Sms ? "sms" : "email";

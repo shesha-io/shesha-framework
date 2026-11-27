@@ -622,7 +622,7 @@ namespace Shesha.Tests.Users
             wrongPinResult.Result.ShouldBe(ShaLoginResultType.InvalidOTP, "a wrong pin must not reveal whether the device is registered");
             loginResult.Result.ShouldBe(ShaLoginResultType.DeviceNotRegistered);
             otp.ConsumedOn.ShouldBeNull("a retry from a registered device can still use the pin");
-            otp.VerifyAttempts.ShouldBe(1, "only the wrong pin counts as an attempt");
+            otp.VerifyAttempts.ShouldBe(2, "every pin compared counts as an attempt, a correct one from an unregistered device too, so concurrent guesses can't get round the limit");
         }
 
         [Fact]

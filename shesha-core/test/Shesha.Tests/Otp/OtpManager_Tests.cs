@@ -161,13 +161,20 @@ namespace Shesha.Tests.Otp
                 storage.Add(dto.OperationId, dto.Pin);
                 return Task.CompletedTask;
             });
-            otpStorage.Setup(s => s.IncrementVerifyAttemptsAsync(It.IsAny<Guid>())).ReturnsAsync(1);
+            // like the real storages, a read returns the attempts counted so far
+            var attempts = new Dictionary<Guid, int>();
+            otpStorage.Setup(s => s.IncrementVerifyAttemptsAsync(It.IsAny<Guid>())).Returns<Guid>(id =>
+            {
+                attempts[id] = attempts.GetValueOrDefault(id) + 1;
+                return Task.FromResult(attempts[id]);
+            });
             otpStorage.Setup(s => s.TryConsumeAsync(It.IsAny<Guid>())).ReturnsAsync(true);
             otpStorage.Setup(s => s.GetOrNullAsync(It.IsAny<Guid>())).Returns<Guid>(id => Task.FromResult<OtpDto?>(new OtpDto
             {
                 Pin = storage[id],
                 OperationId = id,
-                ExpiresOn = DateTime.MaxValue
+                ExpiresOn = DateTime.MaxValue,
+                VerifyAttempts = attempts.GetValueOrDefault(id),
             }));
 
             var otp = new OtpManager(
@@ -221,13 +228,20 @@ namespace Shesha.Tests.Otp
                 return Task.CompletedTask;
             });
 
-            otpStorage.Setup(s => s.IncrementVerifyAttemptsAsync(It.IsAny<Guid>())).ReturnsAsync(1);
+            // like the real storages, a read returns the attempts counted so far
+            var attempts = new Dictionary<Guid, int>();
+            otpStorage.Setup(s => s.IncrementVerifyAttemptsAsync(It.IsAny<Guid>())).Returns<Guid>(id =>
+            {
+                attempts[id] = attempts.GetValueOrDefault(id) + 1;
+                return Task.FromResult(attempts[id]);
+            });
             otpStorage.Setup(s => s.TryConsumeAsync(It.IsAny<Guid>())).ReturnsAsync(true);
             otpStorage.Setup(s => s.GetOrNullAsync(It.IsAny<Guid>())).Returns<Guid>(id => Task.FromResult<OtpDto?>(new OtpDto
             {
                 Pin = storage[id],
                 OperationId = id,
-                ExpiresOn = DateTime.MaxValue
+                ExpiresOn = DateTime.MaxValue,
+                VerifyAttempts = attempts.GetValueOrDefault(id),
             }));
 
             var otp = new OtpManager(

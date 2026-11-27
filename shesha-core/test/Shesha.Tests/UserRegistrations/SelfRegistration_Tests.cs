@@ -70,8 +70,10 @@ namespace Shesha.Tests.UserRegistrations
                 .Returns<Guid>(id => Task.FromResult<IOtpDto?>(_otps.TryGetValue(id, out var otp) ? otp : null));
             otpManager.Setup(m => m.VerifyPinAsync(It.IsAny<VerifyPinInput>()))
                 .Returns<VerifyPinInput>(input => Task.FromResult(Verify(input)));
-            otpManager.Setup(m => m.IsPinValidAsync(It.IsAny<Guid>(), It.IsAny<string>()))
-                .Returns<Guid, string>((id, pin) => Task.FromResult(IsPinValid(id, pin)));
+            otpManager.Setup(m => m.CheckPinAsync(It.IsAny<VerifyPinInput>()))
+                .Returns<VerifyPinInput>(input => Task.FromResult(Check(input)));
+            otpManager.Setup(m => m.ConsumePinAsync(It.IsAny<VerifyPinInput>()))
+                .Returns<VerifyPinInput>(input => Task.FromResult(Consume(input)));
             LocalIocManager.IocContainer.Register(Component.For<IOtpManager>().Instance(otpManager.Object).IsDefault().Named("test-otp-manager"));
         }
 
@@ -92,15 +94,36 @@ namespace Shesha.Tests.UserRegistrations
         }
 
         /// <summary>
-        /// Like OtpManager.IsPinValidAsync: whether Verify would accept the pin, without using it up
+        /// Like OtpManager.CheckPinAsync: counts the attempt, then checks the pin without using it up
         /// </summary>
-        private bool IsPinValid(Guid operationId, string pin)
+        private IVerifyPinResponse Check(VerifyPinInput input)
         {
             if (_ignoreOtpValidation)
-                return true;
+                return VerifyPinResponse.Success();
 
-            return _otps.TryGetValue(operationId, out var otp) && otp.Pin == pin && otp.ExpiresOn > DateTime.Now && !otp.ConsumedOn.HasValue
-                && otp.VerifyAttempts < OtpDefaults.DefaultMaxVerifyAttempts;
+            if (!_otps.TryGetValue(input.OperationId, out var otp) || otp.ConsumedOn.HasValue)
+                return VerifyPinResponse.Failed("Wrong one time pin");
+
+            otp.VerifyAttempts++;
+            return otp.VerifyAttempts <= OtpDefaults.DefaultMaxVerifyAttempts && otp.Pin == input.Pin && (otp.ExpiresOn == null || otp.ExpiresOn > DateTime.Now)
+                ? VerifyPinResponse.Success()
+                : VerifyPinResponse.Failed("Wrong one time pin");
+        }
+
+        /// <summary>
+        /// Like OtpManager.ConsumePinAsync: marks a pin that Check accepted as used, without counting another attempt
+        /// </summary>
+        private IVerifyPinResponse Consume(VerifyPinInput input)
+        {
+            if (_ignoreOtpValidation)
+                return VerifyPinResponse.Success();
+
+            if (!_otps.TryGetValue(input.OperationId, out var otp) || otp.ConsumedOn.HasValue || otp.VerifyAttempts <= 0
+                || otp.VerifyAttempts > OtpDefaults.DefaultMaxVerifyAttempts || otp.Pin != input.Pin || (otp.ExpiresOn != null && otp.ExpiresOn <= DateTime.Now))
+                return VerifyPinResponse.Failed("Wrong one time pin");
+
+            otp.ConsumedOn = DateTime.Now;
+            return VerifyPinResponse.Success();
         }
 
         #region Settings and access
@@ -571,6 +594,35 @@ namespace Shesha.Tests.UserRegistrations
 
             var ex = await Should.ThrowAsync<UserFriendlyException>(async () => { await RegisterAsync(app, input); });
             ex.Message.ShouldBe(SelfRegistrationManager.EmailNotVerifiedMessage);
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull("the missing email proof is found before the mobile pin is used up");
+
+            // the registrant adds the email pin and keeps the mobile pin
+            ProvideEmailOtp(input, sentTo: input.EmailAddress);
+            (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task A_pin_without_an_expiry_is_acceptedAsync()
+        {
+            // the same rule as OtpManager.VerifyPinAsync: an OTP without an expiry doesn't expire
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            _otps[input.OtpOperationId!.Value].ExpiresOn = null;
+
+            (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task Registration_counts_one_attempt_per_pinAsync()
+        {
+            // the early check counts the attempt and the verification doesn't count another
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+
+            await RegisterAsync(app, input);
+
+            _otps[input.OtpOperationId!.Value].VerifyAttempts.ShouldBe(1);
         }
 
         [Fact]

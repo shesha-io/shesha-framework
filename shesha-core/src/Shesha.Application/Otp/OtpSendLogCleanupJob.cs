@@ -1,5 +1,4 @@
 ﻿using Abp.Dependency;
-using Shesha.Configuration.Security;
 using Shesha.Scheduler;
 using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain.Enums;
@@ -17,29 +16,26 @@ namespace Shesha.Otp
     public class OtpSendLogCleanupJob : ScheduledJobBase<ScheduledJobStatistic>, ITransientDependency
     {
         private readonly IOtpSendLog _sendLog;
-        private readonly ISecuritySettings _securitySettings;
 
-        public OtpSendLogCleanupJob(IOtpSendLog sendLog, ISecuritySettings securitySettings)
+        public OtpSendLogCleanupJob(IOtpSendLog sendLog)
         {
             _sendLog = sendLog;
-            _securitySettings = securitySettings;
         }
 
         public override async Task DoExecuteAsync(CancellationToken cancellationToken)
         {
-            var deleted = await CleanupAsync(_sendLog, _securitySettings);
+            var deleted = await CleanupAsync(_sendLog);
             Log.Info($"Removed {deleted} OTP send log items");
         }
 
         /// <summary>
-        /// Removes the sends that are older than <see cref="OtpSendThrottle.GetCleanupRetention"/>: a day, or the default
-        /// cooldown if that's longer
+        /// Removes the sends that are older than <see cref="OtpSendThrottle.MaxCooldown"/> (a day). That covers the hourly cap
+        /// and the longest cooldown the send limits apply, so no setting is read
         /// </summary>
         /// <returns>Number of sends removed</returns>
-        public static async Task<int> CleanupAsync(IOtpSendLog sendLog, ISecuritySettings securitySettings)
+        public static async Task<int> CleanupAsync(IOtpSendLog sendLog)
         {
-            var cooldownSeconds = (await securitySettings.SecuritySettings.GetValueAsync())?.OtpCooldownSeconds ?? 0;
-            return await sendLog.DeleteOlderThanAsync(DateTime.UtcNow - OtpSendThrottle.GetCleanupRetention(cooldownSeconds));
+            return await sendLog.DeleteOlderThanAsync(DateTime.UtcNow - OtpSendThrottle.MaxCooldown);
         }
     }
 }

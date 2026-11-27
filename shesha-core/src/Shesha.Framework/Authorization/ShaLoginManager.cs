@@ -227,18 +227,23 @@ namespace Shesha.Authorization
                     if (user == null)
                         return new ShaLoginResult<TUser>(ShaLoginResultType.UserNotFound, tenant);
 
-                    // Verification uses the pin up, so the device is checked first: a correct pin sent from an unregistered device can
-                    // still be used from a registered one. The device is only checked once the pin is known to be correct, so a wrong
-                    // pin gets the same result whatever the IMEI, and the response doesn't reveal which devices are registered
-                    if (await OtpManager.IsPinValidAsync(operationId, code) && !await CheckImeiAsync(imei))
-                        return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
-
-                    // verification marks the OTP as used, so only one of several concurrent requests for the same OTP gets through
-                    var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
+                    // The pin is checked in two steps so the device can be checked in between. CheckPinAsync counts the attempt
+                    // before comparing the pin, so concurrent requests can't compare more pins than the attempt limit allows.
+                    // The device is only checked once the pin is known to be correct, so a wrong pin gets the same result whatever
+                    // the IMEI and the response doesn't reveal which devices are registered; and it's checked before the pin is
+                    // used up, so a correct pin sent from an unregistered device can still be used from a registered one
+                    var pinInput = new VerifyPinInput
                     {
                         OperationId = operationId,
                         Pin = code
-                    });
+                    };
+                    var verificationResult = await OtpManager.CheckPinAsync(pinInput);
+                    if (verificationResult.IsSuccess && !await CheckImeiAsync(imei))
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
+
+                    // marks the OTP as used, so only one of several concurrent requests for the same OTP gets through
+                    if (verificationResult.IsSuccess)
+                        verificationResult = await OtpManager.ConsumePinAsync(pinInput);
 
                     if (await UserManager.IsLockedOutAsync(user))
                         return new ShaLoginResult<TUser>(ShaLoginResultType.LockedOut, tenant, user);
@@ -253,10 +258,6 @@ namespace Shesha.Authorization
 
                         return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant, user);
                     }
-
-                    // authenticated using internal account, check IMEI
-                    if (!await CheckImeiAsync(imei))
-                        return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
 
                     // clear reset code
                     user.PasswordResetCode = null;

@@ -197,60 +197,85 @@ namespace Shesha.Otp
         /// inheritedDoc
         public async Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
         {
+            // one attempt is counted: ConsumePinAsync doesn't count another
+            var check = await CheckPinAsync(input);
+            return check.IsSuccess
+                ? await ConsumePinAsync(input)
+                : check;
+        }
+
+        /// inheritedDoc
+        public async Task<IVerifyPinResponse> CheckPinAsync(VerifyPinInput input)
+        {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
-            if (!settings.IgnoreOtpValidation)
+            if (settings.IgnoreOtpValidation)
+                return VerifyPinResponse.Success();
+
+            var pinDto = await _otpStorage.GetOrNullAsync(input.OperationId);
+            if (pinDto == null || pinDto.ConsumedOn.HasValue)
+                return VerifyPinResponse.Failed("Wrong one time pin");
+
+            // Email link tokens are random GUIDs and can't be brute-forced, so the attempt limit only applies to numeric pins
+            if (pinDto.SendType != OtpSendType.EmailLink)
             {
-                var pinDto = await _otpStorage.GetOrNullAsync(input.OperationId);
-                if (pinDto == null || pinDto.ConsumedOn.HasValue)
+                // the attempt is counted before the pin is checked so that concurrent requests can't exceed the limit
+                var attempts = await _otpStorage.IncrementVerifyAttemptsAsync(input.OperationId);
+
+                // no attempt was counted: the OTP no longer exists, so the copy read above can't be trusted
+                if (attempts <= 0)
                     return VerifyPinResponse.Failed("Wrong one time pin");
 
-                var isEmailLink = pinDto.SendType == OtpSendType.EmailLink;
-
-                // Email link tokens are random GUIDs and can't be brute-forced, so the attempt limit only applies to numeric pins
-                if (!isEmailLink)
-                {
-                    // the attempt is counted before the pin is checked so that concurrent requests can't exceed the limit
-                    var attempts = await _otpStorage.IncrementVerifyAttemptsAsync(input.OperationId);
-
-                    // no attempt was counted: the OTP no longer exists, so the copy read above can't be trusted
-                    if (attempts <= 0)
-                        return VerifyPinResponse.Failed("Wrong one time pin");
-
-                    if (attempts > GetMaxVerifyAttempts(settings))
-                        return VerifyPinResponse.Failed(TooManyAttemptsMessage);
-                }
-
-                if (!PinMatches(pinDto.Pin, input.Pin))
-                    return VerifyPinResponse.Failed(isEmailLink ? "Invalid email link" : "Wrong one time pin");
-
-                if (pinDto.ExpiresOn < DateTime.Now)
-                {
-                    var message = isEmailLink ? "The link you have supplied has expired" : "One-time pin has expired, try to send a new one";
-                    return VerifyPinResponse.Failed(message);
-                }
-
-                // the pin is single use: of concurrent requests with the same pin, only the one that marks it as used succeeds
-                if (!await _otpStorage.TryConsumeAsync(input.OperationId))
-                    return VerifyPinResponse.Failed(isEmailLink ? "Invalid email link" : "Wrong one time pin");
+                if (attempts > GetMaxVerifyAttempts(settings))
+                    return VerifyPinResponse.Failed(TooManyAttemptsMessage);
             }
+
+            return GetPinFailure(pinDto, input.Pin) ?? VerifyPinResponse.Success();
+        }
+
+        /// inheritedDoc
+        public async Task<IVerifyPinResponse> ConsumePinAsync(VerifyPinInput input)
+        {
+            var settings = await _otpSettings.OneTimePins.GetValueAsync();
+            if (settings.IgnoreOtpValidation)
+                return VerifyPinResponse.Success();
+
+            var pinDto = await _otpStorage.GetOrNullAsync(input.OperationId);
+            if (pinDto == null || pinDto.ConsumedOn.HasValue)
+                return VerifyPinResponse.Failed("Wrong one time pin");
+
+            var isEmailLink = pinDto.SendType == OtpSendType.EmailLink;
+
+            // CheckPinAsync counted an attempt for this pin; refusing an OTP without one means a pin can't be used up without
+            // being counted, and one over the limit stays refused
+            if (!isEmailLink && (pinDto.VerifyAttempts <= 0 || pinDto.VerifyAttempts > GetMaxVerifyAttempts(settings)))
+                return VerifyPinResponse.Failed("Wrong one time pin");
+
+            var failure = GetPinFailure(pinDto, input.Pin);
+            if (failure != null)
+                return failure;
+
+            // the pin is single use: of concurrent requests with the same pin, only the one that marks it as used succeeds
+            if (!await _otpStorage.TryConsumeAsync(input.OperationId))
+                return VerifyPinResponse.Failed(isEmailLink ? "Invalid email link" : "Wrong one time pin");
 
             return VerifyPinResponse.Success();
         }
 
-        /// inheritedDoc
-        public async Task<bool> IsPinValidAsync(Guid operationId, string pin)
+        /// <summary>
+        /// Compares the pin (in constant time) and checks the expiry; an OTP without an expiry doesn't expire
+        /// </summary>
+        /// <returns>The failure, or null when the pin is correct and hasn't expired</returns>
+        private static IVerifyPinResponse? GetPinFailure(OtpDto pinDto, string pin)
         {
-            var settings = await _otpSettings.OneTimePins.GetValueAsync();
-            if (settings.IgnoreOtpValidation)
-                return true;
+            var isEmailLink = pinDto.SendType == OtpSendType.EmailLink;
 
-            // the same checks as VerifyPinAsync, which counts the attempt before comparing the pin
-            var pinDto = await _otpStorage.GetOrNullAsync(operationId);
-            return pinDto != null
-                && !pinDto.ConsumedOn.HasValue
-                && (pinDto.SendType == OtpSendType.EmailLink || pinDto.VerifyAttempts < GetMaxVerifyAttempts(settings))
-                && PinMatches(pinDto.Pin, pin)
-                && (pinDto.ExpiresOn == null || pinDto.ExpiresOn >= DateTime.Now);
+            if (!PinMatches(pinDto.Pin, pin))
+                return VerifyPinResponse.Failed(isEmailLink ? "Invalid email link" : "Wrong one time pin");
+
+            if (pinDto.ExpiresOn < DateTime.Now)
+                return VerifyPinResponse.Failed(isEmailLink ? "The link you have supplied has expired" : "One-time pin has expired, try to send a new one");
+
+            return null;
         }
 
         private const string TooManyAttemptsMessage = "Too many failed verification attempts. Please request a new code.";

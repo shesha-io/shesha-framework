@@ -66,7 +66,7 @@ namespace Shesha.Tests.Otp
 
             var log = Resolve<IOtpSendLog>();
             log.ShouldBeOfType<DbOtpSendLog>();
-            (await log.GetSendsAsync($"sms:{mobileNo}", DateTime.UtcNow.AddMinutes(-1))).Count.ShouldBe(1);
+            (await log.GetSendsAsync($"sms:27{mobileNo[1..]}", DateTime.UtcNow.AddMinutes(-1))).Count.ShouldBe(1);
         }
 
         [Fact]
@@ -94,7 +94,7 @@ namespace Shesha.Tests.Otp
             // Two instances, each with its own DbOtpSendLog on the shared database. Instance B records its send after
             // instance A recorded its own but before A reads the history, the interleaving the throttle has to handle
             var mobileNo = "08" + new Random().Next(10000000, 99999999);
-            var destination = $"sms:{mobileNo}";
+            var destination = $"sms:27{mobileNo[1..]}";
             var instanceB = Resolve<DbOtpSendLog>();
             var instanceA = new InterleavingSendLog(Resolve<DbOtpSendLog>(),
                 async () => await instanceB.AddAsync(destination, DateTime.UtcNow));
@@ -174,13 +174,13 @@ namespace Shesha.Tests.Otp
             // a send recorded by another instance, e.g. a moment ago
             var mobileNo = "08" + new Random().Next(10000000, 99999999);
             var log = Resolve<IOtpSendLog>();
-            await log.AddAsync($"sms:{mobileNo}", DateTime.UtcNow);
+            await log.AddAsync($"sms:27{mobileNo[1..]}", DateTime.UtcNow);
 
             // the default 60 second cooldown refuses the next send
             await Should.ThrowAsync<TooManyRequestsException>(() => Resolve<IOtpSendThrottle>().CheckAndRegisterSendAsync(mobileNo, OtpSendType.Sms));
 
             // the refused send was removed again
-            (await log.GetSendsAsync($"sms:{mobileNo}", DateTime.UtcNow.AddMinutes(-1))).Count.ShouldBe(1);
+            (await log.GetSendsAsync($"sms:27{mobileNo[1..]}", DateTime.UtcNow.AddMinutes(-1))).Count.ShouldBe(1);
         }
     }
 }

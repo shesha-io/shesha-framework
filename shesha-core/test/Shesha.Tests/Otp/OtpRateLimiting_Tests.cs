@@ -158,47 +158,80 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
-        public async Task IsPinValid_should_not_count_an_attempt_or_use_up_the_otpAsync()
+        public async Task CheckPin_should_count_an_attempt_without_using_up_the_otpAsync()
         {
             var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
 
-            (await manager.IsPinValidAsync(operationId, Pin)).ShouldBeTrue();
-            (await manager.IsPinValidAsync(operationId, "000000")).ShouldBeFalse();
-            storage[operationId].VerifyAttempts.ShouldBe(0);
+            (await manager.CheckPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeTrue();
+            storage[operationId].VerifyAttempts.ShouldBe(1, "the attempt is counted before the result is known, a correct pin too");
             storage[operationId].ConsumedOn.ShouldBeNull();
 
-            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeTrue();
-            (await manager.IsPinValidAsync(operationId, Pin)).ShouldBeFalse("a used OTP is no longer valid");
+            (await manager.CheckPinAsync(new VerifyPinInput { OperationId = operationId, Pin = "000000" })).IsSuccess.ShouldBeFalse();
+            storage[operationId].VerifyAttempts.ShouldBe(2);
+
+            (await manager.ConsumePinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeTrue();
+            storage[operationId].VerifyAttempts.ShouldBe(2, "using the pin up doesn't count another attempt");
+            storage[operationId].ConsumedOn.ShouldNotBeNull();
+            (await manager.CheckPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeFalse("a used OTP is no longer valid");
         }
 
         [Fact]
-        public async Task IsPinValid_should_reject_a_correct_pin_once_max_attempts_reachedAsync()
+        public async Task CheckPin_should_reject_a_correct_pin_once_max_attempts_reachedAsync()
         {
             var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
             storage[operationId].VerifyAttempts = 3;
 
-            (await manager.IsPinValidAsync(operationId, Pin)).ShouldBeFalse();
+            (await manager.CheckPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeFalse();
         }
 
         [Fact]
-        public async Task IsPinValid_should_reject_an_expired_pinAsync()
+        public async Task CheckPin_should_reject_an_expired_pinAsync()
         {
             var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
             storage[operationId].ExpiresOn = DateTime.Now.AddMinutes(-1);
 
-            (await manager.IsPinValidAsync(operationId, Pin)).ShouldBeFalse();
+            (await manager.CheckPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeFalse();
         }
 
         [Fact]
-        public async Task IsPinValid_should_accept_a_pin_without_an_expiry_like_VerifyPinAsync()
+        public async Task CheckPin_and_ConsumePin_should_accept_a_pin_without_an_expiry_like_VerifyPinAsync()
         {
-            // VerifyPinAsync and TryConsumeAsync accept an OTP that has no expiry, so IsPinValidAsync must too: OTP login
-            // relies on it to check the device before the correct pin is used up
             var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
             storage[operationId].ExpiresOn = null;
 
-            (await manager.IsPinValidAsync(operationId, Pin)).ShouldBeTrue();
+            (await manager.CheckPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeTrue();
+            (await manager.ConsumePinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task ConsumePin_should_refuse_an_otp_no_attempt_was_counted_forAsync()
+        {
+            // a pin can't be used up without being counted: ConsumePinAsync is only for a pin CheckPinAsync accepted
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+
+            (await manager.ConsumePinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeFalse();
+            storage[operationId].ConsumedOn.ShouldBeNull();
+        }
+
+        [Fact]
+        public async Task ConsumePin_should_refuse_a_wrong_pinAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+            (await manager.CheckPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeTrue();
+
+            (await manager.ConsumePinAsync(new VerifyPinInput { OperationId = operationId, Pin = "000000" })).IsSuccess.ShouldBeFalse();
+            storage[operationId].ConsumedOn.ShouldBeNull();
+        }
+
+        [Fact]
+        public async Task VerifyPin_should_count_one_attemptAsync()
+        {
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+
             (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeTrue();
+
+            storage[operationId].VerifyAttempts.ShouldBe(1);
+            storage[operationId].ConsumedOn.ShouldNotBeNull();
         }
 
         [Fact]
@@ -416,32 +449,48 @@ namespace Shesha.Tests.Otp
             store["sms:0820000000"].Count.ShouldBe(1);
         }
 
-        [Theory]
-        [InlineData(0, 24)]
-        [InlineData(3600, 24)]
-        [InlineData(7200, 24)]
-        [InlineData(30 * 3600, 30)]
-        public void Cleanup_retention_should_be_at_least_a_day(int cooldownSeconds, int expectedHours)
+        [Fact]
+        public async Task Cleanup_job_should_keep_sends_for_a_dayAsync()
         {
-            OtpSendThrottle.GetCleanupRetention(cooldownSeconds).ShouldBe(TimeSpan.FromHours(expectedHours));
-        }
-
-        [Theory]
-        [InlineData(60)]
-        [InlineData(7200)]
-        public async Task Cleanup_job_should_keep_sends_for_a_dayAsync(int cooldownSeconds)
-        {
-            // sends are kept for a day whatever cooldown the job reads: another tenant or application may use a longer one
+            // a day covers the hourly cap and the longest cooldown the send limits apply, wherever the cooldown is set
             var now = DateTime.UtcNow;
             var store = new Dictionary<string, List<DateTime>>
             {
-                ["sms:0821234567"] = new List<DateTime> { now.AddHours(-25), now.AddHours(-23), now.AddMinutes(-100), now.AddMinutes(-5) },
+                ["sms:27821234567"] = new List<DateTime> { now.AddHours(-25), now.AddHours(-23), now.AddMinutes(-100), now.AddMinutes(-5) },
             };
 
-            var deleted = await OtpSendLogCleanupJob.CleanupAsync(new InMemoryOtpSendLog(store), MockSecuritySettings(cooldownSeconds));
+            var deleted = await OtpSendLogCleanupJob.CleanupAsync(new InMemoryOtpSendLog(store));
 
             deleted.ShouldBe(1);
-            store["sms:0821234567"].Count.ShouldBe(3);
+            store["sms:27821234567"].Count.ShouldBe(3);
+        }
+
+        [Theory]
+        [InlineData(23, true)] // within the longest cooldown applied
+        [InlineData(25, false)] // older than the longest cooldown applied, and than what the cleanup job keeps
+        public async Task Throttle_should_apply_a_cooldown_of_at_most_a_dayAsync(int hoursAgo, bool refused)
+        {
+            var store = new Dictionary<string, List<DateTime>> { ["sms:27821234567"] = new List<DateTime> { DateTime.UtcNow.AddHours(-hoursAgo) } };
+            var throttle = CreateThrottle(cooldownSeconds: 48 * 3600, maxSendsPerHour: 5, store);
+
+            if (refused)
+                await Should.ThrowAsync<TooManyRequestsException>(async () => { await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms); });
+            else
+                await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms);
+        }
+
+        [Theory]
+        [InlineData("+27 82 123 4567")]
+        [InlineData("27821234567")]
+        [InlineData("0027821234567")]
+        [InlineData("082-123-4567")]
+        public async Task Throttle_should_count_every_form_of_a_mobile_number_as_oneAsync(string otherForm)
+        {
+            // the SMS gateway dials all of these as 27821234567
+            var throttle = CreateThrottle(cooldownSeconds: 60, maxSendsPerHour: 5);
+            await throttle.CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms);
+
+            await Should.ThrowAsync<TooManyRequestsException>(async () => { await throttle.CheckAndRegisterSendAsync(otherForm, OtpSendType.Sms); });
         }
 
         [Fact]
@@ -449,25 +498,15 @@ namespace Shesha.Tests.Otp
         {
             // a send under a one hour cooldown (e.g. one application), the cleanup job runs 100 minutes later, then a request
             // under a two hour cooldown (another application or tenant) for the same destination
-            var store = new Dictionary<string, List<DateTime>> { ["sms:0821234567"] = new List<DateTime> { DateTime.UtcNow.AddMinutes(-100) } };
+            var store = new Dictionary<string, List<DateTime>> { ["sms:27821234567"] = new List<DateTime> { DateTime.UtcNow.AddMinutes(-100) } };
             var sendLog = new InMemoryOtpSendLog(store);
-            await OtpSendLogCleanupJob.CleanupAsync(sendLog, MockSecuritySettings(3600));
+            await OtpSendLogCleanupJob.CleanupAsync(sendLog);
 
             var ex = await Should.ThrowAsync<TooManyRequestsException>(async () =>
             {
                 await CreateThrottle(cooldownSeconds: 7200, maxSendsPerHour: 5, sendLog).CheckAndRegisterSendAsync("0821234567", OtpSendType.Sms);
             });
             ex.RetryAfterSeconds!.Value.ShouldBeInRange(19 * 60, 20 * 60 + 1);
-        }
-
-        private static ISecuritySettings MockSecuritySettings(int cooldownSeconds)
-        {
-            var securityAccessor = new Mock<ISettingAccessor<SecuritySettings>>();
-            securityAccessor.Setup(a => a.GetValueAsync(It.IsAny<SettingManagementContext>()))
-                .ReturnsAsync(new SecuritySettings { OtpCooldownSeconds = cooldownSeconds });
-            var securitySettings = new Mock<ISecuritySettings>();
-            securitySettings.SetupGet(s => s.SecuritySettings).Returns(securityAccessor.Object);
-            return securitySettings.Object;
         }
 
         [Theory]
