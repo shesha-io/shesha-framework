@@ -626,6 +626,35 @@ namespace Shesha.Tests.UserRegistrations
         }
 
         [Fact]
+        public async Task The_same_email_pin_in_both_fields_is_one_proofAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            input.EmailOtpOperationId = input.OtpOperationId;
+            input.EmailOtpPin = input.OtpPin;
+
+            (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+
+            var otp = _otps[input.OtpOperationId!.Value];
+            otp.ConsumedOn.ShouldNotBeNull();
+            otp.VerifyAttempts.ShouldBe(1, "the repeated pin is checked once");
+        }
+
+        [Fact]
+        public async Task A_mobile_pin_repeated_in_the_email_field_does_not_prove_the_emailAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+            input.EmailOtpOperationId = input.OtpOperationId;
+            input.EmailOtpPin = input.OtpPin;
+
+            var ex = await Should.ThrowAsync<UserFriendlyException>(async () => { await RegisterAsync(app, input); });
+            ex.Message.ShouldBe(SelfRegistrationManager.EmailNotVerifiedMessage);
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull();
+        }
+
+        [Fact]
         public async Task Restricted_email_domains_alone_do_not_require_an_email_addressAsync()
         {
             var app = await CreateAppAsync(EnabledSettings(s =>

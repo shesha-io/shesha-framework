@@ -421,6 +421,11 @@ namespace Shesha.UserRegistrations
             if (input.EmailOtpOperationId == null && string.IsNullOrWhiteSpace(input.EmailOtpPin))
                 return null;
 
+            // the same pin in both fields is one proof, already used up by EnsureContactVerifiedAsync: it only has to have been
+            // sent to the email address
+            if (RepeatsFirstPin(input))
+                return (await GetOtpSentToAsync(input.EmailOtpOperationId, input.EmailOtpPin, EmailNotVerifiedMessage, input.EmailAddress)).SentTo;
+
             return await VerifyOtpSentToAsync(input.EmailOtpOperationId, input.EmailOtpPin, EmailNotVerifiedMessage, input.EmailAddress);
         }
 
@@ -515,10 +520,21 @@ namespace Shesha.UserRegistrations
                 await CheckPinBeforeVerificationAsync(input.OtpOperationId, input.OtpPin, ContactNotVerifiedMessage, input.EmailAddress, input.MobileNumber),
             };
 
-            if (input.EmailOtpOperationId != null || !string.IsNullOrWhiteSpace(input.EmailOtpPin))
+            if (RepeatsFirstPin(input))
+                // one proof, checked above (and counted once): it only has to have been sent to the email address
+                contacts.Add((await GetOtpSentToAsync(input.EmailOtpOperationId, input.EmailOtpPin, EmailNotVerifiedMessage, input.EmailAddress)).SentTo);
+            else if (input.EmailOtpOperationId != null || !string.IsNullOrWhiteSpace(input.EmailOtpPin))
                 contacts.Add(await CheckPinBeforeVerificationAsync(input.EmailOtpOperationId, input.EmailOtpPin, EmailNotVerifiedMessage, input.EmailAddress));
 
             return contacts;
+        }
+
+        /// <summary>
+        /// The email pin is the same one-time pin as the first one (an email OTP entered in both fields)
+        /// </summary>
+        private static bool RepeatsFirstPin(SelfRegistrationInput input)
+        {
+            return input.EmailOtpOperationId != null && input.EmailOtpOperationId == input.OtpOperationId && input.EmailOtpPin == input.OtpPin;
         }
 
         /// <summary>

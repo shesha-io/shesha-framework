@@ -625,6 +625,59 @@ namespace Shesha.Tests.Users
             otp.VerifyAttempts.ShouldBe(2, "every pin compared counts as an attempt, a correct one from an unregistered device too, so concurrent guesses can't get round the limit");
         }
 
+        /// <summary>
+        /// The lockout is checked before the pin is used up, so a correct pin sent while the account is locked out isn't lost
+        /// </summary>
+        [Fact]
+        public async Task LoginViaOtp_while_locked_out_should_not_use_up_the_otp_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var otps = new Dictionary<Guid, OtpDto>();
+            var otpStorage = MockOtpStorage(otps, dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+            var logInManager = Resolve<LogInManager>();
+
+            var sendResponse = await WithUnitOfWorkAsync(async () => await logInManager.SendLoginOtpAsync(await _userRepository.GetAsync(userDto.Id), mobileNo));
+            var loginPin = currentPin;
+
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                var user = await _userRepository.GetAsync(userDto.Id);
+                user.IsLockoutEnabled = true;
+                user.LockoutEndDateUtc = DateTime.UtcNow.AddMinutes(5);
+                await _userRepository.UpdateAsync(user);
+                await uow.CompleteAsync();
+            }
+
+            // saving the login attempt deadlocks in entity history in the test project (#5777), so it's off for the login
+            var entityHistory = Resolve<IEntityHistoryConfiguration>();
+            var entityHistoryWasEnabled = entityHistory.IsEnabled;
+            ShaLoginResult<User> loginResult;
+            try
+            {
+                entityHistory.IsEnabled = false;
+                loginResult = await logInManager.LoginViaOtpAsync(mobileNo, sendResponse.OperationId, loginPin, shouldLockout: false);
+            }
+            finally
+            {
+                entityHistory.IsEnabled = entityHistoryWasEnabled;
+            }
+
+            var otp = otps[sendResponse.OperationId];
+            await _userRepository.DeleteAsync(userDto.Id);
+
+            loginResult.Result.ShouldBe(ShaLoginResultType.LockedOut);
+            otp.ConsumedOn.ShouldBeNull("the pin can still be used once the lockout ends");
+        }
+
         [Fact]
         public async Task LoginViaOtp_should_reject_a_password_reset_otp_TestAsync()
         {
@@ -754,6 +807,46 @@ namespace Shesha.Tests.Users
             withoutOwner.IsSuccess.ShouldBeFalse();
             moved.IsSuccess.ShouldBeFalse("the pin was sent for another account");
             moved.Token.ShouldBeNullOrEmpty();
+        }
+
+        /// <summary>
+        /// Like ResetPasswordVerifyOtp, the reset by username only accepts an SMS pin sent to the account's current mobile number
+        /// </summary>
+        [Fact]
+        public async Task ValidateResetCode_should_reject_an_sms_otp_sent_to_a_previous_mobile_number_TestAsync()
+        {
+            var mobileNo = await GetUniqueMobileNoAsync();
+            var userName = Guid.NewGuid().ToString("N");
+            var currentPin = string.Empty;
+
+            LoginAsHostAdmin();
+
+            var otpStorage = MockOtpStorage(new Dictionary<Guid, OtpDto>(), dto => currentPin = dto.Pin);
+            LocalIocManager.IocContainer.Register(Component.For<IOtpStorage>().Instance(otpStorage.Object).IsDefault());
+
+            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+            var userDto = await CreateUserWithMobileNoAsync(userAppService, userName, mobileNo);
+
+            (await WithUnitOfWorkAsync(async () => await userAppService.SendSmsOtpAsync(userName))).ShouldBeTrue();
+            var input = new ResetPasswordValidateCodeInput
+            {
+                Username = userName,
+                Code = currentPin,
+                Method = (long)RefListPasswordResetMethods.SmsOtp,
+            };
+
+            await SetPhoneNumberAsync(userName, await GetUniqueMobileNoAsync());
+            var changedException = await Should.ThrowAsync<VerificationFailedException>(async () => await WithUnitOfWorkAsync(async () => await userAppService.ValidateResetCodeAsync(input)));
+
+            // the refusal didn't use the pin up: with the number it was sent to, it's accepted
+            await SetPhoneNumberAsync(userName, mobileNo);
+            var response = await WithUnitOfWorkAsync(async () => await userAppService.ValidateResetCodeAsync(input));
+
+            await _userRepository.DeleteAsync(userDto.Id);
+
+            changedException.ShouldNotBeNull();
+            response.IsSuccess.ShouldBeTrue();
+            response.Token.ShouldNotBeNullOrEmpty();
         }
 
         /// <summary>

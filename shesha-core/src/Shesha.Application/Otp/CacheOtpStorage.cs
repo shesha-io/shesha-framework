@@ -42,7 +42,10 @@ namespace Shesha.Otp
                     : (TimeSpan?)null);
         }
 
-        /// inheritedDoc
+        /// <summary>
+        /// Runs <paramref name="updateAction"/> under the storage's lock, which isn't re-entrant: the action must not call
+        /// this storage, or it waits for itself
+        /// </summary>
         public async Task UpdateAsync(Guid operationId, Func<OtpDto, Task> updateAction)
         {
             await Lock.WaitAsync();

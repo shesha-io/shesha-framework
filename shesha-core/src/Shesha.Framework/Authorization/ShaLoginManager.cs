@@ -241,12 +241,14 @@ namespace Shesha.Authorization
                     if (verificationResult.IsSuccess && !await CheckImeiAsync(imei))
                         return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
 
+                    // checked before the pin is used up, so a correct pin sent while the account is locked out can still be used
+                    // once the lockout ends
+                    if (await UserManager.IsLockedOutAsync(user))
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.LockedOut, tenant, user);
+
                     // marks the OTP as used, so only one of several concurrent requests for the same OTP gets through
                     if (verificationResult.IsSuccess)
                         verificationResult = await OtpManager.ConsumePinAsync(pinInput);
-
-                    if (await UserManager.IsLockedOutAsync(user))
-                        return new ShaLoginResult<TUser>(ShaLoginResultType.LockedOut, tenant, user);
 
                     if (!verificationResult.IsSuccess || user.PasswordResetCode != otp.OperationId.ToString())
                     {

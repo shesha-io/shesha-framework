@@ -496,6 +496,13 @@ namespace Shesha.Users
             if (otp?.ActionType != OtpActionTypes.PasswordReset)
                 throw new VerificationFailedException("Failed to verify OTP provided");
 
+            // like ResetPasswordVerifyOtpAsync: an SMS OTP must have been sent for this user, to their current mobile number,
+            // so a pin sent to a number the account no longer has can't reset its password
+            if ((RefListPasswordResetMethods)input.Method == RefListPasswordResetMethods.SmsOtp
+                && (otp.RecipientType != PasswordResetRecipientType || otp.RecipientId != user.Id.ToString()
+                    || string.IsNullOrWhiteSpace(user.PhoneNumber) || otp.SendTo != user.PhoneNumber))
+                throw new VerificationFailedException("Failed to verify OTP provided");
+
             var otpResponse = await _otpManager.VerifyPinAsync(new VerifyPinInput
             {
                 OperationId = operationId.Value,

@@ -17,7 +17,9 @@ namespace Shesha.Otp
         Task SaveAsync(OtpDto input);
 
         /// <summary>
-        /// Update OTP (is used to update status, lifetime)
+        /// Update OTP (is used to update status, lifetime).
+        /// An implementation may hold a lock while <paramref name="updateAction"/> runs (<see cref="CacheOtpStorage"/> does),
+        /// so the action must not call the storage.
         /// </summary>
         /// <param name="operationId"></param>
         /// <param name="updateAction"></param>
