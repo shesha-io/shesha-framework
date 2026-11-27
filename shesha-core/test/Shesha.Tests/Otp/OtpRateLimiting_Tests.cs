@@ -190,6 +190,18 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
+        public async Task IsPinValid_should_accept_a_pin_without_an_expiry_like_VerifyPinAsync()
+        {
+            // VerifyPinAsync and TryConsumeAsync accept an OTP that has no expiry, so IsPinValidAsync must too: OTP login
+            // relies on it to check the device before the correct pin is used up
+            var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);
+            storage[operationId].ExpiresOn = null;
+
+            (await manager.IsPinValidAsync(operationId, Pin)).ShouldBeTrue();
+            (await manager.VerifyPinAsync(new VerifyPinInput { OperationId = operationId, Pin = Pin })).IsSuccess.ShouldBeTrue();
+        }
+
+        [Fact]
         public async Task VerifyPin_should_fail_for_consumed_otpAsync()
         {
             var (manager, storage, operationId) = CreateManagerWithOtp(OtpSendType.Sms, maxVerifyAttempts: 3);

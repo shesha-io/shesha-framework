@@ -14,8 +14,9 @@ namespace Shesha.Otp
     /// </summary>
     public class CacheOtpStorage : IOtpStorage
     {
-        // The cache has no atomic operations, so read-modify-write operations run under a lock. The lock is per
-        // instance, like the in-memory cache this storage is normally used with
+        // The cache has no atomic operations, so read-modify-write operations run under a lock. The lock is static, so it's
+        // shared by all instances of this storage in the process (and all tenants); it doesn't coordinate separate processes,
+        // like the in-memory cache this storage is normally used with
         private static readonly SemaphoreSlim Lock = new SemaphoreSlim(1, 1);
 
         private readonly IOtpCache _otpCache;

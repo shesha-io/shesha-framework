@@ -250,7 +250,7 @@ namespace Shesha.Otp
                 && !pinDto.ConsumedOn.HasValue
                 && (pinDto.SendType == OtpSendType.EmailLink || pinDto.VerifyAttempts < GetMaxVerifyAttempts(settings))
                 && PinMatches(pinDto.Pin, pin)
-                && pinDto.ExpiresOn >= DateTime.Now;
+                && (pinDto.ExpiresOn == null || pinDto.ExpiresOn >= DateTime.Now);
         }
 
         private const string TooManyAttemptsMessage = "Too many failed verification attempts. Please request a new code.";
