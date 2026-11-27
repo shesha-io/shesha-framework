@@ -838,6 +838,15 @@ namespace Shesha.Tests.Users
             await SetPhoneNumberAsync(userName, await GetUniqueMobileNoAsync());
             var changedException = await Should.ThrowAsync<VerificationFailedException>(async () => await WithUnitOfWorkAsync(async () => await userAppService.ValidateResetCodeAsync(input)));
 
+            // nor by submitting the SMS pin as an email link (the user supports both methods)
+            await SetSupportedPasswordResetMethodsAsync(userName, (long)RefListPasswordResetMethods.SmsOtp | (long)RefListPasswordResetMethods.EmailLink);
+            var asEmailLinkException = await Should.ThrowAsync<VerificationFailedException>(async () => await WithUnitOfWorkAsync(async () => await userAppService.ValidateResetCodeAsync(new ResetPasswordValidateCodeInput
+            {
+                Username = Convert.ToBase64String(Encoding.UTF8.GetBytes(userName)),
+                Code = currentPin,
+                Method = (long)RefListPasswordResetMethods.EmailLink,
+            })));
+
             // the refusal didn't use the pin up: with the number it was sent to, it's accepted
             await SetPhoneNumberAsync(userName, mobileNo);
             var response = await WithUnitOfWorkAsync(async () => await userAppService.ValidateResetCodeAsync(input));
@@ -845,6 +854,7 @@ namespace Shesha.Tests.Users
             await _userRepository.DeleteAsync(userDto.Id);
 
             changedException.ShouldNotBeNull();
+            asEmailLinkException.ShouldNotBeNull();
             response.IsSuccess.ShouldBeTrue();
             response.Token.ShouldNotBeNullOrEmpty();
         }
@@ -913,6 +923,17 @@ namespace Shesha.Tests.Users
             withOtherNumber.IsSuccess.ShouldBeFalse("the mobile number doesn't belong to the person the OTP was sent for");
             withOtherNumber.Token.ShouldBeNullOrEmpty();
             withOwnNumber.IsSuccess.ShouldBeTrue(withOwnNumber.ErrorMessage);
+        }
+
+        private async Task SetSupportedPasswordResetMethodsAsync(string userName, long methods)
+        {
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                var user = await (await _userRepository.GetAllAsync()).FirstOrDefaultAsync(u => u.UserName == userName);
+                user.SupportedPasswordResetMethods = methods;
+                await _userRepository.UpdateAsync(user);
+                await uow.CompleteAsync();
+            }
         }
 
         private async Task SetPhoneNumberAsync(string userName, string mobileNo)
