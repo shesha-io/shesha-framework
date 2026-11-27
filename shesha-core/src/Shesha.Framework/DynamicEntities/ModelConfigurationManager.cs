@@ -542,15 +542,17 @@ namespace Shesha.DynamicEntities
         {
             var cacheKey = $"{@namespace}|{name}";
             var result = await _modelConfigsCache.GetAsync(cacheKey, async () => {
-                using (var uow = UnitOfWorkManager.Current == null ? UnitOfWorkManager.Begin() : null)
+                // Always load in a separate unit of work (own session). Reusing the caller's unit of work makes the
+                // repository calls below flush the caller's session; the flush raises entity history events which
+                // call this method again while the cache lock is held, and the non-reentrant lock deadlocks
+                using (var uow = UnitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew))
                 {
                     var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.ClassName == name && m.Namespace == @namespace && !m.IsDeleted).FirstOrDefaultAsync();
                     var result = modelConfig != null
                         ? await GetModelConfigurationAsync(modelConfig, hardCodedProps)
                         : null;
 
-                    if (uow != null)
-                        await uow.CompleteAsync();
+                    await uow.CompleteAsync();
 
                     return result;
                 }
