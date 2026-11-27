@@ -7,11 +7,16 @@ using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
 using Shesha.Sms;
 using System;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Shesha.Otp
 {
+    /// <summary>
+    /// Sends and verifies one-time pins
+    /// </summary>
     public class OtpManager : IOtpManager, ITransientDependency
     {
         private readonly ISmsGatewayFactory _smsGatewayFactory;
@@ -19,14 +24,19 @@ namespace Shesha.Otp
         private readonly IOtpStorage _otpStorage;
         private readonly IOtpGenerator _otpGenerator;
         private readonly IOtpSettings _otpSettings;
+        private readonly IOtpSendThrottle _sendThrottle;
 
-        public OtpManager(ISmsGatewayFactory smsGatewayFactory, IEmailSender emailSender, IOtpStorage otpStorage, IOtpGenerator passwordGenerator, IOtpSettings otpSettings)
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public OtpManager(ISmsGatewayFactory smsGatewayFactory, IEmailSender emailSender, IOtpStorage otpStorage, IOtpGenerator passwordGenerator, IOtpSettings otpSettings, IOtpSendThrottle sendThrottle)
         {
             _smsGatewayFactory = smsGatewayFactory;
             _emailSender = emailSender;
             _otpStorage = otpStorage;
             _otpGenerator = passwordGenerator;
             _otpSettings = otpSettings;
+            _sendThrottle = sendThrottle;
         }
 
         /// inheritedDoc
@@ -35,17 +45,28 @@ namespace Shesha.Otp
             return await _otpStorage.GetOrNullAsync(operationId);
         }
 
+        /// inheritedDoc
         public async Task<ISendPinResponse> ResendPinAsync(ResendPinInput input)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             var otp = await _otpStorage.GetOrNullAsync(input.OperationId);
             if (otp == null)
-                throw new UserFriendlyException("OTP not found, try to request a new one");
+                throw new VerificationFailedException("OTP not found, try to request a new one");
 
             if (otp.ExpiresOn < DateTime.Now)
-                throw new UserFriendlyException("OTP has expired, try to request a new one");
+                throw new VerificationFailedException("OTP has expired, try to request a new one");
+
+            if (otp.ConsumedOn.HasValue)
+                throw new VerificationFailedException("OTP has already been used, try to request a new one");
+
+            // resending doesn't reset the attempt counter, so the pin could no longer be verified
+            if (otp.SendType != OtpSendType.EmailLink && otp.VerifyAttempts >= GetMaxVerifyAttempts(settings))
+                throw new TooManyRequestsException(TooManyAttemptsMessage);
 
             // note: we ignore _otpSettings.IgnoreOtpValidation here, the user pressed `resend` manually
+
+            // resends count towards the same per-destination limits as new pins
+            await _sendThrottle.CheckAndRegisterSendAsync(otp.SendTo, otp.SendType);
 
             // send otp
             var sendTime = DateTime.Now;
@@ -88,11 +109,22 @@ namespace Shesha.Otp
 
         }
 
+        /// inheritedDoc
         public async Task<ISendPinResponse> SendPinAsync(SendPinInput input)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             if (string.IsNullOrWhiteSpace(input.SendTo))
                 throw new Exception($"{input.SendTo} must be specified");
+
+            // reduce an email recipient to its plain address, so that variations of the same mailbox share one throttle
+            // budget and resends go to that address
+            var sendTo = input.SendType == OtpSendType.Sms
+                ? input.SendTo
+                : NormalizeEmailRecipient(input.SendTo);
+
+            // nothing is sent when validation is ignored (dev/QA), so there is nothing to throttle
+            if (!settings.IgnoreOtpValidation)
+                await _sendThrottle.CheckAndRegisterSendAsync(sendTo, input.SendType);
 
             string pinCode = "";
 
@@ -113,12 +145,16 @@ namespace Shesha.Otp
                 OperationId = Guid.NewGuid(),
                 Pin = pinCode,
 
-                SendTo = input.SendTo,
+                SendTo = sendTo,
                 SendType = input.SendType,
                 RecipientId = input.RecipientId,
                 RecipientType = input.RecipientType,
                 ActionType = input.ActionType,
             };
+
+            // record the send-attempt time regardless of the outcome so that the per-user OTP
+            // cooldown works even when IgnoreOtpValidation is on (dev/QA) or the gateway fails.
+            otp.SentOn = DateTime.Now;
 
             // send otp
             if (settings.IgnoreOtpValidation)
@@ -129,8 +165,6 @@ namespace Shesha.Otp
             {
                 try
                 {
-                    otp.SentOn = DateTime.Now;
-
                     await SendInternalAsync(otp);
 
                     otp.SendStatus = OtpSendStatus.Sent;
@@ -160,28 +194,135 @@ namespace Shesha.Otp
             return response;
         }
 
+        /// inheritedDoc
         public async Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
         {
-            var settings = await _otpSettings.OneTimePins.GetValueAsync();
-            if (!settings.IgnoreOtpValidation)
-            {
-                var pinDto = await _otpStorage.GetOrNullAsync(input.OperationId);
-                if (pinDto == null || pinDto.Pin != input.Pin)
-                {
-                    var message = pinDto?.SendType == OtpSendType.EmailLink
-                        ? "Invalid email link"
-                        : "Wrong one time pin";
-                    return VerifyPinResponse.Failed(message);
-                }
+            // one attempt is counted: ConsumePinAsync doesn't count another
+            var check = await CheckPinAsync(input);
+            return check.IsSuccess
+                ? await ConsumePinAsync(input)
+                : check;
+        }
 
-                if (pinDto.ExpiresOn < DateTime.Now)
-                {
-                    var message = pinDto.SendType == OtpSendType.EmailLink ? "The link you have supplied has expired" : "One-time pin has expired, try to send a new one";
-                    return VerifyPinResponse.Failed(message);
-                }
+        /// inheritedDoc
+        public async Task<IVerifyPinResponse> CheckPinAsync(VerifyPinInput input)
+        {
+            var settings = await _otpSettings.OneTimePins.GetValueAsync();
+            if (settings.IgnoreOtpValidation)
+                return VerifyPinResponse.Success();
+
+            var pinDto = await _otpStorage.GetOrNullAsync(input.OperationId);
+            if (pinDto == null || pinDto.ConsumedOn.HasValue)
+                return VerifyPinResponse.Failed("Wrong one time pin");
+
+            // Email link tokens are random GUIDs and can't be brute-forced, so the attempt limit only applies to numeric pins
+            if (pinDto.SendType != OtpSendType.EmailLink)
+            {
+                // the attempt is counted before the pin is checked so that concurrent requests can't exceed the limit
+                var attempts = await _otpStorage.IncrementVerifyAttemptsAsync(input.OperationId);
+
+                // no attempt was counted: the OTP no longer exists, so the copy read above can't be trusted
+                if (attempts <= 0)
+                    return VerifyPinResponse.Failed("Wrong one time pin");
+
+                if (attempts > GetMaxVerifyAttempts(settings))
+                    return VerifyPinResponse.Failed(TooManyAttemptsMessage);
             }
 
+            return GetPinFailure(pinDto, input.Pin) ?? VerifyPinResponse.Success();
+        }
+
+        /// inheritedDoc
+        public async Task<IVerifyPinResponse> ConsumePinAsync(VerifyPinInput input)
+        {
+            var settings = await _otpSettings.OneTimePins.GetValueAsync();
+            if (settings.IgnoreOtpValidation)
+                return VerifyPinResponse.Success();
+
+            var pinDto = await _otpStorage.GetOrNullAsync(input.OperationId);
+            if (pinDto == null || pinDto.ConsumedOn.HasValue)
+                return VerifyPinResponse.Failed("Wrong one time pin");
+
+            var isEmailLink = pinDto.SendType == OtpSendType.EmailLink;
+
+            // CheckPinAsync counted an attempt for this pin; refusing an OTP without one means a pin can't be used up without
+            // being counted, and one over the limit stays refused
+            if (!isEmailLink && (pinDto.VerifyAttempts <= 0 || pinDto.VerifyAttempts > GetMaxVerifyAttempts(settings)))
+                return VerifyPinResponse.Failed("Wrong one time pin");
+
+            var failure = GetPinFailure(pinDto, input.Pin);
+            if (failure != null)
+                return failure;
+
+            // the pin is single use: of concurrent requests with the same pin, only the one that marks it as used succeeds
+            if (!await _otpStorage.TryConsumeAsync(input.OperationId))
+                return VerifyPinResponse.Failed(isEmailLink ? "Invalid email link" : "Wrong one time pin");
+
             return VerifyPinResponse.Success();
+        }
+
+        /// <summary>
+        /// Compares the pin (in constant time) and checks the expiry; an OTP without an expiry doesn't expire
+        /// </summary>
+        /// <returns>The failure, or null when the pin is correct and hasn't expired</returns>
+        private static IVerifyPinResponse? GetPinFailure(OtpDto pinDto, string pin)
+        {
+            var isEmailLink = pinDto.SendType == OtpSendType.EmailLink;
+
+            if (!PinMatches(pinDto.Pin, pin))
+                return VerifyPinResponse.Failed(isEmailLink ? "Invalid email link" : "Wrong one time pin");
+
+            if (pinDto.ExpiresOn < DateTime.Now)
+                return VerifyPinResponse.Failed(isEmailLink ? "The link you have supplied has expired" : "One-time pin has expired, try to send a new one");
+
+            return null;
+        }
+
+        private const string TooManyAttemptsMessage = "Too many failed verification attempts. Please request a new code.";
+
+        /// <summary>
+        /// Returns the plain address of an email recipient. Input such as "Name &lt;a@b.com&gt;" would otherwise get its own
+        /// throttle key while delivering to the same mailbox, so anything that isn't exactly one mailbox is rejected
+        /// </summary>
+        private static string NormalizeEmailRecipient(string sendTo)
+        {
+            // MailAddressCollection splits a list of recipients; a single MailAddress would read "a@x.com, b@x.com" as
+            // display name "a@x.com," and address "b@x.com"
+            var addresses = new System.Net.Mail.MailAddressCollection();
+            try
+            {
+                addresses.Add(sendTo.Trim());
+            }
+            catch (FormatException)
+            {
+                throw new UserFriendlyException("Please enter a valid email address");
+            }
+
+            if (addresses.Count != 1)
+                throw new UserFriendlyException("Please enter a single email address");
+
+            return addresses[0].Address;
+        }
+
+        /// <summary>
+        /// Maximum number of verification attempts per OTP, falling back to the default when not configured
+        /// </summary>
+        private static int GetMaxVerifyAttempts(OtpSettings settings)
+        {
+            return settings.MaxVerifyAttempts > 0
+                ? settings.MaxVerifyAttempts
+                : OtpDefaults.DefaultMaxVerifyAttempts;
+        }
+
+        /// <summary>
+        /// Constant-time comparison of the pins to avoid leaking information through response timing
+        /// </summary>
+        private static bool PinMatches(string expected, string actual)
+        {
+            if (string.IsNullOrEmpty(expected) || actual == null)
+                return false;
+
+            return CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(expected), Encoding.UTF8.GetBytes(actual));
         }
 
         private async Task SendInternalAsync(OtpDto otp)

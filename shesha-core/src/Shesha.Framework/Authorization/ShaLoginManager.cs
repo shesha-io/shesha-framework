@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Identity;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Otp;
 using Shesha.Otp.Dto;
@@ -150,6 +151,11 @@ namespace Shesha.Authorization
                 throw new NotSupportedException("OTP authentication is not supported");
         }
 
+        /// <summary>
+        /// Action type of the OTPs sent by <see cref="SendLoginOtpAsync"/>. Only these OTPs can be used to log in.
+        /// </summary>
+        public const string LoginOtpActionType = "OTP login";
+
         public virtual async Task<ISendPinResponse> SendLoginOtpAsync(TUser user, string mobileNumber)
         {
             CheckOtpAuthAvailability();
@@ -163,7 +169,7 @@ namespace Shesha.Authorization
                 SendTo = mobileNumber,
                 SendType = OtpSendType.Sms,
                 Lifetime = securitySettings.MobileLoginPinLifetime,
-                ActionType = "OTP login",
+                ActionType = LoginOtpActionType,
                 RecipientId = user.Id.ToString(),
             });
 
@@ -196,8 +202,8 @@ namespace Shesha.Authorization
                 return;
 
             var secondsRemaining = (int)Math.Ceiling((nextAllowed - DateTime.Now).TotalSeconds);
-            throw new UserFriendlyException(
-                $"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.");
+            throw new TooManyRequestsException(
+                $"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.", secondsRemaining);
         }
 
         public virtual async Task<ShaLoginResult<TUser>> LoginViaOtpAsync(string mobileNo, Guid operationId, string code, string? imei = null, string? tenancyName = null, bool shouldLockout = true)
@@ -208,15 +214,11 @@ namespace Shesha.Authorization
             {
                 return await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) =>
                 {
-
+                    // only an OTP sent for login: e.g. a password reset OTP also has the user as its recipient and its operation
+                    // id in PasswordResetCode, so it would otherwise log the user in. Checked before verification, so the pin isn't used up
                     var otp = await OtpManager.GetOrNullAsync(operationId);
-                    if (otp == null)
+                    if (otp == null || otp.ActionType != LoginOtpActionType)
                         return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant);
-                    var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
-                    {
-                        OperationId = operationId,
-                        Pin = code
-                    });
 
                     var user = !string.IsNullOrWhiteSpace(otp.RecipientId)
                             ? await UserManager.FindByIdAsync(otp.RecipientId)
@@ -225,10 +227,34 @@ namespace Shesha.Authorization
                     if (user == null)
                         return new ShaLoginResult<TUser>(ShaLoginResultType.UserNotFound, tenant);
 
+                    // The pin is checked in two steps so the device can be checked in between. CheckPinAsync counts the attempt
+                    // before comparing the pin, so concurrent requests can't compare more pins than the attempt limit allows.
+                    // The device is only checked once the pin is known to be correct, so a wrong pin gets the same result whatever
+                    // the IMEI and the response doesn't reveal which devices are registered; and it's checked before the pin is
+                    // used up, so a correct pin sent from an unregistered device can still be used from a registered one
+                    var pinInput = new VerifyPinInput
+                    {
+                        OperationId = operationId,
+                        Pin = code
+                    };
+                    var verificationResult = await OtpManager.CheckPinAsync(pinInput);
+
+                    // only for the user's own login OTP: the send endpoints let anyone send an OTP to their own phone with
+                    // another user as the recipient, which mustn't reveal whether a device is registered to that user
+                    var isUsersLoginOtp = user.PasswordResetCode == otp.OperationId.ToString();
+                    if (verificationResult.IsSuccess && isUsersLoginOtp && !await CheckImeiAsync(imei))
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
+
+                    // checked before the pin is used up, so a correct pin sent while the account is locked out can still be used
+                    // once the lockout ends
                     if (await UserManager.IsLockedOutAsync(user))
                         return new ShaLoginResult<TUser>(ShaLoginResultType.LockedOut, tenant, user);
 
-                    if (!verificationResult.IsSuccess || user.PasswordResetCode != otp.OperationId.ToString())
+                    // marks the OTP as used, so only one of several concurrent requests for the same OTP gets through
+                    if (verificationResult.IsSuccess)
+                        verificationResult = await OtpManager.ConsumePinAsync(pinInput);
+
+                    if (!verificationResult.IsSuccess || !isUsersLoginOtp)
                     {
                         if (shouldLockout)
                         {
@@ -238,10 +264,6 @@ namespace Shesha.Authorization
 
                         return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant, user);
                     }
-
-                    // authenticated using internal account, check IMEI
-                    if (!await CheckImeiAsync(imei))
-                        return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
 
                     // clear reset code
                     user.PasswordResetCode = null;

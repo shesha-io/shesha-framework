@@ -17,7 +17,9 @@ namespace Shesha.Otp
         Task SaveAsync(OtpDto input);
 
         /// <summary>
-        /// Update OTP (is used to update status, lifetime)
+        /// Update OTP (is used to update status, lifetime).
+        /// An implementation may hold a lock while <paramref name="updateAction"/> runs (<see cref="CacheOtpStorage"/> does),
+        /// so the action must not call the storage.
         /// </summary>
         /// <param name="operationId"></param>
         /// <param name="updateAction"></param>
@@ -33,5 +35,21 @@ namespace Shesha.Otp
         /// Get OTP
         /// </summary>
         Task<OtpDto> GetAsync(Guid operationId);
+
+        /// <summary>
+        /// Increments the number of verification attempts of the OTP and returns the new value.
+        /// Implementations should make the increment atomic so that concurrent requests can't exceed the attempt limit.
+        /// </summary>
+        /// <param name="operationId"></param>
+        /// <returns>Number of verification attempts including the current one</returns>
+        Task<int> IncrementVerifyAttemptsAsync(Guid operationId);
+
+        /// <summary>
+        /// Marks the OTP as used so that it can't be accepted again. Implementations must make this atomic: when
+        /// called concurrently for the same OTP, only one call returns true.
+        /// </summary>
+        /// <param name="operationId"></param>
+        /// <returns>True if the OTP was valid (not expired) and is now used, otherwise false</returns>
+        Task<bool> TryConsumeAsync(Guid operationId);
     }
 }

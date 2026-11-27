@@ -16,8 +16,10 @@ using Shesha.Authorization.Users;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.Exceptions;
 using Shesha.Models.TokenAuth;
 using Shesha.Otp;
+using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
 using Shesha.Reflection;
 using Shesha.Settings;
@@ -67,11 +69,61 @@ namespace Shesha.Tests.UserRegistrations
             otpManager.Setup(m => m.GetOrNullAsync(It.IsAny<Guid>()))
                 .Returns<Guid>(id => Task.FromResult<IOtpDto?>(_otps.TryGetValue(id, out var otp) ? otp : null));
             otpManager.Setup(m => m.VerifyPinAsync(It.IsAny<VerifyPinInput>()))
-                .Returns<VerifyPinInput>(input => Task.FromResult<IVerifyPinResponse>(
-                    _ignoreOtpValidation || _otps.TryGetValue(input.OperationId, out var otp) && otp.Pin == input.Pin && otp.ExpiresOn > DateTime.Now
-                        ? VerifyPinResponse.Success()
-                        : VerifyPinResponse.Failed("Wrong one time pin")));
+                .Returns<VerifyPinInput>(input => Task.FromResult(Verify(input)));
+            otpManager.Setup(m => m.CheckPinAsync(It.IsAny<VerifyPinInput>()))
+                .Returns<VerifyPinInput>(input => Task.FromResult(Check(input)));
+            otpManager.Setup(m => m.ConsumePinAsync(It.IsAny<VerifyPinInput>()))
+                .Returns<VerifyPinInput>(input => Task.FromResult(Consume(input)));
             LocalIocManager.IocContainer.Register(Component.For<IOtpManager>().Instance(otpManager.Object).IsDefault().Named("test-otp-manager"));
+        }
+
+        /// <summary>
+        /// Like OtpManager.VerifyPinAsync: a valid pin is marked as used and can't be verified again; any pin is accepted
+        /// when the IgnoreOtpValidation setting is on
+        /// </summary>
+        private IVerifyPinResponse Verify(VerifyPinInput input)
+        {
+            if (_ignoreOtpValidation)
+                return VerifyPinResponse.Success();
+
+            if (!_otps.TryGetValue(input.OperationId, out var otp) || otp.Pin != input.Pin || otp.ExpiresOn <= DateTime.Now || otp.ConsumedOn.HasValue)
+                return VerifyPinResponse.Failed("Wrong one time pin");
+
+            otp.ConsumedOn = DateTime.Now;
+            return VerifyPinResponse.Success();
+        }
+
+        /// <summary>
+        /// Like OtpManager.CheckPinAsync: counts the attempt, then checks the pin without using it up
+        /// </summary>
+        private IVerifyPinResponse Check(VerifyPinInput input)
+        {
+            if (_ignoreOtpValidation)
+                return VerifyPinResponse.Success();
+
+            if (!_otps.TryGetValue(input.OperationId, out var otp) || otp.ConsumedOn.HasValue)
+                return VerifyPinResponse.Failed("Wrong one time pin");
+
+            otp.VerifyAttempts++;
+            return otp.VerifyAttempts <= OtpDefaults.DefaultMaxVerifyAttempts && otp.Pin == input.Pin && (otp.ExpiresOn == null || otp.ExpiresOn > DateTime.Now)
+                ? VerifyPinResponse.Success()
+                : VerifyPinResponse.Failed("Wrong one time pin");
+        }
+
+        /// <summary>
+        /// Like OtpManager.ConsumePinAsync: marks a pin that Check accepted as used, without counting another attempt
+        /// </summary>
+        private IVerifyPinResponse Consume(VerifyPinInput input)
+        {
+            if (_ignoreOtpValidation)
+                return VerifyPinResponse.Success();
+
+            if (!_otps.TryGetValue(input.OperationId, out var otp) || otp.ConsumedOn.HasValue || otp.VerifyAttempts <= 0
+                || otp.VerifyAttempts > OtpDefaults.DefaultMaxVerifyAttempts || otp.Pin != input.Pin || (otp.ExpiresOn != null && otp.ExpiresOn <= DateTime.Now))
+                return VerifyPinResponse.Failed("Wrong one time pin");
+
+            otp.ConsumedOn = DateTime.Now;
+            return VerifyPinResponse.Success();
         }
 
         #region Settings and access
@@ -293,6 +345,141 @@ namespace Shesha.Tests.UserRegistrations
         }
 
         [Fact]
+        public async Task A_pin_that_was_already_used_is_rejectedAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            _otps[input.OtpOperationId!.Value].ConsumedOn = DateTime.Now;
+
+            var ex = await Should.ThrowAsync<VerificationFailedException>(async () => { await RegisterAsync(app, input); });
+
+            ex.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
+            (await UserExistsAsync(input.UserName)).ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task A_wrong_pin_is_a_failed_verification_and_can_be_correctedAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            var pin = input.OtpPin;
+            input.OtpPin = "000000";
+
+            await Should.ThrowAsync<VerificationFailedException>(async () => { await RegisterAsync(app, input); });
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull("a wrong pin doesn't use up the OTP");
+
+            input.OtpPin = pin;
+            (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task A_pin_sent_to_another_address_is_not_used_upAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            var sentTo = _otps[input.OtpOperationId!.Value].SendTo;
+            input.EmailAddress = $"other-{Guid.NewGuid():N}@selfreg.test";
+
+            await Should.ThrowAsync<VerificationFailedException>(async () => { await RegisterAsync(app, input); });
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull();
+
+            input.EmailAddress = sentTo;
+            (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task A_password_mistake_does_not_use_up_the_pinAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            input.PasswordConfirmation = Password + "x";
+
+            await Should.ThrowAsync<AbpValidationException>(async () => { await RegisterAsync(app, input); });
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull("the pin is verified after the account details are checked");
+
+            input.PasswordConfirmation = Password;
+            (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task A_username_already_in_use_does_not_use_up_the_pinAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var first = NewInput();
+            await RegisterAsync(app, first);
+
+            var second = NewInput();
+            second.UserName = first.UserName;
+
+            var ex = await Should.ThrowAsync<AbpValidationException>(async () => { await RegisterAsync(app, second); });
+
+            ex.ValidationErrors.ShouldContain(e => e.ErrorMessage == "User with the same username already exists");
+            _otps[second.OtpOperationId!.Value].ConsumedOn.ShouldBeNull();
+        }
+
+        [Theory]
+        [InlineData("000000")] // wrong pin
+        [InlineData(null)] // no pin
+        public async Task A_taken_username_is_not_revealed_without_a_valid_pinAsync(string? pin)
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var first = NewInput();
+            await RegisterAsync(app, first);
+
+            var second = NewInput();
+            second.UserName = first.UserName;
+            second.OtpPin = pin;
+            if (pin == null)
+                RemoveOtp(second);
+
+            // the same answer as for a username that's free: the contact isn't verified
+            var ex = await Should.ThrowAsync<UserFriendlyException>(async () => { await RegisterAsync(app, second); });
+            ex.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
+        }
+
+        [Fact]
+        public async Task A_username_with_characters_that_are_not_allowed_does_not_use_up_the_pinAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            var validUserName = input.UserName;
+            input.UserName = $"bad/{validUserName}";
+
+            var ex = await Should.ThrowAsync<AbpValidationException>(async () => { await RegisterAsync(app, input); });
+
+            ex.ValidationErrors.ShouldContain(e => e.ErrorMessage!.StartsWith("Username can only contain letters, digits and these characters:"));
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull();
+
+            input.UserName = validUserName;
+            (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task An_email_username_with_characters_that_are_not_allowed_does_not_use_up_the_pinAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s => s.UserEmailAsUsername = true));
+            var input = NewInput();
+            input.EmailAddress = $"o/brien-{Guid.NewGuid():N}@selfreg.test";
+            ProvideOtp(input, sentTo: input.EmailAddress);
+
+            var ex = await Should.ThrowAsync<AbpValidationException>(async () => { await RegisterAsync(app, input); });
+
+            ex.ValidationErrors.ShouldContain(e => e.ErrorMessage == "Email Address contains characters that can't be used in a username");
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull();
+        }
+
+        [Fact]
+        public async Task Registration_marks_the_pin_as_usedAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+
+            await RegisterAsync(app, input);
+
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldNotBeNull();
+        }
+
+        [Fact]
         public async Task A_new_account_rejects_an_otp_sent_to_a_different_email_addressAsync()
         {
             var app = await CreateAppAsync(EnabledSettings());
@@ -407,6 +594,64 @@ namespace Shesha.Tests.UserRegistrations
 
             var ex = await Should.ThrowAsync<UserFriendlyException>(async () => { await RegisterAsync(app, input); });
             ex.Message.ShouldBe(SelfRegistrationManager.EmailNotVerifiedMessage);
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull("the missing email proof is found before the mobile pin is used up");
+
+            // the registrant adds the email pin and keeps the mobile pin
+            ProvideEmailOtp(input, sentTo: input.EmailAddress);
+            (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task A_pin_without_an_expiry_is_acceptedAsync()
+        {
+            // the same rule as OtpManager.VerifyPinAsync: an OTP without an expiry doesn't expire
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            _otps[input.OtpOperationId!.Value].ExpiresOn = null;
+
+            (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task Registration_counts_one_attempt_per_pinAsync()
+        {
+            // the early check counts the attempt and the verification doesn't count another
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+
+            await RegisterAsync(app, input);
+
+            _otps[input.OtpOperationId!.Value].VerifyAttempts.ShouldBe(1);
+        }
+
+        [Fact]
+        public async Task The_same_email_pin_in_both_fields_is_one_proofAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            input.EmailOtpOperationId = input.OtpOperationId;
+            input.EmailOtpPin = input.OtpPin;
+
+            (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+
+            var otp = _otps[input.OtpOperationId!.Value];
+            otp.ConsumedOn.ShouldNotBeNull();
+            otp.VerifyAttempts.ShouldBe(1, "the repeated pin is checked once");
+        }
+
+        [Fact]
+        public async Task A_mobile_pin_repeated_in_the_email_field_does_not_prove_the_emailAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+            input.EmailOtpOperationId = input.OtpOperationId;
+            input.EmailOtpPin = input.OtpPin;
+
+            var ex = await Should.ThrowAsync<UserFriendlyException>(async () => { await RegisterAsync(app, input); });
+            ex.Message.ShouldBe(SelfRegistrationManager.EmailNotVerifiedMessage);
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull();
         }
 
         [Fact]
@@ -485,6 +730,50 @@ namespace Shesha.Tests.UserRegistrations
             ProvideEmailOtp(input, sentTo: input.EmailAddress);
 
             (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task A_wrong_email_pin_does_not_use_up_the_mobile_pinAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.UserEmailAsUsername = true;
+            }));
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+            ProvideEmailOtp(input, sentTo: input.EmailAddress);
+            var emailPin = input.EmailOtpPin;
+            input.EmailOtpPin = "000000";
+
+            var ex = await Should.ThrowAsync<VerificationFailedException>(async () => { await RegisterAsync(app, input); });
+            ex.Message.ShouldBe(SelfRegistrationManager.EmailNotVerifiedMessage);
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull("the mobile pin is only used up when both pins are correct");
+            _otps[input.EmailOtpOperationId!.Value].ConsumedOn.ShouldBeNull();
+
+            // the registrant corrects the email pin and keeps the mobile pin
+            input.EmailOtpPin = emailPin;
+            (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldNotBeNull();
+            _otps[input.EmailOtpOperationId!.Value].ConsumedOn.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task An_email_pin_out_of_attempts_does_not_use_up_the_mobile_pinAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s =>
+            {
+                s.SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber;
+                s.UserEmailAsUsername = true;
+            }));
+            var input = NewInput();
+            ProvideOtp(input, sentTo: input.MobileNumber);
+            ProvideEmailOtp(input, sentTo: input.EmailAddress);
+            _otps[input.EmailOtpOperationId!.Value].VerifyAttempts = OtpDefaults.DefaultMaxVerifyAttempts;
+
+            var ex = await Should.ThrowAsync<VerificationFailedException>(async () => { await RegisterAsync(app, input); });
+            ex.Message.ShouldBe(SelfRegistrationManager.EmailNotVerifiedMessage);
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull("the mobile pin isn't used up when the email pin can't be verified");
         }
 
         [Fact]
@@ -1106,7 +1395,7 @@ namespace Shesha.Tests.UserRegistrations
         private async Task<AuthenticateResultModel> OtpAuthenticateAsync(long userId, string? mobileNo)
         {
             // what OtpAuthenticateSendPin does: an OTP for the user, whose operation id is kept as the user's reset code
-            var otp = new OtpDto { OperationId = Guid.NewGuid(), Pin = "654321", SendTo = mobileNo!, RecipientId = userId.ToString(), ExpiresOn = DateTime.Now.AddMinutes(5) };
+            var otp = new OtpDto { OperationId = Guid.NewGuid(), Pin = "654321", SendTo = mobileNo!, RecipientId = userId.ToString(), ActionType = LogInManager.LoginOtpActionType, ExpiresOn = DateTime.Now.AddMinutes(5) };
             _otps[otp.OperationId] = otp;
             await WithUowAsync(async () =>
             {
