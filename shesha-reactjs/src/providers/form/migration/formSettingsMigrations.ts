@@ -1,5 +1,6 @@
 import { Migrator, MigratorFluent } from "@/utils/fluentMigrator/migrator";
-import { DEFAULT_FORM_SETTINGS, IFormDto, IFormSettings } from "../models";
+import { DEFAULT_FORM_SETTINGS, FALLBACK_FORM_LAYOUT, IFormDto, IFormSettings } from "../models";
+import { ColProps } from "antd";
 import { migrateFormApi } from "@/designer-components/_common-migrations/migrateFormApi1";
 import { migrateDefaults, migrateFormLifecycle } from "@/designer-components/_common-migrations/migrateFormLifecycle";
 import { migrateDefaultApiEndpoints } from "@/designer-components/_common-migrations/migrateDefaultApiEndpoints";
@@ -11,6 +12,38 @@ import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { getStringPropertyOrUndefined } from "@/utils/object";
 import { migrateEmptyStaticLoaderEndpoint } from "@/designer-components/_common-migrations/migrateEmptyStaticLoaderEndpoint";
 
+
+/** The column without a span equal to the old default, keeping its other settings (offset, etc.); undefined when nothing is left. */
+const withoutDefaultSpan = (col: ColProps | undefined, defaultSpan: ColProps['span']): ColProps | undefined => {
+  if (!isDefined(col) || col.span !== defaultSpan) return col;
+  const { span: _span, ...rest } = col;
+  return Object.keys(rest).length > 0 ? rest : undefined;
+};
+
+/**
+ * Forms used to be saved with the framework's layout defaults (horizontal, 6/18 spans, colon) filled in -
+ * by DEFAULT_FORM_SETTINGS and by migration 8 - so every form looked like it overrode the theme. Clear,
+ * field by field, the values that still equal those defaults so the form follows the theme's Form Span
+ * settings, whose own defaults are the same values. Any other value is a real override and is kept, and
+ * since this runs once, a value saved afterwards (even one equal to a default) stays an override.
+ */
+const migrateLayoutToThemeDefaults = (prev: IFormSettings): IFormSettings => {
+  const { layout, colon, labelCol, wrapperCol, ...rest } = prev;
+  const ownLabelCol = withoutDefaultSpan(labelCol, FALLBACK_FORM_LAYOUT.labelCol.span);
+  const ownWrapperCol = withoutDefaultSpan(wrapperCol, FALLBACK_FORM_LAYOUT.wrapperCol.span);
+  // The layout follows the theme only when layout and both spans are the built-in defaults: a form with
+  // its own spans chose its horizontal layout, so it keeps it.
+  const isBuiltInDefaultLayout = layout === FALLBACK_FORM_LAYOUT.layout &&
+    labelCol?.span === FALLBACK_FORM_LAYOUT.labelCol.span &&
+    wrapperCol?.span === FALLBACK_FORM_LAYOUT.wrapperCol.span;
+  return {
+    ...rest,
+    ...(isDefined(layout) && !isBuiltInDefaultLayout ? { layout } : {}),
+    ...(isDefined(colon) && colon !== FALLBACK_FORM_LAYOUT.colon ? { colon } : {}),
+    ...(isDefined(ownLabelCol) ? { labelCol: ownLabelCol } : {}),
+    ...(isDefined(ownWrapperCol) ? { wrapperCol: ownWrapperCol } : {}),
+  };
+};
 
 const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings, IFormMigrationContext>): MigratorFluent<IFormSettings, IFormSettings, IFormMigrationContext> =>
   migrator
@@ -34,6 +67,7 @@ const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings,
     }))
     .add(9, (prev) => migrateEmptyStaticLoaderEndpoint(prev))
     .add(10, (prev) => prev) // There was a wrong migration, leave version to save the version queue
+    .add(11, (prev) => migrateLayoutToThemeDefaults(prev))
   ;
 
 export const migrateFormSettings = (form: IFormDto, designerComponents: IToolboxComponents): Omit<IFormDto, 'settings'> & { settings: IFormSettings } => {

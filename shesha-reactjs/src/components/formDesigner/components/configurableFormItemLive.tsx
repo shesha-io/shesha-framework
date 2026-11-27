@@ -14,6 +14,7 @@ import { designerConstants } from '../utils/designerConstants';
 import { useComponentValidationRules } from '@/providers/formValidator/utils';
 import { resolveFormLayout } from '@/providers/form/models';
 import { useThemeState } from '@/providers/theme';
+import { getEffectiveLabelFont } from '@/providers/theme/defaults';
 
 export const ConfigurableFormItemLive = <TValue = unknown>({
   children,
@@ -35,7 +36,7 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
   // 'auto' carries no fixed height, so fall back to the default alignment in that case.
   // The theme label font is for application forms, not the designer's own settings forms.
   const { theme } = useThemeState();
-  const labelFont = shaForm.isSettingsForm ? undefined : theme.labelFont;
+  const labelFont = useMemo(() => (shaForm.isSettingsForm ? undefined : getEffectiveLabelFont(theme)), [shaForm.isSettingsForm, theme]);
   const { styles } = useStyles({ ...model, autoAlignLabel, labelFont });
 
   const layout = useMemo(() => {

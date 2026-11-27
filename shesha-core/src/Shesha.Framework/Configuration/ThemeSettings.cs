@@ -84,11 +84,18 @@ namespace Shesha.Configuration
         public ThemeSettings.TextSettings? Text { get; set; }
         public string? SidebarBackground { get; set; }
         /// <summary>
-        /// Application-wide font type name. Unset means the default font (Inter)
+        /// Application-wide base font: the lowest style layer, inherited by every component, component
+        /// group and form label that does not set the part itself. Unset type means the default font (Inter)
+        /// </summary>
+        public ThemeSettings.FontSettings? Font { get; set; }
+        /// <summary>
+        /// Legacy: application font type name saved by earlier versions. The frontend reads it into
+        /// <see cref="Font"/> when the theme is loaded and no longer saves it; kept so stored values round-trip
         /// </summary>
         public string? FontFamily { get; set; }
         /// <summary>
-        /// Font of form item labels. Unset parts inherit the application font
+        /// Legacy: label font saved by earlier versions. The frontend reads it into the Input Components group
+        /// (ComponentGroups.input.labelFont) when the theme is loaded and no longer saves it; kept so stored values round-trip
         /// </summary>
         public ThemeSettings.FontSettings? LabelFont { get; set; }
         public int? LabelSpan { get; set; }

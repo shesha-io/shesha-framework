@@ -1,7 +1,7 @@
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IAutocompleteComponentProps } from '@/designer-components/autocomplete/interfaces';
-import { getDataTablePreviewModel, getPreviewComponentModel, getPreviewModelExtras, getPreviewValue, getPreviewVariants, SAMPLE_TABLE_PROPERTY } from '../previewModel';
+import { getPreviewComponentModel, getPreviewModelExtras, getPreviewValue, getPreviewVariants } from '../previewModel';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
 
 const makeDefinition = (type: string, previewConfiguration?: IConfigurableFormComponent): IToolboxComponent => ({
@@ -72,7 +72,6 @@ describe('getPreviewComponentModel', () => {
       displayPropName: 'city',
       fields: ['city'],
       size: 'small',
-      desktop: { size: 'small' },
     });
   });
 
@@ -110,7 +109,7 @@ describe('getPreviewComponentModel', () => {
 
   it('returns the declared preview configuration, at the small size, for a component with no extras', () => {
     expect(getPreviewComponentModel(makeDefinition('textField', textFieldPreviewConfiguration)))
-      .toEqual({ ...textFieldPreviewConfiguration, size: 'small', desktop: { size: 'small' } });
+      .toEqual({ ...textFieldPreviewConfiguration, size: 'small' });
   });
 });
 
@@ -178,43 +177,78 @@ describe('getPreviewComponentModel - variants', () => {
   });
 });
 
-describe('getDataTablePreviewModel', () => {
-  const definition = getComponentDefinitions().get('datatable');
-  if (!definition) throw new Error('datatable is not registered');
-  const context = getDataTablePreviewModel(definition) as unknown as Record<string, unknown>;
-  const table = (context['components'] as Array<Record<string, unknown>>)[0];
-
-  it('wraps the table in an in-memory data context bound to the sample rows', () => {
-    expect(context['type']).toBe('dataContext');
-    expect(context['sourceType']).toBe('Form');
-    expect(context['propertyName']).toBe(SAMPLE_TABLE_PROPERTY);
+describe('preview styles come from the theme', () => {
+  it('renders every preview at the small size, as a fallback under the defaults and the theme', () => {
+    const model = getPreviewComponentModel(makeDefinition('textField'));
+    expect(model.size).toBe('small');
+    // Not a device style: that would override the theme's size.
+    expect(model.desktop).toBeUndefined();
   });
 
-  it('creates the table as when dropped, with sample data columns', () => {
-    expect(table?.['type']).toBe('datatable');
-    expect(table?.['parentId']).toBe(context['id']);
-    expect((table?.['items'] as Array<{ propertyName: string }>).map((c) => c.propertyName)).toEqual(['name', 'email', 'city']);
-    // A default the table only gets from its initModel/migrations.
-    expect(table?.['canEditInline']).toBe('no');
+  it('drops the per-device styles of a preview configuration, which would override the theme', () => {
+    const styled = { type: 'textField', id: 'x', propertyName: 'x', version: 'latest', desktop: { font: { color: 'red' } }, tablet: { size: 'large' }, mobile: {} } as IConfigurableFormComponent;
+    const model = getPreviewComponentModel(makeDefinition('textField', styled));
+    expect(model).not.toHaveProperty('desktop');
+    expect(model).not.toHaveProperty('tablet');
+    expect(model).not.toHaveProperty('mobile');
+  });
+
+  it('keeps the small size and no device styles on each variant', () => {
+    const [variant] = getPreviewVariants('dropdown') ?? [];
+    const model = getPreviewComponentModel(makeDefinition('dropdown'), variant);
+    expect(model.size).toBe('small');
+    expect(model.desktop).toBeUndefined();
+  });
+
+  it('renders the Data Table on its own, as on the Components tab, with no device styles', () => {
+    const definition = getComponentDefinitions().get('datatable');
+    if (!definition) throw new Error('datatable is not registered');
+    const table = getPreviewComponentModel(definition);
+    expect(table.type).toBe('datatable');
+    expect(table.size).toBe('small');
+    expect(table.desktop).toBeUndefined();
+  });
+
+  // Every component previewed on a style-group tab (see GROUP_PREVIEW_TYPES) sets its preview up itself.
+  it.each(['textField', 'textArea', 'numberField', 'button', 'statusTag', 'datatable', 'card', 'collapsiblePanel', 'tabs'])('%s declares a preview configuration', (type) => {
+    expect(getComponentDefinitions().get(type)?.previewConfiguration).toBeDefined();
+  });
+
+  it.each(['card', 'collapsiblePanel', 'tabs', 'button'])('%s preview configuration holds no styles of its own', (type) => {
+    const configuration = getComponentDefinitions().get(type)?.previewConfiguration as unknown as Record<string, unknown>;
+    ['desktop', 'tablet', 'mobile', 'font', 'border', 'background', 'shadow', 'dimensions', 'stylingBoxJson', 'headerStyles'].forEach((key) =>
+      expect(configuration).not.toHaveProperty(key));
   });
 });
 
-describe('preview size', () => {
-  it('renders every preview at the small size', () => {
-    const model = getPreviewComponentModel(makeDefinition('textField'));
-    expect(model.size).toBe('small');
-    expect(model.desktop?.size).toBe('small');
+describe('getPreviewComponentModel - layout components', () => {
+  type Container = { id: string; components?: IConfigurableFormComponent[] };
+  type Layout = IConfigurableFormComponent & { header?: Container; content?: Container; tabs?: Container[] };
+  const definitionOf = (type: string): IToolboxComponent => {
+    const definition = getComponentDefinitions().get(type);
+    if (!definition) throw new Error(`no ${type}`);
+    return definition;
+  };
+
+  it.each(['card', 'collapsiblePanel'])('%s has a header title in its header and sample content in its body', (type) => {
+    const model = getPreviewComponentModel(definitionOf(type)) as Layout;
+    const headerLayout = model.header?.components?.[0] as IConfigurableFormComponent & { components: IConfigurableFormComponent[] };
+    // Not a Text: the title takes the header's font, not the theme's Text defaults.
+    expect(headerLayout.components[0]).toMatchObject({ type: 'headerTitle', content: definitionOf(type).name });
+    expect(model.content?.components).toEqual([expect.objectContaining({ type: 'text', parentId: model.content?.id })]);
   });
 
-  it('keeps the small size on each variant', () => {
-    const [variant] = getPreviewVariants('dropdown') ?? [];
-    expect(getPreviewComponentModel(makeDefinition('dropdown'), variant).desktop?.size).toBe('small');
+  it.each(['card', 'collapsiblePanel', 'tabs'])('%s sample content is black text', (type) => {
+    const model = getPreviewComponentModel(definitionOf(type)) as Layout;
+    const samples = type === 'tabs' ? (model.tabs ?? []).flatMap((tab) => tab.components ?? []) : model.content?.components ?? [];
+    expect(samples.length).toBeGreaterThan(0);
+    samples.forEach((sample) => expect(sample).toMatchObject({ contentType: 'custom', font: { color: '#000' } }));
   });
 
-  it('renders the sample Data Table at the small size', () => {
-    const definition = getComponentDefinitions().get('datatable');
-    if (!definition) throw new Error('datatable is not registered');
-    const [table] = (getDataTablePreviewModel(definition) as unknown as { components: IConfigurableFormComponent[] }).components;
-    expect(table?.size).toBe('small');
+  it('tabs have sample content in every tab', () => {
+    const model = getPreviewComponentModel(definitionOf('tabs')) as Layout;
+    model.tabs?.forEach((tab) => {
+      expect(tab.components).toEqual([expect.objectContaining({ type: 'text', parentId: tab.id })]);
+    });
   });
 });

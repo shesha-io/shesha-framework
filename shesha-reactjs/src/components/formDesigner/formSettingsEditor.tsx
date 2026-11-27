@@ -9,7 +9,7 @@ import { getFormSettingsFormMarkup } from './formSettings';
 import { useFormViaFactory } from '@/form-factory/hooks';
 import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { IShaFormInstance } from '@/providers/form/store/interfaces';
-import { FormMarkup, getOwnFormLayoutSettings, OwnFormSettings, resolveFormLayout } from '@/providers/form/models';
+import { FormMarkup, resolveFormLayout } from '@/providers/form/models';
 import DefaultModelProvider, { useDefaultModelActionsOrUndefined } from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 import { useThemeState } from '@/providers/theme';
 import { deepMergeValues } from '@/utils/object';
@@ -24,7 +24,7 @@ export interface IFormSettingsEditorProps {
 interface IFormSettingsFormProps {
   readOnly: boolean;
   markup: FormMarkup;
-  settings: OwnFormSettings;
+  settings: IFormSettings;
   shaFormRef: RefObject<IShaFormInstance<IFormSettings> | undefined>;
   onSave: (settings: IFormSettings) => void;
 }
@@ -74,9 +74,6 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
     return { layout, labelCol, wrapperCol, colon: colon ?? true };
   }, [theme]);
 
-  // A form on the built-in default layout inherits it, so it shows as inherited rather than overridden.
-  const ownSettings = useMemo(() => getOwnFormLayoutSettings(formSettings), [formSettings]);
-
   const onSave = (values: IFormSettings): void => {
     if (!readOnly) {
       updateFormSettings(values);
@@ -102,11 +99,12 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
       cancelText={readOnly ? 'Close' : undefined}
     >
       <SourceFilesFolderProvider folder={sourcesFolder}>
-        <DefaultModelProvider<Partial<IFormSettings>> name="Theme" model={ownSettings} defaultModel={themeLayout}>
+        {/* Layout values the form leaves unset (see form settings migration 11) show as inherited from the theme. */}
+        <DefaultModelProvider<Partial<IFormSettings>> name="Theme" model={formSettings} defaultModel={themeLayout}>
           <FormSettingsForm
             readOnly={readOnly}
             markup={formSettingsMarkup}
-            settings={ownSettings}
+            settings={formSettings}
             shaFormRef={formRef}
             onSave={onSave}
           />

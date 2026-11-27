@@ -7,6 +7,7 @@ import { GroupSettingsPanel } from './groupSettingsPanel';
 import { GroupDefaultsPreview } from './componentSettings/groupPreview';
 import { CardTitle } from './cardTitle';
 import { FormLayoutSettingsPanel } from './formLayoutSettingsPanel';
+import { GroupHeaderSettingsPanel } from './groupHeaderSettingsPanel';
 import { useStyles } from './styles/styles';
 import AlertsExample from './alertsPreview';
 import InputStatesPreview from './inputStatePreview';
@@ -169,8 +170,8 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                   Font used across the application. Components with a font of their own keep it.
                 </Typography.Text>
                 <Select
-                  value={theme.fontFamily ?? DEFAULT_FONT_TYPE}
-                  onChange={(fontFamily: string | undefined) => changeThemeInternal({ ...theme, fontFamily })}
+                  value={theme.font?.type ?? DEFAULT_FONT_TYPE}
+                  onChange={(type: string | undefined) => changeThemeInternal({ ...theme, font: { ...theme.font, type } })}
                   options={FONT_OPTIONS}
                   disabled={readOnly}
                   allowClear
@@ -220,23 +221,32 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
       )}
       {section === 'input' && (
         <>
-          <Card
-            title={(
-              <CardTitle
-                title="Form Span settings"
-                description="The layout uses a 24-column grid system by default. Choose between vertical or horizontal layout. You can customize how much space each element takes by setting the label span and wrapper span."
-              />
-            )}
-          >
-            <FormLayoutSettingsPanel value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
-          </Card>
-          <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
+          <div className={styles.groupEditors}>
+            {/* One card, so the form layout and the input defaults scroll as one area. */}
+            <Card
+              title={(
+                <CardTitle
+                  title="Form Component settings"
+                  description="The layout uses a 24-column grid system by default. Choose between vertical or horizontal layout. You can customize how much space each element takes by setting the label span and wrapper span."
+                />
+              )}
+            >
+              <FormLayoutSettingsPanel value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
+              <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} asSection />
+            </Card>
+          </div>
           <GroupDefaultsPreview group={section} theme={theme} />
         </>
       )}
       {(section === 'inline' || section === 'standard' || section === 'layout') && (
         <>
-          <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />
+          {/* The editors scroll on their own, so the preview below stays in view. */}
+          <div className={styles.groupEditors}>
+            <GroupSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly}>
+              {/* Cards, panels and tabs have a header, which follows the body unless overridden here. */}
+              {section === 'layout' && <GroupHeaderSettingsPanel group={section} value={theme} onChange={changeThemeInternal} readOnly={readOnly} />}
+            </GroupSettingsPanel>
+          </div>
           <GroupDefaultsPreview group={section} theme={theme} />
         </>
       )}

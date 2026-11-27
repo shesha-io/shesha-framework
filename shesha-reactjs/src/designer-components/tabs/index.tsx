@@ -2,7 +2,7 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import { useState, useEffect } from 'react';
 import { ShaIcon } from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
-import { IFormComponentContainer } from '@/providers/form/models';
+import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
 import { ITabPaneProps, ITabsComponentProps, ITabsComponentPropsV0, TabsComponentDefinition } from './models';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { nanoid } from '@/utils/uuid';
@@ -14,6 +14,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getSettings } from './settingsForm';
 import { defaultCardStyles, defaultStyles, tabPosition2TabPlacement } from './utils';
+import { getHeaderGroupStyle } from '../_common/styles/headerStyles';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { isNonEmptyArray } from '@/utils/array';
@@ -30,11 +31,18 @@ import { isConfigurableFormComponent } from '@/providers/form/models';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { getPreviewSampleText } from '@/generic-pages/settings/dynamic-theme/componentSettings/previewSampleText';
 
 type TabItem = Required<TabsProps>['items'][number];
 
+const previewText = (tabId: string, content: string): IConfigurableFormComponent => getPreviewSampleText(`${tabId}-text`, tabId, content);
+
 const TabsComponent: TabsComponentDefinition = {
   themeGroup: 'layout',
+  // The tab cards (`card`, selected and not) follow the Layout Components theme's header, like a panel's
+  // header: the body's border, background and padding, unless the theme's Header Defaults override them.
+  // The component's own Card Styles override both.
+  nestedGroupStyles: { card: getHeaderGroupStyle },
   allowInherit: true,
   type: 'tabs',
   isInput: false,
@@ -215,6 +223,23 @@ const TabsComponent: TabsComponentDefinition = {
       return migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(newModel)));
     }),
   settingsFormMarkup: getSettings,
+  // Tabs render nothing without a tab, so the theme preview gets two sample tabs: one active and one not,
+  // so the tab strip's header styling shows in both states.
+  previewConfiguration: {
+    type: 'tabs',
+    id: 'tabs-preview',
+    componentName: 'tabsPreview',
+    propertyName: 'tabsPreview',
+    version: 'latest',
+    tabType: 'card',
+    tabPosition: 'top',
+    defaultActiveKey: 'tabs-preview-1',
+    tabs: [
+      // Content in the tabs, so the tab body's padding shows.
+      { id: 'tabs-preview-1', key: 'tabs-preview-1', name: 'tab1', title: 'Tab 1', visible: true, editMode: 'inherited', components: [previewText('tabs-preview-1', 'Tab 1 content')] },
+      { id: 'tabs-preview-2', key: 'tabs-preview-2', name: 'tab2', title: 'Tab 2', visible: true, editMode: 'inherited', components: [previewText('tabs-preview-2', 'Tab 2 content')] },
+    ],
+  } as ITabsComponentProps,
   customContainerNames: ['tabs'],
   getContainers: (model) => {
     return model.tabs.map<IFormComponentContainer>((t) => ({ id: t.id }));

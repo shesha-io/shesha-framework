@@ -12,6 +12,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { RowDataInitializer } from '@/components/reactTable/interfaces';
 import { FormProvider, ShaForm, useForm } from '@/providers/index';
 import { IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
+import { useResolvedFormLayout } from '@/providers/form/useResolvedFormLayout';
 import {
   deleteFailedAction,
   deleteStartedAction,
@@ -90,6 +91,8 @@ const CrudProvider = <TValue extends object = object>(props: PropsWithChildren<I
   });
 
   const { form, setFormData, setFormMode } = useForm<TValue>();
+  // Layout the item form leaves unset follows the theme's Form Span settings.
+  const formLayout = useResolvedFormLayout(props.formSettings);
 
   const { getPayload: getDelayedUpdate } = useDelayedUpdateOrUndefined() ?? {};
   const toolboxComponents = useFormDesignerComponents();
@@ -289,8 +292,7 @@ const CrudProvider = <TValue extends object = object>(props: PropsWithChildren<I
   };
 
   const parentMode = state.mode === "update" ? "editable" : "readOnly";
-  // An unset colon is left out rather than passed as undefined (exactOptionalPropertyTypes), so antd's default applies.
-  const { colon: formColon, ...antdFormSettings } = props.formSettings;
+  const { colon: _colon, layout: _layout, labelCol: _labelCol, wrapperCol: _wrapperCol, ...antdFormSettings } = props.formSettings;
 
   return (
     <CrudContext.Provider value={contextValue}>
@@ -304,7 +306,11 @@ const CrudProvider = <TValue extends object = object>(props: PropsWithChildren<I
         {... (form ? { form } : {})}
         onValuesChange={onValuesChangeInternal}
         {...antdFormSettings}
-        {...(formColon !== undefined ? { colon: formColon } : {})}
+        layout={formLayout.layout}
+        labelCol={formLayout.labelCol}
+        wrapperCol={formLayout.wrapperCol}
+        {...(formLayout.labelAlign !== undefined ? { labelAlign: formLayout.labelAlign } : {})}
+        {...(formLayout.colon !== undefined ? { colon: formLayout.colon } : {})}
         labelWrap
         initialValues={state.initialValues ? state.initialValues as Record<string, unknown> : {}}
       >

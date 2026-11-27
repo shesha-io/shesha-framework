@@ -265,8 +265,9 @@ const SubFormWithMetadataProvider: FC<PropsWithChildren<ISubForWithMetadataProvi
         components: state.components,
         formSettings: {
           ...(state.formSettings ?? DEFAULT_FORM_SETTINGS),
-          labelCol: getColSpan(labelCol) ?? getColSpan(state.formSettings?.labelCol) ?? DEFAULT_FORM_SETTINGS.labelCol,
-          wrapperCol: getColSpan(wrapperCol) ?? getColSpan(state.formSettings?.wrapperCol) ?? DEFAULT_FORM_SETTINGS.wrapperCol, // Override with the incoming one
+          // Spans left unset here follow the theme's Form Span settings (resolved by the SubForm component).
+          labelCol: getColSpan(labelCol) ?? getColSpan(state.formSettings?.labelCol),
+          wrapperCol: getColSpan(wrapperCol) ?? getColSpan(state.formSettings?.wrapperCol), // Override with the incoming one
         },
         propertyName,
         value: value || defaultValue,

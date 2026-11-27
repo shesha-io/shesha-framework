@@ -5,6 +5,7 @@ import { useThemeActions, useThemeState } from '@/providers/theme';
 import { getThemeFontStack, THEME_FONT_VAR } from '@/designer-components/_settings/utils/font/utils';
 import { ensureWebFontLoaded } from '@/designer-components/_settings/utils/font/webFonts';
 import { getApplicationColorTokens } from '@/providers/theme/tokens';
+import { getThemeGroupStyle } from '@/providers/theme/defaults';
 
 export interface IPreviewThemeProviderProps {
   /** The theme being edited, unsaved changes included. */
@@ -26,8 +27,8 @@ export const PreviewThemeProvider: FC<PropsWithChildren<IPreviewThemeProviderPro
 
   const getComponentStyle = useCallback((componentName: string) => theme.components?.[componentName] ?? {}, [theme.components]);
   const getComponentGroupStyle = useCallback(
-    (group: ThemeComponentGroup | undefined) => (group ? theme.componentGroups?.[group] ?? {} : {}),
-    [theme.componentGroups],
+    (group: ThemeComponentGroup | undefined) => (group ? getThemeGroupStyle(theme, group) ?? {} : {}),
+    [theme],
   );
   const actions = useMemo<IThemeActionsContext>(
     () => ({ ...parentActions, getComponentStyle, getComponentGroupStyle }),
@@ -36,7 +37,7 @@ export const PreviewThemeProvider: FC<PropsWithChildren<IPreviewThemeProviderPro
 
   // Font token scoped to the preview: the variable on a wrapper (components on the default font reference it)
   // and Ant Design's own font token.
-  const fontFamily = useMemo(() => getThemeFontStack(theme.fontFamily), [theme.fontFamily]);
+  const fontFamily = useMemo(() => getThemeFontStack(theme.font?.type), [theme.font?.type]);
   useEffect(() => {
     ensureWebFontLoaded(fontFamily);
   }, [fontFamily]);

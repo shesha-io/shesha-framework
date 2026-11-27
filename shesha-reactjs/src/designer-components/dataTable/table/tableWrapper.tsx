@@ -1,12 +1,8 @@
-import { FC, Fragment, useMemo, useRef, useEffect, useState } from 'react';
+import { FC, Fragment, useMemo, useRef, useEffect } from 'react';
 import * as React from 'react';
-import { collectMetadataPropertyPaths, filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder, convertRowStylingBoxToPadding, convertRowPaddingFieldsToPadding, flattenConfiguredColumns, getDataColumnAccessor } from './utils';
+import { collectMetadataPropertyPaths, filterVisibility, calculateDefaultColumns, flattenConfiguredColumns, getDataColumnAccessor } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
-import { withFontFallback } from '@/designer-components/_settings/utils/font/utils';
-import { getBackgroundImageUrl, getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
 import { SidebarContainer } from '@/components/sidebarContainer';
 import { DataTable } from '@/components/dataTable';
 import { DatatableAdvancedFilter } from '@/components/dataTable/advancedFilter';
@@ -21,10 +17,10 @@ import {
 import { GlobalTableStyles } from './styles/styles';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { FilterList } from '../filterList/filterList';
-import { useStyles } from './styles';
 import { useMetadataOrUndefined } from '@/providers/metadata';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { StandaloneTable } from './standaloneTable';
+import { useTableAppearance } from './useTableAppearance';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 import { BackendRepositoryType } from '@/providers/dataTable/repository/backendRepository';
@@ -39,15 +35,14 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   const { formMode } = useForm();
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
-  const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
+  const { anyOfPermissionsGranted } = useSheshaApplication();
+  const appearance = useTableAppearance(props);
   const isDesignMode = formMode === 'designer';
   const metadataContext = useMetadataOrUndefined(); // Don't require - DataTable may not be in a DataSource
   const metadata = metadataContext?.metadata;
   const formDesigner = useFormDesignerOrUndefined();
   const hasAutoConfiguredRef = useRef(false);
 
-  const calculatedStyles = useFormComponentStyles(props);
-  const allStyles = props.allStyles ?? calculatedStyles;
   const componentIdRef = useRef(id);
   const normalizedConfiguredColumns = useMemo(
     () => flattenConfiguredColumns(
@@ -95,239 +90,6 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     }
   }, [id]);
 
-  const shadowStyles = useMemo(() => getShadowStyle(props.shadow), [props.shadow]);
-
-  const finalBoxShadow = useMemo(() => {
-    return props.shadow ? shadowStyles.boxShadow : props.boxShadow;
-  }, [props.shadow, shadowStyles.boxShadow, props.boxShadow]);
-
-  const effectiveRowHeight = useMemo(() => {
-    const converted = convertRowDimensionsToHeight(props.rowDimensions?.height);
-    return converted || props.rowHeight;
-  }, [props.rowDimensions, props.rowHeight]);
-
-  const effectiveRowPadding = useMemo(() => {
-    // Try new individual padding fields first
-    const convertedFromFields = convertRowPaddingFieldsToPadding(
-      props.rowPaddingTop,
-      props.rowPaddingRight,
-      props.rowPaddingBottom,
-      props.rowPaddingLeft,
-    );
-
-    // Fall back to deprecated rowStylingBox for backward compatibility
-    const convertedFromBox = convertRowStylingBoxToPadding(props.rowStylingBox);
-
-    return convertedFromFields || convertedFromBox || props.rowPadding;
-  }, [props.rowPaddingTop, props.rowPaddingRight, props.rowPaddingBottom, props.rowPaddingLeft, props.rowStylingBox, props.rowPadding]);
-
-  const effectiveRowBorder = useMemo(() => {
-    const converted = convertRowBorderStyleToBorder(props.rowBorderStyle);
-    return converted || props.rowBorder;
-  }, [props.rowBorderStyle, props.rowBorder]);
-
-  // Compute effective header font values with backward compatibility
-  const effectiveHeaderFontFamily = useMemo(() => {
-    return withFontFallback(props.headerFont?.type ?? props.headerFontFamily);
-  }, [props.headerFont?.type, props.headerFontFamily]);
-
-  const effectiveHeaderFontSize = useMemo(() => {
-    return props.headerFont?.size ? `${props.headerFont.size}px` : props.headerFontSize;
-  }, [props.headerFont?.size, props.headerFontSize]);
-
-  const effectiveHeaderFontWeight = useMemo(() => {
-    return props.headerFont?.weight ?? props.headerFontWeight;
-  }, [props.headerFont?.weight, props.headerFontWeight]);
-
-  const effectiveHeaderTextColor = useMemo(() => {
-    return props.headerFont?.color ?? props.headerTextColor;
-  }, [props.headerFont?.color, props.headerTextColor]);
-
-  const effectiveHeaderTextAlign = useMemo(() => {
-    return props.headerFont?.align;
-  }, [props.headerFont?.align]);
-
-  const effectiveBodyTextAlign = useMemo(() => {
-    return allStyles.fontStyles.textAlign ?? props.font?.align;
-  }, [allStyles.fontStyles.textAlign, props.font?.align]);
-
-  // State for stored file background URL
-  const [storedFileBackgroundUrl, setStoredFileBackgroundUrl] = useState<string>('');
-
-  // Fetch stored file URL when background type is 'storedFile'
-  useEffect(() => {
-    let isCancelled = false;
-
-    const fetchStoredFileUrl = async (): Promise<void> => {
-      if (isDefined(props.background) && props.background.type === 'storedFile' && props.background.storedFile?.id) {
-        try {
-          const url = await getBackgroundImageUrl(props.background, backendUrl, httpHeaders);
-          if (!isCancelled) {
-            setStoredFileBackgroundUrl(url);
-          }
-        } catch (error) {
-          if (!isCancelled) {
-            console.warn('Failed to fetch stored file background image:', error);
-            setStoredFileBackgroundUrl('');
-          }
-        }
-      } else {
-        if (!isCancelled) {
-          setStoredFileBackgroundUrl('');
-        }
-      }
-    };
-
-    fetchStoredFileUrl().catch((error) => {
-      console.error('Failed to fetch stored file background image', error);
-    });
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [props.background, backendUrl, httpHeaders]);
-
-  // Convert background object to CSS string
-  const effectiveBackground = useMemo(() => {
-    const bgStyles = getBackgroundStyle(props.background, undefined, storedFileBackgroundUrl);
-
-    // Build complete background CSS string with all properties
-    const parts: string[] = [];
-
-    // Add image or color
-    if (bgStyles.backgroundImage) {
-      parts.push(bgStyles.backgroundImage);
-    } else if (bgStyles.backgroundColor) {
-      return bgStyles.backgroundColor; // Color doesn't need size/position
-    }
-
-    // Add position if present
-    if (bgStyles.backgroundPosition) {
-      parts.push(String(bgStyles.backgroundPosition));
-    }
-
-    // Add size if present (must come after position with / separator)
-    if (bgStyles.backgroundSize) {
-      // If position exists, add size with / separator, otherwise add it separately
-      if (bgStyles.backgroundPosition) {
-        parts[parts.length - 1] = `${parts[parts.length - 1]} / ${String(bgStyles.backgroundSize)}`;
-      } else {
-        parts.push(`/ ${String(bgStyles.backgroundSize)}`);
-      }
-    }
-
-    // Add repeat if present
-    if (bgStyles.backgroundRepeat) {
-      parts.push(String(bgStyles.backgroundRepeat));
-    }
-
-    return parts.length > 0 ? parts.join(' ') : undefined;
-  }, [props.background, storedFileBackgroundUrl]);
-
-  const { styles } = useStyles({
-    // Use resolved font styles from allStyles to properly handle device-specific styling
-    fontFamily: allStyles.fontStyles.fontFamily ?? withFontFallback(props.font?.type),
-    fontWeight: allStyles.fontStyles.fontWeight ?? props.font?.weight,
-    textAlign: allStyles.fontStyles.textAlign ?? props.font?.align,
-    color: allStyles.fontStyles.color ?? props.font?.color,
-    fontSize: allStyles.fontStyles.fontSize
-      ? parseInt(allStyles.fontStyles.fontSize as string, 10)
-      : props.font?.size,
-    striped: props.striped ?? false,
-    hoverHighlight: props.hoverHighlight ?? false,
-    rowBackgroundColor: props.rowBackgroundColor,
-    rowAlternateBackgroundColor: props.rowAlternateBackgroundColor,
-    rowHoverBackgroundColor: props.rowHoverBackgroundColor,
-    rowSelectedBackgroundColor: props.rowSelectedBackgroundColor,
-  });
-
-  const finalStyle = useMemo(() => {
-    let baseStyle;
-    if (!props.enableStyleOnReadonly && props.readOnly) {
-      baseStyle = {
-        ...allStyles.fontStyles,
-        ...allStyles.dimensionsStyles,
-        ...allStyles.stylingBoxAsCSS,
-      };
-    } else {
-      baseStyle = allStyles.fullStyle;
-    }
-
-    const {
-      // Remove border properties if border prop is set
-      border: borderProp,
-      borderTop,
-      borderRight,
-      borderBottom,
-      borderLeft,
-      borderWidth,
-      borderStyle: borderStyleProp,
-      borderColor,
-      borderRadius: borderRadiusProp,
-      borderTopWidth,
-      borderRightWidth,
-      borderBottomWidth,
-      borderLeftWidth,
-      borderTopStyle,
-      borderRightStyle,
-      borderBottomStyle,
-      borderLeftStyle,
-      borderTopColor,
-      borderRightColor,
-      borderBottomColor,
-      borderLeftColor,
-      borderTopLeftRadius,
-      borderTopRightRadius,
-      borderBottomLeftRadius,
-      borderBottomRightRadius,
-      // Remove background properties to prevent duplicate application
-      background,
-      backgroundColor,
-      backgroundImage,
-      backgroundSize,
-      backgroundPosition,
-      backgroundRepeat,
-      backgroundAttachment,
-      backgroundOrigin,
-      backgroundClip,
-      ...styleWithoutBorderAndBackground
-    } = baseStyle;
-
-    // Only remove border properties if props.border is set
-    if (props.border) {
-      return styleWithoutBorderAndBackground;
-    }
-
-    // Remove background properties but keep border properties
-    return {
-      borderProp,
-      borderTop,
-      borderRight,
-      borderBottom,
-      borderLeft,
-      borderWidth,
-      borderStyle: borderStyleProp,
-      borderColor,
-      borderRadius: borderRadiusProp,
-      borderTopWidth,
-      borderRightWidth,
-      borderBottomWidth,
-      borderLeftWidth,
-      borderTopStyle,
-      borderRightStyle,
-      borderBottomStyle,
-      borderLeftStyle,
-      borderTopColor,
-      borderRightColor,
-      borderBottomColor,
-      borderLeftColor,
-      borderTopLeftRadius,
-      borderTopRightRadius,
-      borderBottomLeftRadius,
-      borderBottomRightRadius,
-      ...styleWithoutBorderAndBackground,
-    };
-  }, [props.enableStyleOnReadonly, props.readOnly, allStyles, props.border]);
 
   const {
     isAdvancedFilterVisible,
@@ -480,7 +242,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
       {tableFilter.length > 0 && <FilterList filters={tableFilter} rows={totalRows ?? 0} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
 
       <div className="sha-datatable-wrapper">
-        <div className={styles.dataTable} style={finalStyle}>
+        <div className={appearance.wrapperClassName} style={appearance.wrapperStyle}>
           <DataTable
             onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
             onMultiRowSelect={setMultiSelectedRow}
@@ -525,20 +287,20 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
             border={props.border}
             striped={props.striped}
             hoverHighlight={props.hoverHighlight}
-            backgroundColor={effectiveBackground}
+            backgroundColor={appearance.backgroundColor}
             headerFont={props.headerFont}
-            headerFontFamily={effectiveHeaderFontFamily}
-            headerFontSize={effectiveHeaderFontSize}
-            headerFontWeight={effectiveHeaderFontWeight}
+            headerFontFamily={appearance.headerFontFamily}
+            headerFontSize={appearance.headerFontSize}
+            headerFontWeight={appearance.headerFontWeight}
             headerBackgroundColor={props.headerBackgroundColor}
-            headerTextColor={effectiveHeaderTextColor}
-            headerTextAlign={effectiveHeaderTextAlign}
-            bodyTextAlign={effectiveBodyTextAlign}
-            rowHeight={effectiveRowHeight}
-            rowPadding={effectiveRowPadding}
-            rowBorder={effectiveRowBorder}
+            headerTextColor={appearance.headerTextColor}
+            headerTextAlign={appearance.headerTextAlign}
+            bodyTextAlign={appearance.bodyTextAlign}
+            rowHeight={appearance.rowHeight}
+            rowPadding={appearance.rowPadding}
+            rowBorder={appearance.rowBorder}
             rowBorderStyle={props.rowBorderStyle}
-            boxShadow={finalBoxShadow}
+            boxShadow={appearance.boxShadow}
             dimensions={props.dimensions}
             sortableIndicatorColor={props.sortableIndicatorColor}
             cellTextColor={props.cellTextColor}
@@ -551,12 +313,10 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
             headerShadow={props.headerShadow}
             rowShadow={props.rowShadow}
             rowDividers={props.rowDividers}
-            bodyFontFamily={allStyles.fontStyles.fontFamily ?? withFontFallback(props.font?.type)}
-            bodyFontSize={allStyles.fontStyles.fontSize
-              ? (allStyles.fontStyles.fontSize as string)
-              : (props.font?.size ? `${props.font.size}px` : undefined)}
-            bodyFontWeight={allStyles.fontStyles.fontWeight ?? props.font?.weight as string}
-            bodyFontColor={allStyles.fontStyles.color ?? props.font?.color as string}
+            bodyFontFamily={appearance.bodyFontFamily}
+            bodyFontSize={appearance.bodyFontSize}
+            bodyFontWeight={appearance.bodyFontWeight}
+            bodyFontColor={appearance.bodyFontColor}
             actionIconSize={props.actionIconSize}
             actionIconColor={props.actionIconColor}
           />

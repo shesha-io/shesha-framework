@@ -485,11 +485,14 @@ export const EMPTY_FLAT_COMPONENTS_STRUCTURE: IFlatComponentsStructure = Object.
 
 export interface IFormSettingsCommon {
   modelType?: IEntityTypeIdentifier | string | undefined;
-  layout: FormLayout;
+  /** Unset means the form follows the theme's Layout (see resolveFormLayout). */
+  layout?: FormLayout | undefined;
   /** Label colon. Unset means the form follows the theme's Colon setting (see resolveFormColon). */
   colon?: boolean | undefined;
-  labelCol: ColProps;
-  wrapperCol: ColProps;
+  /** A span left unset follows the theme's Label Span (see resolveFormLayout). */
+  labelCol?: ColProps | undefined;
+  /** A span left unset follows the theme's Component Span (see resolveFormLayout). */
+  wrapperCol?: ColProps | undefined;
   size?: SizeType | undefined;
   /** if true then need to update components structure for using Setting component */
   isSettingsForm?: boolean | undefined;
@@ -662,12 +665,22 @@ export interface IFormValidationRulesOptions<TData = unknown> {
   contextConfigurableActionGetter: ContextConfigurableActionGetter;
 }
 
-/** Default form settings */
+/**
+ * Layout a form falls back to when neither the form nor the theme sets one. These are the values forms
+ * used to be created with, so a theme that was never configured keeps forms looking the way they did.
+ */
+export const FALLBACK_FORM_LAYOUT = {
+  layout: 'horizontal' as const,
+  colon: true,
+  labelCol: { span: 6 } as ColProps,
+  wrapperCol: { span: 18 } as ColProps,
+};
+
+/**
+ * Default form settings. New forms carry no layout of their own (layout, spans, colon), so they follow
+ * the theme's Form Span settings until the form's settings override them.
+ */
 export const DEFAULT_FORM_SETTINGS: IFormSettings = {
-  layout: 'horizontal',
-  // No colon: a form that never set its own follows the theme's Colon setting.
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
   permissions: [],
 };
 
@@ -689,19 +702,6 @@ export interface IResolvedFormLayout {
 
 const GRID_COLUMNS = 24;
 
-const isColUnset = (col: ColProps | undefined): boolean =>
-  !isDefined(col) || Object.values(col).every((value) => !isDefined(value));
-
-/**
- * True for a form still on the layout every form was created with before the theme had Form Span
- * settings (horizontal, label 6, component 18). Such a form never chose a layout of its own, so it
- * follows the theme; one with any other layout keeps it.
- */
-const isBuiltInDefaultLayout = (settings: Partial<IFormSettingsCommon>): boolean =>
-  settings.layout === DEFAULT_FORM_SETTINGS.layout &&
-  settings.labelCol?.span === DEFAULT_FORM_SETTINGS.labelCol.span &&
-  settings.wrapperCol?.span === DEFAULT_FORM_SETTINGS.wrapperCol.span;
-
 /** Adds the optional parts of a resolved layout only when defined (exactOptionalPropertyTypes rejects explicit undefined). */
 const withOptional = (
   resolved: Pick<IResolvedFormLayout, 'layout' | 'labelCol' | 'wrapperCol'>,
@@ -716,54 +716,53 @@ const withOptional = (
 export type FormLayoutTheme = Pick<IConfigurableTheme, 'layout' | 'labelSpan' | 'componentSpan' | 'labelAlign' | 'colon'>;
 
 /**
- * The form's own layout settings, without the ones it inherits from the theme: a form still on the
- * built-in default layout (see {@link isBuiltInDefaultLayout}) inherits layout and spans, so they are dropped.
+ * A form column with the inherited span where the form left it unset, keeping the column's other settings
+ * (offset, etc.). A column sized with flex has no span to inherit, so it is kept as it is.
  */
-export type OwnFormSettings = Omit<IFormSettings, 'layout'> & { layout?: FormLayout };
+const resolveFormCol = (col: ColProps | undefined, inheritedSpan: NonNullable<ColProps['span']>): ColProps =>
+  isDefined(col) && (isDefined(col.flex) || isDefined(col.span)) ? col : { ...col, span: inheritedSpan };
 
-export const getOwnFormLayoutSettings = (settings: IFormSettings): OwnFormSettings => {
-  if (!isBuiltInDefaultLayout(settings)) return settings;
-  const { layout: _layout, ...rest } = settings;
-  const { span: _labelSpan, ...labelCol } = settings.labelCol;
-  const { span: _wrapperSpan, ...wrapperCol } = settings.wrapperCol;
-  return { ...rest, labelCol, wrapperCol };
+/**
+ * The label column when there is no theme: an unset span gets the fallback span, reduced so the label's
+ * offset, the label and the control still fit one 24-column row. When no span fits, it is left unset and
+ * the label sizes to its content, as it did before spans were inherited.
+ */
+const resolveFallbackLabelCol = (col: ColProps | undefined, wrapperCol: ColProps): ColProps => {
+  if (isDefined(col) && (isDefined(col.flex) || isDefined(col.span))) return col;
+  const fallbackSpan = Number(FALLBACK_FORM_LAYOUT.labelCol.span ?? 6);
+  if (isDefined(wrapperCol.flex)) return { ...col, span: fallbackSpan };
+  const used = Number(col?.offset ?? 0) + Number(wrapperCol.span ?? 0) + Number(wrapperCol.offset ?? 0);
+  const span = Math.min(fallbackSpan, GRID_COLUMNS - used);
+  return span > 0 ? { ...col, span } : { ...col };
 };
 
 /**
- * Effective layout of a form: Layout, Colon, Label Span and Component Span each come from the
- * form's settings when it set them, and are inherited from the theme's Form Span settings when it did
- * not. A form still on the built-in default layout (see {@link isBuiltInDefaultLayout}) inherits layout
- * and spans too. Label alignment always comes from the theme, as forms have no setting for it.
- * Settings forms are framework chrome, so they never use the theme's.
+ * Effective layout of a form: Layout, Colon, Label Span and Component Span each come from the form's
+ * settings when it set them, and are inherited from the theme's Form Span settings when it did not
+ * (then from {@link FALLBACK_FORM_LAYOUT}). Label alignment always comes from the theme, as forms have no
+ * setting for it. Settings forms are framework chrome, so they never use the theme's.
  */
-/**
- * A form column with the theme's span where it inherits one, keeping the column's other settings (offset, etc.).
- * A column sized with flex has no span to inherit, so it is kept as it is.
- */
-const resolveFormCol = (col: ColProps | undefined, inheritsSpan: boolean, themeSpan: NonNullable<ColProps['span']>): ColProps =>
-  isDefined(col) && (isDefined(col.flex) || (!inheritsSpan && isDefined(col.span))) ? col : { ...col, span: themeSpan };
-
 export const resolveFormLayout = (
   settings: Partial<IFormSettingsCommon> | undefined,
   theme: FormLayoutTheme | undefined,
 ): IResolvedFormLayout => {
   const own = settings ?? {};
   if (own.isSettingsForm === true || !isDefined(theme)) {
+    const wrapperCol = resolveFormCol(own.wrapperCol, FALLBACK_FORM_LAYOUT.wrapperCol.span ?? GRID_COLUMNS - 6);
     return withOptional({
-      layout: own.layout ?? DEFAULT_FORM_SETTINGS.layout,
-      labelCol: isColUnset(own.labelCol) ? DEFAULT_FORM_SETTINGS.labelCol : own.labelCol ?? DEFAULT_FORM_SETTINGS.labelCol,
-      wrapperCol: isColUnset(own.wrapperCol) ? DEFAULT_FORM_SETTINGS.wrapperCol : own.wrapperCol ?? DEFAULT_FORM_SETTINGS.wrapperCol,
+      layout: own.layout ?? FALLBACK_FORM_LAYOUT.layout,
+      labelCol: resolveFallbackLabelCol(own.labelCol, wrapperCol),
+      wrapperCol,
     }, { colon: own.colon });
   }
 
-  const layoutFollowsTheme = isBuiltInDefaultLayout(own);
-  const themeLabelSpan = theme.labelSpan ?? DEFAULT_FORM_SETTINGS.labelCol.span ?? 6;
+  const themeLabelSpan = theme.labelSpan ?? FALLBACK_FORM_LAYOUT.labelCol.span ?? 6;
   const themeComponentSpan = theme.componentSpan ?? GRID_COLUMNS - Number(themeLabelSpan);
 
   return withOptional({
-    layout: layoutFollowsTheme || !isDefined(own.layout) ? theme.layout ?? DEFAULT_FORM_SETTINGS.layout : own.layout,
-    labelCol: resolveFormCol(own.labelCol, layoutFollowsTheme, themeLabelSpan),
-    wrapperCol: resolveFormCol(own.wrapperCol, layoutFollowsTheme, themeComponentSpan),
+    layout: own.layout ?? theme.layout ?? FALLBACK_FORM_LAYOUT.layout,
+    labelCol: resolveFormCol(own.labelCol, themeLabelSpan),
+    wrapperCol: resolveFormCol(own.wrapperCol, themeComponentSpan),
   }, {
     labelAlign: theme.labelAlign,
     colon: own.colon ?? theme.colon,

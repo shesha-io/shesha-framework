@@ -1,7 +1,7 @@
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
 import { IConfigurableFormComponent, IStyleValue } from '@/providers/form/models';
 import { getEffectiveStyle } from '@/utils/style';
-import { headerGroupStyle } from './utils';
+import { getHeaderGroupStyle, getHeaderStyleFromBody } from '../_common/styles/headerStyles';
 
 type PanelStyle = IStyleValue & { headerStyles?: IStyleValue };
 
@@ -12,14 +12,38 @@ const layoutGroup: IStyleValue = {
   stylingBoxJson: { _type: 'styleBox', marginTop: '20', paddingLeft: '12' },
 };
 
-describe('headerGroupStyle', () => {
+describe('getHeaderStyleFromBody', () => {
   it('takes border, background and padding, not margin or shadow', () => {
-    const header = headerGroupStyle(layoutGroup);
+    const header = getHeaderStyleFromBody(layoutGroup);
     expect(header.background).toEqual(layoutGroup.background);
     expect(header.border).toEqual(layoutGroup.border);
     expect(header.shadow).toBeUndefined();
     expect(header.stylingBoxJson?.paddingLeft).toBe('12');
     expect(header.stylingBoxJson?.marginTop).toBeUndefined();
+  });
+});
+
+describe('getHeaderGroupStyle', () => {
+  it('follows the body where the header defaults say nothing', () => {
+    expect(getHeaderGroupStyle(layoutGroup)).toEqual(getHeaderStyleFromBody(layoutGroup));
+  });
+
+  it('lets the header defaults override the body value by value', () => {
+    const header = getHeaderGroupStyle({
+      ...layoutGroup,
+      headerStyles: { background: { type: 'color', color: '#abcdef' }, font: { size: 18 } },
+    });
+    expect(header.background?.color).toBe('#abcdef');
+    expect(header.font?.size).toBe(18);
+    // Not overridden, so still the body's.
+    expect(header.border).toEqual(layoutGroup.border);
+    expect(header.stylingBoxJson?.paddingLeft).toBe('12');
+  });
+
+  it('does not change the theme it reads from', () => {
+    const group = { ...layoutGroup, headerStyles: { border: { border: { all: { color: '#00ff00' } } } } };
+    getHeaderGroupStyle(group);
+    expect(group.border?.border?.all?.color).toBe('#ff0000');
   });
 });
 
@@ -35,6 +59,15 @@ describe('panel header theme inheritance', () => {
     expect(style.headerStyles?.border?.border).toEqual(layoutGroup.border?.border);
     // Header keeps its own defaults where the group says nothing.
     expect(style.headerStyles?.font?.size).toBe(14);
+  });
+
+  it('applies the Layout Components header defaults over the body\'s', () => {
+    const group = { ...layoutGroup, headerStyles: { background: { type: 'color' as const, color: '#abcdef' } } };
+    const style = getEffectiveStyle(model, 'desktop', { componentGroups: { layout: group } }, panel) as PanelStyle;
+    expect(style.headerStyles?.background?.color).toBe('#abcdef');
+    // The header defaults are only for the header, never the body.
+    expect(style.background?.color).toBe('#123456');
+    expect(style).not.toHaveProperty('headerStyles.headerStyles');
   });
 
   it('lets the panel\'s own header style win over the group', () => {

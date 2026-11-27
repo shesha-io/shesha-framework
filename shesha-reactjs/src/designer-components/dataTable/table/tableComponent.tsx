@@ -40,6 +40,9 @@ import { DataTableApi } from '@/componentsApi/dataTableApi';
 
 import apiCode from "../../../componentsApi/dataTableApi.ts?raw";
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
+import { upgradeComponent } from '@/providers/form/utils';
+import { getEmptyFlatMarkup } from '@/providers/form/models';
+import { IToolboxComponent } from '@/interfaces';
 
 const columnsMismatchError = 'CONFIGURATION ERROR: The DataTable columns do not match the data source. Please change the columns configured to suit your data source.';
 
@@ -160,6 +163,15 @@ const TableComponent: TableComponentDefinition = {
     return model.hidden === true ? null : store
       ? <TableComponentFactory model={model} columnsMismatch={columnsMismatch} />
       : <StandaloneTable {...model} />;
+  },
+  // Theme preview: a table as the designer creates it. Outside a Data Context it renders the placeholder
+  // table, the same on the Components tab and in the Standard group preview. A getter, so the table
+  // defaults are read when the preview asks for it rather than while this module is evaluated. The
+  // preview drops the per-device styles: they come from the theme.
+  get previewConfiguration(): ITableComponentProps {
+    // No version: every migration runs, as for a freshly dropped table, which is where many of its defaults come from.
+    const seed = { type: 'datatable', id: 'datatable', componentName: 'datatablePreview', propertyName: 'datatableAppearance', hidden: false } as ITableComponentProps;
+    return upgradeComponent(TableComponent.initModel?.(seed) ?? seed, TableComponent as unknown as IToolboxComponent, undefined, getEmptyFlatMarkup(), true) as ITableComponentProps;
   },
   initModel: (model: ITableComponentProps) => {
     const defaults = defaultStyles();

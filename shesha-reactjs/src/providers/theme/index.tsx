@@ -4,7 +4,7 @@ import './interFont.generated.css';
 import './baseFont.css';
 import { ColorScheme, IConfigurableTheme, IThemeActionsContext, IThemeStateContext, normalizeColorScheme, ResolvedTheme, THEME_CONTEXT_INITIAL_STATE, ThemeComponentGroup, UiActionsContext, UiStateContext } from './contexts';
 import { useResolvedTheme } from './useResolvedTheme';
-import { applyThemeDefaults } from './defaults';
+import { applyThemeDefaults, getThemeGroupStyle } from './defaults';
 import { getApplicationColorTokens } from './tokens';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
@@ -34,7 +34,6 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     // load theme settings
     const loaded = await settings.getSetting<IConfigurableTheme>({ module: 'Shesha', name: 'Shesha.ThemeSettings' });
     // Persisted settings predate the 'system' option, so the stored scheme may be empty or stale.
-    // Fills in the label and input font defaults a theme is initialised with, where it saved none.
     const theme: IConfigurableTheme = applyThemeDefaults({ ...loaded, sidebar: normalizeColorScheme(loaded.sidebar) });
     setState((prev) => ({ ...prev, theme: theme, initialTheme: theme }));
   });
@@ -54,8 +53,8 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
 
   const getComponentStyle = useCallback((componentName: string) => state.theme.components?.[componentName] ?? {}, [state.theme.components]);
   const getComponentGroupStyle = useCallback(
-    (group: ThemeComponentGroup | undefined) => (group ? state.theme.componentGroups?.[group] ?? {} : {}),
-    [state.theme.componentGroups],
+    (group: ThemeComponentGroup | undefined) => (group ? getThemeGroupStyle(state.theme, group) ?? {} : {}),
+    [state.theme],
   );
 
   // 'system' follows the OS preference and re-resolves when the user flips it.
@@ -73,7 +72,8 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     document.documentElement.style.colorScheme = resolvedTheme;
   }, [resolvedTheme]);
 
-  const fontFamily = useMemo(() => getThemeFontStack(state.theme.fontFamily), [state.theme.fontFamily]);
+  // The base font (lowest style layer) also drives Ant Design's token and the inherited page font.
+  const fontFamily = useMemo(() => getThemeFontStack(state.theme.font?.type), [state.theme.font?.type]);
 
   // Components on the default font reference this variable (see `withFontFallback`), so a theme font
   // change restyles them without re-rendering. Set on the root element so popups rendered into body get it too.

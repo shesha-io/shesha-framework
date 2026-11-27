@@ -18,10 +18,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           { key: 'common', title: 'Main', id: commonTabId,
             components: fbf(commonTabId)
               .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', validate: { required: true }, jsSetting: false })
-              .addSettingsInput({ inputType: 'textField', propertyName: 'label', label: 'Heading', jsSetting: true })
               .stdVisibleEditableInputs('full')
               .addSettingsInputRow({ inputs: [
-                { type: 'switch', propertyName: 'hideHeading', label: 'Hide Heading', jsSetting: true },
+                { type: 'switch', propertyName: 'hideHeading', label: 'Hide Header', jsSetting: true },
                 { type: 'switch', label: 'Hide When Empty', propertyName: 'hideWhenEmpty', jsSetting: true },
               ] })
               .addPropertyRouter({ id: commonStyleRouterId, componentName: 'propertyRouter1', label: 'Property router1', labelAlign: 'right',
@@ -33,7 +32,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
               })
               .toJson(),
           },
-          { key: 'events', title: 'Events', id: eventsTabId, components: fbf(eventsTabId).stdEventHandlers(['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave']).toJson() },
+          { key: 'events', title: 'Events', id: eventsTabId,
+            components: fbf(eventsTabId)
+              .stdEventHandlers(['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'])
+              .stdEventHandlers(['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], undefined, 'headerEvents', 'Header ')
+              .toJson(),
+          },
           { key: 'appearance', title: 'Appearance', id: appearanceTabId,
             components: fbf(appearanceTabId)
               .addPropertyRouter({ id: styleRouterId, componentName: 'propertyRouter2', label: 'Property router2', labelAlign: 'right',
@@ -44,6 +48,16 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   .stdBackgroundPanel(removeStyleRouter !== true)
                   .stdShadowPanel()
                   .stdMarginPaddingPanel()
+                  // The header's own style, as a panel's: over the theme's Header Defaults (Layout Components).
+                  .stdCollapsiblePanel('Header Style', (h) => h
+                    .stdFontPanel(undefined, 'headerStyles.font')
+                    .stdDimensionsPanel('headerStyles.dimensions', ['width', 'minWidth', 'maxWidth'])
+                    .stdBorderPanel(removeStyleRouter !== true, 'headerStyles.border', 'radius')
+                    .stdBackgroundPanel(removeStyleRouter !== true, 'headerStyles.background')
+                    .stdMarginPaddingPanel('headerStyles.stylingBoxJson'),
+                  true,
+                  'return getSettingValue(data?.hideHeading) !== true;',
+                  )
                   .addCollapsiblePanel({ label: 'Custom Styles', labelAlign: 'right', ghost: true, collapsible: 'header',
                     content: {
                       id: stylePnlCustomId,

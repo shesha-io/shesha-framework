@@ -1,6 +1,7 @@
 import { IConfigurableActionConfiguration, IConfigurableActionDescriptor } from '@/interfaces/configurableAction';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { useConfigurableActionDispatcher, useForm } from '@/providers';
+import { useResolvedFormLayout } from '@/providers/form/useResolvedFormLayout';
 import { IConfigurableActionGroupDictionary } from '@/providers/configurableActionsDispatcher/models';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { arrayHasAtLeastNDefined } from '@/utils/array';
@@ -44,6 +45,7 @@ const ACTION_FULL_NAME_FIELD = 'actionFullName';
 export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = (props) => {
   const [form] = Form.useForm();
   const { formSettings } = useForm();
+  const formLayout = useResolvedFormLayout(formSettings);
   const { value, onChange, readOnly = false, label = 'Action Name', description } = props;
 
   const { styles } = useStyles();
@@ -137,7 +139,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
       <Form<IActionFormModel>
         component={false}
         form={form}
-        {...(formSettings ? { layout: formSettings.layout, ...(formSettings.colon !== undefined ? { colon: formSettings.colon } : {}) } : {})}
+        {...(formSettings ? { layout: formLayout.layout, ...(formLayout.colon !== undefined ? { colon: formLayout.colon } : {}) } : {})}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
         onValuesChange={onValuesChange}

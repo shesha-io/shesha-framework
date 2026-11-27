@@ -7,7 +7,7 @@ const CANVAS_PREVIEW_BACKGROUND = '#ffffff';
 const CANVAS_PREVIEW_BORDER = '#f0f0f0';
 const CANVAS_PREVIEW_TEXT = 'rgba(0, 0, 0, 0.88)';
 
-export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) => {
+export const useStyles = createStyles(({ css, cx, token }, theme?: IConfigurableTheme) => {
   const appearanceForm = cx(
     'sha-appearance-form',
     css`
@@ -85,6 +85,10 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
         padding: 8px;
       }
 
+      .ant-tabs-nav {
+        margin-bottom: 0px;
+      }
+
       .ant-tabs-body-holder {
         padding: 8px;
 
@@ -115,12 +119,22 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
         }
       }
 
-      .ant-card {
-        padding: 8px;
+      /* The settings' own cards, not a Card component in a preview: these would replace its configured
+         padding and header look (a Card component is .sha-card-component, see designer-components/card). */
+      .ant-card:not(.sha-card-component):not(.theme-card-menu) {
+        height: 100%;
+        max-height: 450px;
+        /* The body scrolls, not the card: a scroll box's padding scrolls with its content, so content
+           would slide over the card's padding. The head and the padding stay put around the body. */
+        display: flex;
+        flex-direction: column;
+        overflow-y: hidden;
 
-        .ant-card-head {
+        > .ant-card-head {
+          flex-shrink: 0;
           min-height: 40px;
           padding: 8px;
+          margin-bottom: 4px;
 
           .ant-card-head-title {
             font-size: 14px;
@@ -128,8 +142,13 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
           }
         }
 
-        .ant-card-body {
-          padding: 8px;
+        > .ant-card-body {
+          padding: 16px;
+          flex: 1 1 auto;
+          min-height: 0;
+          overflow-y: auto;
+          overflow-x: hidden;
+          ${sheshaStyles.thinScrollbars}
         }
       }
 
@@ -217,29 +236,103 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
       border: 1px solid ${CANVAS_PREVIEW_BORDER};
       color: ${CANVAS_PREVIEW_TEXT};
 
-      .ant-card-head {
+      /* Only this frame's own head and body: a previewed Card component sits inside it and must keep
+         its configured appearance. */
+      > .ant-card-head {
         color: ${CANVAS_PREVIEW_TEXT};
         border-bottom-color: ${CANVAS_PREVIEW_BORDER};
       }
 
-      .ant-card-body {
+      > .ant-card-body {
         background: transparent;
       }
     `,
   );
 
+  /* The Components tab's editor card: shrinks to make room for the preview, as the group editors do
+     (its height cap and body scrolling come from the settings card rule above). */
   const themeCardSettings = cx(
     'theme-card',
     css`
-      height: 450px;
+      min-height: 350px;
+    `,
+  );
+
+  /* The Components tab's editor and preview, laid out like a group tab (see the tab body rule above):
+     the editor keeps its size (350px to 450px), and the preview gets the height left after it and the
+     gap, with its body scrolling (see the settings card rule). */
+  const componentEditors = cx(
+    'theme-component-editors',
+    css`
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      > .theme-card {
+        flex: 0 1 auto;
+      }
+
+      > .preview-section {
+        flex: 1 1 0;
+        /* Room for the preview's head and some of its body on a short screen: the column scrolls instead. */
+        min-height: 250px;
+      }
+    `,
+  );
+
+  /* The editors of a group tab scroll on their own, as the Components tab's editor does, so the
+     preview below them always stays in view. */
+  const groupEditors = cx(
+    'theme-group-editors',
+    css`
+      min-height: 350px;
+      max-height: 450px;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      ${sheshaStyles.thinScrollbars}
+
+      > * {
+        flex-shrink: 1;
+      }
+    `,
+  );
+
+  /* A further section of a settings card (e.g. Header Defaults in the Layout Defaults card). */
+  const groupSettingsSection = cx(
+    'theme-group-settings-section',
+    css`
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid ${token.colorBorderSecondary};
     `,
   );
 
   const themeCardMenu = cx(
-    'theme-card',
+    'theme-card-menu',
     css`
-      height: 200px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow-y: hidden;
+      padding: 4px;
+      
+      > .ant-card-head {
+        flex-shrink: 0;
+        min-height: 40px;
+        padding: 4px;
+        margin-bottom: 4px;
+      }
+
+      > .ant-card-body {
+          flex: 1 1 auto;
+          min-height: 0;
+          overflow-y: auto;
+          overflow-x: hidden;
+          ${sheshaStyles.thinScrollbars}
+        }
     `,
   );
 
@@ -286,6 +379,9 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
   );
 
   return {
+    groupEditors,
+    componentEditors,
+    groupSettingsSection,
     groupComponentsHelpIcon,
     groupComponentsHelp,
     themeParameters,
