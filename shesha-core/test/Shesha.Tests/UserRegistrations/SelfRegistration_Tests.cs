@@ -394,6 +394,57 @@ namespace Shesha.Tests.UserRegistrations
             _otps[second.OtpOperationId!.Value].ConsumedOn.ShouldBeNull();
         }
 
+        [Theory]
+        [InlineData("000000")] // wrong pin
+        [InlineData(null)] // no pin
+        public async Task A_taken_username_is_not_revealed_without_a_valid_pinAsync(string? pin)
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var first = NewInput();
+            await RegisterAsync(app, first);
+
+            var second = NewInput();
+            second.UserName = first.UserName;
+            second.OtpPin = pin;
+            if (pin == null)
+                RemoveOtp(second);
+
+            // the same answer as for a username that's free: the contact isn't verified
+            var ex = await Should.ThrowAsync<UserFriendlyException>(async () => { await RegisterAsync(app, second); });
+            ex.Message.ShouldBe(SelfRegistrationManager.ContactNotVerifiedMessage);
+        }
+
+        [Fact]
+        public async Task A_username_with_characters_that_are_not_allowed_does_not_use_up_the_pinAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings());
+            var input = NewInput();
+            var validUserName = input.UserName;
+            input.UserName = $"bad/{validUserName}";
+
+            var ex = await Should.ThrowAsync<AbpValidationException>(async () => { await RegisterAsync(app, input); });
+
+            ex.ValidationErrors.ShouldContain(e => e.ErrorMessage!.StartsWith("Username can only contain letters, digits and these characters:"));
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull();
+
+            input.UserName = validUserName;
+            (await RegisterAsync(app, input)).UserId.ShouldBeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task An_email_username_with_characters_that_are_not_allowed_does_not_use_up_the_pinAsync()
+        {
+            var app = await CreateAppAsync(EnabledSettings(s => s.UserEmailAsUsername = true));
+            var input = NewInput();
+            input.EmailAddress = $"o/brien-{Guid.NewGuid():N}@selfreg.test";
+            ProvideOtp(input, sentTo: input.EmailAddress);
+
+            var ex = await Should.ThrowAsync<AbpValidationException>(async () => { await RegisterAsync(app, input); });
+
+            ex.ValidationErrors.ShouldContain(e => e.ErrorMessage == "Email Address contains characters that can't be used in a username");
+            _otps[input.OtpOperationId!.Value].ConsumedOn.ShouldBeNull();
+        }
+
         [Fact]
         public async Task Registration_marks_the_pin_as_usedAsync()
         {

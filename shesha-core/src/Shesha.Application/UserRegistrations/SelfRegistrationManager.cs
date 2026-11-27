@@ -138,7 +138,12 @@ namespace Shesha.UserRegistrations
             // so the response can't be used to find out whether an email address or mobile number is registered.
             // Each pin is verified once, here: verification marks it as used, and the verified contacts are trusted from now on.
             // The registration forms don't verify the pins themselves, they pass them to Register.
-            await CheckBothPinsBeforeVerificationAsync(input);
+            await CheckPinsBeforeVerificationAsync(input);
+
+            // Only a registrant holding a valid pin gets this far, so the response can't be used to find out which usernames
+            // exist. The pins aren't used up yet, so a taken username can be corrected and submitted again with the same pin.
+            await EnsureUserNameAvailableAsync(input, settings);
+
             var verifiedContact = await EnsureContactVerifiedAsync(input);
             var verifiedEmail = await EnsureEmailVerifiedAsync(input);
             var verifiedContacts = new[] { verifiedContact, verifiedEmail }.Where(c => !string.IsNullOrWhiteSpace(c)).Select(c => c!).Distinct().ToList();
@@ -305,16 +310,14 @@ namespace Shesha.UserRegistrations
         }
 
         /// <summary>
-        /// Checks the username and password before the one-time pins are verified. Verifying a pin uses it up, so these
-        /// common mistakes are reported while the registrant can still correct them and submit again with the same pin.
-        /// The username isn't checked when it's the email address, so this can't reveal whether an email address is registered.
+        /// Checks the password and the characters of the username before the one-time pins are checked. Verifying a pin uses it
+        /// up, so these common mistakes are reported while the registrant can still correct them and submit again with the same pin.
+        /// Nothing here depends on existing accounts, so it can't reveal whether a username or email address is registered: see
+        /// <see cref="EnsureUserNameAvailableAsync"/>.
         /// </summary>
         protected virtual async Task ValidateAccountDetailsAsync(SelfRegistrationInput input, UserManagementSettings settings)
         {
             var errors = new List<ValidationResult>();
-
-            if (!settings.UserEmailAsUsername && !string.IsNullOrWhiteSpace(input.UserName) && await _userManager.FindByNameAsync(input.UserName) != null)
-                errors.Add(new ValidationResult("User with the same username already exists"));
 
             if (string.IsNullOrWhiteSpace(input.Password))
                 errors.Add(new ValidationResult("Password is mandatory"));
@@ -326,8 +329,20 @@ namespace Shesha.UserRegistrations
             if (errors.Any())
                 throw new AbpValidationException("Please correct the errors and try again", errors);
 
-            // the configured password policy
             await _userManager.InitializeOptionsAsync(CurrentUnitOfWork.GetTenantId());
+
+            // the characters Identity allows in a username, which it only checks when the user is created, after the pins are used up
+            var userName = settings.UserEmailAsUsername ? input.EmailAddress : input.UserName;
+            var allowedCharacters = _userManager.Options.User.AllowedUserNameCharacters;
+            if (!string.IsNullOrEmpty(allowedCharacters) && !string.IsNullOrEmpty(userName) && userName.Any(c => !allowedCharacters.Contains(c)))
+            {
+                var message = settings.UserEmailAsUsername
+                    ? "Email Address contains characters that can't be used in a username"
+                    : $"Username can only contain letters, digits and these characters: {new string(allowedCharacters.Where(c => !char.IsLetterOrDigit(c)).ToArray())}";
+                throw new AbpValidationException("Please correct the errors and try again", new List<ValidationResult> { new ValidationResult(message) });
+            }
+
+            // the configured password policy
             foreach (var validator in _userManager.PasswordValidators)
             {
                 var result = await validator.ValidateAsync(_userManager, new User(), input.Password);
@@ -484,18 +499,29 @@ namespace Shesha.UserRegistrations
         }
 
         /// <summary>
-        /// When a mobile pin and an email pin are both supplied, checks both before either is verified. Verification uses a
-        /// pin up, so otherwise a correct first pin would be used up by a registration that then fails on a wrong second pin,
-        /// and the registrant couldn't just correct the second one. A wrong or expired pin is still verified, so the failed
+        /// Checks the pin, and the email pin when one is supplied, before either is verified. Verification uses a pin up, so
+        /// otherwise a correct first pin would be used up by a registration that then fails on a wrong second pin or a taken
+        /// username, and the registrant couldn't just correct it. A wrong or expired pin is still verified, so the failed
         /// attempt counts towards its limit.
         /// </summary>
-        private async Task CheckBothPinsBeforeVerificationAsync(SelfRegistrationInput input)
+        private async Task CheckPinsBeforeVerificationAsync(SelfRegistrationInput input)
         {
-            if (input.EmailOtpOperationId == null && string.IsNullOrWhiteSpace(input.EmailOtpPin))
-                return;
-
             await CheckPinBeforeVerificationAsync(input.OtpOperationId, input.OtpPin, ContactNotVerifiedMessage, input.EmailAddress, input.MobileNumber);
-            await CheckPinBeforeVerificationAsync(input.EmailOtpOperationId, input.EmailOtpPin, EmailNotVerifiedMessage, input.EmailAddress);
+
+            if (input.EmailOtpOperationId != null || !string.IsNullOrWhiteSpace(input.EmailOtpPin))
+                await CheckPinBeforeVerificationAsync(input.EmailOtpOperationId, input.EmailOtpPin, EmailNotVerifiedMessage, input.EmailAddress);
+        }
+
+        /// <summary>
+        /// Refuses a username that's already taken. Called once the pins are known to be valid but before they're used up, so
+        /// only a registrant who proved their email address or mobile number can find out whether a username exists, and they can
+        /// correct it and submit again with the same pin. Not checked when the email address is the username: that would reveal
+        /// whether the address is registered, and registration refuses it later like any other existing contact.
+        /// </summary>
+        protected virtual async Task EnsureUserNameAvailableAsync(SelfRegistrationInput input, UserManagementSettings settings)
+        {
+            if (!settings.UserEmailAsUsername && !string.IsNullOrWhiteSpace(input.UserName) && await _userManager.FindByNameAsync(input.UserName) != null)
+                throw new AbpValidationException("Please correct the errors and try again", new List<ValidationResult> { new ValidationResult("User with the same username already exists") });
         }
 
         private async Task CheckPinBeforeVerificationAsync(Guid? operationId, string? pin, string failureMessage, params string?[] contacts)
